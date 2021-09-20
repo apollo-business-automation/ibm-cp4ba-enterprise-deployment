@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: automagic-install-
+  generateName: automagic-remove-
   namespace: automagic
 spec:
   template:

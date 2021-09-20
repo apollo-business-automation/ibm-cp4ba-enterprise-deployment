@@ -15,6 +15,7 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   echo
   echo ">>>>$(print_timestamp) Install OpenSSl package"
   yum install openssl -y
+  exit_test $? "Install OpenSSL Failed"
 fi
 
 echo
