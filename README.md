@@ -23,8 +23,8 @@ Not for production use. Suitable for Demo and PoC environments - but with enterp
 - Automatic deployment of the whole platform where you don't need to take care about almost any prerequisites
 - Common Global CA used to sign all certificates so there is only one certificate you need to trust in you local machine to trust all URLs of the whole platform
 - Trusted certificate in browser also enable you to save passwords
-- Wherever possible a common admin user *cpadmin* with simple password is used so you don't need to remember credentials when you want to access the platform (convenience also comes with responsibility - so you don't want to expose your platform to whole world)
-- The whole platform is running on containers so you don't need to manually prepare anything on traditional VMs and take care of it including required prerequisites
+- Wherever possible a common admin user *cpadmin* with password adjustable password is used so you don't need to remember multiple credentials when you want to access the platform (convenience also comes with responsibility - so you don't want to expose your platform to whole world)
+- The whole platform is running on containers so you don't need to manually prepare anything on traditional VMs and take care of them including required prerequisites
 - Many otherwise manual post-deployment steps have been automated
 - Pre integrated and automatically connected extras are deployed in the platform for easier access/management/troubleshooting
 - You have a working starting Enterprise deployment which you can use as a reference for further custom deployments
@@ -38,13 +38,14 @@ Result of this Enterprise deployment is not fully supported:
 What is not included:
 - IER - cannot use UMS, missing IER object stores and configuration.
 - ICCs - cannot use UMS, not covered.
-- BAW/BAI Workforce Insights, unresolved issues.
 - Caution! FNCM External share - login issues, do not configure, otherwise other capabilities will break as well - waiting for fixes here.
 - Workflow Server and Workstream Services - this is a dev deployment. BAW Authoring and (BAW + IAWS) are mutually exclusive in single project.
 
 Keep in mind that the platform contains DB2 which is licensed with Standard Edition license available from CP4BA and it must adhere to the *Additional IBM DB2 Standard Edition Detail* in official license information at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument
 
 ## Environments used for installation 💻
+
+With proper sizing of the cluster and provided RWX Storage CLass, this guide should be working on any OpenShift, however it was successfully executed on the following once.
 
 - ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
 OpenShift 4.7.x - 5 Worker Nodes (16 CPU, 32GB Memory)
@@ -54,9 +55,9 @@ OpenShift 4.7.x on vms - 6 Worker Nodes (16 CPU, 32GB Memory)
 
 ## What is in the package 📦
 
-When you perform full deployment, as a result you will get full CP4BA platform as seen in the picture.
+When you perform full deployment, as a result you will get full CP4BA platform as seen in the picture. You can also omit some capabilities - this is covered later in this doc.
 
-More details about each section from the picture follows.
+More details about each section from the picture follows below it.
 
 ![assets/cp4ba-installation.png](assets/cp4ba-installation.png)
 
@@ -64,15 +65,15 @@ More details about each section from the picture follows.
 
 Contains extra software which makes working with the platform even easier.
 
-- DB2MC - web UI for DB2 database making it easier to admin and troubleshoot the DB  
-- phpLDAPadmin - web UI for OpenLDAP directory making it easier to admin and troubleshoot the LDAP  
-- Gitea - contains Git server with web UI and is used for ADS and ADP for project sharing and publishing. Organizations for ADS and APD are automatically created. Gitea is connected to OpenLDAP for authentication and authorization
-- Nexus - repository manager which contains pushed ADS java libraries needed for custom development and also for publishing custom ADS jars. Nexus is connected to OpenLDAP for authentication and authorization
-- Roundcube - web UI for included Mail server to be able to see incoming emails  
-- Cerebro - web UI elastic search browser automatically connected to ES instance deployed with CP4BA  
-- AKHQ - web UI kafka browser automatically connected to Kafka instance deployed with CP4BA  
-- Kibana - Web UI elastic search dashboarding tool automatically connected to ES instance deployed with CP4BA  
-- Mail server - for various mail integrations e.g. from BAN or BAW  
+- DB2MC - Web UI for DB2 database making it easier to admin and troubleshoot the DB.
+- phpLDAPadmin - Web UI for OpenLDAP directory making it easier to admin and troubleshoot the LDAP.
+- Gitea - Contains Git server with web UI and is used for ADS and ADP for project sharing and publishing. Organizations for ADS and APD are automatically created. Gitea is connected to OpenLDAP for authentication and authorization.
+- Nexus - Repository manager which contains pushed ADS java libraries needed for custom development and also for publishing custom ADS jars. Nexus is connected to OpenLDAP for authentication and authorization.
+- Roundcube - Web UI for included Mail server to be able to browse incoming emails.
+- Cerebro - Web UI elastic search browser automatically connected to ES instance deployed with CP4BA.
+- AKHQ - Web UI kafka browser automatically connected to Kafka instance deployed with CP4BA.
+- Kibana - Web UI elastic search dashboarding tool automatically connected to ES instance deployed with CP4BA.
+- Mail server - For various mail integrations e.g. from BAN, BAW and RPA.
   
 ### CP4BA (Cloud Pak for Business Automation) section
 
@@ -81,7 +82,8 @@ Contains extra software which makes working with the platform even easier.
 Purple color is used for CP4BA capabilities.
 
 More info for these capabilities is available in official docs at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x.
-More specifically in overview of patterns at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=capabilities-enterprise-deployments
+
+More specifically in overview of patterns at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=capabilities-enterprise-deployments.
 
 #### IAF (IBM Automation Foundation) capabilities
 
@@ -95,35 +97,35 @@ Contains services which are reused by Cloud Paks.
 
 More info available in official docs at https://www.ibm.com/support/knowledgecenter/en/SSHKN6/kc_welcome_cs.html.
 
-- Monitoring - which contains Grafana instance for custom dashboarding  
-- License metering - for license usage tracking. License Reporter for UI is also installed  
-- IAM - for Identity and Access management  
-- Health Checking - enables you to generate MusthGather output useful for support
+- Monitoring - Contains Grafana instance for custom dashboarding.
+- License metering - Tracks license usage. License Reporter as Web UI is also installed.
+- IAM - Provides Identity and Access management.
+- Health Checking - Enables you to generate MusthGather output which is useful for support.
 
 ### Pre-requisites section
 
-Contains prerequisites for whole platform.
+Contains prerequisites for the whole platform.
 
-- DB2 - as the database solution where some data from Capabilities are stored  
-- OpenLDAP - as a directory solution for users and groups definition  
-- MSSQL server - for RPA database
+- DB2 - Database storage for Capabilities which need it.
+- OpenLDAP - Directory solution for users and groups definition.
+- MSSQL server - Database storage for RPA server.
 
 ### Deployment job section
 
 Multiple command line tools are installed inside a container to make the installation possible.
 
-- JDK9 - for usage of keytool command to generate certificates for ODM and for Maven https://manpages.debian.org/unstable/openjdk-8-jre-headless/keytool.1.en.html https://openjdk.java.net/  
-- jq - to manipulate JSON files from command line https://stedolan.github.io/jq/manual/  
-- yq - to manipulate YAML files from command line. Version 3 is used. https://mikefarah.gitbook.io/yq/  
-- oc - to communicate with OpenShift from command line https://docs.openshift.com/container-platform/4.7/cli_reference/openshift_cli/getting-started-cli.html#cli-using-cli_cli-developer-commands  
-- Global CA - generated self-signed Certification Authority to make trusting the platform easier  
-- helm - for helm charts installation https://helm.sh/docs/  
-- maven - used for pushing ADS jars to Nexus https://maven.apache.org/  
+- JDK9 - Used for keytool command to generate certificates for ODM and for Maven (https://manpages.debian.org/unstable/openjdk-8-jre-headless/keytool.1.en.html https://openjdk.java.net/).
+- jq - Needed for JSON files manipulation from command line (https://stedolan.github.io/jq/manual/).
+- yq - Needed for YAML files manipulation from command line; version 3 is used (https://mikefarah.gitbook.io/yq/).
+- oc - Used to communicate with OpenShift from command line (https://docs.openshift.com/container-platform/4.7/cli_reference/openshift_cli/getting-started-cli.html#cli-using-cli_cli-developer-commands).
+- Global CA - Generated self-signed Certification Authority via OpenSSL to make trusting the platform easier. It is also possible to provide your own CA and how to do so is described later in this doc.
+- helm - Used for helm charts installation (https://helm.sh/docs/).
+- maven - Used for pushing ADS library jars to Nexus (https://maven.apache.org/). This enables custom ADS JARs development.
 
 ## Pre-requisites ⬅️
 
 - OpenShift cluster sized according with the system requirements
-  - Cloud Pak: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=installation-system-requirements.
+  - Cloud Pak: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=installation-system-requirements
   - Process Mining: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=platform-pre-installation-requirements
   - RPA: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-pre-installation-requirements
 - OpenShift cluster admin access
@@ -131,74 +133,342 @@ Multiple command line tools are installed inside a container to make the install
 
 ## Installation steps ⚡
 
-The following steps instructs you to create new OpenShift resources via YAML files.  
+The following steps instructs you to create new OpenShift resources via YAML files.
 
-You can apply them via OpenShift console (with the handy *plus* icon at the top right) or *oc* CLI.  
+You can apply them via OpenShift console (with the handy *plus* icon at the top right - Import YAML) or *oc* CLI from your machine.
+
+![assets/installation-steps.png](assets/installation-steps.png)
 
 ### 1. Create new Project
 
-Create new *automagic* Project by applying [automagic/project.yaml](automagic/project.yaml).  
+At first, create new *automagic* Project by applying the following yaml (also see the picture below the YAML).
+
+This Project is used to house other resources needed for the One-shot deployment.
+
+```yaml
+kind: Project
+apiVersion: project.openshift.io/v1
+metadata:
+  name: automagic
+```
 
 ![assets/project.png](assets/project.png)
 
 ### 2. Assign permissions
 
-This requires the logged in user to be cluster admin.
+This requires the logged in OpenShift user to be cluster admin.
 
-Now you need to assign cluster admin permissions to *automagic* default ServiceAccount under which the installation is performed by applying [automagic/clusterrolebinding.yaml](automagic/clusterrolebinding.yaml).
+Now you need to assign cluster admin permissions to *automagic* default ServiceAccount under which the installation is performed by applying the following yaml (also see the picture below the YAML).
+
+The ServiceAccount needs to have cluster admin to be able to create all resources needed to deploy the platform.
+
+```yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cluster-admin-automagic
+subjects:
+  - kind: User
+    apiGroup: rbac.authorization.k8s.io
+    name: "system:serviceaccount:automagic:default"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+```
 
 ![assets/cluster-role-binding.png](assets/cluster-role-binding.png)
 
 ### 3. Add configuration
 
-Configuration which is used for installation.
+The installation process needs configuration information properly adjusted to your environment.
 
-Update contents of you own copy of [automagic/configmap.yaml](automagic/configmap.yaml).
+Copy the contents of the following yaml to OpenShift console *Import YAML* dialog (as seen in the picture below - point 1 and 2).
 
-If you are copying the file directly from GitHub, open *Raw* (Raw button) contents of the file at first to preserve blank lines for better readability of the YAML.  
-
-Update variables in variables.sh key as needed. Every key is documented.  
+Update variables in variables.sh entry as wanted (as seen in the picture below - point 2, row starting with *variables.sh**). Keys are divided into sections and every key is documented for you to understand what to fill in it.
 
 You can also choose not to deploy the whole platform by setting various feature variables to *false*.  
 
+Optionally add your custom global CA files if you set *GLOBAL_CA_PROVIDED* variable to *true* (as seen in the picture below - point 3, rows starting with *global-ca.crt* and *global-ca.key*). Make sure the contents of CA files are properly indented to the same level like example contents.
+
+Apply the updated contents to your cluster (as seen in the picture below point 4).
+
+<details open>
+  <summary>Click this row to show / hide the configuration YAML file</summary>
+  
+  ```yaml
+  apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: automagic
+  namespace: automagic
+data:
+  variables.sh: |
+    # Always set these parameters to your values #
+
+    ## Entitlement key from the IBM Container software library. 
+    ## (https://myibm.ibm.com/products-services/containerlibrary)  
+    ICR_PASSWORD=TODO_ICR_PASSWORD
+
+    ## Name of the OCP storage class used for all PVCs. 
+    ## Must be RWX and Fast. Some pillars don't allow to specify storage class, 
+    ## so this one will also be automatically set as Default 
+    ## For ROKS this class could be ibmc-file-gold-gid
+    ## For NFS based class this could be managed-nfs-storage
+    STORAGE_CLASS_NAME=ibmc-file-gold-gid
+
+    ## Options are OCP and ROKS
+    ## OCP option also applies to other managed OpenShifts
+    DEPLOYMENT_PLATFORM=ROKS
+
+    ## By default false, which means that new self signed CA will be generated 
+    ## and all certificates will be signed using it. 
+    ## Set true if you want to provide your own global-ca.key and global-ca.crt.
+    ## Contents of these two files are provided in this ConfigMap in keys which are at the bottom of this file
+    ## Files cannot be password protected.
+    GLOBAL_CA_PROVIDED=false
+
+    ## In the Platform, multiple users and keystores and other encrypted entries need a password.
+    ## To make working with the Platform easier all places which require a password share the same one from this variable.
+    ## Make this password strong to ensure that no one from the outside world can login to your Platform.
+    ## Password must be alphanumeric (upper and lower case; no special characters allowed).
+    UNIVERSAL_PASSWORD=Passw0rd
+
+
+    # Always review these parameters for changes
+
+    ## Set to false if you don't want to install (or remove) Process Mining
+    PM_ENABLED=true
+
+    ## Set to false if you don't want to install (or remove) Asset Repo
+    ASSET_REPO_ENABLED=true
+
+    ## Set to false if you don't want to install (or remove) RPA
+    RPA_ENABLED=true
+
+    ## Set to false if you don't want to install (or remove) AKHQ
+    AKHQ_ENABLED=true
+
+    ## Set to false if you don't want to install (or remove) Cerebro
+    CEREBRO_ENABLED=true
+
+    ## Set to false if you don't want to install (or remove) DB2 Management Console
+    DB2MC_ENABLED=true
+
+    ## Set to false if you don't want to install (or remove) Roundcube
+    ROUNDCUBE_ENABLED=true
+
+
+    # Update these parameters if needed #
+
+    ## Default attempts used when calling waiting scripts. 
+    ## Means wait for 20 minutes with combination of DEFAULT_DELAY. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_ATTEMPTS=80
+
+    ## Default attempts used when calling waiting scripts. 
+    ## Means wait for 20 minutes with combination of DEFAULT_ATTEMPTS. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_DELAY=15
+
+    ## Used e.g. for DB2. Default attempts used when calling waiting scripts. 
+    ## Means wait for 20 minutes with combination of DEFAULT_DELAY_1. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_ATTEMPTS_1=40
+
+    ## Used e.g. for DB2. Default delay used when calling waiting scripts. 
+    ## Means wait for 20 minutes with combination of DEFAULT_ATTEMPTS_1. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_DELAY_1=30
+
+    ## Used e.g. for CPFS. Default attempts used when calling waiting scripts. 
+    ## Means wait for 30 minutes with combination of DEFAULT_DELAY_2. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_ATTEMPTS_2=30
+
+    ## Used e.g. for CPFS. Default attempts used when calling waiting scripts. 
+    ## Means wait for 30 minutes with combination of DEFAULT_ATTEMPTS_2. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_DELAY_2=60
+
+    ## Used e.g. for CP4BA pillars. Default attempts used when calling waiting scripts. 
+    ## Means wait for 60 minutes with combination of DEFAULT_DELAY_3. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_ATTEMPTS_3=30
+
+    ## Used e.g. for CPFS. Default attempts used when calling waiting scripts. 
+    ## Means wait for 60 minutes with combination of DEFAULT_ATTEMPTS_3. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_DELAY_3=120
+
+    ## Used e.g. for CP4BA pillars. Default attempts used when calling waiting scripts. 
+    ## Means wait for 180 minutes with combination of DEFAULT_DELAY_4. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_ATTEMPTS_4=36
+
+    ## Used e.g. for CPFS. Default attempts used when calling waiting scripts. 
+    ## Means wait for 180 minutes with combination of DEFAULT_ATTEMPTS_4. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_DELAY_4=300
+
+    ## Do NOT enable now. Set to true if you want to use FNCM External Share with Google ID. 
+    ## You then need to provide also the following parameters (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET). 
+    ## Video on how to get these values is in assets/fncm-es-google-oidc-pre.mp4
+    EXTERNAL_SHARE_GOOGLE=false
+    GOOGLE_CLIENT_ID=TODO_GOOGLE_CLIENT_ID
+    GOOGLE_CLIENT_SECRET=TODO_GOOGLE_CLIENT_SECRET
+
+
+    # Touch these parameters only if you know what you are doing! #
+
+    ## Should not be changed in particular guide version. 
+    ## Version of Cloud Pak e.g. 20.0.2.1, 20.0.3
+    CP4BA_VERSION=21.0.2 
+    ## Should not be changed in particular guide version. 
+    ## Version of Cloud Pak CASE archive as found on 
+    ## https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cp-automation e.g. 3.0.1
+    CP4BA_CASE_VERSION=3.1.3
+    ## Should not be changed in particular guide version. 
+    ## Version of cert-kubernetes folder from Cloud Pak CASE archive e.g. 21.0.1
+    CP4BA_CASE_CERT_K8S_VERSION=21.0.2
+    ## Should not be changed in particular guide version. 
+    ## Version of the Subscription channel as defined on 
+    ## https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=cluster-setting-up-by-installing-operator-catalog
+    OPERATOR_UPDATE_CHANNEL=v21.2
+    ## Hostname of server where DB2 is running
+    DB2_HOSTNAME=c-db2ucluster-db2u.db2
+    ## Hostname of server where MSSQL is running
+    MSSQL_HOSTNAME=mssql.mssql
+    ## Name of OCP CP4BA project
+    PROJECT_NAME=cp4ba
+    ## Name of the CP4BA instance in cr.yaml at path metadata.name
+    CR_META_NAME=cp4ba
+    ## Hostname of server where LDAP is running
+    LDAP_HOSTNAME=openldap-openldap-stack-ha.openldap
+    ## Hostname of server where SMTP is running
+    MAIL_HOSTNAME=mailserver.mail
+    ## OCP API endpoint used for oc login command in --server parameter.
+    ## E.g. something like https://api.[ocp_hostname]:6443 for OCP 
+    ## and https://[endpoint_part].jp-tok.containers.cloud.ibm.com:[port] for ROKS
+    OCP_API_ENDPOINT=TODO_OCP_API_ENDPOINT
+    ## Provide either OCP_CLUSTER_ADMIN + OCP_CLUSTER_ADMIN_PASSWORD 
+    ## or OCP_CLUSTER_TOKEN (e.g. for ROKS)
+    ## Cluster admin of OCP username used for 
+    ## oc login command in --username paremeter.
+    OCP_CLUSTER_ADMIN=TODO_OCP_CLUSTER_ADMIN_USERNAME
+    ## Cluster admin of OCP password used for 
+    ## oc login command in --password paremeter.
+    OCP_CLUSTER_ADMIN_PASSWORD=TODO_OCP_CLUSTER_ADMIN_PASSWORD
+    ## Login token of Cluster admin of OCP (useful for ROKS) used for 
+    ## oc login command in --token paremeter. 
+    ## Replace this value before every interaction to make sure your token is valid long enough.
+    OCP_CLUSTER_TOKEN=TODO_OCP_CLUSTER_ADMIN_TOKEN
+
+  global-ca.crt: |
+    -----BEGIN CERTIFICATE-----
+    TODO_YOUR_BASE64_CONTENT
+    -----END CERTIFICATE-----
+
+  global-ca.key: |
+    -----BEGIN RSA PRIVATE KEY-----
+    TODO_YOUR_BASE64_CONTENT
+    -----END RSA PRIVATE KEY-----
+
+  ```
+</details>
+
 ![assets/config-map-variables.png](assets/config-map-variables.png)
-
-Add global CA files if you like.  
-
-Apply the updated configmap.yaml to your cluster.
 
 ![assets/config-map-tls.png](assets/config-map-tls.png)
 
-### 4. Run the Job  
+### 4. Run the Job
 
-Trigger the installation by applying [automagic/install-job.yaml](automagic/install-job.yaml) to your cluster via OpenShift console or CLI.  
+Trigger the installation by applying the following YAML (also see the picture below the YAML).
+
 This Job runs a Pod which performs the installation.
 
-TODO job screenshot main
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: automagic-intall-
+  namespace: automagic
+spec:
+  template:
+    metadata:
+      labels:
+        app: automagic  
+    spec:
+      containers:
+        - name: automagic
+          image: ubi8/ubi
+          command: ["/bin/bash"]
+          args:
+            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}; chmod u+x automagic.sh; ./automagic.sh"]
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: ACTION
+              value: install
+            - name: GIT_ARCHIVE
+              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/tarball/main
+            - name: CONTAINER_RUN_MODE
+              value: "true"
+          volumeMounts:
+            - name: config
+              mountPath: /config/
+      restartPolicy: Never
+      volumes:
+        - name: config
+          configMap:
+            name: automagic
+  backoffLimit: 0
+```
+
+![assets/install-job.png](assets/install-job.png)
 
 Now you need to wait for a couple of hours 6-10 for the installation to complete depending on speed of your OpenShift and StorageClass bounding.
-You can watch progress in log of pod which name starts with *automagic*.
+
+You can watch progress in log of Pod which was created by the Job and its name starts with *automagic-install*. See below images to find the logs.
+
 During execution, printed Timestamps are in UTC.
+
+Find the pod of install Job.
+
+![assets/install-job-pod.png](assets/install-job-pod.png)
+
+Then open logs tab.
+
+![assets/install-job-pod-log.png](assets/install-job-pod-log.png)
 
 #### Successful completion
 
-Successful completion is determined by seeing that the Job *automagic* is *Complete* and the pod is also *Completed* and there is "CP4BA Enterprise install completed" at the end of the log in the Pod.  
+Successful completion is determined by seeing that the Job is *Complete* (in the below picture point 1) and the pod is also *Completed* (in the below picture point 3).
 
-TODO successful completion
+![assets/failed-job-pod.png](assets/success-job-pod.png)
+
+Also the pod log ends with "CP4BA Enterprise install completed"  (in the below picture point 1).  
+
+![assets/failed-job-log.png](assets/success-job-log.png)
+
+Now continue with the [Post installation steps](#post-installation-steps-) and then review [Usage & Operations](#usage--operations-)
 
 #### Failed completion
 
-If something goes wrong, the Job is *Failed*, the pod has status *Error* and the log ends with message ending with the word "Failed".
-Further execution is stopped - and you need to troubleshoot what went wrong.
-TODO run removal and retry
+If something goes wrong, the Job is *Failed* (in the below picture point 1) and the pod has status *Error* (in the below picture point 3).
 
-TODO failed completion
+![assets/failed-job-pod.png](assets/failed-job-pod.png)
+
+Also the pod log ends with message ending with the word "Failed" (in the below picture point 1).
+
+![assets/failed-job-log.png](assets/failed-job-log.png)
+
+Further execution is stopped - and you need to troubleshoot why the installation failed, fix your environment, clean the cluster by following [Removal steps](#removal-steps-) and after successful removal retry installation from step [4. Run the Job](#4-run-the-job).
 
 ## Post installation steps ➡️
 
 Perform post deploy manual steps which have not been automated yet for CP4BA as specified in ConfigMap cp4ba-postdeploy in postdeploy.md file
 
-Perform post deploy manual steps which have not been automated yet for RPA as specified in ConfigMap rpa-postdeploy.md in postdeploy.md file  
+Perform post deploy manual steps which have not been automated yet for RPA as specified in ConfigMap rpa-postdeploy.md in postdeploy.md file
 
 ## Usage & Operations 😊
 
