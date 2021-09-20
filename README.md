@@ -450,7 +450,7 @@ Also the pod log ends with "CP4BA Enterprise install completed"  (in the below p
 
 ![assets/success-install-job-log.png](assets/success-install-job-log.png)
 
-Now continue with the [Post installation steps](#user-content-post-installation-steps-) and then review [Usage & Operations](#user-content-usage--operations-).
+Now continue with the [Post installation steps](#post-installation-steps-%EF%B8%8F) and then review [Usage & Operations](#usage--operations-).
 
 #### Failed completion
 
@@ -462,7 +462,7 @@ Also the pod log ends with message ending with the word "Failed" (in the below p
 
 ![assets/failed-install-job-log.png](assets/failed-install-job-log.png)
 
-Further execution is stopped - and you need to troubleshoot why the installation failed, fix your environment, clean the cluster by following [Removal steps](#user-content-removal-steps-) and after successful removal retry installation from step [4. Run the Job](#user-content-4-run-the-job).
+Further execution is stopped - and you need to troubleshoot why the installation failed, fix your environment, clean the cluster by following [Removal steps](#removal-steps-%EF%B8%8F) and after successful removal retry installation from step [4. Run the Job](#4-run-the-job).
 
 ## Post installation steps ➡️
 
@@ -551,11 +551,11 @@ Also the pod log ends with "CP4BA Enterprise remove completed" (in the below pic
 
 #### Failed removal
 
-If something goes wrong, the Job is *Failed* and the pod has status *Error* (similarly as in failed installation at [Failed completion](#user-content-failed-completion).
+If something goes wrong, the Job is *Failed* and the pod has status *Error* (similarly as in failed installation at [Failed completion](#failed-completion).
 
 Also the pod log ends with message ending with the word "Failed".
 
-Further execution is stopped - and you need to troubleshoot why the removal failed, fix your environment and retry removal from step [1. Run the Job](#user-content-1-run-the-job).
+Further execution is stopped - and you need to troubleshoot why the removal failed, fix your environment and retry removal from step [1. Run the Job](#1-run-the-job).
 
 ### 2. Remove automagic Project
 
@@ -563,7 +563,7 @@ If you don't plan to repeat install or removal steps, you can remove whole *auto
 
 ![assets/project-delete.png](assets/project-delete.png)
 
-Now continue with the [Post removal steps](#user-content-post-removal-steps-).
+Now continue with the [Post removal steps](#post-removal-steps-%EF%B8%8F).
 
 ## Post removal steps ➡️
 
