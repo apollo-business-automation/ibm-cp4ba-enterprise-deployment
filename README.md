@@ -1,10 +1,11 @@
 # Installation of Cloud Pak for Business Automation on containers - One-shot enterprise deployment 🔫
 
-Goal of this repository is to almost automagically install CP4BA Enterprise patterns with all kinds of prerequisites and collateral. 
+Goal of this repository is to almost automagically install CP4BA Enterprise patterns with all kinds of prerequisites and extras. 
 
-Last installation was performed on 2021-09-02 with CP4BA version 21.0.2-IF002 (also called 21.0.2.2 or 21.2.2)
+Last installation was performed on 2021-09-20 with CP4BA version 21.0.2-IF003 (also called 21.0.2.3 or 21.2.3)
 
-Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-enterprise-deployments.  
+Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-enterprise-deployments.
+
 Deployment of other parts is also based on respective official documentations.
 
 ## Disclaimer ✋
@@ -170,27 +171,33 @@ Apply the updated configmap.yaml to your cluster.
 
 ### 4. Run the Job  
 
-The step which is remaining is to trigger the installation.  
-Add [automagic/install-job.yaml](automagic/install-job.yaml) to your cluster via OpenShift console or CLI.  
+Trigger the installation by applying [automagic/install-job.yaml](automagic/install-job.yaml) to your cluster via OpenShift console or CLI.  
 This Job runs a Pod which performs the installation.
 
-TODO job screenshot
+TODO job screenshot main
 
-Now you need to wait for a couple of hours 6-10 for the installation to complete depending on speed of your OpenShift and StorageClass bounding.  
-You can watch progress in log of pod which name starts with *automagic*.  
-During execution, printed Timestamps are in UTC.  
+Now you need to wait for a couple of hours 6-10 for the installation to complete depending on speed of your OpenShift and StorageClass bounding.
+You can watch progress in log of pod which name starts with *automagic*.
+During execution, printed Timestamps are in UTC.
+
+#### Successful completion
 
 Successful completion is determined by seeing that the Job *automagic* is *Complete* and the pod is also *Completed* and there is "CP4BA Enterprise install completed" at the end of the log in the Pod.  
 
 TODO successful completion
 
-If something goes wrong, the Job is *Failed*, the pod has status *Error* and the log ends with message ending with the word "Failed"
+#### Failed completion
+
+If something goes wrong, the Job is *Failed*, the pod has status *Error* and the log ends with message ending with the word "Failed".
 Further execution is stopped - and you need to troubleshoot what went wrong.
+TODO run removal and retry
 
 TODO failed completion
+
 ## Post installation steps ➡️
 
-Perform post deploy manual steps which have not been automated yet for CP4BA as specified in ConfigMap cp4ba-postdeploy in postdeploy.md file  
+Perform post deploy manual steps which have not been automated yet for CP4BA as specified in ConfigMap cp4ba-postdeploy in postdeploy.md file
+
 Perform post deploy manual steps which have not been automated yet for RPA as specified in ConfigMap rpa-postdeploy.md in postdeploy.md file  
 
 ## Usage & Operations 😊

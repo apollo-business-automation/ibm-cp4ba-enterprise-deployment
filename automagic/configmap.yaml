@@ -149,8 +149,8 @@ data:
     ## Hostname of server where SMTP is running
     MAIL_HOSTNAME=mailserver.mail
     ## OCP API endpoint used for oc login command in --server parameter.
-    ## E.g. something like https://api.ocp01.tec.cz.ibm.com:6443 for OCP 
-    ## and https://c103-e.jp-tok.containers.cloud.ibm.com:32429 for ROKS
+    ## E.g. something like https://api.[ocp_hostname]:6443 for OCP 
+    ## and https://[endpoint_part].jp-tok.containers.cloud.ibm.com:[port] for ROKS
     OCP_API_ENDPOINT=TODO_OCP_API_ENDPOINT
     ## Provide either OCP_CLUSTER_ADMIN + OCP_CLUSTER_ADMIN_PASSWORD 
     ## or OCP_CLUSTER_TOKEN (e.g. for ROKS)
