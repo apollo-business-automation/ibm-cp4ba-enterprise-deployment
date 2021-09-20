@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
         - name: automagic
-          image: bitnami/git
+          image: ubi8/ubi
           command: ["/bin/bash"]
           args:
             [
