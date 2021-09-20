@@ -1,0 +1,176 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: automagic
+  namespace: automagic
+data:
+  variables.sh: |
+    # Always set these parameters to your values #
+
+    ## Entitlement key from the IBM Container software library. 
+    ## (https://myibm.ibm.com/products-services/containerlibrary)  
+    ICR_PASSWORD=TODO_ICR_PASSWORD
+
+    ## Name of the OCP storage class used for all PVCs. 
+    ## Must be RWX and Fast. Some pillars don't allow to specify storage class, 
+    ## so this one will also be automatically set as Default 
+    ## For ROKS this class could be ibmc-file-gold-gid
+    ## For NFS based class this could be managed-nfs-storage
+    STORAGE_CLASS_NAME=ibmc-file-gold-gid
+
+    ## Options are OCP and ROKS
+    ## OCP option also applies to other managed OpenShifts
+    DEPLOYMENT_PLATFORM=ROKS
+
+    ## By default false, which means that new self signed CA will be generated 
+    ## and all certificates will be signed using it. 
+    ## Set true if you want to provide your own global-ca.key and global-ca.crt.
+    ## Contents of these two files are provided in this ConfigMap in keys which are at the bottom of this file
+    ## Files cannot be password protected.
+    GLOBAL_CA_PROVIDED=false
+
+    ## In the Platform, multiple users and keystores and other encrypted entries need a password.
+    ## To make working with the Platform easier all places which require a password share the same one from this variable.
+    ## Make this password strong to ensure that no one from the outside world can login to your Platform.
+    ## Password must be alphanumeric (upper and lower case; no special characters allowed).
+    UNIVERSAL_PASSWORD=Passw0rd
+
+
+    # Always review these parameters for changes
+
+    ## Set to false if you don't want to install (or remove) Process Mining
+    PM_ENABLED=true
+
+    ## Set to false if you don't want to install (or remove) Asset Repo
+    ASSET_REPO_ENABLED=true
+
+    ## Set to false if you don't want to install (or remove) RPA
+    RPA_ENABLED=true
+
+    ## Set to false if you don't want to install (or remove) AKHQ
+    AKHQ_ENABLED=true
+
+    ## Set to false if you don't want to install (or remove) Cerebro
+    CEREBRO_ENABLED=true
+
+    ## Set to false if you don't want to install (or remove) DB2 Management Console
+    DB2MC_ENABLED=true
+
+    ## Set to false if you don't want to install (or remove) Roundcube
+    ROUNDCUBE_ENABLED=true
+
+
+    # Update these parameters if needed #
+
+    ## Default attempts used when calling waiting scripts. 
+    ## Means wait for 20 minutes with combination of DEFAULT_DELAY. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_ATTEMPTS=80
+
+    ## Default attempts used when calling waiting scripts. 
+    ## Means wait for 20 minutes with combination of DEFAULT_ATTEMPTS. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_DELAY=15
+
+    ## Used e.g. for DB2. Default attempts used when calling waiting scripts. 
+    ## Means wait for 20 minutes with combination of DEFAULT_DELAY_1. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_ATTEMPTS_1=40
+
+    ## Used e.g. for DB2. Default delay used when calling waiting scripts. 
+    ## Means wait for 20 minutes with combination of DEFAULT_ATTEMPTS_1. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_DELAY_1=30
+
+    ## Used e.g. for CPFS. Default attempts used when calling waiting scripts. 
+    ## Means wait for 30 minutes with combination of DEFAULT_DELAY_2. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_ATTEMPTS_2=30
+
+    ## Used e.g. for CPFS. Default attempts used when calling waiting scripts. 
+    ## Means wait for 30 minutes with combination of DEFAULT_ATTEMPTS_2. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_DELAY_2=60
+
+    ## Used e.g. for CP4BA pillars. Default attempts used when calling waiting scripts. 
+    ## Means wait for 60 minutes with combination of DEFAULT_DELAY_3. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_ATTEMPTS_3=30
+
+    ## Used e.g. for CPFS. Default attempts used when calling waiting scripts. 
+    ## Means wait for 60 minutes with combination of DEFAULT_ATTEMPTS_3. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_DELAY_3=120
+
+    ## Used e.g. for CP4BA pillars. Default attempts used when calling waiting scripts. 
+    ## Means wait for 180 minutes with combination of DEFAULT_DELAY_4. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_ATTEMPTS_4=36
+
+    ## Used e.g. for CPFS. Default attempts used when calling waiting scripts. 
+    ## Means wait for 180 minutes with combination of DEFAULT_ATTEMPTS_4. 
+    ## Increase if you OCP is slow and you need to wait for things longer.
+    DEFAULT_DELAY_4=300
+
+    ## Do NOT enable now. Set to true if you want to use FNCM External Share with Google ID. 
+    ## You then need to provide also the following parameters (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET). 
+    ## Video on how to get these values is in assets/fncm-es-google-oidc-pre.mp4
+    EXTERNAL_SHARE_GOOGLE=false
+    GOOGLE_CLIENT_ID=TODO_GOOGLE_CLIENT_ID
+    GOOGLE_CLIENT_SECRET=TODO_GOOGLE_CLIENT_SECRET
+
+
+    # Touch these parameters only if you know what you are doing! #
+
+    ## Should not be changed in particular guide version. 
+    ## Version of Cloud Pak e.g. 20.0.2.1, 20.0.3
+    CP4BA_VERSION=21.0.2 
+    ## Should not be changed in particular guide version. 
+    ## Version of Cloud Pak CASE archive as found on 
+    ## https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cp-automation e.g. 3.0.1
+    CP4BA_CASE_VERSION=3.1.3
+    ## Should not be changed in particular guide version. 
+    ## Version of cert-kubernetes folder from Cloud Pak CASE archive e.g. 21.0.1
+    CP4BA_CASE_CERT_K8S_VERSION=21.0.2
+    ## Should not be changed in particular guide version. 
+    ## Version of the Subscription channel as defined on 
+    ## https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=cluster-setting-up-by-installing-operator-catalog
+    OPERATOR_UPDATE_CHANNEL=v21.2
+    ## Hostname of server where DB2 is running
+    DB2_HOSTNAME=c-db2ucluster-db2u.db2
+    ## Hostname of server where MSSQL is running
+    MSSQL_HOSTNAME=mssql.mssql
+    ## Name of OCP CP4BA project
+    PROJECT_NAME=cp4ba
+    ## Name of the CP4BA instance in cr.yaml at path metadata.name
+    CR_META_NAME=cp4ba
+    ## Hostname of server where LDAP is running
+    LDAP_HOSTNAME=openldap-openldap-stack-ha.openldap
+    ## Hostname of server where SMTP is running
+    MAIL_HOSTNAME=mailserver.mail
+    ## OCP API endpoint used for oc login command in --server parameter.
+    ## E.g. something like https://api.ocp01.tec.cz.ibm.com:6443 for OCP 
+    ## and https://c103-e.jp-tok.containers.cloud.ibm.com:32429 for ROKS
+    OCP_API_ENDPOINT=TODO_OCP_API_ENDPOINT
+    ## Provide either OCP_CLUSTER_ADMIN + OCP_CLUSTER_ADMIN_PASSWORD 
+    ## or OCP_CLUSTER_TOKEN (e.g. for ROKS)
+    ## Cluster admin of OCP username used for 
+    ## oc login command in --username paremeter.
+    OCP_CLUSTER_ADMIN=TODO_OCP_CLUSTER_ADMIN_USERNAME
+    ## Cluster admin of OCP password used for 
+    ## oc login command in --password paremeter.
+    OCP_CLUSTER_ADMIN_PASSWORD=TODO_OCP_CLUSTER_ADMIN_PASSWORD
+    ## Login token of Cluster admin of OCP (useful for ROKS) used for 
+    ## oc login command in --token paremeter. 
+    ## Replace this value before every interaction to make sure your token is valid long enough.
+    OCP_CLUSTER_TOKEN=TODO_OCP_CLUSTER_ADMIN_TOKEN
+
+  global-ca.crt: |
+    -----BEGIN CERTIFICATE-----
+    TODO_YOUR_BASE64_CONTENT
+    -----END CERTIFICATE-----
+
+  global-ca.key: |
+    -----BEGIN RSA PRIVATE KEY-----
+    TODO_YOUR_BASE64_CONTENT
+    -----END RSA PRIVATE KEY-----

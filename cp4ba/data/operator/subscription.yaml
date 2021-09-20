@@ -1,0 +1,10 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-cp4a-operator
+spec:
+  channel: "{{OPERATOR_UPDATE_CHANNEL}}"
+  installPlanApproval: Automatic
+  name: ibm-cp4a-operator
+  source: ibm-operator-catalog
+  sourceNamespace: openshift-marketplace

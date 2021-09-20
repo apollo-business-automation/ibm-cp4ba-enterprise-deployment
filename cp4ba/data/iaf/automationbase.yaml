@@ -1,0 +1,67 @@
+apiVersion: base.automation.ibm.com/v1beta1
+kind: AutomationBase
+metadata:
+  name: foundation-iaf
+spec:
+  description: IAF CR for Foundation
+  version: v1.1
+  license:
+    accept: true
+  tls:
+    issuerRef:
+      name: iaf-issuer
+      kind: Issuer
+    caSecret:
+      secretName: global-ca
+      key: ca.crt
+  elasticsearch:
+    version: v1.1
+    license:
+      accept: true
+    additionalAllowedAPIs: "GET:[*],PUT:[*],POST:[*],HEAD:[*],DELETE:[*]"
+    nodegroupspecs:
+      - name: master-data
+        replicas: 1
+        storage:
+          class: "{{STORAGE_CLASS_NAME}}"
+          size: 55Gi
+        template:
+          pod:
+            spec:
+              containers:
+                - name: elasticsearch
+                  resources:
+                    requests:
+                      cpu: 1000m
+                      memory: 2048Mi
+                    limits:
+                      cpu: 1000m
+                      memory: 2048Mi
+  kafka:
+    kafka:
+      replicas: 3
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 1024Mi
+        requests:
+          cpu: 1000m
+          memory: 1024Mi
+      storage:
+        type: persistent-claim
+        size: 4Gi
+        class: "{{STORAGE_CLASS_NAME}}"
+    zookeeper:
+      replicas: 1
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 1024Mi
+        requests:
+          cpu: 1000m
+          memory: 1024Mi
+      storage:
+        type: persistent-claim
+        size: 2Gi
+        class: "{{STORAGE_CLASS_NAME}}"
+  apicurio: {}

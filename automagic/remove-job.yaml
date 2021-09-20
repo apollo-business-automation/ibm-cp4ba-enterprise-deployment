@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: automagic-install-
+  namespace: automagic
+spec:
+  template:
+    metadata:
+      labels:
+        app: automagic  
+    spec:
+      containers:
+        - name: automagic
+          image: bitnami/git
+          command: ["/bin/bash"]
+          args:
+            [
+              "-c",
+              "cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}; chmod u+x automagic.sh; ./automagic.sh"
+            ]
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: ACTION
+              value: remove
+            - name: GIT_ARCHIVE
+              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/tarball/develop
+            - name: CONTAINER_RUN_MODE
+              value: "true"
+          volumeMounts:
+            - name: config
+              mountPath: /config/
+      restartPolicy: Never
+      volumes:
+        - name: config
+          configMap:
+            name: automagic
+  backoffLimit: 0

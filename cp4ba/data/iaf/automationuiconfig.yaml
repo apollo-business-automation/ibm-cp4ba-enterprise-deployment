@@ -1,0 +1,18 @@
+apiVersion: core.automation.ibm.com/v1beta1
+kind: AutomationUIConfig
+metadata:
+  name: iaf-system
+spec:
+  description: automation-ui-config for CP4BA Cartridge
+  license:
+    accept: true
+  zen: true
+  version: v1.1
+  tls: 
+    certificateSecret: 
+      secretName: external-tls-secret
+    caSecret:
+      secretName: external-tls-secret
+      key: ca.crt
+  storage:
+    class: "{{STORAGE_CLASS_NAME}}"
