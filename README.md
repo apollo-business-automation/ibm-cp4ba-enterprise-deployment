@@ -194,7 +194,7 @@ Optionally add your custom global CA files if you set *GLOBAL_CA_PROVIDED* varia
 Apply the updated contents to your cluster (as seen in the picture below point 4).
 
 <details open>
-  <summary>Click this row to show / hide the configuration YAML file</summary>
+  <summary>Click this text to hide / show the configuration YAML file</summary>
   
   ```yaml
   apiVersion: v1
@@ -428,7 +428,7 @@ spec:
 
 Now you need to wait for a couple of hours 6-10 for the installation to complete depending on speed of your OpenShift and StorageClass bounding.
 
-You can watch progress in log of Pod which was created by the Job and its name starts with *automagic-install*. See below images to find the logs.
+You can watch progress in log of Pod which was created by the Job and its name starts with *automagic-install-*. See below images to find the logs.
 
 During execution, printed Timestamps are in UTC.
 
@@ -444,25 +444,25 @@ Then open logs tab.
 
 Successful completion is determined by seeing that the Job is *Complete* (in the below picture point 1) and the pod is also *Completed* (in the below picture point 3).
 
-![assets/failed-job-pod.png](assets/success-job-pod.png)
+![assets/success-install-job-pod.png](assets/success-install-job-pod.png)
 
 Also the pod log ends with "CP4BA Enterprise install completed"  (in the below picture point 1).  
 
-![assets/failed-job-log.png](assets/success-job-log.png)
+![assets/success-install-job-log.png](assets/success-install-job-log.png)
 
-Now continue with the [Post installation steps](#post-installation-steps-) and then review [Usage & Operations](#usage--operations-)
+Now continue with the [Post installation steps](#user-content-post-installation-steps-) and then review [Usage & Operations](#user-content-usage--operations-).
 
 #### Failed completion
 
 If something goes wrong, the Job is *Failed* (in the below picture point 1) and the pod has status *Error* (in the below picture point 3).
 
-![assets/failed-job-pod.png](assets/failed-job-pod.png)
+![assets/failed-install-job-pod.png](assets/failed-install-job-pod.png)
 
 Also the pod log ends with message ending with the word "Failed" (in the below picture point 1).
 
-![assets/failed-job-log.png](assets/failed-job-log.png)
+![assets/failed-install-job-log.png](assets/failed-install-job-log.png)
 
-Further execution is stopped - and you need to troubleshoot why the installation failed, fix your environment, clean the cluster by following [Removal steps](#removal-steps-) and after successful removal retry installation from step [4. Run the Job](#4-run-the-job).
+Further execution is stopped - and you need to troubleshoot why the installation failed, fix your environment, clean the cluster by following [Removal steps](#user-content-removal-steps-) and after successful removal retry installation from step [4. Run the Job](#user-content-4-run-the-job).
 
 ## Post installation steps ➡️
 
@@ -476,32 +476,94 @@ Endpoints, access info and other useful information will be available in Project
 
 ## Removal steps 🗑️
 
-Useful when you want to clean up your environment.  
+Useful when you want to clean up your environment.
+
 You can use it even if the deployment failed and everything was not deployed but expect to see some failures as script tries to remove things which doesn't exist. You can ignore such errors.
 
 ### 1. Run the Job
 
-Trigger the removal by applying [automagic/remove-job.yaml](automagic/remove-job.yaml) to your cluster via OpenShift console or CLI.  
+Trigger the removal by applying the following YAML (also see the picture below the YAML).
 
-TODO job screenshot
+This Job runs a Pod which performs the removal.
 
-Now you need to wait for the removal to complete.  
-You can watch progress in log of pod which name starts with *automagic*
-During execution, printed Timestamps are in UTC. 
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: automagic-remove-
+  namespace: automagic
+spec:
+  template:
+    metadata:
+      labels:
+        app: automagic  
+    spec:
+      containers:
+        - name: automagic
+          image: ubi8/ubi
+          command: ["/bin/bash"]
+          args:
+            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}; chmod u+x automagic.sh; ./automagic.sh"]
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: ACTION
+              value: remove
+            - name: GIT_ARCHIVE
+              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/tarball/develop
+            - name: CONTAINER_RUN_MODE
+              value: "true"
+          volumeMounts:
+            - name: config
+              mountPath: /config/
+      restartPolicy: Never
+      volumes:
+        - name: config
+          configMap:
+            name: automagic
+  backoffLimit: 0
+```
 
-Successful completion of removal is determined by seeing that the Job automagic is *Successful* and the pod is *Completed* and there is "CP4BA Enterprise remove completed" at the end of the log.  
+![assets/remove-job.png](assets/remove-job.png)
 
-TODO successful completion
+Now you need to wait for some time (30 minutes to 1 hour) for the removal to complete depending on the speed of your OpenShift.
 
-If something goes wrong the Job is *Failed*, the pod has status *Error* and the log ends with message ending with the word "Failed"
-Further execution is stopped - and you need to troubleshoot what went wrong.
+You can watch progress in log of Pod which was created by the Job and its name starts with *automagic-remove-*. See below images to find the logs.
 
-TODO failed completion
+During execution, printed Timestamps are in UTC.
+
+Find the pod of remove Job.
+
+![assets/remove-job-pod.png](assets/remove-job-pod.png)
+
+Then open logs tab.
+
+![assets/remove-job-pod-log.png](assets/remove-job-pod-log.png)
+
+#### Successful removal
+
+Successful completion of removal is determined by seeing that the Job is *Complete* (in the below picture point 1) and the pod is also *Completed* (in the below picture point 3).
+
+![assets/success-remove-job-pod.png](assets/success-remove-job-pod.png)
+
+Also the pod log ends with "CP4BA Enterprise remove completed" (in the below picture point 1).  
+
+![assets/success-remove-job-log.png](assets/success-remove-job-log.png)
+
+#### Failed removal
+
+If something goes wrong, the Job is *Failed* and the pod has status *Error* (similarly as in failed installation at [Failed completion](#user-content-failed-completion).
+
+Also the pod log ends with message ending with the word "Failed".
+
+Further execution is stopped - and you need to troubleshoot why the removal failed, fix your environment and retry removal from step [1. Run the Job](#user-content-1-run-the-job).
+
 ### 2. Remove automagic Project
 
-If you don't plan to repeat install or remove steps, you can remove whole *automagic* Project.
+If you don't plan to repeat install or removal steps, you can remove whole *automagic* Project following steps in the following picture.
 
 ![assets/project-delete.png](assets/project-delete.png)
+
+Now continue with the [Post removal steps](#user-content-post-removal-steps-).
 
 ## Post removal steps ➡️
 
@@ -514,5 +576,6 @@ During deployment various CustomResourceDefinitions were created, you may want t
 ## Contact
 
 Jan Dušek  
-Mail: jdusek@cz.ibm.com  
-Slack: @jdusek  
+jdusek@cz.ibm.com  
+Business Automation Technical Specialist  
+IBM
