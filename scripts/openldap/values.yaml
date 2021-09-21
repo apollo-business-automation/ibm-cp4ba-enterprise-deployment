@@ -260,7 +260,7 @@ persistence:
   # storageClass: "standard-singlewriter"
   # existingClaim: openldap-pvc
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   size: 8Gi
   storageClass: "{{STORAGE_CLASS_NAME}}"
 

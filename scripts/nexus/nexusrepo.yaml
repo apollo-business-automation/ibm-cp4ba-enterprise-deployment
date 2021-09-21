@@ -51,7 +51,7 @@ spec:
   nexusProxyRoute:
     enabled: false
   persistence:
-    accessMode: ReadWriteOnce
+    accessMode: ReadWriteMany
     enabled: true
     storageSize: 8Gi
   replicaCount: 1
