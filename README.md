@@ -522,7 +522,7 @@ spec:
             - name: ACTION
               value: remove
             - name: GIT_ARCHIVE
-              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/tarball/develop
+              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/tarball/main
             - name: CONTAINER_RUN_MODE
               value: "true"
           volumeMounts:
