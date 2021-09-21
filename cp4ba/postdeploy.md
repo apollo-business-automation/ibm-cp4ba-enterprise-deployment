@@ -1,8 +1,35 @@
-# Post-deploy
+# CP4BA post-deploy
 
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployments-completing-post-deployment-tasks
 
-With oc CLI, login to OpenShift and switch to your CP4BA project.
+The following list specifies when you need to perform particular post-deployment steps
+- [Business Automation Navigator (BAN) (foundation pattern)](#business-automation-navigator-ban-foundation-pattern)
+  - [Enable Daeja for Office](#enable-daeja-for-office) - When you want to open MS Office documents in Navigator Daeja Viewer
+  - [Add Daeja license](#add-daeja-license) - When you want to open MS Office documents in Navigator Daeja Viewer and use Permanent Redaction of content.
+- [Business Automation Studio (BAS) (foundation pattern)](#business-automation-studio-bas-foundation-pattern)
+  - [Deploy toolkits and configurators](#deploy-toolkits-and-configurators) - When you want to call ODM from Business Application using Automation Services.
+  - [Apps deployment](#apps-deployment) - When you want to deploy or see which Business Applications were deployed in Playback Application Engine.
+- [Business Automation Insights (BAI) (foundation pattern)](#business-automation-insights-bai-foundation-pattern)
+  - [Configure Workforce insights](#configure-workforce-insights) - When you want to use Workforce Insights.
+- [Operational Decision Manager (ODM) (decisions pattern)](#operational-decision-manager-odm-decisions-pattern)
+  - [BAI event emitter](#bai-event-emitter) - When you want to enable BAI event emitting for your Rule Application.
+  - [Rule designer in eclipse](#rule-designer-in-eclipse) - When you want to install Rule Designer in Eclipse to develop Rule Applications.
+  - [Rule designer UMS OpenID Connect](#rule-designer-ums-openid-connect) - When you want to deploy Rule Applications from your local Rule Designer to ODM.
+- [Automation Decision Services (ADS) (decisions_ads pattern)](#automation-decision-services-ads-decisions_ads-pattern)
+  - [ADS project git repo & connection](#ads-project-git-repo--connection) - When you want to connect your ADS solution to GIT repository.
+  - [Connect Nexus for external libraries](#connect-nexus-for-external-libraries) - When you want to use published external libraries from Nexus.
+  - [Develop custom libraries](#develop-custom-libraries) - When you want to create your custom ADS libraries.
+- [FileNet Content Manager (FNCM) (content pattern)](#filenet-content-manager-fncm-content-pattern)
+  - [Update Google OIDC redirect URIs](#update-google-oidc-redirect-uris) - (don't use now) When you configured Google ID for External Share.
+  - [BAN desktop for OS1](#ban-desktop-for-os1) - To update VIewer Map for OS1 Desktop when custom Viewer Map has been created in TODO link for MS Office documents.
+  - [External Share](#external-share) - (don't use now) When you want to use External Share.
+  - [External Share capability in BAN](#external-share-capability-in-ban) - (don't use now) When you want to use External Share.
+  - [Task manager settings](#task-manager-settings) - When you want to use Task Manager.
+- [Automation Document Processing (ADP) (document_processing pattern)](#automation-document-processing-adp-document_processing-pattern)
+  - [Connect ADP project to Git](#connect-adp-project-to-git) - When you need to finish ADP configuration. Without Git connection, you cannot publish your solution.
+
+
+For some of the tasks you need to interact with OpenShift using oc CLI. Use the following templates to log in and switch project.
 ```bash
 # Either Username + Password
 oc login --server={{OCP_API_ENDPOINT}} -u {{OCP_CLUSTER_ADMIN}} -p {{OCP_CLUSTER_ADMIN_PASSWORD}}
@@ -15,13 +42,13 @@ oc project {{PROJECT_NAME}}
 ```
 
 
-For logging in to CP4BA pillars use *Authentication type: Enterprise LDAP* and user *cpadmin* with password "{{UNIVERSAL_PASSWORD}}" if not stated otherwise.  
+For logging in to CP4BA pillars use *Authentication type: Enterprise LDAP* and user *cpadmin* with password "{{UNIVERSAL_PASSWORD}}" if not stated otherwise.
 
-### Business Automation Navigator (BAN) (foundation pattern)
+## Business Automation Navigator (BAN) (foundation pattern)
 
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=tasks-completing-post-deployment-business-automation-navigator
 
-**Enable Daeja for Office**  
+### Enable Daeja for Office
 
 Go to navigator https://navigator-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=admin  
 Switch to Viewer Maps tab  
@@ -38,7 +65,8 @@ Click Save and Close
 
 This viewer can be later used for CPE desktop.  
 
-**Add Daeja license**  
+### Add Daeja license
+
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=tasks-completing-post-deployment-business-automation-navigator point 2.  
 License files generated following https://www.ibm.com/docs/en/daeja-viewone/5.0.7?topic=modules-enabling-viewer-add-in-content-navigator
 
@@ -57,14 +85,14 @@ oc delete `oc get pod -o name | grep navigator | cut -d "/" -f 2`
 
 ```
 
-### Business Automation Studio (BAS) (foundation pattern)
+## Business Automation Studio (BAS) (foundation pattern)
 
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=tasks-completing-post-deployment-business-automation-studio
 
-**Deploy toolkits and configurators**  
+### Deploy toolkits and configurators
+
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=designer-downloadable-toolkits
 
-#TODO maybe can be automated by OPS api if needed at all
 To your local system download the following
 - TWX file from https://github.com/icp4a/odm-toolkit/tree/master/contribution/1.2/Action%20Configurator
 - TWX file from https://github.com/icp4a/odm-toolkit/tree/master/contribution/1.2/Toolkit
@@ -77,7 +105,8 @@ Click Import
 Import all files that you downloaded one by one  
 Some of them are used as Configurators, don't be confused that they don't appear in the list of toolkits.  
 
-**Apps deployment**  
+### Apps deployment
+
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=applications-publishing
 
 Go to Navigator https://navigator-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=admin
@@ -93,22 +122,24 @@ You can import apps from Studio and create desktops for them (see referenced gui
 You can also use full featured standalone AAE if deployed. Connection was created automatically.
 
 
-### Business Automation Insights (BAI) (foundation pattern)
+## Business Automation Insights (BAI) (foundation pattern)
 
-**Configure Workforce insights secret**  
+### Configure Workforce insights
 
 Part of WFI configuration has already been done automatically.
 
 Set up WFI following https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=dashboards-enabling-workforce-insights
 
-### Operational Decision Manager (ODM) (decisions pattern)
+## Operational Decision Manager (ODM) (decisions pattern)
 
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=tasks-completing-post-deployment-operational-decision-manager
 
-**BAI event emitter**  
+### BAI event emitter
+
 After you have some rule project ready, configure it to emit BAI events using https://www.ibm.com/docs/en/odm/8.10?topic=properties-built-in-ruleset-odm-event-emitter
 
-**Rule designer in eclipse**   
+### Rule designer in eclipse
+
 Based on https://www.ibm.com/docs/odm/8.10?topic=810x-installing-rule-designer  
 
 Download Eclipse 4.7 from https://archive.eclipse.org/eclipse/downloads/drops4/R-4.7-201706120950/ (Platform Runtime Binary section)  
@@ -124,7 +155,7 @@ Wait for the installation completion.
 Restart eclipse  
 Window > Perspective > Open Perspective > Other > Rule  
 
-**Rule designer UMS OpenID Connect**  
+### Rule designer UMS OpenID Connect
 Based on https://www.ibm.com/docs/en/odm/8.10?topic=parties-configuring-rule-designer
 
 Copy and edit data/odm/oidc-providers.json to you eclipse directory  
@@ -155,11 +186,12 @@ Authentication: OpenID Connect
 Provider: ums
 
 
-### Automation Decision Services (ADS) (decisions_ads pattern)
+## Automation Decision Services (ADS) (decisions_ads pattern)
 
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=tasks-completing-post-deployment-automation-decision-services
 
-**ADS project git repo & connection**  
+### ADS project git repo & connection
+
 Needs to be done for every project individually.  
 Create Repository. Change *name* in the payload to correspond to your project name.
 ```bash
@@ -192,7 +224,8 @@ Username: cpadmin
 Password: {{UNIVERSAL_PASSWORD}}  
 Click Connect
 
-**Connect Nexus for external libraries**  
+### Connect Nexus for external libraries
+
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=services-configuring-credentials-maven-repository-manager  
 
 Open https://cpd-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ads/admin-platform  
@@ -203,11 +236,13 @@ Username: cpadmin
 Password: {{UNIVERSAL_PASSWORD}}  
 Credentials type: MAVEN  
 
+### Develop custom libraries
+
 To find out how to create and add External libraries to ADS, follow https://github.com/icp4a/automation-decision-services-samples/tree/21.0.1/samples/ExternalLibraryStart
 
 To be able to follow the above guide from my environment, I needed to perform the following.
 
-Add settings for Nexus in my local .m2\settings.xml (Available in ConfigMap nexus-maven-settings in settings.xml file)  
+Add settings for Nexus in my local maven settings .m2\settings.xml (Available in Project *automagic*, in ConfigMap *nexus-maven-settings* in *settings.xml* file)  
 
 
 Installed JDK 16 Oracle, added to path.
@@ -221,11 +256,12 @@ Import Global CA crt (available in *automagic* Project in global-ca Secret if no
 Installed VSCode and added Java Extension Pack
 
 
-### FileNet Content Manager (FNCM) (content pattern)
+## FileNet Content Manager (FNCM) (content pattern)
 
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=tasks-completing-post-deployment-filenet-content-manager
 
-**Update Google OIDC redirect URIs**  
+### Update Google OIDC redirect URIs
+
 If you plan to use Google ID for External Share  
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=manager-configuring-redirect-url-identity-provider and  
 on https://developers.google.com/identity/protocols/oauth2/openid-connect#setredirecturi  
@@ -233,7 +269,8 @@ Watch video and follow with your own google account and Client ID you used in th
 [Video fncm-es-google-oidc-post.mp4 download](../assets/fncm-es-google-oidc-post.mp4?raw=true) 
 #TODO errata for redirect uris when this start to work
 
-**BAN desktop for OS1**  
+### BAN desktop for OS1
+
 If desktop OS1 already exists, modify its viewer map
 
 Go to Navigator  
@@ -251,7 +288,8 @@ Viewer map: Virtual Viewer
 
 Click *Save and Close*  
 
-**External Share**  
+### External Share
+
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=manager-configuring-external-share-after-deployment
 
 If you plan to use External Share  
@@ -314,7 +352,8 @@ Permission group: View all properties, Create instance
 Click OK  
 Click Save  
 
-**External Share capability in BAN**  
+### External Share capability in BAN
+
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=cesad-configuring-share-plug-in-in-business-automation-navigator  
 Based on https://www.ibm.com/docs/en/content-navigator/3.0.x?topic=components-configuring-external-share  
 
@@ -379,7 +418,8 @@ Click save and Close
 
 If you want to share content, use https://ingress-es-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=OS1
 
-**Task manager settings**  
+### Task manager settings
+
 Go to navigator https://ban-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=admin  
 Go to Settings  
 Go to General  
@@ -392,11 +432,12 @@ Task manager administrator password: {{UNIVERSAL_PASSWORD}}
 Click Save and Close  
 Refresh browser  
 
-### Automation Document Processing (ADP) (document_processing pattern)
+## Automation Document Processing (ADP) (document_processing pattern)
 
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=tasks-completing-post-deployment-document-processing?view=kc
 
-**Connect ADP project to Git**  
+### Connect ADP project to Git
+
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=processing-setting-up-remote-git-organization
 
 Needed if you want to be able to deploy Share, Version and Deploy ADP project

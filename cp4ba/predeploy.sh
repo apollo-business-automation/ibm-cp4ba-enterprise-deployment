@@ -249,7 +249,7 @@ echo ">>>>$(print_timestamp) Operational Decision Manager (ODM) (decisions patte
 
 echo
 echo ">>>>$(print_timestamp) ODM Security DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/[CP_KC_VERSION]?topic=capabilities-preparing-install-operational-decision-manager
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=capabilities-preparing-install-operational-decision-manager
 sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" data/odm/secret.yaml
 oc apply -f data/odm/secret.yaml
 

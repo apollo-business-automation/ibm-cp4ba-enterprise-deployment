@@ -466,13 +466,26 @@ Further execution is stopped - and you need to troubleshoot why the installation
 
 ## Post installation steps ➡️
 
-Perform post deploy manual steps which have not been automated yet for CP4BA as specified in ConfigMap cp4ba-postdeploy in postdeploy.md file
+Review and perform post deploy manual steps for CP4BA as specified in ConfigMap *cp4ba-postdeploy* in *postdeploy.md* file. See below images to find this file. It is best to copy the contents and open it in nice MarkDown editor like VSCode. 
 
-Perform post deploy manual steps which have not been automated yet for RPA as specified in ConfigMap rpa-postdeploy.md in postdeploy.md file
+![assets/cp4ba-postdeploy-cm.png](assets/cp4ba-postdeploy-cm.png)
+
+![assets/cp4ba-postdeploy-md.png](assets/cp4ba-postdeploy-md.png)
+
+
+Review and perform post deploy manual steps for RPA as specified in ConfigMap *rpa-postdeploy.md* in *postdeploy.md* file. See below images to find this file. It is best to copy the contents and open it in nice MarkDown editor like VSCode.
+
+![assets/rpa-postdeploy-cm.png](assets/rpa-postdeploy-cm.png)
+
+![assets/rpa-postdeploy-md.png](assets/rpa-postdeploy-md.png)
 
 ## Usage & Operations 😊
 
-Endpoints, access info and other useful information will be available in Project *automagic* in ConfigMap named *usage* in *usage.md* file after installation. The best way to view the file is to download it and open it in VSCode. TODO picture with display mode
+Endpoints, access info and other useful information is available in Project *automagic* in ConfigMap named *usage* in *usage.md* file after installation. It is best to copy the contents and open it in nice MarkDown editor like VSCode.
+
+![assets/usage-cm.png](assets/usage-cm.png)
+
+![assets/usage-md.png](assets/usage-md.png)
 
 ## Removal steps 🗑️
 
@@ -567,7 +580,7 @@ Now continue with the [Post removal steps](#post-removal-steps-%EF%B8%8F).
 
 ## Post removal steps ➡️
 
-StorageClass defined in ConfigMap in variables.sh in variable STORAGE_CLASS_NAME was set as Default, you may want choose the original Default Storage Class.  
+StorageClass defined in ConfigMap in variables.sh in variable STORAGE_CLASS_NAME was set as Default, you may want choose some other Default Storage Class.  
 
 On ROKS, you may want to revert the actions of node labeling for DB2 "no root squash" from https://www.ibm.com/docs/en/db2/11.5?topic=requirements-cloud-file-storage
 
