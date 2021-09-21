@@ -23,6 +23,7 @@ echo
 echo ">>>>$(print_timestamp) Update Deployment"
 sed -i "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" deployment.yaml
 sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" deployment.yaml
+sed -i "s|{{BASE64_ELASTIC_CREDENTIALS}}|"$(echo -n elasticsearch-admin:${UNIVERSAL_PASSWORD} | base64)"|g" deployment.yaml
 
 echo
 echo ">>>>$(print_timestamp) Create Deployment"

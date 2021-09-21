@@ -33,7 +33,7 @@ spec:
               scheme: HTTP
               httpHeaders:
                 - name: Authorization
-                  value: Basic ZWxhc3RpY3NlYXJjaC1hZG1pbjpQYXNzdzByZA==
+                  value: "Basic {{BASE64_ELASTIC_CREDENTIALS}}"
             initialDelaySeconds: 120
             timeoutSeconds: 1
             periodSeconds: 10
@@ -46,7 +46,7 @@ spec:
               scheme: HTTP
               httpHeaders:
                 - name: Authorization
-                  value: Basic ZWxhc3RpY3NlYXJjaC1hZG1pbjpQYXNzdzByZA==
+                  value: "Basic {{BASE64_ELASTIC_CREDENTIALS}}"
             initialDelaySeconds: 125
             timeoutSeconds: 1
             periodSeconds: 10

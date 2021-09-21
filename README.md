@@ -404,7 +404,7 @@ spec:
           image: ubi8/ubi
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}; chmod u+x automagic.sh; ./automagic.sh"]
+            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x automagic.sh; ./automagic.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
@@ -516,13 +516,13 @@ spec:
           image: ubi8/ubi
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}; chmod u+x automagic.sh; ./automagic.sh"]
+            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x automagic.sh; ./automagic.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
               value: remove
             - name: GIT_ARCHIVE
-              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/tarball/develop
+              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/tarball/main
             - name: CONTAINER_RUN_MODE
               value: "true"
           volumeMounts:

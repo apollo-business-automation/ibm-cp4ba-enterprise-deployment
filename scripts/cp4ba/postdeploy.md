@@ -266,8 +266,8 @@ If you plan to use Google ID for External Share
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=manager-configuring-redirect-url-identity-provider and  
 on https://developers.google.com/identity/protocols/oauth2/openid-connect#setredirecturi  
 Watch video and follow with your own google account and Client ID you used in the pre-deploy section  
-[Video fncm-es-google-oidc-post.mp4 download](../assets/fncm-es-google-oidc-post.mp4?raw=true) 
-#TODO errata for redirect uris when this start to work
+[Video fncm-es-google-oidc-post.mp4 download](https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/blob/main/assets/fncm-es-google-oidc-post.mp4?raw=true) 
+#TODO errata for redirect uris when this starts to work
 
 ### BAN desktop for OS1
 
