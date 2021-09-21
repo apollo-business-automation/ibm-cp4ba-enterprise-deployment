@@ -580,7 +580,7 @@ Now continue with the [Post removal steps](#post-removal-steps-%EF%B8%8F).
 
 ## Post removal steps ➡️
 
-StorageClass defined in ConfigMap in variables.sh in variable STORAGE_CLASS_NAME was set as Default, you may want choose some other Default Storage Class.  
+StorageClass defined in ConfigMap *automagic* in *variables.sh* in variable *STORAGE_CLASS_NAME* was set as Default, you may want choose some other Default Storage Class.  
 
 On ROKS, you may want to revert the actions of node labeling for DB2 "no root squash" from https://www.ibm.com/docs/en/db2/11.5?topic=requirements-cloud-file-storage
 
