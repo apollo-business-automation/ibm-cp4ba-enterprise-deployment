@@ -4,7 +4,7 @@ metadata:
   name: mssql-data
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 8Gi
