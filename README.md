@@ -195,7 +195,9 @@ Apply the updated contents to your cluster (as seen in the picture below point 4
 
 <details open>
   <summary>Click this text to hide / show the configuration YAML file</summary>
-  
+
+<p>
+
 ```yaml
 apiVersion: v1
 kind: ConfigMap
@@ -375,6 +377,8 @@ data:
     -----END RSA PRIVATE KEY-----
 
 ```
+
+</p>
 </details>
 
 ![assets/config-map-variables.png](assets/config-map-variables.png)
