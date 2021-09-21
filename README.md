@@ -196,8 +196,8 @@ Apply the updated contents to your cluster (as seen in the picture below point 4
 <details open>
   <summary>Click this text to hide / show the configuration YAML file</summary>
   
-  ```yaml
-  apiVersion: v1
+```yaml
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: automagic
@@ -374,7 +374,7 @@ data:
     TODO_YOUR_BASE64_CONTENT
     -----END RSA PRIVATE KEY-----
 
-  ```
+```
 </details>
 
 ![assets/config-map-variables.png](assets/config-map-variables.png)
