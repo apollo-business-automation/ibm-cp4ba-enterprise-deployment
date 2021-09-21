@@ -22,6 +22,10 @@ fi
 
 find . -type f \( -iname \*.sh \) | xargs chmod u+x
 
+echo
+echo ">>>>Source functions"
+. functions.sh
+
 cd tooling
 ./install.sh
 exit_test $? "Install Tooling Failed"
