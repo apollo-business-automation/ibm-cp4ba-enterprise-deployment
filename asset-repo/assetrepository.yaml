@@ -1,0 +1,15 @@
+apiVersion: integration.ibm.com/v1beta1
+kind: AssetRepository
+metadata:
+  name: assets
+spec:
+  license:
+    accept: true
+    license: L-NCAN-C3CJ8D
+  version: 2021.2.1-0
+  replicas: 1
+  storage:
+    assetDataVolume:
+      class: "{{STORAGE_CLASS_NAME}}"
+    couchVolume:
+      class: "{{STORAGE_CLASS_NAME}}"

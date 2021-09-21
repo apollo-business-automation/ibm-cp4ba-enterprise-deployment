@@ -1,0 +1,130 @@
+# imagePullSecrets:
+#  - name: my-repository-secret
+image:
+  repository: tchiotludo/akhq
+  tag: 0.18.0
+
+# custom annotations (example: for prometheus)
+annotations: {}
+  #prometheus.io/scrape: 'true'
+  #prometheus.io/port: '8080'
+  #prometheus.io/path: '/prometheus'
+
+## You can put directly your configuration here... or add java opts or any other env vars
+extraEnv: []
+# - name: AKHQ_CONFIGURATION
+#   value: |
+#       akhq:
+#         secrets:
+#           docker-kafka-server:
+#             properties:
+#               bootstrap.servers: "kafka:9092"
+# - name: JAVA_OPTS
+#   value: "-Djavax.net.ssl.trustStore=/usr/local/openjdk-11/lib/security/cacerts -Djavax.net.ssl.trustStorePassword=password"
+# - name: CLASSPATH
+#   value: "/any/additional/jars/desired.jar:/go/here.jar"
+
+## Or you can also use configmap for the configuration...
+configuration:
+  akhq:
+    server:
+      access-log:
+        enabled: true
+        name: org.akhq.log.access
+
+##... and secret for connection information
+existingSecrets: ""
+# name of the existingSecret
+secrets: |
+  akhq:
+    connections:
+      iaf-kafka:
+        properties:
+          bootstrap.servers: "iaf-system-kafka-bootstrap-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}:443"
+          security.protocol: SASL_SSL
+          sasl.mechanism: SCRAM-SHA-512
+          sasl.jaas.config: org.apache.kafka.common.security.scram.ScramLoginModule required username="cpadmin" password='{{UNIVERSAL_PASSWORD}}';
+          ssl.truststore.location: /app/truststore.jks
+          ssl.truststore.password: '{{UNIVERSAL_PASSWORD}}'
+        # IAF avro not supported  
+        #schema-registry:
+        #  type: "confluent"
+        #  url: "https://iaf-system-apicurio-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}"
+        #  basic-auth-username: cpadmin
+        #  basic-auth-password: '{{UNIVERSAL_PASSWORD}}'
+        #  properties:
+        #    schema.registry.ssl.truststore.location: /app/truststore.jks
+        #    schema.registry.ssl.truststore.password: '{{UNIVERSAL_PASSWORD}}'
+
+kafkaSecrets:
+  truststorejks: ""
+#Provide extra base64 encoded kubernetes secrets (keystore/truststore)
+
+# Any extra volumes to define for the pod (like keystore/truststore)
+extraVolumes: []
+
+# Any extra volume mounts to define for the akhq container
+extraVolumeMounts:
+  - name: secrets
+    mountPath: /app/truststore.jks
+    subPath: truststorejks
+
+# Specify ServiceAccount for pod
+serviceAccountName: null
+
+# Add your own init container or uncomment and modify the example.
+initContainers: {}
+#   create-keystore:
+#     image: "openjdk:11-slim"
+#     command: ['sh', '-c', 'keytool']
+#     volumeMounts:
+#      - mountPath: /tmp
+#        name: certs
+
+securityContext: {}
+#  capabilities:
+#    drop:
+#      - ALL
+#  # readOnlyRootFilesystem: true
+#  runAsNonRoot: true
+#  runAsUser: 1000
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+  #httpNodePort: 32551
+  labels: {}
+  annotations:
+    # cloud.google.com/load-balancer-type: "Internal"
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  paths:
+    - /
+  hosts:
+    - akhq.demo.com
+  tls: []
+  #  - secretName: akhq-tls
+  #    hosts:
+  #      - akhq.demo.com
+
+readinessProbe:
+  prefix: "" # set same as `micronaut.server.context-path`
+
+resources: {}
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

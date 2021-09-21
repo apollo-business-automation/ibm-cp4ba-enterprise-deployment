@@ -1,0 +1,23 @@
+apiVersion: processmining.ibm.com/v1beta1
+kind: ProcessMining
+metadata:
+  name: processmining
+spec:
+  version: 1.11.1
+  license:
+    accept: true
+    cloudPak: "IBM Cloud Pak for Business Automation"
+  processmining:
+    tls:
+      ui:
+        secretname: pm-tls-secret
+        certificate: tls.crt
+        key: tls.key
+        ca: ca.crt
+  taskmining:
+    tls:
+      ui:
+        secretname: pm-tls-secret
+        certificate: tls.crt
+        key: tls.key
+        ca: ca.crt

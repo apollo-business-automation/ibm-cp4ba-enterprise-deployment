@@ -1,0 +1,11 @@
+{
+  "providers": [{
+    "name": "ums",
+    "authorizationURL": "https://ums-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/oidc/endpoint/ums/authorize",
+    "tokenURL": "https://ums-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/oidc/endpoint/ums/token",
+    "clientId": "{{PROJECT_NAME}}-odm-oidc-client-id",
+    "clientSecret": "{{PROJECT_NAME}}-odm-oidc-client-id-secret-value",
+    "callbackPort": "9081",
+    "callbackHttps": true
+  }]
+}
