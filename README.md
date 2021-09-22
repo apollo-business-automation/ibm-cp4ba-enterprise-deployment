@@ -50,10 +50,13 @@ Keep in mind that this deployment contains capabilities which are not eligible t
 With proper sizing of the cluster and provided RWX Storage CLass, this guide should be working on any OpenShift, however it was successfully executed on the following once.
 
 - ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
-OpenShift 4.7.x - 5 Worker Nodes (16 CPU, 32GB Memory)
+OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ibmc-file-gold-gid Storage Class
+
+- ARO - Azure Red Hat OpenShift allowing to run managed Red Hat OpenShift on Azure 
+OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class
 
 - Traditional OpenShift cluster created from scratch on top of virtualization platform  
-OpenShift 4.7.x on vms - 6 Worker Nodes (16 CPU, 32GB Memory)
+OpenShift 4.7.x on vms - 6 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class
 
 ## What is in the package 📦
 
