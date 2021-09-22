@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Based on https://github.com/lmenezes/cerebro
+
 echo
 echo ">>>>Source variables"
 . ../variables.sh
