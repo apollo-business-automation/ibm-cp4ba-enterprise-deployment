@@ -23,7 +23,7 @@ spec:
         database_name: CP4BA
         database_port: "50000"
   workflow_authoring_configuration:
-    replicas: 1 # TODO increase to 2 when WFI bug is resolved. Need 2 because of PDB, or wait for odb resolved and keep 1
+    replicas: 1 # TODO increase to 2 when WFI bug is resolved. Need 2 because of PDB, or wait for pdb resolved and keep 1
     admin_user: cpadmin
     database:
       enable_ssl: false

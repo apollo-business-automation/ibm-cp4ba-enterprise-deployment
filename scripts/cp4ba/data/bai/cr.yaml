@@ -1,6 +1,7 @@
 spec:
   bai_configuration:
-    # TODO enable when fixed bai_secret: custom-bai-secret
+    # TODO enable when fixed 
+    #bai_secret: custom-bai-secret
     # TODO enable when fixed
     #settings:
     #  external_kibana_url: http://kibana.kibana:5601  

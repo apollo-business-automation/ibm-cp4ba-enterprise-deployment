@@ -15,7 +15,7 @@ Execute RPA Client install script with the following command. It also installs S
 ```cmd
 "IBM RPA Client Install.exe" /exenoui /qn installlevel=4 tenantcode=5000 licenseapiaddress=https://rpa-apiserver-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/
 ```
-Wait until the installation is completed. You can use provided [client-install-wait.cmd](https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/blob/main/rpa/client-install-wait.cmd) (from the repository) to wait for install process to finish.  
+Wait until the installation is completed. You can use provided [client-install-wait.cmd](https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/blob/main/scripts/rpa/client-install-wait.cmd) (from the repository) to wait for install process to finish.  
 
 ## Create vault password
 
