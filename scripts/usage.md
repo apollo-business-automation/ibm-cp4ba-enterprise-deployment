@@ -95,6 +95,7 @@ Pre-configured for IAF Kafka with custom user (cpadmin / {{UNIVERSAL_PASSWORD}})
 ### Kibana
 
 As elastic search content browser and for BAI dashboards.
+
 #### Endpoints
 
 - UI: https://kibana.{{OCP_APPS_ENDPOINT}}
