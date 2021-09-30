@@ -605,4 +605,4 @@ During deployment various CustomResourceDefinitions were created, you may want t
 Jan Dušek  
 jdusek@cz.ibm.com  
 Business Automation Technical Specialist  
-IBM
+IBM Czech Republic
