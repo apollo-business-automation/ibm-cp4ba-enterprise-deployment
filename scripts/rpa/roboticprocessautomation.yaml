@@ -5,7 +5,7 @@ metadata:
 spec:
   license:
     accept: true
-  version: 1.0.0
+  version: 1.1.0
   tls:
     issuerRef:
       name: iaf-issuer
@@ -42,3 +42,5 @@ spec:
     replicas: 1
   ocr:
     replicas: 1
+  antivirus:
+    replicas: 1    

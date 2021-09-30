@@ -6,7 +6,7 @@ spec:
   license:
     accept: true
     license: L-NCAN-C3CJ8D
-  version: 2021.2.1-0
+  version: 2021.2.1-1
   replicas: 1
   storage:
     assetDataVolume:

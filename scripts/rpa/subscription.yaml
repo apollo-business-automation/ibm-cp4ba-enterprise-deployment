@@ -3,7 +3,7 @@ kind: Subscription
 metadata:
   name: rpa-subscription
 spec:
-  channel: v1.0
+  channel: v1.1
   installPlanApproval: Automatic
   name: ibm-automation-rpa
   source: ibm-operator-catalog
