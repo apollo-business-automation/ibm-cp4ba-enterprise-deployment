@@ -47,7 +47,11 @@ Keep in mind that this deployment contains capabilities which are not eligible t
 
 ## Environments used for installation 💻
 
-With proper sizing of the cluster and provided RWX Storage CLass, this guide should be working on any OpenShift, however it was successfully executed on the following once.
+**Do not run this guide on OpenShift 4.8.x** as DB2 container won't start on it.
+
+ROSA - Red Hat OpenShift Service on AWS doesn't work due to passthrough Routes malfunction.
+
+With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift, however it was successfully executed on the following once.
 
 - ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
 OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ibmc-file-gold-gid Storage Class
@@ -222,7 +226,7 @@ data:
     ## so this one will also be automatically set as Default 
     ## For ROKS this class could be ibmc-file-gold-gid
     ## For NFS based class this could be managed-nfs-storage
-    ## For ODF (OCS) based class this could be ocs-storagecluster-cephfs    
+    ## For ODF (OCS) based class (e.g. on ARO or ROSA) this could be ocs-storagecluster-cephfs    
     STORAGE_CLASS_NAME=ibmc-file-gold-gid
 
     ## Options are OCP and ROKS
