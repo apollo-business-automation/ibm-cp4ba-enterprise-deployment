@@ -33,8 +33,11 @@ cd ..
 
 echo
 echo ">>>>Update PATH to include new tooling"
-PATH=`realpath tooling`:$PATH
+REAL_PATH=`realpath tooling`
+echo "PATH=$REAL_PATH:$PATH" >> ~/.bash_profile
+echo "export PATH" >> ~/.bash_profile
 
 echo
 echo ">>>>Update HOME to internal folder"
-HOME=`pwd`
+echo "HOME=`pwd`" >> ~/.bash_profile
+echo "export HOME" >> ~/.bash_profile
