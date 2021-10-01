@@ -159,6 +159,12 @@ wait_for_cp4ba() {
   done
 }
 
+copy_cp4ba_operator_log() {
+  echo
+  echo ">>>>$(print_timestamp) Copy CP4BA Operator log"
+  
+}
+
 exit_test() {
   local exit_code="${1}"
   local fail_message="${2:-Failed}"
