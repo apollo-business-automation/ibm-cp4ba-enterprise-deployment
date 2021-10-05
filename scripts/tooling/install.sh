@@ -56,7 +56,7 @@ chmod u+x helm
 
 echo
 echo ">>>>$(print_timestamp) Install maven"
-curl -k -O https://dlcdn.apache.org/maven/maven-3/3.8.2/binaries/apache-maven-3.8.2-bin.tar.gz
+curl -k -O https://archive.apache.org/dist/maven/maven-3/3.8.2/binaries/apache-maven-3.8.2-bin.tar.gz
 exit_test $? "Download maven Failed"
 tar -xvf apache-maven-3.8.2-bin.tar.gz
 ln -fs apache-maven-3.8.2/bin/mvn mvn
