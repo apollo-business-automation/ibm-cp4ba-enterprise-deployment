@@ -35,7 +35,11 @@ exit_test $? "CP4BA Predeploy Failed"
 echo
 echo ">>>>$(print_timestamp) Deploy"
 ./deploy.sh
-exit_test $? "CP4BA Deploy Failed"
+deploy_exit_code=$?
+if [[ "$deploy_exit_code" != "0" ]]; then
+  copy_cp4ba_operator_log
+fi
+exit_test ${deploy_exit_code} "CP4BA Deploy Failed"
 
 echo
 echo ">>>>$(print_timestamp) Postdeploy"

@@ -159,6 +159,17 @@ wait_for_cp4ba() {
   done
 }
 
+copy_cp4ba_operator_log() {
+  echo
+  echo ">>>>$(print_timestamp) Copy failed tasks from CP4BA Operator log"
+  oc logs -n ${PROJECT_NAME} deployment/ibm-cp4a-operator | grep -B3 -A15 "playbook task failed" | head -c 950K > cp4ba-operator.log
+
+  if [[ $CONTAINER_RUN_MODE == "true" ]]; then
+    oc project automagic
+    oc create cm cp4ba-opertor-log --from-file=cp4ba-operator.log=cp4ba-operator.log -o yaml --dry-run=client | oc apply -f -
+  fi
+}
+
 exit_test() {
   local exit_code="${1}"
   local fail_message="${2:-Failed}"

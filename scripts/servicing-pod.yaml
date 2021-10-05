@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  generateName: automagic-servicing-
+  namespace: automagic
+  labels:
+    app: automagic-servicing
+spec:
+  containers:
+    - name: automagic
+      image: ubi8/ubi
+      command: ["/bin/bash"]
+      args:
+        ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x servicing.sh; ./servicing.sh; while true; do echo 'Automagic servicing pod - Ready - Enter it via Terminal and \"bash -l\" - Delete it after you are done.'; sleep 300; done"]      
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: ACTION
+          value: install
+        - name: GIT_ARCHIVE
+          value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/tarball/main
+        - name: CONTAINER_RUN_MODE
+          value: "true"
+      volumeMounts:
+        - name: config
+          mountPath: /config/
+  volumes:
+    - name: config
+      configMap:
+        name: automagic          
