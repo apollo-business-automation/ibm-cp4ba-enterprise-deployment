@@ -8,6 +8,12 @@ Deploying CP4BA is based on official documentation which is located at https://w
 
 Deployment of other parts is also based on respective official documentations.
 
+- IBM Robotic Process Automation (RPA) https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-planning-rpa-openshift
+- IBM Automation Assets https://www.ibm.com/docs/en/cloud-paks/1.0?topic=foundation-automation-assets
+- IBM Process Mining https://www.ibm.com/docs/en/cloud-paks/1.0?topic=pm-installation-setup-guide-process-mining-openshift-container-platform
+- IBM Automation Foundation (IAF) https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-foundation
+- IBM Cloud Pak Foundational Services (CPFS) https://www.ibm.com/docs/en/cpfs?topic=operator-installing-foundational-services-online
+
 ## Disclaimer ✋
 
 This is **not** an official IBM documentation.  
@@ -44,23 +50,6 @@ What is not included:
 Keep in mind that the platform contains DB2 which is licensed with Standard Edition license available from CP4BA and it must adhere to the *Additional IBM DB2 Standard Edition Detail* in official license information at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument (or its newer revision).
 
 Keep in mind that this deployment contains capabilities (the ones which are not bundled with CP4BA) which are not eligible to run on Worker Nodes covered by CP4BA OCP Restricted licenses. More info on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=clusters-restricted-openshift-entitlement.
-
-## Environments used for installation 💻
-
-**Do not run this guide on OpenShift 4.8.x** as DB2 container won't start on it.
-
-ROSA - Red Hat OpenShift Service on AWS doesn't work due to passthrough Routes malfunction.
-
-With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift, however it was successfully executed on the following once.
-
-- ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
-OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ibmc-file-gold-gid Storage Class
-
-- ARO - Azure Red Hat OpenShift allowing to run managed Red Hat OpenShift on Azure 
-OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class
-
-- Traditional OpenShift cluster created from scratch on top of virtualization platform  
-OpenShift 4.7.x on vms - 6 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class
 
 ## What is in the package 📦
 
@@ -111,6 +100,28 @@ More info available in official docs at https://www.ibm.com/support/knowledgecen
 - IAM - Provides Identity and Access management.
 - Health Checking - Enables you to generate MusthGather output which is useful for support.
 
+## Environments used for installation 💻
+
+**Do not run this guide on OpenShift 4.8.x** as DB2 container won't start on it.
+
+With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift, however it was executed on the following once.
+
+- ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
+OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ibmc-file-gold-gid Storage Class  
+Successfully installed
+
+- ARO - Azure Red Hat OpenShift allowing to run managed Red Hat OpenShift on Azure  
+OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
+Successfully installed
+
+- Traditional OpenShift cluster created from scratch on top of virtualization platform  
+OpenShift 4.7.x on vms - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
+Successfully installed
+
+- ROSA - Red Hat OpenShift Service on AWS  
+OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
+Successfully installed **but has issues** with passthrough Routes malfunction making it hard to access the platform.
+
 ### Pre-requisites section
 
 Contains prerequisites for the whole platform.
@@ -138,6 +149,7 @@ Multiple command line tools are installed inside a container to make the install
   - Process Mining: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=platform-pre-installation-requirements
   - RPA: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-pre-installation-requirements
 - OpenShift cluster admin access
+- Access to public internet from OpenShift
 - Software entitlement key for IBM software which is found at https://myibm.ibm.com/products-services/containerlibrary
 
 ## Installation steps ⚡
