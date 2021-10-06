@@ -1,8 +1,8 @@
 # Installation of Cloud Pak for Business Automation on containers - One-shot enterprise deployment 🔫
 
-Goal of this repository is to almost automagically install CP4BA Enterprise patterns with all kinds of prerequisites and extras. 
+Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components  with all kinds of prerequisites and extras on OpenShift.
 
-Last installation was performed on 2021-09-20 with CP4BA version 21.0.2-IF003 (also called 21.0.2.3 or 21.2.3)
+Last installation was performed on 2021-10-05 with CP4BA version 21.0.2-IF003 (also called 21.0.2.3 or 21.2.3)
 
 Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-enterprise-deployments.
 
@@ -145,9 +145,11 @@ Successfully installed **but has issues** with passthrough Routes malfunction ma
 ## Pre-requisites ⬅️
 
 - OpenShift cluster sized according with the system requirements
-  - Cloud Pak: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=installation-system-requirements
+  - Cloud Pak: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=pei-system-requirements
+  - RPA: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=openshift-pre-installation-requirements
   - Process Mining: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=platform-pre-installation-requirements
-  - RPA: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-pre-installation-requirements
+  - IAF : https://www.ibm.com/docs/en/cloud-paks/1.0?topic=p-system-requirement
+  - CPFS: https://www.ibm.com/docs/en/cpfs?topic=services-hardware-requirements-starterset-profile
 - OpenShift cluster admin access
 - Access to public internet from OpenShift
 - Software entitlement key for IBM software which is found at https://myibm.ibm.com/products-services/containerlibrary
