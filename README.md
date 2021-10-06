@@ -100,6 +100,26 @@ More info available in official docs at https://www.ibm.com/support/knowledgecen
 - IAM - Provides Identity and Access management.
 - Health Checking - Enables you to generate MusthGather output which is useful for support.
 
+### Pre-requisites section
+
+Contains prerequisites for the whole platform.
+
+- DB2 - Database storage for Capabilities which need it.
+- OpenLDAP - Directory solution for users and groups definition.
+- MSSQL server - Database storage for RPA server.
+
+### Deployment job section
+
+Multiple command line tools are installed inside a container to make the installation possible.
+
+- JDK9 - Used for keytool command to generate certificates for ODM and for Maven (https://manpages.debian.org/unstable/openjdk-8-jre-headless/keytool.1.en.html https://openjdk.java.net/).
+- jq - Needed for JSON files manipulation from command line (https://stedolan.github.io/jq/manual/).
+- yq - Needed for YAML files manipulation from command line; version 3 is used (https://mikefarah.gitbook.io/yq/).
+- oc - Used to communicate with OpenShift from command line (https://docs.openshift.com/container-platform/4.7/cli_reference/openshift_cli/getting-started-cli.html#cli-using-cli_cli-developer-commands).
+- Global CA - Generated self-signed Certification Authority via OpenSSL to make trusting the platform easier. It is also possible to provide your own CA and how to do so is described later in this doc.
+- helm - Used for helm charts installation (https://helm.sh/docs/).
+- maven - Used for pushing ADS library jars to Nexus (https://maven.apache.org/). This enables custom ADS JARs development.
+
 ## Environments used for installation 💻
 
 **Do not run this guide on OpenShift 4.8.x** as DB2 container won't start on it.
@@ -121,26 +141,6 @@ Successfully installed
 - ROSA - Red Hat OpenShift Service on AWS  
 OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
 Successfully installed **but has issues** with passthrough Routes malfunction making it hard to access the platform.
-
-### Pre-requisites section
-
-Contains prerequisites for the whole platform.
-
-- DB2 - Database storage for Capabilities which need it.
-- OpenLDAP - Directory solution for users and groups definition.
-- MSSQL server - Database storage for RPA server.
-
-### Deployment job section
-
-Multiple command line tools are installed inside a container to make the installation possible.
-
-- JDK9 - Used for keytool command to generate certificates for ODM and for Maven (https://manpages.debian.org/unstable/openjdk-8-jre-headless/keytool.1.en.html https://openjdk.java.net/).
-- jq - Needed for JSON files manipulation from command line (https://stedolan.github.io/jq/manual/).
-- yq - Needed for YAML files manipulation from command line; version 3 is used (https://mikefarah.gitbook.io/yq/).
-- oc - Used to communicate with OpenShift from command line (https://docs.openshift.com/container-platform/4.7/cli_reference/openshift_cli/getting-started-cli.html#cli-using-cli_cli-developer-commands).
-- Global CA - Generated self-signed Certification Authority via OpenSSL to make trusting the platform easier. It is also possible to provide your own CA and how to do so is described later in this doc.
-- helm - Used for helm charts installation (https://helm.sh/docs/).
-- maven - Used for pushing ADS library jars to Nexus (https://maven.apache.org/). This enables custom ADS JARs development.
 
 ## Pre-requisites ⬅️
 
