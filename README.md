@@ -236,7 +236,7 @@ data:
     ## By default false, which means that new self signed CA will be generated 
     ## and all certificates will be signed using it. 
     ## Set true if you want to provide your own global-ca.key and global-ca.crt.
-    ## Contents of these two files are provided in this ConfigMap in keys which are at the bottom of this file
+    ## Contents of these two files are provided in this ConfigMap in keys which are at the bottom of this file.
     ## Files cannot be password protected.
     GLOBAL_CA_PROVIDED=false
 
@@ -464,7 +464,7 @@ Also the pod log ends with "CP4BA Enterprise install completed"  (in the below p
 
 ![assets/success-install-job-log.png](assets/success-install-job-log.png)
 
-Now continue with the [Post installation steps](#post-installation-steps-%EF%B8%8F) and then review [Usage & Operations](#usage--operations-).
+Now continue with the [Post installation steps](#post-installation-steps-%EF%B8%8F) and then review [Usage & Operations](#usage--operations-). 
 
 #### Failed completion
 
@@ -496,6 +496,8 @@ Review and perform post deploy manual steps for RPA as specified in ConfigMap *r
 ## Usage & Operations 😊
 
 Endpoints, access info and other useful information is available in Project *automagic* in ConfigMap named *usage* in *usage.md* file after installation. It is best to copy the contents and open it in nice MarkDown editor like VSCode.
+
+Specifically, if you haven't provided your own Global CA, review the section *Global CA* in this md file.
 
 ![assets/usage-cm.png](assets/usage-cm.png)
 

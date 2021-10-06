@@ -139,7 +139,7 @@ oc logs deployment/ibm-cp4a-operator -c operator > cp4ba-operator.log
 
 In operator log you can search for error using *playbook task failed*.
 
-Operator loop in operator.log begins with output *TASK [Gathering Facts]*.
+Operator loop in cp4ba-operator.log begins with output *TASK [Gathering Facts]*.
 
 If you want to determine Operator version use the following command.
 ```bash
