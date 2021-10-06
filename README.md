@@ -464,7 +464,7 @@ Also the pod log ends with "CP4BA Enterprise install completed"  (in the below p
 
 ![assets/success-install-job-log.png](assets/success-install-job-log.png)
 
-Now continue with the [Post installation steps](#post-installation-steps-%EF%B8%8F) and then review [Usage & Operations](#usage--operations-). 
+Now continue with the [Post installation steps](#post-installation-steps-%EF%B8%8F) and then review [Usage & Operations](#usage--operations-).
 
 #### Failed completion
 
