@@ -142,6 +142,44 @@ Successfully installed
 OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
 Successfully installed **but has issues** with passthrough Routes malfunction making it hard to access the platform.
 
+The following picture shows real idle utilization of Nodes with deployed platform on above mentioned ROKS as an example.
+
+![assets/utilization.png](assets/utilization.png)
+
+The following output shows CPU and Memory requests and limits on Nodes on above mentioned ROKS as an example.
+
+```text
+node/10.162.243.118
+  Resource           Requests          Limits
+  cpu                11899m (74%)      54085m (340%)
+  memory             21465690Ki (74%)  56264992Ki (194%)
+
+node/10.162.243.121
+  Resource           Requests          Limits
+  cpu                11144m (70%)      55080m (346%)
+  memory             23100946Ki (79%)  80256288Ki (276%)
+
+node/10.162.243.125
+  Resource           Requests          Limits
+  cpu                5182m (32%)       5700m (35%)
+  memory             27267602Ki (94%)  26988832Ki (93%)
+
+node/10.162.243.67
+  Resource           Requests          Limits
+  cpu                11860m (74%)      40250m (253%)
+  memory             22722066Ki (78%)  60561696Ki (208%)
+
+node/10.162.243.85
+  Resource           Requests          Limits
+  cpu                11543m (72%)      40980m (258%)
+  memory             21248530Ki (73%)  56277280Ki (194%)
+
+node/10.162.243.94
+  Resource           Requests          Limits
+  cpu                11301m (71%)      95040m (598%)
+  memory             21502482Ki (74%)  114686240Ki (395%)
+```
+
 ## Pre-requisites ⬅️
 
 - OpenShift cluster sized according with the system requirements
@@ -622,3 +660,7 @@ Jan Dušek
 jdusek@cz.ibm.com  
 Business Automation Technical Specialist  
 IBM Czech Republic
+
+## Notice
+
+© Copyright IBM Corporation 2021.
