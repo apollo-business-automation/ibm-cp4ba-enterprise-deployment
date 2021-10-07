@@ -1,12 +1,18 @@
 # Installation of Cloud Pak for Business Automation on containers - One-shot enterprise deployment 🔫
 
-Goal of this repository is to almost automagically install CP4BA Enterprise patterns with all kinds of prerequisites and extras. 
+Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components  with all kinds of prerequisites and extras on OpenShift.
 
-Last installation was performed on 2021-09-20 with CP4BA version 21.0.2-IF003 (also called 21.0.2.3 or 21.2.3)
+Last installation was performed on 2021-10-05 with CP4BA version 21.0.2-IF003 (also called 21.0.2.3 or 21.2.3)
 
 Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-enterprise-deployments.
 
 Deployment of other parts is also based on respective official documentations.
+
+- IBM Robotic Process Automation (RPA) https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-planning-rpa-openshift
+- IBM Automation Assets https://www.ibm.com/docs/en/cloud-paks/1.0?topic=foundation-automation-assets
+- IBM Process Mining https://www.ibm.com/docs/en/cloud-paks/1.0?topic=pm-installation-setup-guide-process-mining-openshift-container-platform
+- IBM Automation Foundation (IAF) https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-foundation
+- IBM Cloud Pak Foundational Services (CPFS) https://www.ibm.com/docs/en/cpfs?topic=operator-installing-foundational-services-online
 
 ## Disclaimer ✋
 
@@ -44,23 +50,6 @@ What is not included:
 Keep in mind that the platform contains DB2 which is licensed with Standard Edition license available from CP4BA and it must adhere to the *Additional IBM DB2 Standard Edition Detail* in official license information at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument (or its newer revision).
 
 Keep in mind that this deployment contains capabilities (the ones which are not bundled with CP4BA) which are not eligible to run on Worker Nodes covered by CP4BA OCP Restricted licenses. More info on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=clusters-restricted-openshift-entitlement.
-
-## Environments used for installation 💻
-
-**Do not run this guide on OpenShift 4.8.x** as DB2 container won't start on it.
-
-ROSA - Red Hat OpenShift Service on AWS doesn't work due to passthrough Routes malfunction.
-
-With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift, however it was successfully executed on the following once.
-
-- ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
-OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ibmc-file-gold-gid Storage Class
-
-- ARO - Azure Red Hat OpenShift allowing to run managed Red Hat OpenShift on Azure 
-OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class
-
-- Traditional OpenShift cluster created from scratch on top of virtualization platform  
-OpenShift 4.7.x on vms - 6 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class
 
 ## What is in the package 📦
 
@@ -131,13 +120,76 @@ Multiple command line tools are installed inside a container to make the install
 - helm - Used for helm charts installation (https://helm.sh/docs/).
 - maven - Used for pushing ADS library jars to Nexus (https://maven.apache.org/). This enables custom ADS JARs development.
 
+## Environments used for installation 💻
+
+**Do not run this guide on OpenShift 4.8.x** as DB2 container won't start on it.
+
+With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift, however it was executed on the following once.
+
+- ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
+OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ibmc-file-gold-gid Storage Class  
+Successfully installed
+
+- ARO - Azure Red Hat OpenShift allowing to run managed Red Hat OpenShift on Azure  
+OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
+Successfully installed
+
+- Traditional OpenShift cluster created from scratch on top of virtualization platform  
+OpenShift 4.7.x on vms - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
+Successfully installed
+
+- ROSA - Red Hat OpenShift Service on AWS  
+OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
+Successfully installed **but has issues** with passthrough Routes malfunction making it hard to access the platform.
+
+The following picture shows real idle utilization of Nodes with deployed platform on above mentioned ROKS as an example.
+
+![assets/utilization.png](assets/utilization.png)
+
+The following output shows CPU and Memory requests and limits on Nodes on above mentioned ROKS as an example.
+
+```text
+node/10.162.243.118
+  Resource           Requests          Limits
+  cpu                11899m (74%)      54085m (340%)
+  memory             21465690Ki (74%)  56264992Ki (194%)
+
+node/10.162.243.121
+  Resource           Requests          Limits
+  cpu                11144m (70%)      55080m (346%)
+  memory             23100946Ki (79%)  80256288Ki (276%)
+
+node/10.162.243.125
+  Resource           Requests          Limits
+  cpu                5182m (32%)       5700m (35%)
+  memory             27267602Ki (94%)  26988832Ki (93%)
+
+node/10.162.243.67
+  Resource           Requests          Limits
+  cpu                11860m (74%)      40250m (253%)
+  memory             22722066Ki (78%)  60561696Ki (208%)
+
+node/10.162.243.85
+  Resource           Requests          Limits
+  cpu                11543m (72%)      40980m (258%)
+  memory             21248530Ki (73%)  56277280Ki (194%)
+
+node/10.162.243.94
+  Resource           Requests          Limits
+  cpu                11301m (71%)      95040m (598%)
+  memory             21502482Ki (74%)  114686240Ki (395%)
+```
+
 ## Pre-requisites ⬅️
 
 - OpenShift cluster sized according with the system requirements
-  - Cloud Pak: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=installation-system-requirements
+  - Cloud Pak: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=pei-system-requirements
+  - RPA: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=openshift-pre-installation-requirements
   - Process Mining: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=platform-pre-installation-requirements
-  - RPA: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-pre-installation-requirements
+  - IAF : https://www.ibm.com/docs/en/cloud-paks/1.0?topic=p-system-requirement
+  - CPFS: https://www.ibm.com/docs/en/cpfs?topic=services-hardware-requirements-starterset-profile
 - OpenShift cluster admin access
+- Access to public internet from OpenShift
 - Software entitlement key for IBM software which is found at https://myibm.ibm.com/products-services/containerlibrary
 
 ## Installation steps ⚡
@@ -608,3 +660,7 @@ Jan Dušek
 jdusek@cz.ibm.com  
 Business Automation Technical Specialist  
 IBM Czech Republic
+
+## Notice
+
+© Copyright IBM Corporation 2021.

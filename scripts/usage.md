@@ -269,6 +269,7 @@ For external share you need to use ingress prefixed set of endpoints.
 - External Share ingress for desktop: https://ingress-es-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=OS1  
 - External Share ingress for external desktop: https://ingress-es-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=ExternalShareOS1  
 - Task Manager API endpoint: https://tm-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/taskManagerWeb/api/v1  
+- Task Manager Ping page: https://tm-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/taskManagerWeb/api/v1/tasks/ping  
 
 ####  Credentials
 
