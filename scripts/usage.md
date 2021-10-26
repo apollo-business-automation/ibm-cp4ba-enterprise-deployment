@@ -201,6 +201,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{UNIVERS
 #### Endpoints
 
 - Business Performance Center UI: https://bai-bpc-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}  
+- Business Performance Center About JSON: https://bai-bpc-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/about.json  
 - Management endpoint: https://bai-management-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}  
 - Business Performance Center UI in BAN: https://navigator-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=BAI  
 - Flink: https://bai-flink-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}  
