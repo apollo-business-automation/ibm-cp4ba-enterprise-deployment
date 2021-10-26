@@ -35,7 +35,7 @@ configuration:
 ##... and secret for connection information
 existingSecrets: ""
 # name of the existingSecret
-secrets: |
+secrets:
   akhq:
     connections:
       iaf-kafka:
@@ -57,7 +57,7 @@ secrets: |
         #    schema.registry.ssl.truststore.password: '{{UNIVERSAL_PASSWORD}}'
 
 kafkaSecrets:
-  truststorejks: ""
+  truststorejks: "{{TRUST_STORE}}"
 #Provide extra base64 encoded kubernetes secrets (keystore/truststore)
 
 # Any extra volumes to define for the pod (like keystore/truststore)

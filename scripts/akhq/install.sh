@@ -22,6 +22,10 @@ echo ">>>>$(print_timestamp) Create Project"
 oc new-project akhq
 
 echo
+echo ">>>>$(print_timestamp) Add anyuid SCC to default SA"
+oc adm policy add-scc-to-user anyuid system:serviceaccount:akhq:default
+
+echo
 echo ">>>>$(print_timestamp) Add helmchart"
 helm repo add akhq https://akhq.io/
 helm repo update
@@ -33,8 +37,8 @@ keytool -import -destkeystore truststore.jks -deststoretype jks -deststorepass $
 trustore_base64=`base64 -w 0 truststore.jks`
 
 echo
-echo ">>>>$(print_timestamp) Update gitea helm values"
-yq w -i values.yaml kafkaSecrets.truststorejks "${trustore_base64}"
+echo ">>>>$(print_timestamp) Update akhq helm values"
+sed -i "s|{{TRUST_STORE}}|${trustore_base64}|g" values.yaml
 sed -i "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" values.yaml
 sed -i "s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g" values.yaml
 sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" values.yaml
