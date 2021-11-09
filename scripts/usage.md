@@ -125,7 +125,7 @@ Not exposed outside the cluster.
 
 If you want to investigate the actual ansible code that is running in the operator, you can get it from running operator pod from /opt/ansible/ directory.
 ```bash
-oc cp `oc get pod --no-headers | grep cp4a-operator | awk '{print $1}'`:/opt/ansible/ ansible
+oc cp `oc get pod -n {{PROJECT_NAME}} --no-headers | grep cp4a-operator | awk '{print $1}'`:/opt/ansible/ ansible
 
 ```
 
@@ -143,7 +143,7 @@ Operator loop in cp4ba-operator.log begins with output *TASK [Gathering Facts]*.
 
 If you want to determine Operator version use the following command.
 ```bash
-oc exec -it `oc get pod|grep ibm-cp4a-operator |awk '{print $1}'` -- cat /opt/ibm/version.txt
+oc exec -it `oc get pod -n {{PROJECT_NAME}} | grep ibm-cp4a-operator | awk '{print $1}'` -- cat /opt/ibm/version.txt
 
 ```
 
@@ -209,12 +209,12 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{UNIVERS
 ####  Credentials
 
 - for BAI - cpadmin / {{UNIVERSAL_PASSWORD}}
-- for Flink - username: ```oc get secret $(oc get eventprocessor {{PROJECT_NAME}}-bai-event-processor -o jsonpath='{.status.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.username}' | base64 -d``` / password: ```oc get secret $(oc get eventprocessor {{PROJECT_NAME}}-bai-event-processor -o jsonpath='{.status.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.password}' | base64 -d```
+- for Flink - username: ```oc get secret -n {{PROJECT_NAME}} $(oc get eventprocessor -n {{PROJECT_NAME}} {{PROJECT_NAME}}-bai-event-processor -o jsonpath='{.status.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.username}' | base64 -d``` / password: ```oc get secret -n {{PROJECT_NAME}} $(oc get eventprocessor -n {{PROJECT_NAME}} {{PROJECT_NAME}}-bai-event-processor -o jsonpath='{.status.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.password}' | base64 -d```
 
 #### Extracting generated templates from operator for debug
 
 ```bash
-oc cp `oc get pod --no-headers | grep cp4a-operator | awk '{print $1}'`:/tmp/ansible-operator/runner/tmp/bai/templates/bai_all_in_one.yaml bai_all_in_one.yaml
+oc cp `oc get pod --no-headers -n {{PROJECT_NAME}} | grep cp4a-operator | awk '{print $1}'`:/tmp/ansible-operator/runner/tmp/bai/templates/bai_all_in_one.yaml bai_all_in_one.yaml
 
 ```
 
@@ -351,8 +351,8 @@ For external share you need to use ingress prefixed set of endpoints.
 
 #### Credentials
 
-- Username: ```oc get kafkauser icp4ba-kafka-auth -o jsonpath='{.status.username}'```  
-- Password: ```oc get secret $(oc get kafkauser icp4ba-kafka-auth -o jsonpath='{.status.secret}') -o jsonpath='{.data.password}' | base64 -d```  
+- Username: ```oc get kafkauser icp4ba-kafka-auth -n {{PROJECT_NAME}} -o jsonpath='{.status.username}'```  
+- Password: ```oc get secret -n {{PROJECT_NAME}} $(oc get kafkauser icp4ba-kafka-auth -n {{PROJECT_NAME}} -o jsonpath='{.status.secret}') -o jsonpath='{.data.password}' | base64 -d```  
 
 Apicurio has same credentials as Kafka.
 
@@ -362,7 +362,7 @@ Alternative custom user: cpadmin / {{UNIVERSAL_PASSWORD}}
 
 - Security protocol: Sasl Ssl  
 - Sasl Mechanism: SCRAM-SHA-512  
-- Root CA cert (used in *Path to root CA certificates file*): ```oc get kafka iaf-system -o jsonpath='{.status.listeners[1].certificates[0]}'```  
+- Root CA cert (used in *Path to root CA certificates file*): ```oc get kafka iaf-system -n {{PROJECT_NAME}} -o jsonpath='{.status.listeners[1].certificates[0]}'```  
 
 ### Process Mining
 
@@ -379,12 +379,12 @@ Alternative custom user: cpadmin / {{UNIVERSAL_PASSWORD}}
 
 If you want to investigate the actual ansible code that is running in the operator, you can get it from running operator pod from /opt/ansible/ directory.
 ```bash
-oc cp `oc get pod --no-headers | grep processmining-operator-controller-manager | awk '{print $1}'`:/opt/ansible/ pm-ansible
+oc cp `oc get pod -n {{PROJECT_NAME}} --no-headers | grep processmining-operator-controller-manager | awk '{print $1}'`:/opt/ansible/ pm-ansible
 ```
 
 To get logs for Operator.
 ```bash
-oc get pods -o name | grep processmining-operator-controller | xargs oc logs  > process-mining-operator.log
+oc get pods -n {{PROJECT_NAME}} -o name | grep processmining-operator-controller | xargs oc logs  > process-mining-operator.log
 ```
 
 ### Asset Repository
