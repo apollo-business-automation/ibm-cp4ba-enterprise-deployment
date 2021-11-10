@@ -12,7 +12,8 @@ fi
 
 echo
 echo ">>>>$(print_timestamp) Set OCP apps endpoint"
-OCP_APPS_ENDPOINT=`oc get route console -n openshift-console -o json | jq -r '.status.ingress[0].routerCanonicalHostname'`
+# Based on https://docs.openshift.com/container-platform/4.8/networking/ingress-operator.html
+OCP_APPS_ENDPOINT=`oc get ingress.config.openshift.io cluster -o json | jq -r '.spec.domain'`
 
 echo
 echo ">>>>$(print_timestamp) Set escaped password"

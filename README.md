@@ -457,7 +457,7 @@ This Job runs a Pod which performs the installation.
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: automagic-intall-
+  generateName: automagic-install-
   namespace: automagic
 spec:
   template:
