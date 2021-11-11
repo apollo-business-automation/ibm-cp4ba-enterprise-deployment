@@ -4,7 +4,6 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   echo
   echo ">>>>Copy variables.sh"
   cp /config/variables.sh variables.sh
-  cp /config/variables.sh variables.sh
 fi
 
 echo

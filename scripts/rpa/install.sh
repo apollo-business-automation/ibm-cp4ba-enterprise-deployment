@@ -102,6 +102,13 @@ echo ">>>>$(print_timestamp) Update RoboticProcessAutomation instance"
 sed -i "s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g" roboticprocessautomation.yaml
 sed -i "s|{{MAIL_HOSTNAME}}|${MAIL_HOSTNAME}|g" roboticprocessautomation.yaml
 
+if [ "$DEPLOYMENT_PLATFORM" = "ROKS" ]; then
+echo
+echo ">>>>$(print_timestamp) Add permissive Egress NetworkPolicy for RPA API server"
+# TODO remove when ROKS officially supported and working
+  oc apply -f netwrokpolicy-hotfix.yaml
+fi
+
 echo
 echo ">>>>$(print_timestamp) Add RoboticProcessAutomation instance"
 oc apply -f roboticprocessautomation.yaml
