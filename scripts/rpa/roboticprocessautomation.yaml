@@ -38,6 +38,16 @@ spec:
       archive:
         size: 11Gi
         class: "{{STORAGE_CLASS_NAME}}"
+    # Following increases probes for ROKS        
+    template:
+      pod:
+        spec:
+          containers:
+            - name: rpa-server
+              readinessProbe:
+                initialDelaySeconds: 100
+              livenessProbe:
+                initialDelaySeconds: 200            
   ui:
     replicas: 1
   ocr:
