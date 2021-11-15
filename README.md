@@ -2,7 +2,7 @@
 
 Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components  with all kinds of prerequisites and extras on OpenShift.
 
-Last installation was performed on 2021-11-11 with CP4BA version 21.0.2-IF004 (also called 21.0.2.4 or 21.2.4)
+Last installation was performed on 2021-11-12 with CP4BA version 21.0.2-IF005 (also called 21.0.2.5 or 21.2.5)
 
 Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-enterprise-deployments.
 
