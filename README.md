@@ -2,7 +2,7 @@
 
 Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components  with all kinds of prerequisites and extras on OpenShift.
 
-Last installation was performed on 2021-10-05 with CP4BA version 21.0.2-IF003 (also called 21.0.2.3 or 21.2.3)
+Last installation was performed on 2021-11-12 with CP4BA version 21.0.2-IF005 (also called 21.0.2.5 or 21.2.5)
 
 Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-enterprise-deployments.
 
@@ -122,7 +122,7 @@ Multiple command line tools are installed inside a container to make the install
 
 ## Environments used for installation 💻
 
-**Do not run this guide on OpenShift 4.8.x** as DB2 container won't start on it.
+**If you want to run this on OpenShift 4.8.x** disable Process Mining installation in configmap by setting ```PM_ENABLED=false``` as it is not working.
 
 With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift, however it was executed on the following once.
 
@@ -135,7 +135,7 @@ OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-stor
 Successfully installed
 
 - Traditional OpenShift cluster created from scratch on top of virtualization platform  
-OpenShift 4.7.x on vms - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
+OpenShift 4.7.x and 4.8.x on vms - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
 Successfully installed
 
 - ROSA - Red Hat OpenShift Service on AWS  

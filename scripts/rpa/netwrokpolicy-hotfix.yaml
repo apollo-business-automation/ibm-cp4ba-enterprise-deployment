@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: rpa-apiserver-rpa-hotfix
+spec:
+  egress:
+    - {}
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: rpa
+      app.kubernetes.io/instance: rpa
+      app.kubernetes.io/managed-by: ibm-rpa-operator
+      app.kubernetes.io/name: apiserver
+      rpa.automation.ibm.com/cr-name: rpa
+  policyTypes:
+    - Egress
