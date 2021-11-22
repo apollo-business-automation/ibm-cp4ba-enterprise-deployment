@@ -125,7 +125,7 @@ Not exposed outside the cluster.
 
 If you want to investigate the actual ansible code that is running in the operator, you can get it from running operator pod from /opt/ansible/ directory.
 ```bash
-oc cp `oc get pod -n {{PROJECT_NAME}} --no-headers | grep cp4a-operator | awk '{print $1}'`:/opt/ansible/ ansible
+oc cp -n {{PROJECT_NAME}} `oc get pod -n {{PROJECT_NAME}} --no-headers | grep cp4a-operator | awk '{print $1}'`:/opt/ansible/ ansible
 
 ```
 
@@ -143,7 +143,7 @@ Operator loop in cp4ba-operator.log begins with output *TASK [Gathering Facts]*.
 
 If you want to determine Operator version use the following command.
 ```bash
-oc exec -it `oc get pod -n {{PROJECT_NAME}} | grep ibm-cp4a-operator | awk '{print $1}'` -- cat /opt/ibm/version.txt
+oc exec -it -n {{PROJECT_NAME}} `oc get pod -n {{PROJECT_NAME}} | grep ibm-cp4a-operator | awk '{print $1}'` -- cat /opt/ibm/version.txt
 
 ```
 
@@ -214,7 +214,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{UNIVERS
 #### Extracting generated templates from operator for debug
 
 ```bash
-oc cp `oc get pod --no-headers -n {{PROJECT_NAME}} | grep cp4a-operator | awk '{print $1}'`:/tmp/ansible-operator/runner/tmp/bai/templates/bai_all_in_one.yaml bai_all_in_one.yaml
+oc cp -n {{PROJECT_NAME}} `oc get pod --no-headers -n {{PROJECT_NAME}} | grep cp4a-operator | awk '{print $1}'`:/tmp/ansible-operator/runner/tmp/bai/templates/bai_all_in_one.yaml bai_all_in_one.yaml
 
 ```
 
@@ -379,7 +379,7 @@ Alternative custom user: cpadmin / {{UNIVERSAL_PASSWORD}}
 
 If you want to investigate the actual ansible code that is running in the operator, you can get it from running operator pod from /opt/ansible/ directory.
 ```bash
-oc cp `oc get pod -n {{PROJECT_NAME}} --no-headers | grep processmining-operator-controller-manager | awk '{print $1}'`:/opt/ansible/ pm-ansible
+oc cp -n {{PROJECT_NAME}} `oc get pod -n {{PROJECT_NAME}} --no-headers | grep processmining-operator-controller-manager | awk '{print $1}'`:/opt/ansible/ pm-ansible
 ```
 
 To get logs for Operator.
