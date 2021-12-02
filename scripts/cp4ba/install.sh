@@ -3,6 +3,10 @@
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-enterprise-deployments
 
 echo
+echo ">>>>Source internal variables"
+. ../inernal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 

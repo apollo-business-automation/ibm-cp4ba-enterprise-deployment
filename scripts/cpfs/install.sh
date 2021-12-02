@@ -4,6 +4,10 @@
 # Based on https://www.ibm.com/docs/en/cpfs?topic=online-installing-foundational-services-by-using-cli  
 
 echo
+echo ">>>>Source internal variables"
+. ../inernal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 

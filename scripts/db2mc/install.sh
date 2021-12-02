@@ -3,6 +3,10 @@
 # Based on https://www.ibm.com/docs/en/db2-data-mgr-console/3.1.x?topic=configuring-setting-up-db2-data-management-console
 
 echo
+echo ">>>>Source internal variables"
+. ../inernal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 

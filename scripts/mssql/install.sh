@@ -3,6 +3,10 @@
 # Based on https://cloud.redhat.com/blog/getting-started-with-microsoft-sql-server-on-openshift
 
 echo
+echo ">>>>Source internal variables"
+. ../inernal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 

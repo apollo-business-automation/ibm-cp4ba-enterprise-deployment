@@ -4,6 +4,10 @@
 # License Based on https://www.ibm.com/docs/en/db2/11.5?topic=updating-managing-licenses
 
 echo
+echo ">>>>Source internal variables"
+. ../inernal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 

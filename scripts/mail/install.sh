@@ -3,6 +3,10 @@
 # Based on https://docker-mailserver.github.io/docker-mailserver/edge/config/advanced/kubernetes/
 
 echo
+echo ">>>>Source internal variables"
+. ../inernal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 

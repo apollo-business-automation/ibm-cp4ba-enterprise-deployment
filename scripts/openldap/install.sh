@@ -3,6 +3,10 @@
 # Based on https://github.com/osixia/docker-openldap & https://github.com/jp-gouin/helm-openldap
 
 echo
+echo ">>>>Source internal variables"
+. ../inernal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 

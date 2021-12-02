@@ -16,7 +16,6 @@ spec:
         use_dynamic_provisioning: true
         storage_class: "{{ shared_configuration.storage_configuration.sc_fast_file_storage_classname }}"
     playback_server:
-      hostname: "pb-{{ shared_configuration.sc_deployment_hostname_suffix }}"
       admin_secret_name: playback-server-admin-secret
       admin_user: cpadmin
       replica_size: 2

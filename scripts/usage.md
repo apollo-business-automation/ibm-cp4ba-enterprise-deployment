@@ -190,7 +190,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{UNIVERS
 #### Endpoints
 
 - Studio UI: https://bas-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/BAStudio (Now redirects to Platform UI)
-- Playback AAE Server apps list: https://pb-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/v2/applications  
+- Playback AAE Server apps list: https://ae-pbk-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/v2/applications  
 
 ####  Credentials
 

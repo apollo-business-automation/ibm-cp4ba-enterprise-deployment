@@ -3,6 +3,10 @@
 # Based on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=foundation-robotic-process-automation
 
 echo
+echo ">>>>Source internal variables"
+. ../inernal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 

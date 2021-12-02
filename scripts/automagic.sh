@@ -7,6 +7,10 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
 fi
 
 echo
+echo ">>>>Source internal variables"
+. inernal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . variables.sh
 

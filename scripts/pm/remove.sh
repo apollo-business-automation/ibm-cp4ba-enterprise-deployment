@@ -8,6 +8,10 @@ echo
 echo ">>>>$(print_timestamp) PM remove started"
 
 echo
+echo ">>>>Source internal variables"
+. ../inernal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 

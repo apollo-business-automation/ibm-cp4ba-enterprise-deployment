@@ -4,6 +4,10 @@
 # Based on https://linuxconfig.org/quick-nfs-server-configuration-on-redhat-7-linux
 
 echo
+echo ">>>>Source internal variables"
+. ../inernal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 

@@ -3,6 +3,10 @@
 # Based on https://github.com/roundcube/roundcubemail-docker/blob/master/examples/kubernetes.yaml
 
 echo
+echo ">>>>Source internal variables"
+. ../inernal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 
