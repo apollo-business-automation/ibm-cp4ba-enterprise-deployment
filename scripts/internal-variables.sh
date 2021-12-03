@@ -13,7 +13,8 @@ CP4BA_CASE_CERT_K8S_VERSION=21.0.2
 ## Should not be changed in particular guide version. 
 ## Version of the Subscription channel as defined on 
 ## https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=cluster-setting-up-by-installing-operator-catalog
-OPERATOR_UPDATE_CHANNEL=v21.2
+CP4BA_OPERATOR_UPDATE_CHANNEL=v21.2
+CP4BA_STARTING_CSV=ibm-cp4a-operator.v21.2.5
 ## Hostname of server where DB2 is running
 DB2_HOSTNAME=c-db2ucluster-db2u.db2
 ## Hostname of server where MSSQL is running
@@ -21,7 +22,7 @@ MSSQL_HOSTNAME=mssql.mssql
 ## Name of OCP CP4BA project
 PROJECT_NAME=cp4ba
 ## Name of the CP4BA instance in cr.yaml at path metadata.name
-CR_META_NAME=cp4ba
+CP4BA_CR_META_NAME=cp4ba
 ## Hostname of server where LDAP is running
 LDAP_HOSTNAME=openldap-openldap-stack-ha.openldap
 ## Hostname of server where SMTP is running
@@ -82,3 +83,18 @@ DEFAULT_ATTEMPTS_4=36
 ## Means wait for 180 minutes with combination of DEFAULT_ATTEMPTS_4. 
 ## Increase if you OCP is slow and you need to wait for things longer.
 DEFAULT_DELAY_4=300
+
+AKHQ_CHART_VERSION=0.2.3
+
+ASSET_REPO_OPERATOR_CHANNEL=v1.3
+ASSET_REPO_STARTING_CSV=ibm-integration-asset-repository.v1.3.2
+ASSET_REPO_VERSION=2021.2.1-1
+
+CEREBRO_VERSION=0.9.4
+
+CPFS_OPERATOR_CHANNEL=v3
+CPFS_STARTING_CSV=ibm-common-service-operator.v3.13.0
+
+DB2_OPERATOR_CHANNEL=v1.1
+DB2_STARTING_CSV=db2u-operator.v1.1.6
+

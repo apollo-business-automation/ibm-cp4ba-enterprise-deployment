@@ -1,7 +1,7 @@
 apiVersion: icp4a.ibm.com/v1
 kind: ICP4ACluster
 metadata:
-  name: "{{CR_META_NAME}}"
+  name: "{{CP4BA_CR_META_NAME}}"
   labels:
     app.kubernetes.io/instance: ibm-dba
     app.kubernetes.io/managed-by: ibm-dba

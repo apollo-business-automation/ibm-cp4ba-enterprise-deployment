@@ -4,8 +4,9 @@ metadata:
   name: ibm-common-service-operator
   namespace: common-service
 spec:
-  channel: v3
-  installPlanApproval: Automatic
+  channel: "{{CPFS_OPERATOR_CHANNEL}}"
+  installPlanApproval: Manual
   name: ibm-common-service-operator
   source: ibm-operator-catalog
   sourceNamespace: openshift-marketplace
+  startingCSV: "{{CPFS_STARTING_CSV}}"  

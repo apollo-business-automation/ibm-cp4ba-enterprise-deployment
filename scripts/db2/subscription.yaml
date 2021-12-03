@@ -4,9 +4,9 @@ metadata:
   name: db2u-operator
   namespace: db2
 spec:
-  channel: v1.1
+  channel: "{{DB2_OPERATOR_CHANNEL}}"
   installPlanApproval: Manual
   name: db2u-operator
   source: ibm-operator-catalog
   sourceNamespace: openshift-marketplace
-  startingCSV: db2u-operator.v1.1.6
+  startingCSV: "{{DB2_STARTING_CSV}}"

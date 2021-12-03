@@ -1,1 +1,4 @@
 scripts/variables.sh
+*.target.*
+scripts/global-ca/global-ca.crt
+scripts/global-ca/global-ca.key

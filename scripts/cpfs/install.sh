@@ -58,8 +58,17 @@ echo ">>>>$(print_timestamp) Add OperatorGroup"
 oc apply -f operatorgroup.yaml
 
 echo
+echo ">>>>$(print_timestamp) Update Subscription"
+sed -f - subscription.yaml > subscription.target.yaml << SED_SCRIPT
+s|{{CPFS_OPERATOR_CHANNEL}}|${CPFS_OPERATOR_CHANNEL}|g
+s|{{CPFS_STARTING_CSV}}|${CPFS_STARTING_CSV}|g
+SED_SCRIPT
+
+echo
 echo ">>>>$(print_timestamp) Add Subscription"
-oc apply -f subscription.yaml
+oc apply -f subscription.target.yaml
+
+manage_manual_operator ibm-common-service-operator ibm-common-service-operator
 
 echo
 echo ">>>>$(print_timestamp) Switch to Project ibm-common-services"

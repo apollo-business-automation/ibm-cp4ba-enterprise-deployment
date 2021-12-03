@@ -183,3 +183,21 @@ exit_test() {
 print_timestamp() {
   date --utc +%FT%TZ
 }
+
+manage_manual_operator() {
+  local subscription="${1}"
+  local deployment="${2}"
+
+  echo
+  echo ">>>>$(print_timestamp) Wait for InstallPlan to be created"
+  wait_for_k8s_resource_condition_generic Subscription/${subscription} ".status.installplan.kind" InstallPlan ${DEFAULT_ATTEMPTS_1} ${DEFAULT_DELAY_1}
+
+  echo
+  echo ">>>>$(print_timestamp) Approve InstallPlan"
+  install_plan=`oc get subscription ${subscription} -o json | jq -r '.status.installplan.name'`
+  oc patch installplan ${install_plan} --type merge --patch '{"spec":{"approved":true}}'
+
+  echo
+  echo ">>>>$(print_timestamp) Wait for Operator Deployment to be Available"
+  wait_for_k8s_resource_condition deployment/${deployment} Available
+}

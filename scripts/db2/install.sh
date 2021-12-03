@@ -40,21 +40,17 @@ echo ">>>>$(print_timestamp) Add OperatorGroup"
 oc apply -f operatorgroup.yaml
 
 echo
+echo ">>>>$(print_timestamp) Update Subscription"
+sed -f - subscription.yaml > subscription.target.yaml << SED_SCRIPT
+s|{{DB2_OPERATOR_CHANNEL}}|${DB2_OPERATOR_CHANNEL}|g
+s|{{DB2_STARTING_CSV}}|${DB2_STARTING_CSV}|g
+SED_SCRIPT
+
+echo
 echo ">>>>$(print_timestamp) Add Subscription"
-oc apply -f subscription.yaml
+oc apply -f subscription.target.yaml
 
-echo
-echo ">>>>$(print_timestamp) Wait for InstallPlan to be created"
-wait_for_k8s_resource_condition_generic Subscription/db2u-operator ".status.installplan.kind" InstallPlan ${DEFAULT_ATTEMPTS_1} ${DEFAULT_DELAY_1}
-
-echo
-echo ">>>>$(print_timestamp) Approve InstallPlan"
-install_plan=`oc get subscription db2u-operator -o json | jq -r '.status.installplan.name'`
-oc patch installplan ${install_plan} --type merge --patch '{"spec":{"approved":true}}'
-
-echo
-echo ">>>>$(print_timestamp) Wait for Operator Deployment to be Available"
-wait_for_k8s_resource_condition deployment/db2u-operator-manager Available
+manage_manual_operator db2u-operator db2u-operator-manager
 
 echo
 echo ">>>>$(print_timestamp) Wait for DB2uCluster CRD to be Established"
@@ -66,13 +62,15 @@ oc create secret docker-registry ibm-entitlement-key --docker-username=cp --dock
 
 echo
 echo ">>>>$(print_timestamp) Update DB2uCluster CR"
-yq w -i db2ucluster.yaml spec.storage[0].spec.storageClassName "${STORAGE_CLASS_NAME}"
-sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" db2ucluster.yaml
+sed -f - db2ucluster.yaml > db2ucluster.target.yaml << SED_SCRIPT
+s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
+s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Add DB2uCluster instance"
 # Based on LI at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument DB2 Standard Edition is a supporting program with limitation of 16 CPU and 128 Memory
-oc apply -f db2ucluster.yaml
+oc apply -f db2ucluster.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Wait for Db2uCluster instance Ready state"

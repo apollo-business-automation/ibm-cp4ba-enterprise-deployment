@@ -44,3 +44,7 @@ echo
 echo ">>>>Update HOME to internal folder"
 echo "HOME=`pwd`" >> ~/.bash_profile
 echo "export HOME" >> ~/.bash_profile
+
+echo
+echo ">>>>Add aliases"
+echo "alias ll='ls -la'" >> ~/.bash_profile

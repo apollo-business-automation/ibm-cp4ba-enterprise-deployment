@@ -3,30 +3,31 @@
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployments-completing-post-deployment-tasks
 
 The following list specifies when you need to perform particular post-deployment steps
-- [Business Automation Navigator (BAN) (foundation pattern)](#business-automation-navigator-ban-foundation-pattern)
-  - [Enable Daeja for Office](#enable-daeja-for-office) - When you want to open MS Office documents in Navigator Daeja Viewer
-  - [Add Daeja license](#add-daeja-license) - When you want to open MS Office documents in Navigator Daeja Viewer and use Permanent Redaction of content.
-- [Business Automation Studio (BAS) (foundation pattern)](#business-automation-studio-bas-foundation-pattern)
-  - [Deploy toolkits and configurators](#deploy-toolkits-and-configurators) - When you want to call ODM from Business Application using Automation Services.
-  - [Apps deployment](#apps-deployment) - When you want to deploy or see which Business Applications were deployed in Playback Application Engine.
-- [Business Automation Insights (BAI) (foundation pattern)](#business-automation-insights-bai-foundation-pattern)
-  - [Configure Workforce insights](#configure-workforce-insights) - When you want to use Workforce Insights.
-- [Operational Decision Manager (ODM) (decisions pattern)](#operational-decision-manager-odm-decisions-pattern)
-  - [BAI event emitter](#bai-event-emitter) - When you want to enable BAI event emitting for your Rule Application.
-  - [Rule designer in eclipse](#rule-designer-in-eclipse) - When you want to install Rule Designer in Eclipse to develop Rule Applications.
-  - [Rule designer UMS OpenID Connect](#rule-designer-ums-openid-connect) - When you want to deploy Rule Applications from your local Rule Designer to ODM.
-- [Automation Decision Services (ADS) (decisions_ads pattern)](#automation-decision-services-ads-decisions_ads-pattern)
-  - [ADS project git repo & connection](#ads-project-git-repo--connection) - When you want to connect your ADS solution to GIT repository.
-  - [Connect Nexus for external libraries](#connect-nexus-for-external-libraries) - When you want to use published external libraries from Nexus.
-  - [Develop custom libraries](#develop-custom-libraries) - When you want to create your custom ADS libraries.
-- [FileNet Content Manager (FNCM) (content pattern)](#filenet-content-manager-fncm-content-pattern)
-  - [Update Google OIDC redirect URIs](#update-google-oidc-redirect-uris) - (don't use now) When you configured Google ID for External Share.
-  - [BAN desktop for OS1](#ban-desktop-for-os1) - To update VIewer Map for OS1 Desktop when custom Viewer Map has been created in TODO link for MS Office documents.
-  - [External Share](#external-share) - (don't use now) When you want to use External Share.
-  - [External Share capability in BAN](#external-share-capability-in-ban) - (don't use now) When you want to use External Share.
-  - [Task manager settings](#task-manager-settings) - When you want to use Task Manager.
-- [Automation Document Processing (ADP) (document_processing pattern)](#automation-document-processing-adp-document_processing-pattern)
-  - [Connect ADP project to Git](#connect-adp-project-to-git) - When you need to finish ADP configuration. Without Git connection, you cannot publish your solution.
+- [CP4BA post-deploy](#cp4ba-post-deploy)
+  - [Business Automation Navigator (BAN) (foundation pattern)](#business-automation-navigator-ban-foundation-pattern)
+    - [Enable Daeja for Office](#enable-daeja-for-office)
+    - [Add Daeja license](#add-daeja-license)
+  - [Business Automation Studio (BAS) (foundation pattern)](#business-automation-studio-bas-foundation-pattern)
+    - [Deploy toolkits and configurators](#deploy-toolkits-and-configurators)
+    - [Apps deployment](#apps-deployment)
+  - [Business Automation Insights (BAI) (foundation pattern)](#business-automation-insights-bai-foundation-pattern)
+    - [Configure Workforce insights](#configure-workforce-insights)
+  - [Operational Decision Manager (ODM) (decisions pattern)](#operational-decision-manager-odm-decisions-pattern)
+    - [BAI event emitter](#bai-event-emitter)
+    - [Rule designer in eclipse](#rule-designer-in-eclipse)
+    - [Rule designer UMS OpenID Connect](#rule-designer-ums-openid-connect)
+  - [Automation Decision Services (ADS) (decisions_ads pattern)](#automation-decision-services-ads-decisions_ads-pattern)
+    - [ADS project git repo & connection](#ads-project-git-repo--connection)
+    - [Connect Nexus for external libraries](#connect-nexus-for-external-libraries)
+    - [Develop custom libraries](#develop-custom-libraries)
+  - [FileNet Content Manager (FNCM) (content pattern)](#filenet-content-manager-fncm-content-pattern)
+    - [Update Google OIDC redirect URIs](#update-google-oidc-redirect-uris)
+    - [BAN desktop for OS1](#ban-desktop-for-os1)
+    - [External Share](#external-share)
+    - [External Share capability in BAN](#external-share-capability-in-ban)
+    - [Task manager settings](#task-manager-settings)
+  - [Automation Document Processing (ADP) (document_processing pattern)](#automation-document-processing-adp-document_processing-pattern)
+    - [Connect ADP project to Git](#connect-adp-project-to-git)
 
 
 For some of the tasks you need to interact with OpenShift using oc CLI. Use the following templates to log in and switch project.
@@ -158,7 +159,7 @@ Window > Perspective > Open Perspective > Other > Rule
 ### Rule designer UMS OpenID Connect
 Based on https://www.ibm.com/docs/en/odm/8.10?topic=parties-configuring-rule-designer
 
-Copy and edit data/odm/oidc-providers.json to you eclipse directory  
+Copy and edit oidc-providers.json (available in *automagic* Project in odm-oidc-providers Config Map) to you eclipse directory  
 Parameters can be seen in pod
 ```bash
 POD=`oc get pod -o name | grep decisionserverconsole`
@@ -167,7 +168,7 @@ oc exec $POD -- cat /liberty/wlp/usr/servers/defaultServer/authOidc/openIdParame
 ```
 
 Based on https://www.ibm.com/docs/en/odm/8.10?topic=designer-passing-parameters-rule  
-Copy data/odm/truststore.jks to you eclipse directory  
+Copy truststore.jks (available in *automagic* Project in odm-truststore Config Map) to you eclipse directory  
 Add the following to eclipse.ini  
 ```text
 -Dcom.ibm.rules.authentication.oidcconfig=oidc-providers.json

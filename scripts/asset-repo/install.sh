@@ -24,17 +24,24 @@ echo ">>>>$(print_timestamp) Switch Project"
 oc project ${PROJECT_NAME}
 
 echo
-echo ">>>>$(print_timestamp) Install Operator"
-oc apply -f subscription.yaml
+echo ">>>>$(print_timestamp) Update Subscription"
+sed -f - subscription.yaml > subscription.target.yaml << SED_SCRIPT
+s|{{ASSET_REPO_OPERATOR_CHANNEL}}|${ASSET_REPO_OPERATOR_CHANNEL}|g
+s|{{ASSET_REPO_STARTING_CSV}}|${ASSET_REPO_STARTING_CSV}|g
+SED_SCRIPT
 
 echo
-echo ">>>>$(print_timestamp) Wait for Operator Deployment to be Available"
-wait_for_k8s_resource_condition deployment/ibm-integration-asset-repository-operator Available
+echo ">>>>$(print_timestamp) Install Operator"
+oc apply -f subscription.target.yaml
+
+manage_manual_operator ibm-integration-asset-repository ibm-integration-asset-repository-operator
 
 echo
 echo ">>>>$(print_timestamp) Update AssetRepository CR"
-yq w -i assetrepository.yaml spec.storage.assetDataVolume.class "${STORAGE_CLASS_NAME}"
-yq w -i assetrepository.yaml spec.storage.couchVolume.class "${STORAGE_CLASS_NAME}"
+sed -f - assetrepository.yaml > assetrepository.target.yaml << SED_SCRIPT
+s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
+s|{{ASSETREPO_VERSION}}|${ASSET_REPO_VERSION}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Wait for AssetRepository CRD to be Established"
@@ -42,7 +49,7 @@ wait_for_k8s_resource_condition CustomResourceDefinition/assetrepositories.integ
 
 echo
 echo ">>>>$(print_timestamp) Add AssetRepository instance"
-oc apply -f assetrepository.yaml
+oc apply -f assetrepository.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Wait for AssetRepository instance Ready phase"

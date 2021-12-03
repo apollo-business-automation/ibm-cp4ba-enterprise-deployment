@@ -117,15 +117,22 @@ oc get pods -o name | grep business-performance-center | xargs oc delete
 
 echo
 echo ">>>>$(print_timestamp) Wait for BPC Deployment Available state"
-wait_for_k8s_resource_condition Deployment/${CR_META_NAME}-bai-business-performance-center Available
+wait_for_k8s_resource_condition Deployment/${CP4BA_CR_META_NAME}-bai-business-performance-center Available
 
 echo
 echo ">>>>$(print_timestamp) Operational Decision Manager (ODM) (decisions pattern)"
 
 echo
 echo ">>>>$(print_timestamp) Replace OIDC providers file with real values"
-sed -i "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" data/odm/oidc-providers.json
-sed -i "s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g" data/odm/oidc-providers.json
+sed -f - data/odm/oidc-providers.json > data/odm/oidc-providers.target.json << SED_SCRIPT
+s|{{PROJECT_NAME}}|${PROJECT_NAME}|g
+s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g
+SED_SCRIPT
+
+if [[ $CONTAINER_RUN_MODE == "true" ]]; then
+  oc project automagic
+  oc create cm odm-oidc-providers --from-file=oidc-providers.json=data/odm/oidc-providers.target.json -o yaml --dry-run=client | oc apply -f -
+fi
 
 echo
 echo ">>>>$(print_timestamp) Set Default servers credentials"
@@ -303,18 +310,21 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) Generate CP4BA post deployment steps"
-sed -i "s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g" postdeploy.md
-sed -i "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" postdeploy.md
-sed -i "s|{{OCP_API_ENDPOINT}}|${OCP_API_ENDPOINT}|g" postdeploy.md
-sed -i "s|{{OCP_CLUSTER_ADMIN}}|${OCP_CLUSTER_ADMIN}|g" postdeploy.md
-sed -i "s|{{OCP_CLUSTER_ADMIN_PASSWORD}}|${OCP_CLUSTER_ADMIN_PASSWORD}|g" postdeploy.md
-sed -i "s|{{OCP_CLUSTER_TOKEN}}|${OCP_CLUSTER_TOKEN}|g" postdeploy.md
-sed -i "s|{{MAIL_HOSTNAME}}|${MAIL_HOSTNAME}|g" postdeploy.md
-sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" postdeploy.md
+sed -f - postdeploy.md > postdeploy.target.md << SED_SCRIPT
+s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g"
+s|{{PROJECT_NAME}}|${PROJECT_NAME}|g"
+s|{{OCP_API_ENDPOINT}}|${OCP_API_ENDPOINT}|g"
+s|{{OCP_CLUSTER_ADMIN}}|${OCP_CLUSTER_ADMIN}|g"
+s|{{OCP_CLUSTER_ADMIN_PASSWORD}}|${OCP_CLUSTER_ADMIN_PASSWORD}|g"
+s|{{OCP_CLUSTER_TOKEN}}|${OCP_CLUSTER_TOKEN}|g"
+s|{{MAIL_HOSTNAME}}|${MAIL_HOSTNAME}|g"
+s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g"
+SED_SCRIPT
+
 
 if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   oc project automagic
-  oc create cm cp4ba-postdeploy --from-file=postdeploy.md=postdeploy.md -o yaml --dry-run=client | oc apply -f -
+  oc create cm cp4ba-postdeploy --from-file=postdeploy.md=postdeploy.target.md -o yaml --dry-run=client | oc apply -f -
 fi
 
 echo
