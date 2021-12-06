@@ -21,7 +21,7 @@ echo ">>>>Init env"
 
 echo
 echo ">>>>$(print_timestamp) Switch Project"
-oc project ${PROJECT_NAME}
+oc project ${CP4BA_PROJECT_NAME}
 
 echo
 echo ">>>>$(print_timestamp) Security"
@@ -32,20 +32,31 @@ oc create secret generic pm-tls-secret \
 --from-file=ca.crt=../global-ca/global-ca.crt
 
 echo
-echo ">>>>$(print_timestamp) Install Operator"
-oc apply -f subscription.yaml
+echo ">>>>$(print_timestamp) Update Subscription"
+sed -f - subscription.yaml > subscription.target.yaml << SED_SCRIPT
+s|{{PM_OPERATOR_CHANNEL}}|${PM_OPERATOR_CHANNEL}|g
+s|{{PM_STARTING_CSV}}|${PM_STARTING_CSV}|g
+SED_SCRIPT
 
 echo
-echo ">>>>$(print_timestamp) Wait for Operator Deployment to be Available"
-wait_for_k8s_resource_condition deployment/processmining-operator-controller-manager Available
+echo ">>>>$(print_timestamp) Install Operator"
+oc apply -f subscription.target.yaml
+
+manage_manual_operator processmining-subscription processmining-operator-controller-manager
 
 echo
 echo ">>>>$(print_timestamp) Wait for ProcessMining CRD to be Established"
 wait_for_k8s_resource_condition CustomResourceDefinition/processminings.processmining.ibm.com Established
 
 echo
+echo ">>>>$(print_timestamp) Update ProcessMining instance"
+sed -f - processmining.yaml > processmining.target.yaml << SED_SCRIPT
+s|{{PM_VERSION}}|${PM_VERSION}|g
+SED_SCRIPT
+
+echo
 echo ">>>>$(print_timestamp) Add ProcessMining instance"
-oc apply -f processmining.yaml
+oc apply -f processmining.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Wait for ProcessMining instance Ready state"

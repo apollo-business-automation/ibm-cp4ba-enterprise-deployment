@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: roundcubemail
-        image: roundcube/roundcubemail:1.4.x-fpm-alpine
+        image: "roundcube/roundcubemail:{{ROUNDCUBE_IMAGE_TAG}}"
         imagePullPolicy: ""
         env:
         - name: ROUNDCUBEMAIL_DB_TYPE

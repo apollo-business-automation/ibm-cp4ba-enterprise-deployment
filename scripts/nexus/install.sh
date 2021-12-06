@@ -28,20 +28,31 @@ echo ">>>>$(print_timestamp) Add OperatorGroup"
 oc apply -f operatorgroup.yaml
 
 echo
-echo ">>>>$(print_timestamp) Add Subscription"
-oc apply -f subscription.yaml
+echo ">>>>$(print_timestamp) Update Subscription"
+sed -f - subscription.yaml > subscription.target.yaml << SED_SCRIPT
+s|{{NEXUS_CHANNEL}}|${NEXUS_CHANNEL}|g
+s|{{NEXUS_STARTING_CSV}}|${NEXUS_STARTING_CSV}|g
+SED_SCRIPT
 
 echo
-echo ">>>>$(print_timestamp) Wait for Operator Deployment to be Available"
-wait_for_k8s_resource_condition deployment/nxrm-operator-certified Available
+echo ">>>>$(print_timestamp) Add Subscription"
+oc apply -f subscription.target.yaml
+
+manage_manual_operator nxrm-operator-certified nxrm-operator-certified
 
 echo
 echo ">>>>$(print_timestamp) Wait for NexusRepo CRD to be Established"
 wait_for_k8s_resource_condition CustomResourceDefinition/nexusrepos.sonatype.com Established
 
 echo
+echo ">>>>$(print_timestamp) Update NexusRepo instance"
+sed -f - nexusrepo.yaml > nexusrepo.target.yaml << SED_SCRIPT
+s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
+SED_SCRIPT
+
+echo
 echo ">>>>$(print_timestamp) Add NexusRepo instance"
-oc apply -f nexusrepo.yaml
+oc apply -f nexusrepo.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Wait for nexus Deployment to be Available"
@@ -52,7 +63,6 @@ echo ">>>>$(print_timestamp) Create nexus Route"
 oc create route edge nexus --hostname=nexus.${OCP_APPS_ENDPOINT} \
 --service=nexusrepo-sonatype-nexus-service --insecure-policy=Redirect --cert=../global-ca/wildcard.crt \
 --key=../global-ca/wildcard.key --ca-cert=../global-ca/global-ca.crt
-
 
 echo
 echo ">>>>$(print_timestamp) Wait for Route to be Admitted"
@@ -134,18 +144,20 @@ curl --insecure --request PUT "https://nexus.${OCP_APPS_ENDPOINT}/service/rest/v
 
 echo
 echo ">>>>$(print_timestamp) Replace maven settings file with real values"
-sed -i "s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g" maven-settings.xml
-sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" maven-settings.xml
+sed -f - maven-settings.yaml > maven-settings.target.yaml << SED_SCRIPT
+s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g
+s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Apply maven settings.xml"
 mkdir -p ~/.m2
 mv -f ~/.m2/settings.xml ~/.m2/settings.xml.bak
-cp maven-settings.xml ~/.m2/settings.xml
+cp maven-settings.target.xml ~/.m2/settings.xml
 
 if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   oc project automagic
-  oc create cm nexus-maven-settings --from-file=settings.xml=maven-settings.xml -o yaml --dry-run=client | oc apply -f -
+  oc create cm nexus-maven-settings --from-file=settings.xml=maven-settings.target.xml -o yaml --dry-run=client | oc apply -f -
 fi
 
 echo

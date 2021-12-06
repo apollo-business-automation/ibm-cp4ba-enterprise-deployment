@@ -4,4 +4,4 @@ metadata:
   name: operatorgroup
 spec:
   targetNamespaces:
-    - "{{PROJECT_NAME}}"
+    - "{{CP4BA_PROJECT_NAME}}"

@@ -3,8 +3,9 @@ kind: Subscription
 metadata:
   name: nxrm-operator-certified
 spec:
-  channel: stable
-  installPlanApproval: Automatic
+  channel: "{{NEXUS_CHANNEL}}"
+  installPlanApproval: Manual
   name: nxrm-operator-certified
   source: certified-operators
   sourceNamespace: openshift-marketplace
+  startingCSV: "{{NEXUS_STARTING_CSV}}"

@@ -23,7 +23,7 @@ echo ">>>>Init env"
 
 echo
 echo ">>>>$(print_timestamp) Create Project"
-oc new-project ${PROJECT_NAME}
+oc new-project ${CP4BA_PROJECT_NAME}
 
 echo
 echo ">>>>$(print_timestamp) Update Operator shared and log PVCs"
@@ -56,7 +56,7 @@ oc create secret docker-registry ibm-entitlement-key --docker-username=cp --dock
 echo
 echo ">>>>$(print_timestamp) Update OperatorGroup"
 sed -f - data/operator/operatorgroup.yaml > data/operator/operatorgroup.target.yaml << SED_SCRIPT
-s|{{PROJECT_NAME}}|${PROJECT_NAME}|g
+s|{{CP4BA_PROJECT_NAME}}|${CP4BA_PROJECT_NAME}|g
 SED_SCRIPT
 
 echo

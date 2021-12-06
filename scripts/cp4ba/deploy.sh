@@ -23,7 +23,7 @@ echo ">>>>Init env"
 
 echo
 echo ">>>>$(print_timestamp) Switch Project"
-oc project ${PROJECT_NAME}
+oc project ${CP4BA_PROJECT_NAME}
 
 echo
 echo ">>>>$(print_timestamp) Make helper scripts executable"

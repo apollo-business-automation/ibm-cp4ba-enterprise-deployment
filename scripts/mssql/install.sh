@@ -26,21 +26,34 @@ echo ">>>>$(print_timestamp) Create Project"
 oc new-project mssql
 
 echo
+echo ">>>>$(print_timestamp) Update Secret"
+sed -f - secret.yaml > secret.target.yaml << SED_SCRIPT
+s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+SED_SCRIPT
+
+echo
 echo ">>>>$(print_timestamp) Create Secret"
-sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" secret.yaml
-oc apply -f secret.yaml
+oc apply -f secret.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Update PVC"
-sed -i "s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g" pvc.yaml
+sed -f - pvc.yaml > pvc.target.yaml << SED_SCRIPT
+s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Create pvc"
-oc apply -f pvc.yaml
+oc apply -f pvc.target.yaml
+
+echo
+echo ">>>>$(print_timestamp) Update Deployment"
+sed -f - deployment.yaml > deployment.target.yaml << SED_SCRIPT
+s|{{MSSQL_IMAGE_TAG}}|${MSSQL_IMAGE_TAG}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Create Deployment"
-oc apply -f deployment.yaml
+oc apply -f deployment.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Wait for mssql Deployment to be Available"

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: docker-mailserver
-          image: mailserver/docker-mailserver:10.0.0
+          image: "mailserver/docker-mailserver:{{MAIL_IMAGE_TAG}}"
           imagePullPolicy: IfNotPresent
           securityContext:
             capabilities:

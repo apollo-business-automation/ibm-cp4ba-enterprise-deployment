@@ -5,7 +5,7 @@ metadata:
 spec:
   license:
     accept: true
-  version: 1.1.0
+  version: "{{RPA_VERSION}}"
   tls:
     issuerRef:
       name: iaf-issuer

@@ -44,7 +44,7 @@ echo
 echo ">>>>$(print_timestamp) Update akhq helm values"
 sed -f - values.yaml > values.target.yaml << SED_SCRIPT
 s|{{TRUST_STORE}}|${trustore_base64}|g
-s|{{PROJECT_NAME}}|${PROJECT_NAME}|g
+s|{{CP4BA_PROJECT_NAME}}|${CP4BA_PROJECT_NAME}|g
 s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g
 s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
 SED_SCRIPT

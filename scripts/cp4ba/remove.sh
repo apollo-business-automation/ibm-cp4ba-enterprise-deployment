@@ -21,11 +21,11 @@ echo ">>>>Init env"
 
 echo
 echo ">>>>$(print_timestamp) Force delete Project cp4ba"
-./force-uninstall.sh -n ${PROJECT_NAME}
+./force-uninstall.sh -n ${CP4BA_PROJECT_NAME}
 
 echo
 echo ">>>>$(print_timestamp) Wait for project cp4ba deletion"
-wait_for_k8s_resource_disappear project/${PROJECT_NAME}
+wait_for_k8s_resource_disappear project/${CP4BA_PROJECT_NAME}
 
 echo
 echo ">>>>$(print_timestamp) Remove DBs from DB2MC"

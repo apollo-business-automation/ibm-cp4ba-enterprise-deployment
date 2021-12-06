@@ -23,13 +23,13 @@ echo ">>>>Init env"
 
 echo
 echo ">>>>$(print_timestamp) Switch Project"
-oc project ${PROJECT_NAME}
+oc project ${CP4BA_PROJECT_NAME}
 
 echo
 echo ">>>>$(print_timestamp) Register external UMS access"
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=apis-from-command-line-application
 # Used for BAI and ADS.
-curl --insecure --request POST "https://ums-sso-${PROJECT_NAME}.${OCP_APPS_ENDPOINT}/oidc/endpoint/ums/registration" \
+curl --insecure --request POST "https://ums-sso-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/oidc/endpoint/ums/registration" \
 --header 'Content-Type: application/json' \
 --user "umsadmin:${UNIVERSAL_PASSWORD}" \
 --data-raw '{
@@ -79,7 +79,7 @@ ZEN_ACCESS_TOKEN=`oc exec deployment/zen-core -- curl -k -X POST https://zen-cor
 | jq -r '.token'`
 
 # Create cpadmin user
-curl -k -X POST https://cpd-${PROJECT_NAME}.${OCP_APPS_ENDPOINT}/usermgmt/v1/user \
+curl -k -X POST https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/usermgmt/v1/user \
 --header 'Content-Type: application/json' \
 --header "Authorization: Bearer $ZEN_ACCESS_TOKEN" \
 --data-raw '{
@@ -96,14 +96,14 @@ echo ">>>>$(print_timestamp) Business Automation Insights (BAI) (foundation patt
 echo
 echo ">>>>$(print_timestamp) Get UMS access token"
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=apis-from-command-line-application
-TOKEN=`curl --insecure --request POST "https://ums-sso-${PROJECT_NAME}.${OCP_APPS_ENDPOINT}/oidc/endpoint/ums/token" \
+TOKEN=`curl --insecure --request POST "https://ums-sso-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/oidc/endpoint/ums/token" \
 --user "externalrest:${UNIVERSAL_PASSWORD}" \
 --data "grant_type=password&scope=openid&username=umsadmin&password=${UNIVERSAL_PASSWORD}" | jq -r '.access_token'`
 
 echo
 echo ">>>>$(print_timestamp) Update Workforce Insights Secret"
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=resource-configuring-custom-secrets#custom-bpc-workforce-secret   
-curl --insecure --request GET https://pfs-${PROJECT_NAME}.${OCP_APPS_ENDPOINT}/rest/bpm/federated/v1/systems \
+curl --insecure --request GET https://pfs-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/rest/bpm/federated/v1/systems \
 --header "Authorization: Bearer $TOKEN" \
 | jq '.systems | map(. | select(.systemType=="SYSTEM_TYPE_WLE")) | map(. |= {"systemID", "hostname"}) | [.[] | .["bpmSystemId"] = .systemID | .["url"] = ("https://"+.hostname+":9443") | .["username"] = "cpadmin" | .["password"] = "'${UNIVERSAL_PASSWORD}'" | del(.systemID,.hostname)]' \
 > data/bai/workforce-insights-configuration.json
@@ -125,7 +125,7 @@ echo ">>>>$(print_timestamp) Operational Decision Manager (ODM) (decisions patte
 echo
 echo ">>>>$(print_timestamp) Replace OIDC providers file with real values"
 sed -f - data/odm/oidc-providers.json > data/odm/oidc-providers.target.json << SED_SCRIPT
-s|{{PROJECT_NAME}}|${PROJECT_NAME}|g
+s|{{CP4BA_PROJECT_NAME}}|${CP4BA_PROJECT_NAME}|g
 s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g
 SED_SCRIPT
 
@@ -137,17 +137,17 @@ fi
 echo
 echo ">>>>$(print_timestamp) Set Default servers credentials"
 # Get UMS access token
-TOKEN=`curl --insecure --request POST "https://ums-sso-${PROJECT_NAME}.${OCP_APPS_ENDPOINT}/oidc/endpoint/ums/token" \
+TOKEN=`curl --insecure --request POST "https://ums-sso-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/oidc/endpoint/ums/token" \
 --user "externalrest:${UNIVERSAL_PASSWORD}" \
 --data "grant_type=password&scope=openid&username=umsadmin&password=${UNIVERSAL_PASSWORD}" | jq -r '.access_token'`
 
 # Get Servers & Update credentials
-curl --insecure --request GET "https://odm-decisioncenter-${PROJECT_NAME}.${OCP_APPS_ENDPOINT}/decisioncenter-api/v1/servers" \
+curl --insecure --request GET "https://odm-decisioncenter-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/decisioncenter-api/v1/servers" \
 --header "Authorization: Bearer $TOKEN" | \
 jq -c '.elements[]' | while read i; do
 SERVER_ID=`echo $i | jq -r '.id'`;
 echo $i | jq -c '.loginServer = "cpadmin" | .loginPassword = "'${UNIVERSAL_PASSWORD}'"' | \
-curl --insecure --request POST  "https://odm-decisioncenter-${PROJECT_NAME}.${OCP_APPS_ENDPOINT}/decisioncenter-api/v1/servers/$SERVER_ID" \
+curl --insecure --request POST  "https://odm-decisioncenter-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/decisioncenter-api/v1/servers/$SERVER_ID" \
 --header "Authorization: Bearer $TOKEN" \
 --header "Content-Type: application/json" \
 --data-binary @-;
@@ -179,17 +179,17 @@ curl --insecure --request POST "https://gitea.${OCP_APPS_ENDPOINT}/api/v1/orgs" 
 echo
 echo ">>>>$(print_timestamp) Download ADS Maven plugins and push them to Nexus"
 # Get UMS access token
-TOKEN=`curl --insecure --request POST "https://ums-sso-${PROJECT_NAME}.${OCP_APPS_ENDPOINT}/oidc/endpoint/ums/token" \
+TOKEN=`curl --insecure --request POST "https://ums-sso-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/oidc/endpoint/ums/token" \
 --user "externalrest:${UNIVERSAL_PASSWORD}" \
 --data "grant_type=password&scope=openid&username=umsadmin&password=${UNIVERSAL_PASSWORD}" | jq -r '.access_token'`
 
 # Download maven plugins definition
-curl --insecure --request GET "https://cpd-${PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/index.json" \
+curl --insecure --request GET "https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/index.json" \
 --header "Authorization: Bearer $TOKEN" --output data/ads/index.json
 
 # Download and push annotations_maven_plugin
 JAR_PATH=$(cat data/ads/index.json | jq -r '.resources.annotations_maven_plugin.path')
-curl --insecure https://cpd-${PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/$JAR_PATH --output data/ads/$JAR_PATH \
+curl --insecure https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/$JAR_PATH --output data/ads/$JAR_PATH \
 --header "Authorization: Bearer $TOKEN"
 JAR_SUB="${JAR_PATH:0:(-4)}"  
 ARTIFACT_ID=`echo $JAR_SUB | cut -d "_" -f 1`
@@ -201,7 +201,7 @@ mvn --s ~/.m2/settings.xml deploy:deploy-file -Dmaven.wagon.http.ssl.insecure=tr
 
 # Download and push build_command_maven_plugin
 JAR_PATH=$(cat data/ads/index.json | jq -r '.resources.build_command_maven_plugin.path')
-curl --insecure https://cpd-${PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/$JAR_PATH -o data/ads/$JAR_PATH \
+curl --insecure https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/$JAR_PATH -o data/ads/$JAR_PATH \
 --header "Authorization: Bearer $TOKEN"
 JAR_SUB="${JAR_PATH:0:(-4)}"  
 ARTIFACT_ID=`echo $JAR_SUB | cut -d "_" -f 1`
@@ -213,7 +213,7 @@ mvn --s ~/.m2/settings.xml deploy:deploy-file -Dmaven.wagon.http.ssl.insecure=tr
 
 # Download and push import_maven_plugin
 JAR_PATH=$(cat data/ads/index.json | jq -r '.resources.import_maven_plugin.path')
-curl --insecure https://cpd-${PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/$JAR_PATH -o data/ads/$JAR_PATH \
+curl --insecure https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/$JAR_PATH -o data/ads/$JAR_PATH \
 --header "Authorization: Bearer $TOKEN"
 JAR_SUB="${JAR_PATH:0:(-4)}"  
 ARTIFACT_ID=`echo $JAR_SUB | cut -d "_" -f 1`
@@ -225,7 +225,7 @@ mvn --s ~/.m2/settings.xml deploy:deploy-file -Dmaven.wagon.http.ssl.insecure=tr
 
 # Download and push engine_maven_plugin
 JAR_PATH=$(cat data/ads/index.json | jq -r '.resources.engine_maven_plugin.path')
-curl --insecure https://cpd-${PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/$JAR_PATH -o data/ads/$JAR_PATH \
+curl --insecure https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/$JAR_PATH -o data/ads/$JAR_PATH \
 --header "Authorization: Bearer $TOKEN"
 JAR_SUB="${JAR_PATH:0:(-4)}"  
 ARTIFACT_ID=`echo $JAR_SUB | cut -d "_" -f 1`
@@ -237,7 +237,7 @@ mvn --s ~/.m2/settings.xml deploy:deploy-file -Dmaven.wagon.http.ssl.insecure=tr
 
 # Download and push ml_integration_maven_plugin
 JAR_PATH=$(cat data/ads/index.json | jq -r '.resources.ml_integration_maven_plugin.path')
-curl --insecure https://cpd-${PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/$JAR_PATH -o data/ads/$JAR_PATH \
+curl --insecure https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/$JAR_PATH -o data/ads/$JAR_PATH \
 --header "Authorization: Bearer $TOKEN"
 JAR_SUB="${JAR_PATH:0:(-4)}"  
 ARTIFACT_ID=`echo $JAR_SUB | cut -d "_" -f 1`
@@ -312,7 +312,7 @@ echo
 echo ">>>>$(print_timestamp) Generate CP4BA post deployment steps"
 sed -f - postdeploy.md > postdeploy.target.md << SED_SCRIPT
 s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g"
-s|{{PROJECT_NAME}}|${PROJECT_NAME}|g"
+s|{{CP4BA_PROJECT_NAME}}|${CP4BA_PROJECT_NAME}|g"
 s|{{OCP_API_ENDPOINT}}|${OCP_API_ENDPOINT}|g"
 s|{{OCP_CLUSTER_ADMIN}}|${OCP_CLUSTER_ADMIN}|g"
 s|{{OCP_CLUSTER_ADMIN_PASSWORD}}|${OCP_CLUSTER_ADMIN_PASSWORD}|g"

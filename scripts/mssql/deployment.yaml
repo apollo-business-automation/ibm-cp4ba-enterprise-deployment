@@ -15,7 +15,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
         - name: mssql
-          image: mcr.microsoft.com/mssql/rhel/server:2019-latest
+          image: "mcr.microsoft.com/mssql/rhel/server:{{MSSQL_IMAGE_TAG}}"
           ports:
             - name: db
               containerPort: 1433

@@ -162,7 +162,7 @@ wait_for_cp4ba() {
 copy_cp4ba_operator_log() {
   echo
   echo ">>>>$(print_timestamp) Copy failed tasks from CP4BA Operator log"
-  oc logs -n ${PROJECT_NAME} deployment/ibm-cp4a-operator | grep -B3 -A15 "playbook task failed" | head -c 950K > cp4ba-operator.log
+  oc logs -n ${CP4BA_PROJECT_NAME} deployment/ibm-cp4a-operator | grep -B3 -A15 "playbook task failed" | head -c 950K > cp4ba-operator.log
 
   if [[ $CONTAINER_RUN_MODE == "true" ]]; then
     oc project automagic

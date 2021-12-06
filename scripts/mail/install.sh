@@ -52,20 +52,33 @@ oc create secret generic tls --from-file=tls.crt=../global-ca/mailserver.crt \
 
 echo
 echo ">>>>$(print_timestamp) Update PVC"
-yq w -i pvc.yaml spec.storageClassName "${STORAGE_CLASS_NAME}"
+sed -f - pvc.yaml > pvc.target.yaml << SED_SCRIPT
+s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Create pvcs"
-oc apply -f pvc.yaml
+oc apply -f pvc.target.yaml
+
+echo
+echo ">>>>$(print_timestamp) Update configmaps"
+sed -f - configmaps.yaml > configmaps.target.yaml << SED_SCRIPT
+s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Create configmaps"
-sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" configmaps.yaml
-oc apply -f configmaps.yaml
+oc apply -f configmaps.target.yaml
+
+echo
+echo ">>>>$(print_timestamp) Update deployment"
+sed -f - deployment.yaml > deployment.target.yaml << SED_SCRIPT
+s|{{MAIL_IMAGE_TAG}}|${MAIL_IMAGE_TAG}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Create deployment"
-oc apply -f deployment.yaml
+oc apply -f deployment.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Wait for mailserver Deployment to be Available"

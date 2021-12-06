@@ -40,7 +40,7 @@ secrets:
     connections:
       iaf-kafka:
         properties:
-          bootstrap.servers: "iaf-system-kafka-bootstrap-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}:443"
+          bootstrap.servers: "iaf-system-kafka-bootstrap-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}:443"
           security.protocol: SASL_SSL
           sasl.mechanism: SCRAM-SHA-512
           sasl.jaas.config: org.apache.kafka.common.security.scram.ScramLoginModule required username="cpadmin" password='{{UNIVERSAL_PASSWORD}}';
@@ -49,7 +49,7 @@ secrets:
         # IAF avro not supported  
         #schema-registry:
         #  type: "confluent"
-        #  url: "https://iaf-system-apicurio-{{PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}"
+        #  url: "https://iaf-system-apicurio-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}"
         #  basic-auth-username: cpadmin
         #  basic-auth-password: '{{UNIVERSAL_PASSWORD}}'
         #  properties:

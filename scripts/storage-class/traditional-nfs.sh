@@ -48,9 +48,11 @@ chmod -R 777 /nfs/storage
 oc new-project nfs-client-provisioner
 oc apply -f rbac.yaml
 oc adm policy add-scc-to-user hostmount-anyuid system:serviceaccount:nfs-client-provisioner:nfs-client-provisioner
-yq w -i deployment.yaml spec.template.spec.containers[0].env[1].value "${NFS_HOSTNAME}"
-yq w -i deployment.yaml spec.template.spec.volumes[0].nfs.server "${NFS_HOSTNAME}"
-oc apply -f deployment.yaml
+sed -f - deployment.yaml > deployment.target.yaml << SED_SCRIPT
+s|{{NFS_HOSTNAME}}|${NFS_HOSTNAME}|g
+SED_SCRIPT
+
+oc apply -f deployment.target.yaml
 oc apply -f storageclass.yaml
 
 echo

@@ -35,16 +35,20 @@ oc create secret generic wildcard --from-file=cert.pem=../global-ca/wildcard.crt
 
 echo
 echo ">>>>$(print_timestamp) Update PVC"
-yq w -i pvc.yaml spec.storageClassName "${STORAGE_CLASS_NAME}"
+sed -f - pvc.yaml > pvc.target.yaml << SED_SCRIPT
+s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Create PVC"
-oc apply -f pvc.yaml
+oc apply -f pvc.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Deploy Deployment"
-sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" deployment.yaml
-oc apply -f deployment.yaml
+sed -f - deployment.yaml > deployment.target.yaml << SED_SCRIPT
+s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+SED_SCRIPT
+oc apply -f deployment.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Wait for Deployment to be Available"

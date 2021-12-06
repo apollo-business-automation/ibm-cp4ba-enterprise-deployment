@@ -21,13 +21,15 @@ echo ">>>>Init env"
 
 echo
 echo ">>>>$(print_timestamp) Generate Usage documentation"
-sed -i "s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g" usage.md
-sed -i "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" usage.md
-sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" usage.md
+sed -f - usage.md > usage.target.md << SED_SCRIPT
+s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g
+s|{{CP4BA_PROJECT_NAME}}|${CP4BA_PROJECT_NAME}|g
+s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+SED_SCRIPT
 
 if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   oc project automagic
-  oc create cm usage --from-file=usage.md=usage.md -o yaml --dry-run=client | oc apply -f -
+  oc create cm usage --from-file=usage.md=usage.target.md -o yaml --dry-run=client | oc apply -f -
 fi
 
 echo

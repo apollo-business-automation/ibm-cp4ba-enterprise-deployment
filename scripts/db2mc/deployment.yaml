@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: db2mc
-          image: ibmcom/db2console:3.1.5
+          image: "ibmcom/db2console:{{DB2MC_IMAGE_TAG}}"
           ports:
             - containerPort: 8443
           volumeMounts:

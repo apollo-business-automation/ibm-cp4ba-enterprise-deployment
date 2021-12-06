@@ -64,6 +64,7 @@ echo
 echo ">>>>$(print_timestamp) Update DB2uCluster CR"
 sed -f - db2ucluster.yaml > db2ucluster.target.yaml << SED_SCRIPT
 s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
+s|{{DB2_VERSION}}|${DB2_VERSION}|g
 s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
 SED_SCRIPT
 

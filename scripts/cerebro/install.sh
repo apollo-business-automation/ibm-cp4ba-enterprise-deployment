@@ -32,7 +32,7 @@ oc adm policy add-scc-to-user anyuid system:serviceaccount:cerebro:default
 echo
 echo ">>>>$(print_timestamp) Update ConfigMap"
 sed -f - configmap.yaml > configmap.target.yaml << SED_SCRIPT
-s|{{PROJECT_NAME}}|${PROJECT_NAME}|g
+s|{{CP4BA_PROJECT_NAME}}|${CP4BA_PROJECT_NAME}|g
 s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
 SED_SCRIPT
 
@@ -43,7 +43,7 @@ oc apply -f configmap.target.yaml
 echo
 echo ">>>>$(print_timestamp) Update Deployment"
 sed -f - deployment.yaml > deployment.target.yaml << SED_SCRIPT
-s|{{CEREBRO_VERSION}}|${CEREBRO_VERSION}|g
+s|{{CEREBRO_IMAGE_TAG}}|${CEREBRO_IMAGE_TAG}|g
 SED_SCRIPT
 
 echo

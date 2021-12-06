@@ -27,7 +27,6 @@ updateStrategy:
 image:
   # From repository https://github.com/osixia/docker-openldap
   repository: osixia/openldap
-  tag: 1.5.0
   pullPolicy: IfNotPresent
   # pullSecret: harbor
 

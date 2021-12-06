@@ -23,15 +23,20 @@ echo ">>>>Init env"
 
 echo
 echo ">>>>$(print_timestamp) Switch Project"
-oc project ${PROJECT_NAME}
+oc project ${CP4BA_PROJECT_NAME}
+
+echo
+echo ">>>>$(print_timestamp) Update Subscription"
+sed -f - subscription.yaml > subscription.target.yaml << SED_SCRIPT
+s|{{RPA_OPERATOR_CHANNEL}}|${RPA_OPERATOR_CHANNEL}|g
+s|{{RPA_STARTING_CSV}}|${RPA_STARTING_CSV}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Install Operator"
-oc apply -f subscription.yaml
+oc apply -f subscription.target.yaml
 
-echo
-echo ">>>>$(print_timestamp) Wait for Operator Deployment to be Available"
-wait_for_k8s_resource_condition deployment/ibm-rpa-operator-controller-manager Available
+manage_manual_operator rpa-subscription ibm-rpa-operator-controller-manager
 
 echo
 echo ">>>>$(print_timestamp) Wait for ProcessMining CRD to be Established"
@@ -94,17 +99,22 @@ curl -k -X POST --header "Authorization: bearer $ACCESS_TOKEN" \
 
 echo
 echo ">>>>$(print_timestamp) Update Secrets"
-sed -i "s|{{MSSQL_HOSTNAME}}|${MSSQL_HOSTNAME}|g" secrets.yaml
+sed -f - secrets.yaml > secrets.target.yaml << SED_SCRIPT
+s|{{MSSQL_HOSTNAME}}|${MSSQL_HOSTNAME}|g
+s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Create Secrets"
-sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" secrets.yaml
-oc apply -f secrets.yaml
+oc apply -f secrets.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Update RoboticProcessAutomation instance"
-sed -i "s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g" roboticprocessautomation.yaml
-sed -i "s|{{MAIL_HOSTNAME}}|${MAIL_HOSTNAME}|g" roboticprocessautomation.yaml
+sed -f - roboticprocessautomation.yaml > roboticprocessautomation.target.yaml << SED_SCRIPT
+s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
+s|{{MAIL_HOSTNAME}}|${MAIL_HOSTNAME}|g
+SED_SCRIPT
+
 
 if [ "$DEPLOYMENT_PLATFORM" = "ROKS" ]; then
 echo
@@ -115,7 +125,7 @@ fi
 
 echo
 echo ">>>>$(print_timestamp) Add RoboticProcessAutomation instance"
-oc apply -f roboticprocessautomation.yaml
+oc apply -f roboticprocessautomation.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Wait for RoboticProcessAutomation instance Ready state"
@@ -134,13 +144,15 @@ wait_for_k8s_resource_condition deployment/rpa-apiserver-rpa Available ${DEFAULT
 
 echo
 echo ">>>>$(print_timestamp) Generate RPA post deployment steps"
-sed -i "s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g" postdeploy.md
-sed -i "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" postdeploy.md
-sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" postdeploy.md
+sed -f - postdeploy.yaml > postdeploy.target.yaml << SED_SCRIPT
+s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g
+s|{{CP4BA_PROJECT_NAME}}|${CP4BA_PROJECT_NAME}|g
+s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+SED_SCRIPT
 
 if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   oc project automagic
-  oc create cm rpa-postdeploy --from-file=postdeploy.md=postdeploy.md -o yaml --dry-run=client | oc apply -f -
+  oc create cm rpa-postdeploy --from-file=postdeploy.md=postdeploy.target.md -o yaml --dry-run=client | oc apply -f -
 fi
 
 echo

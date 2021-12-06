@@ -75,7 +75,7 @@ data:
     # A list of known hosts
     hosts = [
       {
-        host = "https://iaf-system-elasticsearch-es.{{PROJECT_NAME}}:9200"
+        host = "https://iaf-system-elasticsearch-es.{{CP4BA_PROJECT_NAME}}:9200"
         name = "IAF Elastic"
         auth = {
           username = "elasticsearch-admin"

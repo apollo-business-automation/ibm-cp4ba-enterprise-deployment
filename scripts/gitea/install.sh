@@ -37,13 +37,16 @@ helm repo update
 
 echo
 echo ">>>>$(print_timestamp) Update gitea helm values"
-yq w -i values.yaml gitea.ldap.host "${LDAP_HOSTNAME}"
-yq w -i values.yaml gitea.config.server.ROOT_URL "https://gitea.${OCP_APPS_ENDPOINT}"
-sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" values.yaml
+sed -f - values.yaml > values.target.yaml << SED_SCRIPT
+s|{{LDAP_HOSTNAME}}|${LDAP_HOSTNAME}|g
+s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g
+s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Install helm release"
-helm install gitea gitea-charts/gitea --values values.yaml --version 4.0.1
+helm install gitea gitea-charts/gitea --values values.target.yaml --version ${GITEA_CHART_VERSION}
 
 echo
 echo ">>>>$(print_timestamp) Create gitea Route"

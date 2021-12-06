@@ -54,7 +54,7 @@ spec:
             failureThreshold: 30
           env:
             - name: ELASTICSEARCH_HOSTS
-              value: 'https://iaf-system-elasticsearch-es.{{PROJECT_NAME}}:9200'
+              value: 'https://iaf-system-elasticsearch-es.{{CP4BA_PROJECT_NAME}}:9200'
             - name: ELASTICSEARCH_USERNAME
               value: 'elasticsearch-admin'
             - name: ELASTICSEARCH_PASSWORD
@@ -68,7 +68,6 @@ spec:
               containerPort: 5601
               protocol: TCP
           imagePullPolicy: Always
-          image: >-
-            docker.elastic.co/kibana/kibana-oss:7.8.1
+          image: "docker.elastic.co/kibana/kibana-oss:{{KIBANA_IMAGE_TAG}}"
   strategy:
     type: Recreate

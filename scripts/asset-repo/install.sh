@@ -21,7 +21,7 @@ echo ">>>>Init env"
 
 echo
 echo ">>>>$(print_timestamp) Switch Project"
-oc project ${PROJECT_NAME}
+oc project ${CP4BA_PROJECT_NAME}
 
 echo
 echo ">>>>$(print_timestamp) Update Subscription"
@@ -74,7 +74,7 @@ ZEN_ACCESS_TOKEN=`oc exec deployment/zen-core -- curl -k -X POST https://zen-cor
 | jq -r '.token'`
 
 # Update user roles
-curl -k -X PUT https://cpd-${PROJECT_NAME}.${OCP_APPS_ENDPOINT}/usermgmt/v1/user/cpadmin?add_roles=true \
+curl -k -X PUT https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/usermgmt/v1/user/cpadmin?add_roles=true \
 --header 'Content-Type: application/json' \
 --header "Authorization: Bearer $ZEN_ACCESS_TOKEN" \
 --data-raw '{
