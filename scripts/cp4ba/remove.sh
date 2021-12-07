@@ -2,7 +2,7 @@
 
 echo
 echo ">>>>Source internal variables"
-. ../inernal-variables.sh
+. ../internal-variables.sh
 
 echo
 echo ">>>>Source variables"
@@ -107,6 +107,19 @@ oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/removeLdapUser.py -u bados
 echo
 echo ">>>>$(print_timestamp) Delete DB user bawaut"
 oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/removeLdapUser.py -u bawaut
+
+echo
+echo ">>>>$(print_timestamp) Delete Mongo DBs"
+oc rsh -n mongodb deployment/mongodb << EOSSH
+mongo --username root --password ${UNIVERSAL_PASSWORD} --authenticationDatabase admin <<EOF
+use ads
+db.dropDatabase()
+use ads-git
+db.dropDatabase()
+use ads-history
+db.dropDatabase()
+EOF
+EOSSH
 
 echo
 echo ">>>>$(print_timestamp) Remove ADS organization in Gitea if empty"

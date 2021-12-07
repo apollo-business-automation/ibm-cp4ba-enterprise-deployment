@@ -6,9 +6,11 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   cp /config/variables.sh variables.sh
 fi
 
+find . -type f \( -iname \*.sh \) | xargs chmod u+x
+
 echo
 echo ">>>>Source internal variables"
-. inernal-variables.sh
+. internal-variables.sh
 
 echo
 echo ">>>>Source variables"
@@ -22,8 +24,6 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
     cp /config/global-ca.key global-ca/global-ca.key
   fi
 fi
-
-find . -type f \( -iname \*.sh \) | xargs chmod u+x
 
 echo
 echo ">>>>Source functions"
@@ -51,10 +51,6 @@ if [[ $ACTION == "install" ]]; then
   echo ">>>>Configure automagic resiliency with PodDisruptionBudget"
   oc project automagic
   oc apply -f automagic/poddisruptionbudget.yaml
-
-  cd storage-class
-  ./make-default.sh
-  cd ..
 
   if [[ $CONTAINER_RUN_MODE == "true" ]]; then
     ./install.sh

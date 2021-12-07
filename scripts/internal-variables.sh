@@ -48,7 +48,7 @@ DB2_VERSION=11.5.6.0-cn5
 DB2MC_IMAGE_TAG=3.1.6.1
 
 # Gitea #
-GITEA_CHART_VERSION=5.0.0
+GITEA_CHART_VERSION=4.1.1
 
 # Kibana #
 KIBANA_IMAGE_TAG=7.8.1
@@ -81,16 +81,26 @@ RPA_OPERATOR_CHANNEL=v1.1
 RPA_STARTING_CSV=ibm-automation-rpa.v1.1.1
 RPA_VERSION=1.1.0
 
+# MongoDB #
+MONGODB_CHART_VERSION=8.3.2 # specific version bringing 4.2 version for ADS, ADP
+MONGODB_IMAGE_TAG=4.2.10-debian-10-r45
+
+# Mongo Express #
+MONGO_EXPRESS_IMAGE_TAG=0.54.0
+
 # Common #
 
 ## Hostname of server where DB2 is running
 DB2_HOSTNAME=c-db2ucluster-db2u.db2.svc.cluster.local
+#DB2_HOSTNAME=c-db2ucluster-db2u.db2
 ## Hostname of server where MSSQL is running
 MSSQL_HOSTNAME=mssql.mssql.svc.cluster.local
 ## Hostname of server where LDAP is running
 LDAP_HOSTNAME=openldap-openldap-stack-ha.openldap.svc.cluster.local
 ## Hostname of server where SMTP is running
 MAIL_HOSTNAME=mailserver.mail.svc.cluster.local
+## Hostname of server where MongoDB is running
+MONGODB_HOSTNAME=mongodb.mongodb.svc.cluster.local
 
 # Attempts & delays #
 

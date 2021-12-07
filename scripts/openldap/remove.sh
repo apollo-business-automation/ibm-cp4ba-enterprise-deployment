@@ -9,7 +9,7 @@ echo ">>>>$(print_timestamp) OpenLDAP + phpLDAPadmin remove started"
 
 echo
 echo ">>>>Source internal variables"
-. ../inernal-variables.sh
+. ../internal-variables.sh
 
 echo
 echo ">>>>Source variables"

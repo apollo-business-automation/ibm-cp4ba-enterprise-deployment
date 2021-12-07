@@ -5,7 +5,7 @@
 
 echo
 echo ">>>>Source internal variables"
-. ../inernal-variables.sh
+. ../internal-variables.sh
 
 echo
 echo ">>>>Source variables"
@@ -74,9 +74,12 @@ echo
 echo ">>>>$(print_timestamp) Switch to Project ibm-common-services"
 oc project ibm-common-services
 
-echo
-echo ">>>>$(print_timestamp) Wait for Operator Deployment to be Available"
-wait_for_k8s_resource_condition deployment/operand-deployment-lifecycle-manager Available ${DEFAULT_ATTEMPTS_1} ${DEFAULT_DELAY_1}
+manage_manual_operator ibm-common-service-operator ibm-common-service-operator
+manage_manual_operator operand-deployment-lifecycle-manager-app operand-deployment-lifecycle-manager
+
+#echo
+#echo ">>>>$(print_timestamp) Wait for Operator Deployment to be Available"
+#wait_for_k8s_resource_condition deployment/operand-deployment-lifecycle-manager Available ${DEFAULT_ATTEMPTS_1} ${DEFAULT_DELAY_1}
 
 echo
 echo ">>>>$(print_timestamp) Wait for OperandConfig CRD to be Established"
@@ -99,6 +102,9 @@ oc patch operandconfig common-service --type json -p '[{"op":"replace","path":"/
 echo
 echo ">>>>$(print_timestamp) Apply OperandRequest instance"
 oc apply -f operandrequest.yaml
+
+manage_manual_operator ibm-commonui-operator ibm-commonui-operator
+manage_manual_operator ibm-ingress-nginx-operator ibm-ingress-nginx-operator
 
 echo
 echo ">>>>$(print_timestamp) Wait for OperandRequest instance Running phase"

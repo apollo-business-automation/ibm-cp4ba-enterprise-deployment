@@ -8,7 +8,7 @@ fi
 
 echo
 echo ">>>>Source internal variables"
-. inernal-variables.sh
+. internal-variables.sh
 
 echo
 echo ">>>>Source variables"

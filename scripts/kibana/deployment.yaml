@@ -54,7 +54,7 @@ spec:
             failureThreshold: 30
           env:
             - name: ELASTICSEARCH_HOSTS
-              value: 'https://iaf-system-elasticsearch-es.{{CP4BA_PROJECT_NAME}}:9200'
+              value: 'https://iaf-system-elasticsearch-es.{{CP4BA_PROJECT_NAME}}.svc.cluster.local:9200'
             - name: ELASTICSEARCH_USERNAME
               value: 'elasticsearch-admin'
             - name: ELASTICSEARCH_PASSWORD

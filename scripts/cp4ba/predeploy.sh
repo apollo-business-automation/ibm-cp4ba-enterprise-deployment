@@ -4,7 +4,7 @@
 
 echo
 echo ">>>>Source internal variables"
-. ../inernal-variables.sh
+. ../internal-variables.sh
 
 echo
 echo ">>>>Source variables"
@@ -223,6 +223,21 @@ echo ">>>>$(print_timestamp) Add AutomationBase instance"
 oc apply -f data/iaf/automationbase.target.yaml
 
 echo
+echo ">>>>$(print_timestamp) Approve Events InstallPlan"
+oc project ibm-common-services
+
+echo
+echo ">>>>$(print_timestamp) Wait for InstallPlan to be created"
+wait_for_k8s_resource_condition_generic Subscription/ibm-events-operator ".status.installplan.kind" InstallPlan ${DEFAULT_ATTEMPTS_1} ${DEFAULT_DELAY_1}
+
+echo
+echo ">>>>$(print_timestamp) Approve InstallPlan"
+install_plan=`oc get subscription ibm-events-operator -o json | jq -r '.status.installplan.name'`
+oc patch installplan ${install_plan} --type merge --patch '{"spec":{"approved":true}}'
+
+oc project ${CP4BA_PROJECT_NAME}
+
+echo
 echo ">>>>$(print_timestamp) Wait for AutomationBase instance Ready state"
 wait_for_k8s_resource_condition AutomationBase/foundation-iaf Ready ${DEFAULT_ATTEMPTS_2} ${DEFAULT_DELAY_2}
 
@@ -239,12 +254,12 @@ echo ">>>>$(print_timestamp) Add password Secret for new KafkaUser instance"
 sed -f - data/iaf/kafkauser-secret.yaml > data/iaf/kafkauser-secret.target.yaml << SED_SCRIPT
 s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
 SED_SCRIPT
-oc apply -f data/iaf/kafkauser-secret.yaml
+oc apply -f data/iaf/kafkauser-secret.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Add new KafkaUser instance"
 # Based on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=foundation-administration-guide#day-2-operations-for-kafka reference for Strimzi in Kafka Day 2
-oc apply -f data/iaf/kafkauser.target.yaml
+oc apply -f data/iaf/kafkauser.yaml
 
 echo
 echo ">>>>$(print_timestamp) Wait for KafkaUser instance Ready state"
@@ -315,8 +330,10 @@ echo ">>>>$(print_timestamp) Automation Decision Services (ADS) (decisions_ads p
 echo
 echo ">>>>$(print_timestamp) ADS Security"
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=services-configuring-decision-runtime
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=services-configuring-mongodb-storage
 sed -f - data/ads/secret.yaml > data/ads/secret.target.yaml << SED_SCRIPT
 s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+s|{{MONGODB_HOSTNAME}}|${MONGODB_HOSTNAME}|g
 SED_SCRIPT
 oc apply -f data/ads/secret.target.yaml
 
@@ -372,6 +389,7 @@ echo ">>>>$(print_timestamp) ADP Security"
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=piadp-creating-secrets-protect-sensitive-document-processing-configuration-data
 sed -f - data/adp/secret.yaml > data/adp/secret.target.yaml << SED_SCRIPT
 s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+s|{{MONGODB_HOSTNAME}}|${MONGODB_HOSTNAME}|g
 SED_SCRIPT
 oc apply -f data/adp/secret.target.yaml
 # Update FNCM secret

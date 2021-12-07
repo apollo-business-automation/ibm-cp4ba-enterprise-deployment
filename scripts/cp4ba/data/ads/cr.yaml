@@ -4,8 +4,6 @@ spec:
       enabled: true
     embedded_build_service:
       replica_count: 1
-    mongo:
-      use_embedded: true
     front:
       replica_count: 1
     download_service:

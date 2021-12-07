@@ -4,7 +4,7 @@
 
 echo
 echo ">>>>Source internal variables"
-. ../inernal-variables.sh
+. ../internal-variables.sh
 
 echo
 echo ">>>>Source variables"
@@ -47,6 +47,7 @@ echo
 echo ">>>>$(print_timestamp) Deploy Deployment"
 sed -f - deployment.yaml > deployment.target.yaml << SED_SCRIPT
 s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+s|{{DB2MC_IMAGE_TAG}}|${DB2MC_IMAGE_TAG}|g
 SED_SCRIPT
 oc apply -f deployment.target.yaml
 
@@ -75,6 +76,7 @@ su - db2inst1
 db2 CREATE DATABASE DB2MC AUTOMATIC STORAGE YES PAGESIZE 32 K;
 db2 activate db DB2MC
 EOSSH
+sleep 90 # Wait for new DB2 DB to become available
 
 echo
 echo ">>>>$(print_timestamp) Get auth token"

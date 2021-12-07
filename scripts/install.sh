@@ -2,7 +2,7 @@
 
 echo
 echo ">>>>Source internal variables"
-. inernal-variables.sh
+. internal-variables.sh
 
 echo
 echo ">>>>Source variables"
@@ -122,6 +122,13 @@ echo ">>>>$(print_timestamp) Install Kibana"
 cd kibana
 ./install.sh
 exit_test $? "Install Kibana Failed"
+cd ..
+
+echo
+echo ">>>>$(print_timestamp) Install MongoDB"
+cd mongodb
+./install.sh
+exit_test $? "Install MongoDB Failed"
 cd ..
 
 echo

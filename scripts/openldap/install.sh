@@ -4,7 +4,7 @@
 
 echo
 echo ">>>>Source internal variables"
-. ../inernal-variables.sh
+. ../internal-variables.sh
 
 echo
 echo ">>>>Source variables"
@@ -40,6 +40,7 @@ sed -f - values.yaml > values.target.yaml << SED_SCRIPT
 s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
 s|{{BASE64_UNIVERSAL_PASSWORD}}|$(echo -n ${UNIVERSAL_PASSWORD} | base64)|g
 s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+s|{{LDAP_HOSTNAME}}|${LDAP_HOSTNAME}|g
 SED_SCRIPT
 
 echo

@@ -4,7 +4,7 @@ metadata:
   name: ibm-cp4a-operator
 spec:
   channel: "{{CP4BA_OPERATOR_UPDATE_CHANNEL}}"
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: ibm-cp4a-operator
   source: ibm-operator-catalog
   sourceNamespace: openshift-marketplace

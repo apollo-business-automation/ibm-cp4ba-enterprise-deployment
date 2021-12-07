@@ -119,6 +119,18 @@ Not exposed outside the cluster.
 - for cpadmin: cpadmin@cp.local / {{UNIVERSAL_PASSWORD}}
 - for cpuser: cpuser@cp.local / {{UNIVERSAL_PASSWORD}}
 
+### Mongo Express
+
+As UI for MongoDB
+
+#### Endpoints
+
+- Mongo Express UI: https://mongo-express.{{OCP_APPS_ENDPOINT}}
+
+#### Credentials
+
+- cpadmin / {{UNIVERSAL_PASSWORD}}
+
 ## CP4BA - CP4BA capabilities
 
 ### Useful info
@@ -495,6 +507,18 @@ As DB server for RPA.
 #### Credentials
 
 - sa / {{UNIVERSAL_PASSWORD}}
+
+### MongoDB
+
+As MongoDB database storage for the platform.
+
+#### Endpoints
+
+- Not exposed outside the cluster.
+
+#### Credentials
+
+- root / {{UNIVERSAL_PASSWORD}}
 
 ## Deployment job
 

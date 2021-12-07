@@ -2,7 +2,7 @@
 
 echo
 echo ">>>>Source internal variables"
-. ../inernal-variables.sh
+. ../internal-variables.sh
 
 echo
 echo ">>>>Source variables"
@@ -535,6 +535,16 @@ add_db2mc_connection TENANT1
 sleep 5
 add_db2mc_connection TENANT2
 sleep 5
+
+echo
+echo ">>>>$(print_timestamp) Create CP4BA Mongo DBs"
+oc rsh -n mongodb deployment/mongodb << EOSSH
+mongo --username root --password ${UNIVERSAL_PASSWORD} --authenticationDatabase admin <<EOF
+use ads
+use ads-git
+use ads-history
+EOF
+EOSSH
 
 echo
 echo ">>>>$(print_timestamp) CP4BA dbs install completed"
