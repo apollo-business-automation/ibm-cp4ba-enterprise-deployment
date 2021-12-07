@@ -99,6 +99,7 @@ echo
 echo ">>>>$(print_timestamp) Update AutomationUiConfig CR"
 sed -f - data/iaf/automationuiconfig.yaml > data/iaf/automationuiconfig.target.yaml << SED_SCRIPT
 s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
+s|{{CP4BA_AUTOMATION_UI_CONFIG_VERSION}}|${CP4BA_AUTOMATION_UI_CONFIG_VERSION}|g
 SED_SCRIPT
 
 echo
@@ -214,6 +215,7 @@ echo
 echo ">>>>$(print_timestamp) Update AutomationBase instance"
 sed -f - data/iaf/automationbase.yaml > data/iaf/automationbase.target.yaml << SED_SCRIPT
 s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
+s|{{CP4BA_AUTOMATION_BASE_VERSION}}|${CP4BA_AUTOMATION_BASE_VERSION}|g
 SED_SCRIPT
 
 echo

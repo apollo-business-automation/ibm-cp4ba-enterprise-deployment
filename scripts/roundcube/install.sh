@@ -75,6 +75,7 @@ echo
 echo ">>>>$(print_timestamp) Update roundcube DB deployment"
 sed -f - deployment.yaml > deployment.target.yaml << SED_SCRIPT
 s|{{ROUNDCUBE_IMAGE_TAG}}|${ROUNDCUBE_IMAGE_TAG}|g
+s|{{MAIL_HOSTNAME}}|${MAIL_HOSTNAME}|g
 SED_SCRIPT
 
 echo

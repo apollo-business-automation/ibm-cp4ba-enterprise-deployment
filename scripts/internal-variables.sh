@@ -21,6 +21,8 @@ CP4BA_STARTING_CSV=ibm-cp4a-operator.v21.2.5
 CP4BA_CR_META_NAME=cp4ba
 ## Name of OCP CP4BA project
 CP4BA_PROJECT_NAME=cp4ba
+CP4BA_AUTOMATION_BASE_VERSION=v1.1
+CP4BA_AUTOMATION_UI_CONFIG_VERSION=v1.1
 
 # AKHQ #
 AKHQ_CHART_VERSION=0.2.6
@@ -82,13 +84,13 @@ RPA_VERSION=1.1.0
 # Common #
 
 ## Hostname of server where DB2 is running
-DB2_HOSTNAME=c-db2ucluster-db2u.db2
+DB2_HOSTNAME=c-db2ucluster-db2u.db2.svc.cluster.local
 ## Hostname of server where MSSQL is running
-MSSQL_HOSTNAME=mssql.mssql
+MSSQL_HOSTNAME=mssql.mssql.svc.cluster.local
 ## Hostname of server where LDAP is running
-LDAP_HOSTNAME=openldap-openldap-stack-ha.openldap
+LDAP_HOSTNAME=openldap-openldap-stack-ha.openldap.svc.cluster.local
 ## Hostname of server where SMTP is running
-MAIL_HOSTNAME=mailserver.mail
+MAIL_HOSTNAME=mailserver.mail.svc.cluster.local
 
 # Attempts & delays #
 

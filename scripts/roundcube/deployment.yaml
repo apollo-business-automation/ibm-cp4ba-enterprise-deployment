@@ -43,9 +43,9 @@ spec:
               name: roundcubemail-shared-secret
               key: DES_KEY
         - name: ROUNDCUBEMAIL_DEFAULT_HOST
-          value: tls://mailserver.mail
+          value: "tls://{{MAIL_HOSTNAME}}"
         - name: ROUNDCUBEMAIL_SMTP_SERVER
-          value: tls://mailserver.mail
+          value: "tls://{{MAIL_HOSTNAME}}"
         - name: ROUNDCUBEMAIL_SKIN
           value: elastic
         - name: ROUNDCUBEMAIL_PLUGINS

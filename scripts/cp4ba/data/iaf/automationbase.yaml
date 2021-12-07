@@ -4,7 +4,7 @@ metadata:
   name: foundation-iaf
 spec:
   description: IAF CR for Foundation
-  version: v1.1
+  version: "{{CP4BA_AUTOMATION_BASE_VERSION}}"
   license:
     accept: true
   tls:
@@ -15,7 +15,7 @@ spec:
       secretName: global-ca
       key: ca.crt
   elasticsearch:
-    version: v1.1
+    version: "{{CP4BA_AUTOMATION_BASE_VERSION}}"
     license:
       accept: true
     additionalAllowedAPIs: "GET:[*],PUT:[*],POST:[*],HEAD:[*],DELETE:[*]"

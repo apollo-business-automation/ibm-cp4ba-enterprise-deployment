@@ -21,7 +21,7 @@ The following list specifies when you need to perform particular post-deployment
   - [Develop custom libraries](#develop-custom-libraries) - When you want to create your custom ADS libraries.
 - [FileNet Content Manager (FNCM) (content pattern)](#filenet-content-manager-fncm-content-pattern)
   - [Update Google OIDC redirect URIs](#update-google-oidc-redirect-uris) - (don't use now) When you configured Google ID for External Share.
-  - [BAN desktop for OS1](#ban-desktop-for-os1) - To update VIewer Map for OS1 Desktop when custom Viewer Map has been created in TODO link for MS Office documents.
+  - [BAN desktop for OS1](#ban-desktop-for-os1) - To update Viewer Map for OS1 Desktop when custom Viewer Map has been created in [Enable Daeja for Office](#enable-daeja-for-office) link for MS Office documents.
   - [External Share](#external-share) - (don't use now) When you want to use External Share.
   - [External Share capability in BAN](#external-share-capability-in-ban) - (don't use now) When you want to use External Share.
   - [Task manager settings](#task-manager-settings) - When you want to use Task Manager.
