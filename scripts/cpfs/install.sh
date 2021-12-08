@@ -94,10 +94,18 @@ echo ">>>>$(print_timestamp) Patch authentication object to customize admin user
 # Based on https://www.ibm.com/docs/en/cpfs?topic=services-configuring-foundational-by-using-custom-resource#default-admin for admin username
 INDEX=`oc get operandconfig common-service -o json | jq '[.spec.services[] | .name == "ibm-iam-operator"] | index(true)'`
 oc patch operandconfig common-service --type json -p '[{"op":"replace","path":"/spec/services/'$INDEX'/spec/authentication/config", "value":{}}]'
+oc patch operandconfig common-service --type json -p '[{"op":"replace","path":"/spec/services/'$INDEX'/spec/authentication/config/defaultAdminUser", "value":"cpfsadmin"}]'
 
 echo
-echo ">>>>$(print_timestamp) Change admin username"
-oc patch operandconfig common-service --type json -p '[{"op":"replace","path":"/spec/services/'$INDEX'/spec/authentication/config/defaultAdminUser", "value":"cpfsadmin"}]'
+echo ">>>>$(print_timestamp) Set StorageClass for MongoDB"
+INDEX=`oc get operandconfig common-service -o json | jq '[.spec.services[] | .name == "ibm-mongodb-operator"] | index(true)'`	
+oc patch operandconfig common-service --type json -p '[{"op":"replace","path":"/spec/services/'$INDEX'/spec/mongoDB/storageClass", "value":"'${STORAGE_CLASS_NAME}'"}]'
+
+echo
+echo ">>>>$(print_timestamp) Set StorageClass for Mustgather"
+INDEX=`oc get operandconfig common-service -o json | jq '[.spec.services[] | .name == "ibm-healthcheck-operator"] | index(true)'`	
+oc patch operandconfig common-service --type json -p '[{"op":"replace","path":"/spec/services/'$INDEX'/spec/mustgatherService/persistentVolumeClaim", "value":{}}]'
+oc patch operandconfig common-service --type json -p '[{"op":"replace","path":"/spec/services/'$INDEX'/spec/mustgatherService/persistentVolumeClaim/storageClassName", "value":"'${STORAGE_CLASS_NAME}'"}]'
 
 echo
 echo ">>>>$(print_timestamp) Apply OperandRequest instance"
@@ -129,9 +137,15 @@ oc create secret tls ibm-licensing-certs --key ../global-ca/wildcard.key --cert 
 oc patch IBMLicensing instance --type json -p '[{"op":"replace","path":"/spec/httpsCertsSource", "value":"custom"}]'
 
 echo
+echo ">>>>$(print_timestamp) Update License Service Reporter"
+sed -f - ibmlicenseservicereporter.yaml > ibmlicenseservicereporter.target.yaml << SED_SCRIPT
+s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
+SED_SCRIPT
+
+echo
 echo ">>>>$(print_timestamp) Add License Service Reporter"
 # Based on Based on https://www.ibm.com/docs/en/cpfs?topic=reporter-deploying-license-service
-oc apply -f ibmlicenseservicereporter.yaml
+oc apply -f ibmlicenseservicereporter.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Configure License Service Reporter"

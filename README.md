@@ -18,11 +18,18 @@ Deployment of other parts is also based on respective official documentations.
 
 This is **not** an official IBM documentation.  
 Absolutely no warranties, no support, no responsibility for anything.  
-Use it on your own risk and always follow the official IBM documentations.
+Use it on your own risk and always follow the official IBM documentations.  
+It is always your responsibility to make sure you are license compliant when using this repository to install IBM Cloud Pak for Business Automation.
 
 Please do not hesitate to create an issue here if needed. Your feedback is appreciated.
 
 Not for production use. Suitable for Demo and PoC environments - but with enterprise deployment.  
+
+**!Important** - Keep in mind that the platform contains DB2 which is licensed with Standard Edition license available from CP4BA and it must adhere to the *Additional IBM DB2 Standard Edition Detail* in official license information at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument (or its newer revision).
+
+**!Important** - Keep in mind that this deployment contains capabilities (the ones which are not bundled with CP4BA) which are not eligible to run on Worker Nodes covered by CP4BA OCP Restricted licenses. More info on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=clusters-restricted-openshift-entitlement.
+
+**!Important** - Keep in mind that this deployment contains *IBM Daeja ViewONE Virtual Module for Microsoft Office* and *IBM Daeja ViewONE Virtual Module for Permanent Redaction* enabled which require additional licenses as per official license information at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument (or its newer revision).
 
 ## Benefits 🚀
 
@@ -46,10 +53,6 @@ What is not included:
 - ICCs - cannot use UMS, not covered.
 - Caution! FNCM External share - login issues, do not configure, otherwise other capabilities will break as well - waiting for fixes here.
 - Workflow Server and Workstream Services - this is a dev deployment. BAW Authoring and (BAW + IAWS) are mutually exclusive in single project.
-
-**!Important** - Keep in mind that the platform contains DB2 which is licensed with Standard Edition license available from CP4BA and it must adhere to the *Additional IBM DB2 Standard Edition Detail* in official license information at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument (or its newer revision).
-
-**!Important** - Keep in mind that this deployment contains capabilities (the ones which are not bundled with CP4BA) which are not eligible to run on Worker Nodes covered by CP4BA OCP Restricted licenses. More info on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=clusters-restricted-openshift-entitlement.
 
 ## What is in the package 📦
 

@@ -236,6 +236,18 @@ echo ">>>>$(print_timestamp) Wait for CP4BA deployment to complete, this will ta
 #wait_for_cp4ba ${CP4BA_CR_META_NAME} ${CP4BA_ATTEMPTS} ${CP4BA_DELAY}
 
 echo
+echo ">>>>$(print_timestamp) Switch to Project ibm-common-services"
+oc project ibm-common-services
+
+echo
+echo ">>>>$(print_timestamp) Manually approve Zen Subscription"
+manage_manual_operator ibm-zen-operator ibm-zen-operator
+
+echo
+echo ">>>>$(print_timestamp) Switch back to CP4BA Project"
+oc project ${CP4BA_PROJECT_NAME}
+
+echo
 echo ">>>>$(print_timestamp) Wait for Zen instance Ready state"
 wait_for_k8s_resource_condition Cartridge/icp4ba Ready ${DEFAULT_ATTEMPTS_4} ${DEFAULT_DELAY_4}
 echo

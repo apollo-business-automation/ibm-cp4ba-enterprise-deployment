@@ -19,3 +19,4 @@ scripts/cp4ba/jdbc
 scripts/akhq/truststore.jks
 scripts/cpfs/cloudctl
 scripts/cpfs/cluster-monitoring-config.yaml
+nohup*

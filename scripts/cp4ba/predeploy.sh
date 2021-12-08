@@ -223,18 +223,20 @@ echo ">>>>$(print_timestamp) Add AutomationBase instance"
 oc apply -f data/iaf/automationbase.target.yaml
 
 echo
-echo ">>>>$(print_timestamp) Approve Events InstallPlan"
+echo ">>>>$(print_timestamp) Switch to Project ibm-common-services"
 oc project ibm-common-services
 
 echo
-echo ">>>>$(print_timestamp) Wait for InstallPlan to be created"
+echo ">>>>$(print_timestamp) Wait for Events InstallPlan to be created"
 wait_for_k8s_resource_condition_generic Subscription/ibm-events-operator ".status.installplan.kind" InstallPlan ${DEFAULT_ATTEMPTS_1} ${DEFAULT_DELAY_1}
 
 echo
-echo ">>>>$(print_timestamp) Approve InstallPlan"
+echo ">>>>$(print_timestamp) Approve Events InstallPlan"
 install_plan=`oc get subscription ibm-events-operator -o json | jq -r '.status.installplan.name'`
 oc patch installplan ${install_plan} --type merge --patch '{"spec":{"approved":true}}'
 
+echo
+echo ">>>>$(print_timestamp) Switch back to CP4BA Project"
 oc project ${CP4BA_PROJECT_NAME}
 
 echo
