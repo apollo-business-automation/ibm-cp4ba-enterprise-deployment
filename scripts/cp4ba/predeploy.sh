@@ -83,8 +83,9 @@ wait_for_k8s_resource_condition CustomResourceDefinition/icp4aclusters.icp4a.ibm
 
 echo
 echo ">>>>$(print_timestamp) Download and copy DB2 JDBC driver and license to Operator"
+rm -rf jdbc
 oc cp db2/c-db2ucluster-db2u-0:/opt/ibm/db2/V11.5.0.0/java/db2jcc_license_cu.jar ./jdbc/db2/db2jcc_license_cu.jar -c db2u
-# DB2 driver JAR download on pupose. oc cp not usd as it caused EOF errors for larger file
+# DB2 driver JAR download on purpose. oc cp not used as it caused EOF errors for larger file
 curl -k https://repo1.maven.org/maven2/com/ibm/db2/jcc/11.5.6.0/jcc-11.5.6.0.jar -o ./jdbc/db2/db2jcc4.jar
 exit_test $? "Download DB2 drivers Failed"
 OPERATOR_POD=`oc get pod -o name | grep cp4a | cut -d "/" -f 2`

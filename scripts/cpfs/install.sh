@@ -93,19 +93,19 @@ echo
 echo ">>>>$(print_timestamp) Patch authentication object to customize admin username"
 # Based on https://www.ibm.com/docs/en/cpfs?topic=services-configuring-foundational-by-using-custom-resource#default-admin for admin username
 INDEX=`oc get operandconfig common-service -o json | jq '[.spec.services[] | .name == "ibm-iam-operator"] | index(true)'`
-oc patch operandconfig common-service --type json -p '[{"op":"replace","path":"/spec/services/'$INDEX'/spec/authentication/config", "value":{}}]'
-oc patch operandconfig common-service --type json -p '[{"op":"replace","path":"/spec/services/'$INDEX'/spec/authentication/config/defaultAdminUser", "value":"cpfsadmin"}]'
+oc patch operandconfig common-service --type json -p '[{"op":"add","path":"/spec/services/'$INDEX'/spec/authentication/config", "value":{}}]'
+oc patch operandconfig common-service --type json -p '[{"op":"add","path":"/spec/services/'$INDEX'/spec/authentication/config/defaultAdminUser", "value":"cpfsadmin"}]'
 
 echo
 echo ">>>>$(print_timestamp) Set StorageClass for MongoDB"
 INDEX=`oc get operandconfig common-service -o json | jq '[.spec.services[] | .name == "ibm-mongodb-operator"] | index(true)'`	
-oc patch operandconfig common-service --type json -p '[{"op":"replace","path":"/spec/services/'$INDEX'/spec/mongoDB/storageClass", "value":"'${STORAGE_CLASS_NAME}'"}]'
+oc patch operandconfig common-service --type json -p '[{"op":"add","path":"/spec/services/'$INDEX'/spec/mongoDB/storageClass", "value":"'${STORAGE_CLASS_NAME}'"}]'
 
 echo
 echo ">>>>$(print_timestamp) Set StorageClass for Mustgather"
 INDEX=`oc get operandconfig common-service -o json | jq '[.spec.services[] | .name == "ibm-healthcheck-operator"] | index(true)'`	
-oc patch operandconfig common-service --type json -p '[{"op":"replace","path":"/spec/services/'$INDEX'/spec/mustgatherService/persistentVolumeClaim", "value":{}}]'
-oc patch operandconfig common-service --type json -p '[{"op":"replace","path":"/spec/services/'$INDEX'/spec/mustgatherService/persistentVolumeClaim/storageClassName", "value":"'${STORAGE_CLASS_NAME}'"}]'
+oc patch operandconfig common-service --type json -p '[{"op":"add","path":"/spec/services/'$INDEX'/spec/mustgatherService/persistentVolumeClaim", "value":{}}]'
+oc patch operandconfig common-service --type json -p '[{"op":"add","path":"/spec/services/'$INDEX'/spec/mustgatherService/persistentVolumeClaim/storageClassName", "value":"'${STORAGE_CLASS_NAME}'"}]'
 
 echo
 echo ">>>>$(print_timestamp) Apply OperandRequest instance"

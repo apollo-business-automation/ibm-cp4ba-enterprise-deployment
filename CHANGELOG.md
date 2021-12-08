@@ -8,7 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Changed
 
-- Changed all to fixed versions
+- Switch all Operators and Containers to fixed versions
+- Storage class doesn't have to be set as default now
+
 ## [2021-09-03]
 
 ### Added
