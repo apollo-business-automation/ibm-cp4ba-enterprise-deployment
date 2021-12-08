@@ -14,6 +14,16 @@ spec:
         certificate: tls.crt
         key: tls.key
         ca: ca.crt
+    storage:
+      database: 
+        external: 
+          host: "{{MONGODB_PM_HOSTNAME}}"
+          port: 27017
+          database: processmining
+          user: root
+          credential: 
+            secretname: pm-dbs
+            passwordkey: mongodbPassword
   taskmining:
     tls:
       ui:
@@ -21,3 +31,17 @@ spec:
         certificate: tls.crt
         key: tls.key
         ca: ca.crt
+# TODO enable with 1.12 version        
+#    storage:
+#      database: 
+#        dbtype: db2
+#        external:
+#          credential:
+#            secretname: pm-dbs
+#            passwordkey: db2Password
+#          user: pm
+#          database: cp4ba
+#          host: "{{DB2_HOSTNAME}}"
+#          port: 50000
+#          schema: pm
+#          ssl: false        

@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: mongo-express-pm
+  labels:
+    app: mongo-express-pm
+spec:
+  selector:
+    app: mongo-express-pm
+  ports:
+    - name: ui
+      port: 8081
+      targetPort: ui

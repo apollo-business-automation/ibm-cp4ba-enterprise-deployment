@@ -25,10 +25,6 @@ echo
 echo ">>>>$(print_timestamp) Create Project"
 oc new-project mongo-express
 
-#echo
-#echo ">>>>$(print_timestamp) Add anyuid SCC to default SA"
-#oc adm policy add-scc-to-user anyuid system:serviceaccount:mongodb:default
-
 echo
 echo ">>>>$(print_timestamp) Update Deployment"
 sed -f - deployment.yaml > deployment.target.yaml << SED_SCRIPT

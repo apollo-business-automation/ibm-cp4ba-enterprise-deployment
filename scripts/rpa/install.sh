@@ -113,6 +113,7 @@ echo ">>>>$(print_timestamp) Update RoboticProcessAutomation instance"
 sed -f - roboticprocessautomation.yaml > roboticprocessautomation.target.yaml << SED_SCRIPT
 s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
 s|{{MAIL_HOSTNAME}}|${MAIL_HOSTNAME}|g
+s|{{RPA_VERSION}}|${RPA_VERSION}|g
 SED_SCRIPT
 
 

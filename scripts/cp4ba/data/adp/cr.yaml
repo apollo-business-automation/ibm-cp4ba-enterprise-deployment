@@ -39,7 +39,7 @@ spec:
         replica_count: 1
         auto_scaling:
           enabled: false
-      deploy_mongo: false
+      deploy_mongo: true
   ca_configuration:
     global:
       db_secret: ca-basedb

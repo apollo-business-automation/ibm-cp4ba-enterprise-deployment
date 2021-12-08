@@ -131,6 +131,18 @@ As UI for MongoDB
 
 - cpadmin / {{UNIVERSAL_PASSWORD}}
 
+### Mongo Express PM
+
+As UI for MongoDB for Process Mining
+
+#### Endpoints
+
+- Mongo Express PM UI: https://mongo-express-pm.{{OCP_APPS_ENDPOINT}}
+
+#### Credentials
+
+- cpadmin / {{UNIVERSAL_PASSWORD}}
+
 ## CP4BA - CP4BA capabilities
 
 ### Useful info
@@ -511,6 +523,18 @@ As DB server for RPA.
 ### MongoDB
 
 As MongoDB database storage for the platform.
+
+#### Endpoints
+
+- Not exposed outside the cluster.
+
+#### Credentials
+
+- root / {{UNIVERSAL_PASSWORD}}
+
+### MongoDB PM
+
+As MongoDB database storage for Process Mining.
 
 #### Endpoints
 

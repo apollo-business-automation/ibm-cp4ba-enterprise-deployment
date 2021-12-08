@@ -8,7 +8,7 @@ CP4BA_VERSION=21.0.2
 ## Should not be changed in particular guide version. 
 ## Version of Cloud Pak CASE archive as found on 
 ## https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cp-automation e.g. 3.0.1
-CP4BA_CASE_VERSION=3.1.3
+CP4BA_CASE_VERSION=3.1.5
 ## Should not be changed in particular guide version. 
 ## Version of cert-kubernetes folder from Cloud Pak CASE archive e.g. 21.0.1
 CP4BA_CASE_CERT_K8S_VERSION=21.0.2
@@ -57,7 +57,7 @@ KIBANA_IMAGE_TAG=7.8.1
 MAIL_IMAGE_TAG=10.3.0
 
 # MSSQL #
-MSSQL_IMAGE_TAG=2019-CU14-ubuntu-20.04
+MSSQL_IMAGE_TAG=2019-CU14-rhel-8.4
 
 # Nexus #
 NEXUS_CHANNEL=stable
@@ -79,7 +79,7 @@ ROUNDCUBE_NGINX_IMAGE_TAG=1.21.4-alpine
 # RPA #
 RPA_OPERATOR_CHANNEL=v1.1
 RPA_STARTING_CSV=ibm-automation-rpa.v1.1.1
-RPA_VERSION=1.1.0
+RPA_VERSION=1.1.1
 
 # MongoDB #
 MONGODB_CHART_VERSION=8.3.2 # specific version bringing 4.2 version for ADS, ADP
@@ -87,6 +87,13 @@ MONGODB_IMAGE_TAG=4.2.10-debian-10-r45
 
 # Mongo Express #
 MONGO_EXPRESS_IMAGE_TAG=0.54.0
+
+# MongoDB PM #
+MONGODB_PM_CHART_VERSION=8.3.2 # older chart capable of handling mongo 3.6 releases
+MONGODB_PM_IMAGE_TAG=3.6.21-debian-9-r78
+
+# Mongo Express PM #
+MONGO_EXPRESS_PM_IMAGE_TAG=0.54.0
 
 # Common #
 
@@ -101,6 +108,8 @@ LDAP_HOSTNAME=openldap-openldap-stack-ha.openldap.svc.cluster.local
 MAIL_HOSTNAME=mailserver.mail.svc.cluster.local
 ## Hostname of server where MongoDB is running
 MONGODB_HOSTNAME=mongodb.mongodb.svc.cluster.local
+## Hostname of server where MongoDB for PM is running
+MONGODB_PM_HOSTNAME=mongodb-pm.mongodb-pm.svc.cluster.local
 
 # Attempts & delays #
 

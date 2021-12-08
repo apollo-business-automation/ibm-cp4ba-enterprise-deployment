@@ -132,6 +132,13 @@ exit_test $? "Install MongoDB Failed"
 cd ..
 
 echo
+echo ">>>>$(print_timestamp) Install Mongo Express"
+cd mongo-express
+./install.sh
+exit_test $? "Install Mongo Express Failed"
+cd ..
+
+echo
 echo ">>>>$(print_timestamp) Install CPFS"
 cd cpfs
 ./install.sh
@@ -146,6 +153,20 @@ exit_test $? "Install CP4BA Failed"
 cd ..
 
 if [[ $PM_ENABLED == "true" ]]; then
+echo
+echo ">>>>$(print_timestamp) Install MongoDB PM"
+cd mongodb-pm
+./install.sh
+exit_test $? "Install MongoDB PM Failed"
+cd ..
+
+echo
+echo ">>>>$(print_timestamp) Install Mongo Express PM"
+cd mongo-express-pm
+./install.sh
+exit_test $? "Install Mongo Express PM Failed"
+cd ..
+
 echo
 echo ">>>>$(print_timestamp) Install PM"
 cd pm
