@@ -75,6 +75,7 @@ echo ">>>>$(print_timestamp) Switch to Project ibm-common-services"
 oc project ibm-common-services
 
 manage_manual_operator ibm-common-service-operator ibm-common-service-operator
+manage_manual_operator ibm-namespace-scope-operator ibm-namespace-scope-operator
 manage_manual_operator operand-deployment-lifecycle-manager-app operand-deployment-lifecycle-manager
 
 #echo
