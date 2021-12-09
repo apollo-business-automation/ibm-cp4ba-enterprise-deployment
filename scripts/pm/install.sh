@@ -53,6 +53,7 @@ echo ">>>>$(print_timestamp) Create PM Mongo DB"
 oc rsh -n mongodb-pm deployment/mongodb-pm << EOSSH
 mongo --username root --password ${UNIVERSAL_PASSWORD} --authenticationDatabase admin <<EOF
 use processmining
+db.createUser({user: "root", pwd: "${UNIVERSAL_PASSWORD}", roles: [ { role: "readWrite", db: "processmining" } ]})
 EOF
 EOSSH
 
