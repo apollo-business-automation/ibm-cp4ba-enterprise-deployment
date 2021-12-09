@@ -97,6 +97,7 @@ sed -f - processmining.yaml > processmining.target.yaml << SED_SCRIPT
 s|{{PM_VERSION}}|${PM_VERSION}|g
 s|{{MONGODB_PM_HOSTNAME}}|${MONGODB_PM_HOSTNAME}|g
 s|{{DB2_HOSTNAME}}|${DB2_HOSTNAME}|g
+s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
 SED_SCRIPT
 
 echo
