@@ -132,6 +132,7 @@ SED_SCRIPT
 if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   oc project automagic
   oc create cm odm-oidc-providers --from-file=oidc-providers.json=data/odm/oidc-providers.target.json -o yaml --dry-run=client | oc apply -f -
+  oc project ${CP4BA_PROJECT_NAME}
 fi
 
 echo

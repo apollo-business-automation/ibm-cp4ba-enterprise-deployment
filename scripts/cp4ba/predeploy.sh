@@ -318,6 +318,7 @@ oc create secret generic odm-tls-secret --from-literal=keystore_password=${UNIVE
 if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   oc project automagic
   oc create cm odm-truststore --from-file=truststore.jks=data/odm/truststore.jks -o yaml --dry-run=client | oc apply -f -
+  oc project ${CP4BA_PROJECT_NAME}
 fi
 
 echo
