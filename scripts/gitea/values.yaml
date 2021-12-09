@@ -51,4 +51,6 @@ postgresql:
     enabled: false
   livenessProbe:
     initialDelaySeconds: 180
+  persistence:
+    storageClass: "{{STORAGE_CLASS_NAME}}"
 
