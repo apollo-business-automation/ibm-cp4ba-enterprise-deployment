@@ -40,7 +40,7 @@ echo
 echo ">>>>$(print_timestamp) Update AssetRepository CR"
 sed -f - assetrepository.yaml > assetrepository.target.yaml << SED_SCRIPT
 s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
-s|{{ASSETREPO_VERSION}}|${ASSET_REPO_VERSION}|g
+s|{{ASSET_REPO_VERSION}}|${ASSET_REPO_VERSION}|g
 SED_SCRIPT
 
 echo
