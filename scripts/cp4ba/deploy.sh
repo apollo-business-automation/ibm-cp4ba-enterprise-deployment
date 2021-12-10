@@ -282,7 +282,7 @@ echo ">>>>$(print_timestamp) Wait for FNCM TM Deployment Available state"
 wait_for_k8s_resource_condition Deployment/${CP4BA_CR_META_NAME}-tm-deploy Available ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 echo
 echo ">>>>$(print_timestamp) Wait for ADP Mongo Deployment Available state"
-wait_for_k8s_resource_condition Deployment/${CR_META_NAME}-mongo-deploy Available ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+wait_for_k8s_resource_condition Deployment/${CP4BA_CR_META_NAME}-mongo-deploy Available ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 echo
 echo ">>>>$(print_timestamp) Wait for ADP Git Gateway Deployment Available state"
 wait_for_k8s_resource_condition Deployment/${CP4BA_CR_META_NAME}-gitgateway-deploy Available ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
