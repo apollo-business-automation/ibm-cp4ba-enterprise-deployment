@@ -80,8 +80,11 @@ curl -k -O https://archive.apache.org/dist/maven/maven-3/3.8.2/binaries/apache-m
 exit_test $? "Download maven Failed"
 tar -xvf apache-maven-3.8.2-bin.tar.gz
 ln -fs apache-maven-3.8.2/bin/mvn mvn
+OLD_PATH=$PATH
+PATH=`realpath .`:$PATH
 ./mvn --version
 exit_test $? "maven setup Failed"
+PATH=$OLD_PATH
 
 echo
 echo ">>>>$(print_timestamp) Tooling install completed"
