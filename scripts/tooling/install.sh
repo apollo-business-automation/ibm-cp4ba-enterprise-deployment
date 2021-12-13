@@ -31,7 +31,7 @@ tar -xvf openjdk-9_linux-x64_bin.tar.gz
 ln -fs jdk-9/bin/java java
 ln -fs jdk-9/bin/javac javac
 ln -fs jdk-9/bin/keytool keytool
-java -version
+./java -version
 exit_test $? "java setup Failed"
 sleep 5
 
@@ -40,7 +40,7 @@ echo ">>>>$(print_timestamp) Install jq"
 curl -L -o jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux32
 exit_test $? "Download jq Failed"
 chmod u+x jq
-jq --version
+./jq --version
 exit_test $? "jq setup Failed"
 sleep 5
 
@@ -49,7 +49,7 @@ echo ">>>>$(print_timestamp) Install yq"
 curl -L -o yq https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
 exit_test $? "Download yq Failed"
 chmod u+x yq
-yq --version
+./yq --version
 exit_test $? "yq setup Failed"
 sleep 5
 
@@ -59,7 +59,7 @@ curl -k https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshi
 exit_test $? "Download oc Failed"
 tar -xvf oc.tar oc
 chmod u+x oc
-oc version
+./oc version
 exit_test $? "oc setup Failed"
 sleep 5
 
@@ -70,7 +70,7 @@ exit_test $? "Download helm Failed"
 tar -zxvf helm-v3.6.0-linux-amd64.tar.gz linux-amd64/helm
 mv linux-amd64/helm helm
 chmod u+x helm
-helm version
+./helm version
 exit_test $? "helm setup Failed"
 sleep 5
 
@@ -80,7 +80,7 @@ curl -k -O https://archive.apache.org/dist/maven/maven-3/3.8.2/binaries/apache-m
 exit_test $? "Download maven Failed"
 tar -xvf apache-maven-3.8.2-bin.tar.gz
 ln -fs apache-maven-3.8.2/bin/mvn mvn
-mvn --version
+./mvn --version
 exit_test $? "maven setup Failed"
 
 echo
