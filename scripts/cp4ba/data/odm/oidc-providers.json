@@ -1,6 +1,6 @@
 {
   "providers": [{
-    "name": "ums",
+    "name": "iam",
     "authorizationURL": "https://ums-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/oidc/endpoint/ums/authorize",
     "tokenURL": "https://ums-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/oidc/endpoint/ums/token",
     "clientId": "{{CP4BA_PROJECT_NAME}}-odm-oidc-client-id",

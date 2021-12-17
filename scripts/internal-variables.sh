@@ -4,40 +4,40 @@
 
 ## Should not be changed in particular guide version. 
 ## Version of Cloud Pak e.g. 20.0.2.1, 20.0.3
-CP4BA_VERSION=21.0.2 
+CP4BA_VERSION=21.0.3 
 ## Should not be changed in particular guide version. 
 ## Version of Cloud Pak CASE archive as found on 
 ## https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cp-automation e.g. 3.0.1
-CP4BA_CASE_VERSION=3.1.5
+CP4BA_CASE_VERSION=3.2.0
 ## Should not be changed in particular guide version. 
 ## Version of cert-kubernetes folder from Cloud Pak CASE archive e.g. 21.0.1
-CP4BA_CASE_CERT_K8S_VERSION=21.0.2
+CP4BA_CASE_CERT_K8S_VERSION=21.0.3
 ## Should not be changed in particular guide version. 
 ## Version of the Subscription channel as defined on 
-## https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=cluster-setting-up-by-installing-operator-catalog
-CP4BA_OPERATOR_UPDATE_CHANNEL=v21.2
-CP4BA_STARTING_CSV=ibm-cp4a-operator.v21.2.5
+## https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=cluster-setting-up-in-openshift-console
+CP4BA_OPERATOR_UPDATE_CHANNEL=v21.3
+CP4BA_STARTING_CSV=ibm-cp4a-operator.v21.3.0
 ## Name of the CP4BA instance in cr.yaml at path metadata.name
 CP4BA_CR_META_NAME=cp4ba
 ## Name of OCP CP4BA project
 CP4BA_PROJECT_NAME=cp4ba
-CP4BA_AUTOMATION_BASE_VERSION=v1.1
-CP4BA_AUTOMATION_UI_CONFIG_VERSION=v1.1
+CP4BA_AUTOMATION_BASE_VERSION=v2
+CP4BA_AUTOMATION_UI_CONFIG_VERSION=v1.2.0
 
 # AKHQ #
 AKHQ_CHART_VERSION=0.2.6
 
 # Asset Repo #
-ASSET_REPO_OPERATOR_CHANNEL=v1.3
-ASSET_REPO_STARTING_CSV=ibm-integration-asset-repository.v1.3.2
-ASSET_REPO_VERSION=2021.2.1-1
+ASSET_REPO_OPERATOR_CHANNEL=v1.4
+ASSET_REPO_STARTING_CSV=ibm-integration-asset-repository.v1.4.1
+ASSET_REPO_VERSION=2021.4.1-1
 
 # Cerebro #
 CEREBRO_IMAGE_TAG=0.9.4
 
 # CPFS #
 CPFS_OPERATOR_CHANNEL=v3
-CPFS_STARTING_CSV=ibm-common-service-operator.v3.14.0
+CPFS_STARTING_CSV=ibm-common-service-operator.v3.14.1
 
 # DB2 #
 DB2_OPERATOR_CHANNEL=v1.1
@@ -61,15 +61,15 @@ MSSQL_IMAGE_TAG=2019-CU14-rhel-8.4
 
 # Nexus #
 NEXUS_CHANNEL=stable
-NEXUS_STARTING_CSV=nxrm-operator-certified.v3.35.0-1
+NEXUS_STARTING_CSV=nxrm-operator-certified.v3.37.0-1
 
 # OpenLDAP + PHPLDAPAdmin #
 OPENLDAP_CHART_VERSION=2.1.6
 
 # PM #
-PM_OPERATOR_CHANNEL=v1.0
-PM_STARTING_CSV=ibm-automation-processmining.v1.0.2
-PM_VERSION=1.11.1
+PM_OPERATOR_CHANNEL=v2.0
+PM_STARTING_CSV=ibm-automation-processmining.v1.0.5
+PM_VERSION=1.12.0.2
 
 # Roundcube #
 ROUNDCUBE_DB_IMAGE_TAG=9.6.24-alpine

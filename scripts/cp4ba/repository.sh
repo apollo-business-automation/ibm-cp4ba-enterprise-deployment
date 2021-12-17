@@ -21,7 +21,7 @@ echo ">>>>Init env"
 
 echo
 echo ">>>>$(print_timestamp) Download and extract installation repository"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=operator-preparing-log-file-storage
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=operator-preparing-log-file-storage
 rm ibm-cp-automation-${CP4BA_CASE_VERSION}.tgz
 rm -rf ibm-cp-automation
 rm -rf cert-kubernetes

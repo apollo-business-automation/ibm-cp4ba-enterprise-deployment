@@ -29,7 +29,7 @@ oc new-project db2
 if [ "$DEPLOYMENT_PLATFORM" = "ROKS" ]; then
 echo
 echo ">>>>$(print_timestamp) Update worker nodes on ROKS for DB2 storage"
-# Based on https://www.ibm.com/docs/en/db2/11.5?topic=requirements-cloud-file-storage
+# Based on https://www.ibm.com/docs/en/db2/11.5?topic=SSEPGG_11.5.0/com.ibm.db2.luw.db2u_openshift.doc/aese-cfg-nfs-filegold.html
   oc get no -l node-role.kubernetes.io/worker --no-headers -o name \
   | xargs -I {} --  oc debug {} -- chroot /host sh -c 'grep "^Domain = slnfsv4.coms" /etc/idmapd.conf || ( sed -i "s/.*Domain =.*/Domain = slnfsv4.com/g" /etc/idmapd.conf; nfsidmap -c; rpc.idmapd )'
   sleep 45

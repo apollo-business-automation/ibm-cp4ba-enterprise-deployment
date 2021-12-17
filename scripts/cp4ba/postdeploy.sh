@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployments-completing-post-deployment-tasks
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=deployments-completing-post-installation-tasks
 
 echo
 echo ">>>>Source internal variables"
@@ -26,31 +26,13 @@ echo ">>>>$(print_timestamp) Switch Project"
 oc project ${CP4BA_PROJECT_NAME}
 
 echo
-echo ">>>>$(print_timestamp) Register external UMS access"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=apis-from-command-line-application
-# Used for BAI and ADS.
-curl --insecure --request POST "https://ums-sso-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/oidc/endpoint/ums/registration" \
---header 'Content-Type: application/json' \
---user "umsadmin:${UNIVERSAL_PASSWORD}" \
---data-raw '{
-  "scope": "openid",
-  "preauthorized_scope": "openid",
-  "introspect_tokens": true,
-  "client_id": "externalrest",
-  "client_secret": "'${UNIVERSAL_PASSWORD}'",
-  "client_name": "externalrest",
-  "grant_types": ["password"],
-  "response_types": ["token"]
-}'
-
-echo
 echo ">>>>$(print_timestamp) Business Automation Navigator (BAN) (foundation pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=tasks-completing-post-deployment-business-automation-navigator
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-navigator
 
 echo
 echo ">>>>$(print_timestamp) Copy Daeja license"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=tasks-completing-post-deployment-business-automation-navigator point 2.  
-# License files generated following https://www.ibm.com/docs/en/daeja-viewone/5.0.7?topic=modules-enabling-viewer-add-in-content-navigator
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-navigator point 2.  
+# License files generated following https://www.ibm.com/docs/en/daeja-viewone/5.0.x?topic=modules-enabling-viewer-add-in-content-navigator
 # IBM Daeja ViewONE Virtual Permanent Redaction Server Module & IBM Daeja ViewONE Virtual Module for Microsoft Office are part of CP4BA as per LI at http://www-03.ibm.com/software/sla/sladb.nsf/lilookup/31BA4BF94C59AD55852586FE0060B39C?OpenDocument
 BAN_POD=`oc get pod -o name | grep navigator | cut -d "/" -f 2`
 oc cp data/ban/lic-server-virtual.v1 ${BAN_POD}:/opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/
@@ -58,14 +40,12 @@ oc cp data/ban/lic-server.v1 ${BAN_POD}:/opt/ibm/wlp/usr/servers/defaultServer/c
 
 echo
 echo ">>>>$(print_timestamp) Business Automation Studio (BAS) (foundation pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=tasks-completing-post-deployment-business-automation-studio
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-studio
 
 echo
 echo ">>>>$(print_timestamp) Add cpadmin user to ZEN UI"
-# Based on https://github.ibm.com/PrivateCloud-analytics/zen-dev-test-utils/blob/gh-pages/docs/IAM-Zen-integration.md#getting-zen-token
-# Based on https://www.ibm.com/support/knowledgecenter/en/cloudpaks_start/platform-ui/1.x.x/apis/usermgmt-api-swagger.json
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=tasks-completing-post-deployment-business-automation-studio\
-# Based on CP4BA demo deployment code for internal zen call
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-studio
+# TODO reference
 
 # Get access token for ZEN administrative initial user
 INITIAL_PASSWORD=`oc get secret admin-user-details -o jsonpath='{.data.initial_admin_password}' | base64 -d`
@@ -93,16 +73,17 @@ curl -k -X POST https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/usermgmt/
 echo
 echo ">>>>$(print_timestamp) Business Automation Insights (BAI) (foundation pattern)"
 
+# TODO rework
 echo
 echo ">>>>$(print_timestamp) Get UMS access token"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=apis-from-command-line-application
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=apis-from-command-line-application
 TOKEN=`curl --insecure --request POST "https://ums-sso-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/oidc/endpoint/ums/token" \
 --user "externalrest:${UNIVERSAL_PASSWORD}" \
 --data "grant_type=password&scope=openid&username=umsadmin&password=${UNIVERSAL_PASSWORD}" | jq -r '.access_token'`
 
 echo
 echo ">>>>$(print_timestamp) Update Workforce Insights Secret"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=resource-configuring-custom-secrets#custom-bpc-workforce-secret   
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=secrets-creating-custom-bpc-workforce-secret
 curl --insecure --request GET https://pfs-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/rest/bpm/federated/v1/systems \
 --header "Authorization: Bearer $TOKEN" \
 | jq '.systems | map(. | select(.systemType=="SYSTEM_TYPE_WLE")) | map(. |= {"systemID", "hostname"}) | [.[] | .["bpmSystemId"] = .systemID | .["url"] = ("https://"+.hostname+":9443") | .["username"] = "cpadmin" | .["password"] = "'${UNIVERSAL_PASSWORD}'" | del(.systemID,.hostname)]' \
@@ -157,11 +138,11 @@ done
 
 echo
 echo ">>>>$(print_timestamp) Automation Decision Services (ADS) (decisions_ads pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=tasks-completing-post-deployment-automation-decision-services
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-automation-decision-services
 
 echo
 echo ">>>>$(print_timestamp) Create ADS organization in Gitea"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=tutorial-task-5-sharing-your-decision-service
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=gst-task-2-connecting-git-repository-sharing-decision-service
 curl --insecure --request POST "https://gitea.${OCP_APPS_ENDPOINT}/api/v1/orgs" \
 --header  "Content-Type: application/json" \
 --user "cpadmin:${UNIVERSAL_PASSWORD}" \
@@ -250,7 +231,7 @@ mvn --s ~/.m2/settings.xml deploy:deploy-file -Dmaven.wagon.http.ssl.insecure=tr
 
 echo
 echo ">>>>$(print_timestamp) Automation Document Processing (ADP) (document_processing pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=tasks-completing-post-deployment-document-processing
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-document-processing
 
 echo
 echo ">>>>$(print_timestamp) Create ADP organization in Gitea"
@@ -271,7 +252,7 @@ curl --insecure --request POST "https://gitea.${OCP_APPS_ENDPOINT}/api/v1/orgs" 
 
 echo
 echo ">>>>$(print_timestamp) Download Init Tenants scripts"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=processing-loading-default-sample-data
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-loading-default-sample-data
 nle_pod=$(oc get po |grep natural-language-extractor | awk {'print $1'}| head -1)
 oc cp $nle_pod:/data-org/db_sample_data/imports.tar.xz data/adp/imports.tar.xz
 

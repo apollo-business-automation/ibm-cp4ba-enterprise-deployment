@@ -184,21 +184,6 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{UNIVERS
 
 ```
 
-### User Management Services (UMS) (foundation pattern)
-
-#### Endpoints
-
-- UMS login: https://ums-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ums/login  
-- UMS SSO endpoint: https://ums-sso-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}  
-- UMS Teams UI: https://ums-teams-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/teamserver/ui (can login with umsadmin/{{UNIVERSAL_PASSWORD}} but need to login on dedicated page at first https://ums-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ums/login)  
-- UMS Teams REST endpoint: https://ums-teams-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/teamserver/rest  
-- UMS SCIM: https://ums-scim-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}  
-- UMS Profiles: https://ums-profiles-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}  
-
-####  Credentials
-
-- cpadmin / {{UNIVERSAL_PASSWORD}}
-
 ### Business Automation Navigator (BAN) (foundation pattern)
 
 #### Endpoints
@@ -265,7 +250,7 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 - Administration: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ads/admin-platform  
 - Runtime OAS: https://ads-runtime-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ads/runtime/api/swagger-ui  
 - Runtime OAS JSON file: https://ads-runtime-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ads/runtime/api/v1/openapi.json  
-- Runtime service invocation template: https://ads-runtime-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ads/runtime/api/v1/decision/{decisionId}/operations/{operation} (using Bearer Authentication with UMS token (https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=sign-invoking-oauth-20-protected-apis))  
+- TODO Runtime service invocation template: https://ads-runtime-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ads/runtime/api/v1/decision/{decisionId}/operations/{operation} (using enApiKey Authentication with Zen token (https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=administering-authorizing-http-requests-by-using-zen-api-key))  
 
 ####  Credentials
 
@@ -456,7 +441,7 @@ As Cloud Pak Foundational Services.
 #### Getting license info
 
 Based on https://www.ibm.com/docs/en/cpfs?topic=service-obtaining-updating-api-token  
-Based on https://www.ibm.com/docs/en/cpfs?topic=service-apis-retrieving-license-data#products  
+Based on https://www.ibm.com/docs/en/cpfs?topic=pcfls-apis#auditSnapshot
 
 ```bash
 TOKEN=`oc get secret ibm-licensing-token -o jsonpath={.data.token} -n ibm-common-services | base64 -d`

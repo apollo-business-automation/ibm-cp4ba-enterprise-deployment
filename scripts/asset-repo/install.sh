@@ -57,10 +57,8 @@ wait_for_k8s_resource_condition_generic AssetRepository/assets ".status.phase" R
 
 echo
 echo ">>>>$(print_timestamp) Add new asset repo roles to cpadmin user"
-# Based on https://github.ibm.com/PrivateCloud-analytics/zen-dev-test-utils/blob/gh-pages/docs/IAM-Zen-integration.md#getting-zen-token
-# Based on https://www.ibm.com/support/knowledgecenter/en/cloudpaks_start/platform-ui/1.x.x/apis/usermgmt-api-swagger.json
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=tasks-completing-post-deployment-business-automation-studio\
-# Based on CP4BA demo deployment code for internal zen call
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-studio
+# TODO Based on CP4BA demo deployment code for internal zen call
 
 # Get access token for ZEN administrative initial user
 INITIAL_PASSWORD=`oc get secret admin-user-details -o jsonpath='{.data.initial_admin_password}' | base64 -d`

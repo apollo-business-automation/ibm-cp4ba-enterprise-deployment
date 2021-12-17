@@ -130,7 +130,7 @@ oc apply -f roboticprocessautomation.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Wait for RoboticProcessAutomation instance Ready state"
-# Validate successful deployment by following https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-validating-successful-installation
+# Validate successful deployment by following https://www.ibm.com/docs/en/cloud-paks/1.0?topic=dependencies-validating-successful-installation
 wait_for_k8s_resource_condition RoboticProcessAutomation/rpa Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 echo

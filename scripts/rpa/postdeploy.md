@@ -7,7 +7,7 @@ The following list specifies when you need to perform particular post-deployment
 
 ## Install RPA Client
 
-Based on https://www.ibm.com/docs/en/rpa/20.12?topic=premises-client-installation
+Based on https://www.ibm.com/docs/en/rpa/21.0?topic=SSTHBP_21.0/installation/on_premises/client/client_installation.html
 
 You need to download IBM Robotic Process Automation Client Installer (G00PWZX) as IRPA_Client_Installer.zip from PPA  
 Unzip IRPA_Client_Installer.zip  
@@ -26,7 +26,7 @@ Click *Confirm*
 
 ## Update chromedriver for studio
 
-Based on https://www.ibm.com/docs/en/rpa/20.12?topic=twarpa-google-chrome-binary-file-is-not-found-when-starting-browser-instance
+Based on https://www.ibm.com/docs/en/rpa/21.0?topic=twarpa-google-chrome-binary-file-is-not-found-when-starting-browser-instance
 
 Take note of which Chrome version you are using  
 Download the appropriate chromedriver from here (don't worry about 32 or 64bit, this driver works for both) https://chromedriver.chromium.org/downloads  

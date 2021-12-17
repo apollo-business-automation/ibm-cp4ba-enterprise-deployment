@@ -9,7 +9,6 @@ spec:
       create_route: true
     business_performance_center:
       replicas: 1
-      admin_group: cn=cpadmins,ou=Groups,dc=cp
       workforce_insights_secret: custom-bpc-workforce-secret
     management:
       replicas: 1    
@@ -29,3 +28,5 @@ spec:
     content:
       install: true
       parallelism: 1
+    event_forwarder:
+      install: false

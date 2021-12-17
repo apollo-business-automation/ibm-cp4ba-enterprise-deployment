@@ -7,18 +7,6 @@ spec:
       dc_common_database_name: CP4BA
       dc_common_database_instance_secret: odm-db-secret
   odm_configuration:
-    service:
-      routes:
-        decisionCenter:
-          type: passthrough
-        decisionRunner:
-          type: passthrough
-        decisionServerConsole:
-          type: passthrough
-        decisionServerRuntime:
-          type: passthrough
     customization:
       securitySecretRef: odm-tls-secret
       authSecretRef: odm-web-security-secret
-    oidc:
-      enabled: true

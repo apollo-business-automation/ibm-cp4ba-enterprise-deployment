@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=deployment-installing-enterprise-script
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=deployment-checking-completing-your-custom-resource
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=deployment-deploying-custom-resource-you-created-script
 
 echo
 echo ">>>>Source internal variables"
@@ -43,29 +44,13 @@ SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Resource Registry (RR) (foundation pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=resource-checking-cluster-configuration point 3
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-checking-cluster-configuration point 3
 ./data/add-pattern.sh data/cr.target.yaml "foundation"
 yq m -i -x -a append data/cr.target.yaml data/rr/cr.yaml
 
 echo
-echo ">>>>$(print_timestamp) User Management Services (UMS) (foundation pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=resource-configuring-user-management-services
-
-echo
-echo ">>>>$(print_timestamp) Update UMS CR"
-sed -f - data/ums/cr.yaml > data/ums/cr.target.yaml << SED_SCRIPT
-s|{{DB2_HOSTNAME}}|${DB2_HOSTNAME}|g
-SED_SCRIPT
-
-echo
-echo ">>>>$(print_timestamp) Add UMS to CR"
-./data/add-pattern.sh data/cr.target.yaml "foundation"
-./data/add-component.sh data/cr.target.yaml "ums"
-yq m -i -x -a append data/cr.target.yaml data/ums/cr.target.yaml
-
-echo
 echo ">>>>$(print_timestamp) Business Automation Navigator (BAN) (foundation pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=resource-configuring-business-automation-navigator
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-business-automation-navigator
 
 echo
 echo ">>>>$(print_timestamp) Update BAN CR"
@@ -88,7 +73,7 @@ fi
 
 echo
 echo ">>>>$(print_timestamp) Business Automation Studio (BAS) (foundation pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=resource-configuring-business-automation-studio
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-business-automation-studio
 
 echo
 echo ">>>>$(print_timestamp) Update BAS CR"
@@ -104,7 +89,7 @@ yq m -i -x -a append data/cr.target.yaml data/bas/cr.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Business Automation Insights (BAI) (foundation pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=resource-configuring-business-automation-insights
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-business-automation-insights
 
 echo
 echo ">>>>$(print_timestamp) Add BAI to CR"
@@ -114,7 +99,7 @@ yq m -i -x -a append data/cr.target.yaml data/bai/cr.yaml
 
 echo
 echo ">>>>$(print_timestamp) Operational Decision Manager (ODM) (decisions pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=resource-configuring-operational-decision-manager
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-operational-decision-manager
 
 echo
 echo ">>>>$(print_timestamp) Update ODM CR"
@@ -132,7 +117,7 @@ yq m -i -x -a append data/cr.target.yaml data/odm/cr.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Automation Decision Services (ADS) (decisions_ads pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=resource-configuring-automation-decision-services
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-automation-decision-services
 
 echo
 echo ">>>>$(print_timestamp) Add ADS to CR"
@@ -143,7 +128,7 @@ yq m -i -x -a append data/cr.target.yaml data/ads/cr.yaml
 
 echo
 echo ">>>>$(print_timestamp) FileNet Content Manager (FNCM) (content pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=resource-configuring-filenet-content-manager
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-filenet-content-manager
 
 echo
 echo ">>>>$(print_timestamp) Update FNCM CR"
@@ -174,7 +159,7 @@ fi
 
 echo
 echo ">>>>$(print_timestamp) Automation Application Engine (AAE) (application pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=resource-configuring-business-automation-application
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-business-automation-application
 
 echo
 echo ">>>>$(print_timestamp) Update AAE CR"
@@ -196,7 +181,7 @@ yq w -i data/cr.target.yaml spec.application_engine_configuration[0].data_persis
 
 echo
 echo ">>>>$(print_timestamp) Automation Document Processing (ADP) (document_processing pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=resource-configuring-document-processing
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-document-processing
 
 echo
 echo ">>>>$(print_timestamp) Update ADP CR"
@@ -212,7 +197,7 @@ yq m -i -x -a append data/cr.target.yaml data/adp/cr.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Business Automation Workflow Authoring (BAWAUT)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=resource-configuring-business-automation-workflow-authoring
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-business-automation-workflow-authoring
 
 echo
 echo ">>>>$(print_timestamp) Update BAWUAT CR"
@@ -228,7 +213,7 @@ yq m -i -x -a append data/cr.target.yaml data/bawaut/cr.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Apply completed CR"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=script-deploying-custom-resource
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=deployment-deploying-custom-resource-you-created-script
 oc apply -f data/cr.target.yaml
 
 echo
@@ -250,9 +235,6 @@ oc project ${CP4BA_PROJECT_NAME}
 echo
 echo ">>>>$(print_timestamp) Wait for Zen instance Ready state"
 wait_for_k8s_resource_condition Cartridge/icp4ba Ready ${DEFAULT_ATTEMPTS_4} ${DEFAULT_DELAY_4}
-echo
-echo ">>>>$(print_timestamp) Wait for UMS Deployment Available state"
-wait_for_k8s_resource_condition Deployment/${CP4BA_CR_META_NAME}-ums-deployment Available ${DEFAULT_ATTEMPTS_4} ${DEFAULT_DELAY_4}
 echo
 echo ">>>>$(print_timestamp) Wait for BAS PB Available state"
 wait_for_k8s_resource_condition Deployment/${CP4BA_CR_META_NAME}-pbk-ae-deployment Available ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}

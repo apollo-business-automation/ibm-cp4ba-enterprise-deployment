@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-enterprise-deployments
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=openshift-installing-production-deployments
 
 echo
 echo ">>>>Source internal variables"

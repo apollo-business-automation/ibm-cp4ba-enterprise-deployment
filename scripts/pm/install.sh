@@ -23,30 +23,30 @@ echo
 echo ">>>>$(print_timestamp) Switch Project"
 oc project ${CP4BA_PROJECT_NAME}
 
-# TODO enable with 1.12 version
-#echo
-#echo ">>>>$(print_timestamp) Create DB user"
-## Based on https://www.ibm.com/docs/en/db2/11.5?topic=ldap-managing-users
-#ldap_pod=$(oc get pod -n db2 -o name | grep ldap)
-#echo
-#echo ">>>>$(print_timestamp) Create DB user pm"
-#oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/addLdapUser.py -u pm -p ${UNIVERSAL_PASSWORD} -r user
-#
-#echo
-#echo ">>>>$(print_timestamp) Create & configure PM Schema"
-## This counts on CP4BA database created during CP4BA deployment makign this part not standalone
-#oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
-#su - db2inst1
-#db2 CONNECT TO CP4BA;
-#db2 CREATE REGULAR TABLESPACE PM_TS PAGESIZE 32 K BUFFERPOOL CP4BA_BP_32K;
-#db2 CREATE USER TEMPORARY TABLESPACE PM_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-#db2 CREATE SYSTEM TEMPORARY TABLESPACE PM_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-#
-#db2 GRANT DBADM ON DATABASE TO user pm;
-#db2 GRANT USE OF TABLESPACE PM_TS TO user pm;
-#db2 GRANT USE OF TABLESPACE PM_TEMP_TS TO user pm;
-#db2 CONNECT RESET;
-#EOSSH
+echo
+echo ">>>>$(print_timestamp) Create DB user"
+# Based on https://www.ibm.com/docs/en/db2/11.5?topic=ldap-managing-users
+ldap_pod=$(oc get pod -n db2 -o name | grep ldap)
+
+echo
+echo ">>>>$(print_timestamp) Create DB user pm"
+oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/addLdapUser.py -u pm -p ${UNIVERSAL_PASSWORD} -r user
+
+echo
+echo ">>>>$(print_timestamp) Create & configure PM Schema"
+# This counts on CP4BA database created during CP4BA deployment makign this part not standalone
+oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
+su - db2inst1
+db2 CONNECT TO CP4BA;
+db2 CREATE REGULAR TABLESPACE PM_TS PAGESIZE 32 K BUFFERPOOL CP4BA_BP_32K;
+db2 CREATE USER TEMPORARY TABLESPACE PM_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+db2 CREATE SYSTEM TEMPORARY TABLESPACE PM_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+
+db2 GRANT DBADM ON DATABASE TO user pm;
+db2 GRANT USE OF TABLESPACE PM_TS TO user pm;
+db2 GRANT USE OF TABLESPACE PM_TEMP_TS TO user pm;
+db2 CONNECT RESET;
+EOSSH
 
 echo
 echo ">>>>$(print_timestamp) Create PM Mongo DB"

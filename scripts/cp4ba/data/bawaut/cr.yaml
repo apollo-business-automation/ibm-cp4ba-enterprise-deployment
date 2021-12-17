@@ -22,6 +22,14 @@ spec:
         database_servername: "{{DB2_HOSTNAME}}"
         database_name: CP4BA
         database_port: "50000"
+      - dc_database_type: db2
+        dc_os_label: ch
+        dc_common_cpe_datasource_name: CH
+        dc_common_cpe_xa_datasource_name: CHXA
+        database_servername: "{{DB2_HOSTNAME}}"
+        database_name: CP4BA
+        database_port: "50000"
+        dc_common_conn_name: CH_dbconnection
   workflow_authoring_configuration:
     replicas: 1 # TODO increase to 2 when WFI bug is resolved. Need 2 because of PDB, or wait for pdb resolved and keep 1
     admin_user: cpadmin
@@ -46,6 +54,10 @@ spec:
         date_sql: 20210801T000000Z
         logical_unique_id: bawaut
         solution_list: "*"
+      case_history_emitter:
+        enable: true
+        case_history_store_schema_name: CH
+        dc_common_cpe_datasource_name: CH
     environment_config:
       show_task_prioritization_service_toggle: true
     federation_config:

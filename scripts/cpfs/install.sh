@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Based on https://www.ibm.com/docs/en/cpfs
-# Based on https://www.ibm.com/docs/en/cpfs?topic=online-installing-foundational-services-by-using-cli  
+# Based on https://www.ibm.com/docs/en/cpfs?topic=314-installing-foundational-services-by-using-cli
 
 echo
 echo ">>>>Source internal variables"

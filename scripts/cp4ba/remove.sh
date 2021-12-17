@@ -60,12 +60,6 @@ echo ">>>>$(print_timestamp) Delete DB users"
 # Based on https://www.ibm.com/docs/en/db2/11.5?topic=ldap-managing-users
 ldap_pod=$(oc get pod -n db2 -o name | grep ldap)
 echo
-echo ">>>>$(print_timestamp) Delete DB user ums"
-oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/removeLdapUser.py -u ums
-echo
-echo ">>>>$(print_timestamp) Delete DB user umsts"
-oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/removeLdapUser.py -u umsts
-echo
 echo ">>>>$(print_timestamp) Delete DB user icndb"
 oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/removeLdapUser.py -u icndb
 echo

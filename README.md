@@ -2,9 +2,9 @@
 
 Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components  with all kinds of prerequisites and extras on OpenShift.
 
-Last installation was performed on 2021-11-12 with CP4BA version 21.0.2-IF005 (also called 21.0.2.5 or 21.2.5)
+Last installation was performed on TODO 2021-11-12 with CP4BA version 21.0.3 (also called 21.0.3 or 21.3.0)
 
-Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-enterprise-deployments.
+Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=overview-what-is-cloud-pak-business-automation.
 
 Deployment of other parts is also based on respective official documentations.
 
@@ -49,8 +49,8 @@ Result of this Enterprise deployment is not fully supported:
 - For convenience and lower resource consumption, it uses one containerized DB2 database and schemas for majority of required DBs - in real deployments a supported DB option described on "[Compatibility matrix](https://www.ibm.com/software/reports/compatibility/clarity-reports/report/html/softwareReqsForProduct?deliverableId=F883F7E084D911EB986DCF4EEFB38D3F&osPlatforms=Linux|Mac%20OS|Windows&duComponentIds=D010|D009|D011|S013|S012|S002|S003|C020|C025|C014|C029|C018|C022|C026|C017|C028|C023|C021|C027|C019|C024|C015|C016|C001&mandatoryCapIds=71|26&optionalCapIds=134|62|127|9|401|132|20|161) > Supported Software > Databases" would be used
 
 What is not included:
-- IER - cannot use UMS, missing IER object stores and configuration.
-- ICCs - cannot use UMS, not covered.
+- IER - missing IER object stores and configuration.
+- ICCs - not covered.
 - Caution! FNCM External share - login issues, do not configure, otherwise other capabilities will break as well - waiting for fixes here.
 - Workflow Server and Workstream Services - this is a dev deployment. BAW Authoring and (BAW + IAWS) are mutually exclusive in single project.
 
@@ -75,6 +75,7 @@ Contains extra software which makes working with the platform even easier.
 - AKHQ - Web UI kafka browser automatically connected to Kafka instance deployed with CP4BA.
 - Kibana - Web UI elastic search dashboarding tool automatically connected to ES instance deployed with CP4BA.
 - Mail server - For various mail integrations e.g. from BAN, BAW and RPA.
+- Mongo Express - Web UI for MOngo DB databases for CP4BA and Process Mining to easier troubleshoot DB.
   
 ### CP4BA (Cloud Pak for Business Automation) section
 
@@ -82,9 +83,9 @@ Contains extra software which makes working with the platform even easier.
 
 Purple color is used for CP4BA capabilities.
 
-More info for these capabilities is available in official docs at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x.
+More info for these capabilities is available in official docs at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3.
 
-More specifically in overview of patterns at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=capabilities-enterprise-deployments.
+More specifically in overview of patterns at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=deployment-capabilities-production-deployments.
 
 #### IAF (IBM Automation Foundation) capabilities
 
@@ -96,7 +97,7 @@ More info for these capabilities is available in official docs at https://www.ib
 
 Contains services which are reused by Cloud Paks.
 
-More info available in official docs at https://www.ibm.com/support/knowledgecenter/en/SSHKN6/kc_welcome_cs.html.
+More info available in official docs at https://www.ibm.com/docs/en/cpfs.
 
 - Monitoring - Contains Grafana instance for custom dashboarding.
 - License metering - Tracks license usage. License Reporter as Web UI is also installed.
@@ -110,15 +111,16 @@ Contains prerequisites for the whole platform.
 - DB2 - Database storage for Capabilities which need it.
 - OpenLDAP - Directory solution for users and groups definition.
 - MSSQL server - Database storage for RPA server.
+- MongoDB - Database storage for ADS and Process Mining.
 
 ### Deployment job section
 
 Multiple command line tools are installed inside a container to make the installation possible.
 
-- JDK9 - Used for keytool command to generate certificates for ODM and for Maven (https://manpages.debian.org/unstable/openjdk-8-jre-headless/keytool.1.en.html https://openjdk.java.net/).
+- JDK9 - Used for keytool command to generate certificates for ODM and for Maven (https://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html https://openjdk.java.net/).
 - jq - Needed for JSON files manipulation from command line (https://stedolan.github.io/jq/manual/).
 - yq - Needed for YAML files manipulation from command line; version 3 is used (https://mikefarah.gitbook.io/yq/).
-- oc - Used to communicate with OpenShift from command line (https://docs.openshift.com/container-platform/4.7/cli_reference/openshift_cli/getting-started-cli.html#cli-using-cli_cli-developer-commands).
+- oc - Used to communicate with OpenShift from command line (https://docs.openshift.com/container-platform/4.8/cli_reference/openshift_cli/getting-started-cli.html#cli-using-cli_cli-developer-commands).
 - Global CA - Generated self-signed Certification Authority via OpenSSL to make trusting the platform easier. It is also possible to provide your own CA and how to do so is described later in this doc.
 - helm - Used for helm charts installation (https://helm.sh/docs/).
 - maven - Used for pushing ADS library jars to Nexus (https://maven.apache.org/). This enables custom ADS JARs development.
@@ -186,10 +188,10 @@ node/10.162.243.94
 ## Pre-requisites ⬅️
 
 - OpenShift cluster sized according with the system requirements
-  - Cloud Pak: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=pei-system-requirements
+  - Cloud Pak: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=ppd-system-requirements
   - RPA: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=openshift-pre-installation-requirements
   - Process Mining: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=platform-pre-installation-requirements
-  - IAF : https://www.ibm.com/docs/en/cloud-paks/1.0?topic=p-system-requirement
+  - IAF : https://www.ibm.com/docs/en/cloud-paks/1.0?topic=p-system-requirements
   - CPFS: https://www.ibm.com/docs/en/cpfs?topic=services-hardware-requirements-starterset-profile
 - OpenShift cluster admin access
 - Access to public internet from OpenShift
@@ -552,7 +554,7 @@ Now continue with the [Post removal steps](#post-removal-steps-%EF%B8%8F).
 
 ## Post removal steps ➡️
 
-On ROKS, you may want to revert the actions of node labeling for DB2 "no root squash" from https://www.ibm.com/docs/en/db2/11.5?topic=requirements-cloud-file-storage
+On ROKS, you may want to revert the actions of node labeling for DB2 "no root squash" from https://www.ibm.com/docs/en/db2/11.5?topic=SSEPGG_11.5.0/com.ibm.db2.luw.db2u_openshift.doc/aese-cfg-nfs-filegold.html
 
 During deployment various CustomResourceDefinitions were created, you may want to remove them.
 
