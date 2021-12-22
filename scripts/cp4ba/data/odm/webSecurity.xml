@@ -27,5 +27,14 @@
   <variable name="odm.resDeployers.user2" value="user:customRealm/{{CP4BA_PROJECT_NAME}}-{{CP4BA_CR_META_NAME}}-odm-oidc-client-id"/>
   <variable name="odm.resMonitors.user2" value="user:customRealm/{{CP4BA_PROJECT_NAME}}-{{CP4BA_CR_META_NAME}}-odm-oidc-client-id"/>
   <variable name="odm.resExecutors.user2" value="user:customRealm/{{CP4BA_PROJECT_NAME}}-{{CP4BA_CR_META_NAME}}-odm-oidc-client-id"/>
+  
+  <!-- Give all roles to the IAM clientID -->
+  <variable name="odm.rtsAdministrators.user3" value="user:customRealm/{{CP4BA_CR_META_NAME}}-odm-oidc-client-id"/>
+  <variable name="odm.rtsInstallers.user3" value="user:customRealm/{{CP4BA_CR_META_NAME}}-odm-oidc-client-id"/>
+  <variable name="odm.rtsConfigManagers.user3" value="user:customRealm/{{CP4BA_CR_META_NAME}}-odm-oidc-client-id"/>
+  <variable name="odm.resAdministrators.user3" value="user:customRealm/{{CP4BA_CR_META_NAME}}-odm-oidc-client-id"/>
+  <variable name="odm.resDeployers.user3" value="user:customRealm/{{CP4BA_CR_META_NAME}}-odm-oidc-client-id"/>
+  <variable name="odm.resMonitors.user3" value="user:customRealm/{{CP4BA_CR_META_NAME}}-odm-oidc-client-id"/>
+  <variable name="odm.resExecutors.user3" value="user:customRealm/{{CP4BA_CR_META_NAME}}-odm-oidc-client-id"/>
 
 </server>

@@ -20,7 +20,7 @@ As DB2 database management UI.
 #### Endpoints
 
 - DB2 Monitoring Console UI: https://db2mc.{{OCP_APPS_ENDPOINT}}/console  
-- DB2 Monitoring Console REST API docs: https://db2mc.{{OCP_APPS_ENDPOINT}}/dbapi/api/index_enterprise.html  
+- DB2 Monitoring Console REST API docs: https://db2mc.{{OCP_APPS_ENDPOINT}}/dbapi/api/index_enterprise.html (If you encounter Content Security Policy error, use FireFox)  
 - DB2 Monitoring Console REST API endpoint: https://db2mc.{{OCP_APPS_ENDPOINT}}/dbapi/v4
 
 #### Credentials
@@ -173,10 +173,6 @@ oc exec -it -n {{CP4BA_PROJECT_NAME}} `oc get pod -n {{CP4BA_PROJECT_NAME}} | gr
 
 ### Resource Registry (RR) (foundation pattern)
 
-#### Endpoints
-
-- Version of RR: https://rr-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/version  
-
 #### Reading content of ETCD from RR container terminal
 
 ```bash
@@ -188,7 +184,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{UNIVERS
 
 #### Endpoints
 
-- Admin desktop: https://navigator-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=admin  
+- Admin desktop: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/icn/navigator/?desktop=admin  
 
 ####  Credentials
 
@@ -198,8 +194,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{UNIVERS
 
 #### Endpoints
 
-- Studio UI: https://bas-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/BAStudio (Now redirects to Platform UI)
-- Playback AAE Server apps list: https://ae-pbk-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/v2/applications  
+- Playback AAE Server apps list: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ae-pbk/v2/applications  
 
 ####  Credentials
 
@@ -209,16 +204,15 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{UNIVERS
 
 #### Endpoints
 
-- Business Performance Center UI: https://bai-bpc-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}  
-- Business Performance Center About JSON: https://bai-bpc-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/about.json  
-- Management endpoint: https://bai-management-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}  
-- Business Performance Center UI in BAN: https://navigator-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=BAI  
-- Flink: https://bai-flink-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}  
+- Business Performance Center UI: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/bai-bpc  
+- Business Performance Center About JSON: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/bai-bpc/about.json  
+- Business Performance Center UI in BAN: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/icn/navigator/?desktop=BAI  
+- Flink: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/bai-flink-ui  
 
 ####  Credentials
 
 - for BAI - cpadmin / {{UNIVERSAL_PASSWORD}}
-- for Flink - username: ```oc get secret -n {{CP4BA_PROJECT_NAME}} $(oc get eventprocessor -n {{CP4BA_PROJECT_NAME}} {{CP4BA_PROJECT_NAME}}-bai-event-processor -o jsonpath='{.status.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.username}' | base64 -d``` / password: ```oc get secret -n {{CP4BA_PROJECT_NAME}} $(oc get eventprocessor -n {{CP4BA_PROJECT_NAME}} {{CP4BA_PROJECT_NAME}}-bai-event-processor -o jsonpath='{.status.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.password}' | base64 -d```
+- for Flink - username: eventprocessing-admin (```oc get secret -n {{CP4BA_PROJECT_NAME}} $(oc get InsightsEngine -n {{CP4BA_PROJECT_NAME}} iaf-insights-engine -o jsonpath='{.status.components.flinkUi.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.username}' | base64 -d```) / password: ```oc get secret -n {{CP4BA_PROJECT_NAME}} $(oc get InsightsEngine -n {{CP4BA_PROJECT_NAME}} iaf-insights-engine -o jsonpath='{.status.components.flinkUi.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.password}' | base64 -d```
 
 #### Extracting generated templates from operator for debug
 
@@ -233,11 +227,11 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 
 #### Endpoints
 
-- Decision Center UI: https://odm-decisioncenter-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}  
-- Decision Center OAS: https://odm-decisioncenter-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/decisioncenter-api  
-- Decision Runner UI: https://odm-decisionrunner-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}  
-- Decision Server Console: https://odm-decisionserverconsole-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}  
-- Decision Server Runtime: https://odm-decisionserverruntime-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}  
+- Decision Center UI: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/odm/decisioncenter  
+- Decision Center OAS: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/odm/decisioncenter-api  
+- Decision Runner UI: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/odm/DecisionRunner  
+- Decision Server Console: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/odm/res  
+- Decision Server Runtime: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/odm/DecisionService  
 
 ####  Credentials
 
@@ -248,9 +242,9 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 #### Endpoints
 
 - Administration: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ads/admin-platform  
-- Runtime OAS: https://ads-runtime-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ads/runtime/api/swagger-ui  
-- Runtime OAS JSON file: https://ads-runtime-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ads/runtime/api/v1/openapi.json  
-- TODO Runtime service invocation template: https://ads-runtime-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ads/runtime/api/v1/decision/{decisionId}/operations/{operation} (using enApiKey Authentication with Zen token (https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=administering-authorizing-http-requests-by-using-zen-api-key))  
+- Runtime OAS: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ads/runtime/api/swagger-ui  
+- Runtime OAS JSON file: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ads/runtime/api/v1/openapi.json  
+- TODO Runtime service invocation template: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ads/runtime/api/v1/decision/{decisionId}/operations/{operation} (using enApiKey Authentication with Zen token (https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=administering-authorizing-http-requests-by-using-zen-api-key))  
 
 ####  Credentials
 
@@ -262,24 +256,25 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 
 For external share you need to use ingress prefixed set of endpoints.
 
-- ACCE console UI: https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/acce  
-- CPE WSI endpoint: https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/wsi/FNCEWS40MTOM  
-- CPE health check: https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/P8CE/Health
-- CPE ping page: https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/FileNet/Engine
-- PE ping page: https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/peengine/IOR/ping
-- PE details page: https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/peengine/IOR/admin/help
-- CSS health check: https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/P8CE/Health/CBRDashboard
-- CMIS definitions UI: https://cmis-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/openfncmis_wlp  
-- CMIS endpoint: https://cmis-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/openfncmis_wlp/services (e.g. for BAW CMIS)  
-- GraphiQL UI: https://graphql-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/content-services-graphql  
-- GraphQL endpoint: https://graphql-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/content-services-graphql/graphql  
+- ACCE console UI: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/acce  
+- CPE WSI endpoint: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/wsi/FNCEWS40MTOM  
+- CPE health check: https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/P8CE/Health (https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/P8CE/Health)
+- CPE ping page: https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/FileNet/Engine (https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/FileNet/Engine)
+- PE ping page: https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/peengine/IOR/ping (https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/peengine/IOR/ping)
+- PE details page: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/peengine/IOR/admin/help
+- CSS health check: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/P8CE/Health/CBRDashboard
+- CMIS definitions UI: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/openfncmis_wlp
+- CMIS endpoint: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/openfncmis_wlp/services (e.g. for BAW CMIS)  
+- GraphiQL UI: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/content-services-graphql  
+- GraphQL endpoint: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/content-services-graphql/graphql  
+- OS1 Desktop: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/icn/navigator/?desktop=OS1  
 - External Share ingress for navigator: https://ingress-es-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=admin
 - External Share ingress for plugin: https://ingress-es-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/contentapi/plugins/sharePlugin.jar  
 - External Share ingress for rest endpoint: https://ingress-es-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/contentapi/rest/share/v1/info  
 - External Share ingress for desktop: https://ingress-es-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=OS1  
 - External Share ingress for external desktop: https://ingress-es-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=ExternalShareOS1  
-- Task Manager API endpoint: https://tm-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/taskManagerWeb/api/v1  
-- Task Manager Ping page: https://tm-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/taskManagerWeb/api/v1/tasks/ping  
+- Task Manager API endpoint: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/tm/api/v1  
+- Task Manager Ping page: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/tm/api/v1/tasks/ping  
 
 ####  Credentials
 
@@ -289,7 +284,7 @@ For external share you need to use ingress prefixed set of endpoints.
 
 #### Endpoints
 
-- AAE Server apps list: https://ae-instance1-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/v1/applications  
+- AAE Server apps list: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ae-instance1/v2/applications  
 
 ####  Credentials
 
@@ -299,9 +294,8 @@ For external share you need to use ingress prefixed set of endpoints.
 
 #### Endpoints
 
-- CDRA API: https://cdra-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cdapi/v1/api  
-- Content Project Deployment Service: https://cpds-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}} (Note: This URL is meant to use with ADP scripts and not to be accessed as is without context root)
-- Viewone build info: https://viewone-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}  
+- CDRA API: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/adp/cdra/cdapi/  
+- Content Project Deployment Service: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/adp/cpds/ibm-dba-content-deployment/ (Note: This URL is meant to use with ADP scripts and not to be accessed as is without context root)
 
 ####  Credentials
 
@@ -311,23 +305,35 @@ For external share you need to use ingress prefixed set of endpoints.
 
 #### Endpoints
 
-- Process Portal: https://bawaut-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ProcessPortal  
-- Process Admin: https://bawaut-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ProcessAdmin  
-- Process Inspector: https://bawaut-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ProcessInspector  
-- OAS REST API: https://bawaut-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/bpm/explorer  
-- OAS REST API Operations: https://bawaut-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/bpm/explorer/?url=/ops/docs  
-- Original REST API: https://bawaut-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/bpmrest-ui  
-- PFS federated systems: https://pfs-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/rest/bpm/federated/v1/systems  
-- Workplace: https://navigator-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=workplace  
-- Case monitor: https://navigator-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=bawmonitor  
-- Case Client: https://navigator-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=baw  
-- Case administration: https://navigator-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=bawadmin  
+- Process Portal: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/bawaut/ProcessPortal  
+- Process Admin: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/bawaut/ProcessAdmin  
+- Process Inspector: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/bawaut/ProcessInspector  
+- OAS REST API: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/bawaut/bpm/explorer  
+- OAS REST API Operations: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/bawaut/bpm/explorer/?url=/bawaut/ops/docs  
+- Original REST API: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/bawaut/bpmrest-ui  
+- PFS federated systems: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/pfs/rest/bpm/federated/v1/systems  
+- Workplace: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/icn/navigator/?desktop=workplace  
+- Case monitor: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/icn/navigator/?desktop=bawmonitor  
+- Case Client: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/icn/navigator/?desktop=baw  
+- Case administration: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/icn/navigator/?desktop=bawadmin  
 
 ####  Credentials
 
 - cpadmin / {{UNIVERSAL_PASSWORD}}
 
 ## CP4BA - IAF capabilities
+
+### BTS
+
+#### Endpoints
+
+- Admin UI: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/teamserver/ui
+- API Explorer: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/teamserver/api/explorer
+- Teams API: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/teamserver/rest
+
+#### Credentials
+
+- cpadmin / {{UNIVERSAL_PASSWORD}}
 
 ### Platform UI
 
@@ -360,8 +366,8 @@ For external share you need to use ingress prefixed set of endpoints.
 
 #### Credentials
 
-- Username: ```oc get kafkauser icp4ba-kafka-auth -n {{CP4BA_PROJECT_NAME}} -o jsonpath='{.status.username}'```  
-- Password: ```oc get secret -n {{CP4BA_PROJECT_NAME}} $(oc get kafkauser icp4ba-kafka-auth -n {{CP4BA_PROJECT_NAME}} -o jsonpath='{.status.secret}') -o jsonpath='{.data.password}' | base64 -d```  
+- Username: icp4ba-kafka-auth-0 (```oc get kafkauser icp4ba-kafka-auth-0 -n {{CP4BA_PROJECT_NAME}} -o jsonpath='{.status.username}'```)  
+- Password: ```oc get secret -n {{CP4BA_PROJECT_NAME}} $(oc get kafkauser icp4ba-kafka-auth-0 -n {{CP4BA_PROJECT_NAME}} -o jsonpath='{.status.secret}') -o jsonpath='{.data.password}' | base64 -d```  
 
 Apicurio has same credentials as Kafka.
 
@@ -410,8 +416,8 @@ oc get pods -n {{CP4BA_PROJECT_NAME}} -o name | grep processmining-operator-cont
 
 #### Endpoints
 
-- UI: https://rpa-ui-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/
-- API: https://rpa-apiserver-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/v1.0/en/configuration
+- UI: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/rpa/ui
+- API: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/rpa/api/v1.2/en/configuration
 
 ####  Credentials
 

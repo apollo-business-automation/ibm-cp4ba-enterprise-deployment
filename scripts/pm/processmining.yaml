@@ -43,5 +43,5 @@ spec:
           database: cp4ba
           host: "{{DB2_HOSTNAME}}"
           port: 50000
-          schema: pm
+          schema: PM
           ssl: false        

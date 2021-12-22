@@ -84,7 +84,7 @@ su - db2inst1
 sleep 30 #for db2start to finish
 db2 deactivate db BLUDB
 db2 force application ALL
-sleep 30 #for force aplication to finish
+sleep 60 #for force aplication to finish
 db2 drop db BLUDB
 EOSSH
 

@@ -4,5 +4,3 @@ spec:
       replica_count: 1
       es_production_setting:
         license_model: FNCM.PVUNonProd
-        # TODO remove after fix, broken in 21.0.2 roles\FNCM\templates\es\es-override-configMap.yaml@226
-        allowed_origins: "https://ingress-es-{{ shared_configuration.sc_deployment_hostname_suffix }}"

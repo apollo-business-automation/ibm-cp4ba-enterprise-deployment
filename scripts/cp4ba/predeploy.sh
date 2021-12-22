@@ -88,7 +88,7 @@ oc cp db2/c-db2ucluster-db2u-0:/opt/ibm/db2/V11.5.0.0/java/db2jcc_license_cu.jar
 # DB2 driver JAR download on purpose. oc cp not used as it caused EOF errors for larger file
 curl -k https://repo1.maven.org/maven2/com/ibm/db2/jcc/11.5.6.0/jcc-11.5.6.0.jar -o ./jdbc/db2/db2jcc4.jar
 exit_test $? "Download DB2 drivers Failed"
-OPERATOR_POD=`oc get pod -o name | grep cp4a | cut -d "/" -f 2`
+OPERATOR_POD=`oc get pod -o name | grep cp4a-operator | cut -d "/" -f 2`
 oc cp ./jdbc ${OPERATOR_POD}:/opt/ansible/share/jdbc
 
 echo
@@ -197,6 +197,7 @@ oc create secret generic global-ca --from-file=ca.crt=../global-ca/global-ca.crt
 echo
 echo ">>>>$(print_timestamp) Create IAF admin ES user Secret"
 # Based on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=configuration-operational-datastore
+# Username change is not described
 sed -f - data/iaf/es-secret.yaml > data/iaf/es-secret.target.yaml << SED_SCRIPT
 s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
 SED_SCRIPT
@@ -216,6 +217,8 @@ oc apply -f data/iaf/automationbase.target.yaml
 echo
 echo ">>>>$(print_timestamp) Switch to Project ibm-common-services"
 oc project ibm-common-services
+
+manage_manual_operator ibm-crossplane-operator-app ibm-crossplane
 
 echo
 echo ">>>>$(print_timestamp) Wait for Events InstallPlan to be created"
@@ -265,19 +268,18 @@ echo ">>>>$(print_timestamp) Business Automation Insights (BAI) (foundation patt
 echo
 echo ">>>>$(print_timestamp) Setup Stub Workforce Insights Secret"
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=secrets-creating-custom-bpc-workforce-secret
-
+rm data/bai/workforce-insights-configuration.yaml
 touch data/bai/workforce-insights-configuration.yaml
 oc create secret generic custom-bpc-workforce-secret --from-file=workforce-insights-configuration.yml=data/bai/workforce-insights-configuration.yaml
 
 echo
 echo ">>>>$(print_timestamp) BAI custom Secret"
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=secrets-creating-custom-bai-secret
-# TODO enable when fixed - double encoding in roles\BAI\templates\config\bai-secret-internal.yaml@28
-#oc create secret generic custom-bai-secret \
-#--from-literal=kibana-username=elasticsearch-admin \
-#--from-literal=kibana-password=${UNIVERSAL_PASSWORD} \
-#--from-literal=management-username=cpadmin \
-#--from-literal=management-password=${UNIVERSAL_PASSWORD}
+oc create secret generic custom-bai-secret \
+--from-literal=kibana-username=elasticsearch-admin \
+--from-literal=kibana-password=${UNIVERSAL_PASSWORD} \
+--from-literal=management-username=cpadmin \
+--from-literal=management-password=${UNIVERSAL_PASSWORD}
 
 echo
 echo ">>>>$(print_timestamp) Operational Decision Manager (ODM) (decisions pattern)"
@@ -312,7 +314,7 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
 fi
 
 echo
-echo ">>>>$(print_timestamp) ODM Security UMS OIDC"
+echo ">>>>$(print_timestamp) ODM Security IAM OIDC"
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=access-mapping-odm-roles-iam-groups-users
 # Adds cpadmin user to all roles and cpadmins to all groups.
 sed -f - data/odm/webSecurity.xml > data/odm/webSecurity.target.xml << SED_SCRIPT
@@ -408,9 +410,19 @@ oc patch secret ibm-fncm-secret -p '{"data": {"badocsDBUsername": "'$(echo -n ba
 oc patch secret ibm-fncm-secret -p '{"data": {"batosDBUsername": "'$(echo -n batos | base64)'","batosDBPassword": "'$(echo -n ${UNIVERSAL_PASSWORD} | base64)'"}}'
 oc patch secret ibm-fncm-secret -p '{"data": {"badosDBUsername": "'$(echo -n bados | base64)'","badosDBPassword": "'$(echo -n ${UNIVERSAL_PASSWORD} | base64)'"}}'
 
-# Update FNCM secret for new Case History connection. 
+# Update FNCM secret for new Case History connection.
 # Make sure FNCM secret already exists
 oc patch secret ibm-fncm-secret -p '{"data": {"chDBUsername": "'$(echo -n ch | base64)'","chDBPassword": "'$(echo -n ${UNIVERSAL_PASSWORD} | base64)'"}}'
+
+echo
+echo ">>>>$(print_timestamp) BAWAUT Security for Email notifications"
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=services-optional-customizing-runtime-server-properties
+# Based on https://www.ibm.com/docs/en/baw/20.x?topic=work-configuring-email-notifications
+# Based on https://www.ibm.com/docs/en/baw/20.x?topic=configuration-creating-100customxml-file
+sed -f - data/bawaut/100Custom.xml > data/bawaut/100Custom.target.xml << SED_SCRIPT
+s|{{MAIL_HOSTNAME}}|${MAIL_HOSTNAME}|g
+SED_SCRIPT
+oc create secret generic wfs-lombardi-custom-xml-secret --from-file=sensitiveCustomConfig=data/bawaut/100Custom.target.xml
 
 echo
 echo ">>>>$(print_timestamp) CP4BA predeploy install completed"

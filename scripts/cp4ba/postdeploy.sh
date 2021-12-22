@@ -45,7 +45,6 @@ echo ">>>>$(print_timestamp) Business Automation Studio (BAS) (foundation patter
 echo
 echo ">>>>$(print_timestamp) Add cpadmin user to ZEN UI"
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-studio
-# TODO reference
 
 # Get access token for ZEN administrative initial user
 INITIAL_PASSWORD=`oc get secret admin-user-details -o jsonpath='{.data.initial_admin_password}' | base64 -d`
@@ -58,35 +57,36 @@ ZEN_ACCESS_TOKEN=`oc exec deployment/zen-core -- curl -k -X POST https://zen-cor
 }' \
 | jq -r '.token'`
 
-# Create cpadmin user
-curl -k -X POST https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/usermgmt/v1/user \
+# Add all roles to  cpadmin user
+curl -k -X PUT https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/usermgmt/v1/user/cpadmin?add_roles=true \
 --header 'Content-Type: application/json' \
 --header "Authorization: Bearer $ZEN_ACCESS_TOKEN" \
 --data-raw '{
   "username": "cpadmin",
-  "displayName": "cpadmin",
-  "role": "Admin",
-  "user_roles": ["zen_administrator_role","iaf-automation-admin","iaf-automation-analyst","iaf-automation-developer","iaf-automation-operator","zen_user_role"],
-  "email": "cpadmin@cp.local"
+  "user_roles": ["zen_administrator_role","iaf-automation-admin","iaf-automation-analyst","iaf-automation-developer","iaf-automation-operator","zen_user_role"]
 }'
+
+echo
+echo ">>>>$(print_timestamp) Get IAM access token"
+# Based on https://www.ibm.com/docs/en/cpfs?topic=apis-oidc-registration#get2 (Get access token by using username and password)
+ACCESS_TOKEN=`curl -k -X POST -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" \
+-d "grant_type=password&username=cpadmin&password=${UNIVERSAL_PASSWORD}&scope=openid" \
+https://cp-console.${OCP_APPS_ENDPOINT}/idprovider/v1/auth/identitytoken \
+| jq -r '.access_token'`
+
+echo
+echo ">>>>$(print_timestamp) Exchange IAM access token for Zen token"
+TOKEN=$(curl -sk "https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/v1/preauth/validateAuth" -H "username:cpadmin" -H "iam-token: $ACCESS_TOKEN" | jq -r .accessToken)
 
 echo
 echo ">>>>$(print_timestamp) Business Automation Insights (BAI) (foundation pattern)"
 
-# TODO rework
-echo
-echo ">>>>$(print_timestamp) Get UMS access token"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=apis-from-command-line-application
-TOKEN=`curl --insecure --request POST "https://ums-sso-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/oidc/endpoint/ums/token" \
---user "externalrest:${UNIVERSAL_PASSWORD}" \
---data "grant_type=password&scope=openid&username=umsadmin&password=${UNIVERSAL_PASSWORD}" | jq -r '.access_token'`
-
 echo
 echo ">>>>$(print_timestamp) Update Workforce Insights Secret"
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=secrets-creating-custom-bpc-workforce-secret
-curl --insecure --request GET https://pfs-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/rest/bpm/federated/v1/systems \
+curl --insecure --request GET https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/pfs/rest/bpm/federated/v1/systems \
 --header "Authorization: Bearer $TOKEN" \
-| jq '.systems | map(. | select(.systemType=="SYSTEM_TYPE_WLE")) | map(. |= {"systemID", "hostname"}) | [.[] | .["bpmSystemId"] = .systemID | .["url"] = ("https://"+.hostname+":9443") | .["username"] = "cpadmin" | .["password"] = "'${UNIVERSAL_PASSWORD}'" | del(.systemID,.hostname)]' \
+| jq '.systems | map(. | select(.systemType=="SYSTEM_TYPE_WLE")) | map(. |= {"systemID", "hostname"}) | [.[] | .["bpmSystemId"] = .systemID | .["url"] = ("https://cpd-'${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}'/bawaut") | .["username"] = "cpadmin" | .["password"] = "'${UNIVERSAL_PASSWORD}'" | del(.systemID,.hostname)]' \
 > data/bai/workforce-insights-configuration.json
 
 yq r --prettyPrint data/bai/workforce-insights-configuration.json > data/bai/workforce-insights-configuration.yaml
@@ -94,11 +94,11 @@ oc patch secret custom-bpc-workforce-secret -p '{"data": {"workforce-insights-co
 
 echo
 echo ">>>>$(print_timestamp) Delete BPC pods"
-oc get pods -o name | grep business-performance-center | xargs oc delete
+oc get pods -o name | grep iaf-insights-engine-cockpit | xargs oc delete
 
 echo
 echo ">>>>$(print_timestamp) Wait for BPC Deployment Available state"
-wait_for_k8s_resource_condition Deployment/${CP4BA_CR_META_NAME}-bai-business-performance-center Available
+wait_for_k8s_resource_condition Deployment/iaf-insights-engine-cockpit Available
 
 echo
 echo ">>>>$(print_timestamp) Operational Decision Manager (ODM) (decisions pattern)"
@@ -106,7 +106,7 @@ echo ">>>>$(print_timestamp) Operational Decision Manager (ODM) (decisions patte
 echo
 echo ">>>>$(print_timestamp) Replace OIDC providers file with real values"
 sed -f - data/odm/oidc-providers.json > data/odm/oidc-providers.target.json << SED_SCRIPT
-s|{{CP4BA_PROJECT_NAME}}|${CP4BA_PROJECT_NAME}|g
+s|{{CP4BA_CR_META_NAME}}|${CP4BA_CR_META_NAME}|g
 s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g
 SED_SCRIPT
 
@@ -115,26 +115,6 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   oc create cm odm-oidc-providers --from-file=oidc-providers.json=data/odm/oidc-providers.target.json -o yaml --dry-run=client | oc apply -f -
   oc project ${CP4BA_PROJECT_NAME}
 fi
-
-echo
-echo ">>>>$(print_timestamp) Set Default servers credentials"
-# Get UMS access token
-TOKEN=`curl --insecure --request POST "https://ums-sso-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/oidc/endpoint/ums/token" \
---user "externalrest:${UNIVERSAL_PASSWORD}" \
---data "grant_type=password&scope=openid&username=umsadmin&password=${UNIVERSAL_PASSWORD}" | jq -r '.access_token'`
-
-# Get Servers & Update credentials
-curl --insecure --request GET "https://odm-decisioncenter-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/decisioncenter-api/v1/servers" \
---header "Authorization: Bearer $TOKEN" | \
-jq -c '.elements[]' | while read i; do
-SERVER_ID=`echo $i | jq -r '.id'`;
-echo $i | jq -c '.loginServer = "cpadmin" | .loginPassword = "'${UNIVERSAL_PASSWORD}'"' | \
-curl --insecure --request POST  "https://odm-decisioncenter-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/decisioncenter-api/v1/servers/$SERVER_ID" \
---header "Authorization: Bearer $TOKEN" \
---header "Content-Type: application/json" \
---data-binary @-;
-done
-
 
 echo
 echo ">>>>$(print_timestamp) Automation Decision Services (ADS) (decisions_ads pattern)"
@@ -160,17 +140,24 @@ curl --insecure --request POST "https://gitea.${OCP_APPS_ENDPOINT}/api/v1/orgs" 
 
 echo
 echo ">>>>$(print_timestamp) Download ADS Maven plugins and push them to Nexus"
-# Get UMS access token
-TOKEN=`curl --insecure --request POST "https://ums-sso-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/oidc/endpoint/ums/token" \
---user "externalrest:${UNIVERSAL_PASSWORD}" \
---data "grant_type=password&scope=openid&username=umsadmin&password=${UNIVERSAL_PASSWORD}" | jq -r '.access_token'`
-
 # Download maven plugins definition
 curl --insecure --request GET "https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/index.json" \
 --header "Authorization: Bearer $TOKEN" --output data/ads/index.json
 
 # Download and push annotations_maven_plugin
 JAR_PATH=$(cat data/ads/index.json | jq -r '.resources.annotations_maven_plugin.path')
+curl --insecure https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/$JAR_PATH --output data/ads/$JAR_PATH \
+--header "Authorization: Bearer $TOKEN"
+JAR_SUB="${JAR_PATH:0:(-4)}"  
+ARTIFACT_ID=`echo $JAR_SUB | cut -d "_" -f 1`
+VERSION=`echo $JAR_SUB | cut -d "_" -f 2`
+
+mvn --s ~/.m2/settings.xml deploy:deploy-file -Dmaven.wagon.http.ssl.insecure=true -DgroupId=com.ibm.decision -DartifactId=$ARTIFACT_ID \
+-Dversion=$VERSION -Dpackaging=jar -DrepositoryId=nexus \
+-Durl=https://nexus.${OCP_APPS_ENDPOINT}/repository/maven-releases/ -Dfile=data/ads/$JAR_PATH
+
+# Download and push foundation_maven_plugin
+JAR_PATH=$(cat data/ads/index.json | jq -r '.resources.foundation_maven_plugin.path')
 curl --insecure https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/$JAR_PATH --output data/ads/$JAR_PATH \
 --header "Authorization: Bearer $TOKEN"
 JAR_SUB="${JAR_PATH:0:(-4)}"  
@@ -195,6 +182,18 @@ mvn --s ~/.m2/settings.xml deploy:deploy-file -Dmaven.wagon.http.ssl.insecure=tr
 
 # Download and push import_maven_plugin
 JAR_PATH=$(cat data/ads/index.json | jq -r '.resources.import_maven_plugin.path')
+curl --insecure https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/$JAR_PATH -o data/ads/$JAR_PATH \
+--header "Authorization: Bearer $TOKEN"
+JAR_SUB="${JAR_PATH:0:(-4)}"  
+ARTIFACT_ID=`echo $JAR_SUB | cut -d "_" -f 1`
+VERSION=`echo $JAR_SUB | cut -d "_" -f 2`
+
+mvn --s ~/.m2/settings.xml deploy:deploy-file -Dmaven.wagon.http.ssl.insecure=true -DgroupId=com.ibm.decision -DartifactId=$ARTIFACT_ID \
+-Dversion=$VERSION -Dpackaging=jar -DrepositoryId=nexus \
+-Durl=https://nexus.${OCP_APPS_ENDPOINT}/repository/maven-releases/ -Dfile=data/ads/$JAR_PATH
+
+# Download and push import_maven_archetype_plugin
+JAR_PATH=$(cat data/ads/index.json | jq -r '.resources.import_maven_archetype_plugin.path')
 curl --insecure https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/download/$JAR_PATH -o data/ads/$JAR_PATH \
 --header "Authorization: Bearer $TOKEN"
 JAR_SUB="${JAR_PATH:0:(-4)}"  
@@ -230,6 +229,45 @@ mvn --s ~/.m2/settings.xml deploy:deploy-file -Dmaven.wagon.http.ssl.insecure=tr
 -Durl=https://nexus.${OCP_APPS_ENDPOINT}/repository/maven-releases/ -Dfile=data/ads/$JAR_PATH
 
 echo
+echo ">>>>$(print_timestamp) Create ADS Admin custom Role and assign it to cpadmin to be able to manage ADS platform credentials"
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=services-managing-user-permissions
+
+# Get access token for ZEN administrative initial user
+INITIAL_PASSWORD=`oc get secret admin-user-details -o jsonpath='{.data.initial_admin_password}' | base64 -d`
+ZEN_ACCESS_TOKEN=`oc exec deployment/zen-core -- curl -k -X POST https://zen-core-api-svc:4444/openapi/v1/authorize \
+--header 'Content-Type: application/json' \
+--header "Accept: application/json" \
+--data-raw '{
+  "username": "admin",
+  "password": "'${INITIAL_PASSWORD}'"
+}' \
+| jq -r '.token'`
+
+# Create ADS admin role
+ROLE_ID=`curl -k -X POST https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/usermgmt/v1/role \
+--header 'Content-Type: application/json' \
+--header "Authorization: Bearer $ZEN_ACCESS_TOKEN" \
+--data-raw '{"role_name":"ADS Admin","description":"","permissions":["administer_ads_platform","execute_ads_decision","manage_ads_decision","monitor_ads_runtime"]}' | jq -r '.id'`
+
+# Update user roles
+curl -k -X PUT https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/usermgmt/v1/user/cpadmin?add_roles=true \
+--header 'Content-Type: application/json' \
+--header "Authorization: Bearer $ZEN_ACCESS_TOKEN" \
+--data-raw '{
+  "username": "cpadmin",
+  "user_roles": ["'${ROLE_ID}'"]
+}'
+
+#TODO how to refresh groups?
+#echo
+#echo ">>>>$(print_timestamp) Add Maven credential"
+## Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=credentials-configuring-maven-repository-manager
+#curl -k -X POST https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/rest-api/api/admin/credential \
+#--header 'Content-Type: application/json' \
+#--header "Authorization: Bearer $TOKEN" \
+#--data-raw '{"credentialsType":"USERNAME","credentialsUsage":"MAVEN","discriminator":"https://nexus.'${OCP_APPS_ENDPOINT}'/repository/maven-releases/ ","credentials":"cpadmin:'${UNIVERSAL_PASSWORD}'"}'
+
+echo
 echo ">>>>$(print_timestamp) Automation Document Processing (ADP) (document_processing pattern)"
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-document-processing
 
@@ -253,7 +291,7 @@ curl --insecure --request POST "https://gitea.${OCP_APPS_ENDPOINT}/api/v1/orgs" 
 echo
 echo ">>>>$(print_timestamp) Download Init Tenants scripts"
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-loading-default-sample-data
-nle_pod=$(oc get po |grep natural-language-extractor | awk {'print $1'}| head -1)
+nle_pod=$(oc get po | grep natural-language-extractor | awk {'print $1'} | head -1)
 oc cp $nle_pod:/data-org/db_sample_data/imports.tar.xz data/adp/imports.tar.xz
 
 echo
@@ -289,6 +327,15 @@ oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
 rm -rf sqllib/_adp_tmp
 EOSSH
+
+# TODO maybe later - CSRF rejected error
+#echo
+#echo ">>>>$(print_timestamp) ADP setup Git connection"
+## Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-setting-up-remote-git-organization
+#curl -k -X POST https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/adp/designer/api/cd/v1/credentials \
+#--header 'Content-Type: application/json' \
+#--header "Authorization: Bearer $TOKEN" \
+#--data-raw '{"uri":"https://gitea.'${OCP_APPS_ENDPOINT}'/adp","user_id":"cpadmin","type":"password","secret":"'${UNIVERSAL_PASSWORD}'","provider":"gitea"}'
 
 echo
 echo ">>>>$(print_timestamp) Generate CP4BA post deployment steps"

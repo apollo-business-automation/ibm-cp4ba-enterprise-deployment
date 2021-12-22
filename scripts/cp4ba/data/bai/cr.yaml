@@ -1,10 +1,8 @@
 spec:
   bai_configuration:
-    # TODO enable when fixed 
-    #bai_secret: custom-bai-secret
-    # TODO enable when fixed
-    #settings:
-    #  external_kibana_url: http://kibana.kibana:5601  
+    bai_secret: custom-bai-secret
+    settings:
+      external_kibana_url: http://kibana.kibana.svc.cluster.local:5601  
     flink:
       create_route: true
     business_performance_center:

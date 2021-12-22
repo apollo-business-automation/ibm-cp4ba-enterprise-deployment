@@ -109,6 +109,10 @@ oc patch operandconfig common-service --type json -p '[{"op":"add","path":"/spec
 oc patch operandconfig common-service --type json -p '[{"op":"add","path":"/spec/services/'$INDEX'/spec/mustgatherService/persistentVolumeClaim/storageClassName", "value":"'${STORAGE_CLASS_NAME}'"}]'
 
 echo
+echo ">>>>$(print_timestamp) Add ICR secret (mainly for CPs installation)"
+oc create secret docker-registry ibm-entitlement-key --docker-username=cp --docker-password="${ICR_PASSWORD}" --docker-server="cp.icr.io"
+
+echo
 echo ">>>>$(print_timestamp) Apply OperandRequest instance"
 oc apply -f operandrequest.yaml
 

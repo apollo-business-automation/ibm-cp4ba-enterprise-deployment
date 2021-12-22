@@ -57,13 +57,14 @@ echo ">>>>$(print_timestamp) Wait for PM CSV deletion"
 wait_for_k8s_resource_disappear ${CSV}
 
 echo
-echo ">>>>$(print_timestamp) Delete Tablespaces"
+echo ">>>>$(print_timestamp) Delete Tablespaces and Schema"
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
 db2 connect to CP4BA
 db2 DROP TABLESPACE PM_TS;
 db2 DROP TABLESPACE PM_TEMP_TS;
 db2 DROP TABLESPACE PM_SYSTMP_TS;
+db2 "CALL SYSPROC.ADMIN_DROP_SCHEMA('PM', NULL, 'ERRORSCHEMA', 'ERRORTABLE')"
 EOSSH
 
 echo

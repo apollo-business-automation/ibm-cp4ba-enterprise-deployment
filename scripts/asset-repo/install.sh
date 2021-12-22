@@ -57,9 +57,6 @@ wait_for_k8s_resource_condition_generic AssetRepository/assets ".status.phase" R
 
 echo
 echo ">>>>$(print_timestamp) Add new asset repo roles to cpadmin user"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-studio
-# TODO Based on CP4BA demo deployment code for internal zen call
-
 # Get access token for ZEN administrative initial user
 INITIAL_PASSWORD=`oc get secret admin-user-details -o jsonpath='{.data.initial_admin_password}' | base64 -d`
 ZEN_ACCESS_TOKEN=`oc exec deployment/zen-core -- curl -k -X POST https://zen-core-api-svc:4444/openapi/v1/authorize \

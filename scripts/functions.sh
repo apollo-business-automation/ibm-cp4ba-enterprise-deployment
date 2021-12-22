@@ -82,6 +82,26 @@ wait_for_k8s_resource_disappear () {
   done
 }
 
+wait_for_k8s_resource_appear () {
+  local resourceName="${1}"
+  local attempts="${2:-${DEFAULT_ATTEMPTS}}"
+  local delay="${3:-${DEFAULT_DELAY}}"
+  
+  local attempt=0
+  echo "Waiting on resource '${resourceName}' to appear with '${attempts}' attempts with '${delay}' seconds delay each (total of `expr ${attempts} \* ${delay} / 60` minutes)." 
+  echo "Errors are expected until the resource '${resourceName}' appears"
+  while : ; do
+    echo "Attempt #`expr ${attempt} + 1`/${attempts}: " 
+    oc get ${resourceName} && echo "Success - Resource ${resourceName} appeared" && break
+    attempt=$((attempt+1))
+    if ((attempt == attempts)); then
+      echo "Failed - Resource '${resourceName}' didn't appear, you need to troubleshoot"
+      exit 1
+    fi
+    sleep $delay
+  done
+}
+
 add_db2mc_connection() {
   local db_name="${1}"
 
@@ -120,9 +140,9 @@ wait_for_cp4ba() {
     echo 
     echo ">>>>$(print_timestamp) Attempt #`expr ${attempt} + 1`/${attempts}: Checking if CP4BA is deployed"
 
-    value=`oc get ICP4ACluster/${resourceName} -o json | jq -r '.status.conditions[] | select(.type == "ReconciliationSuccess") | .status'`
+    value=`oc get ICP4ACluster/${resourceName} -o json | jq -r '.status.conditions[] | select(.type == "Ready") | .status'`
     echo
-    echo ">>>>$(print_timestamp) Current status of ReconciliationSuccess is: ${value}"
+    echo ">>>>$(print_timestamp) Current status of Ready is: ${value}"
 
     notready_pods=`oc get pods -o json  | \
     jq -r '.items[] | select(.status.phase != "Running" and .status.phase != "Succeeded" and .status.phase != "Failed" and ([ .status.conditions[] | select(.type == "Ready" and .status != "True") ] | length ) == 1 ) | .metadata.name'`
@@ -136,12 +156,12 @@ wait_for_cp4ba() {
       echo ${notready_pods}
     fi
 
-    reconciliation_message=`oc get ICP4ACluster/${resourceName} -o json | jq -r '.status.conditions[] | select(.type == "ReconciliationSuccess") | .message'`
+    reconciliation_message=`oc get ICP4ACluster/${resourceName} -o json | jq -r '.status.conditions[] | select(.type == "Ready") | .message'`
     echo
-    echo ">>>>$(print_timestamp) Current message of ReconciliationSuccess is: ${reconciliation_message}"
+    echo ">>>>$(print_timestamp) Current message of Ready is: ${reconciliation_message}"
 
     echo
-    echo ">>>>$(print_timestamp) Completed if ReconciliationSuccess is True, all Pods are Ready and message is empty"
+    echo ">>>>$(print_timestamp) Completed if Ready is True, all Pods are Ready and message is empty"
     
     if [ "$value" = "True" ] && [ -z "$notready_pods" ] && [ -z "$reconciliation_message" ]; then
       echo ">>>>$(print_timestamp) Deployment completed"

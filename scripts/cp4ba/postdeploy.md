@@ -49,7 +49,7 @@ Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=t
 
 ### Enable Daeja for Office
 
-Go to navigator https://navigator-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=admin  
+Go to navigator https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/icn/navigator/?desktop=admin  
 Switch to Viewer Maps tab  
 Click on Default viewer map  
 Click Copy  
@@ -71,7 +71,7 @@ License files generated following https://www.ibm.com/docs/en/daeja-viewone/5.0.
 
 License files have already been copied
 
-Go to navigator https://navigator-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=admin  
+Go to navigator https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/icn/navigator/?desktop=admin  
 Switch to Settings section  
 Switch to Daeja ViewONE tab  
 Switch to Server section  
@@ -90,36 +90,19 @@ Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=t
 
 ### Deploy toolkits and configurators
 
-TODO Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=designer-downloadable-toolkits
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=reference-downloadable-toolkits
 
 To your local system download the following
 - TWX file from https://github.com/icp4a/odm-toolkit/tree/master/contribution/1.2/Action%20Configurator
 - TWX file from https://github.com/icp4a/odm-toolkit/tree/master/contribution/1.2/Toolkit
 
-Go to Studio https://bas-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/BAStudio/build/index.jsp?#/apps/platformRepo  
+Go to Studio https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/bas/BAStudio/build/index.jsp?#/apps/platformRepo  
 Login with Enterprise LDAP with cpadmin / {{UNIVERSAL_PASSWORD}}  
 
 Click Toolkits  
 Click Import  
 Import all files that you downloaded one by one  
 Some of them are used as Configurators, don't be confused that they don't appear in the list of toolkits.  
-
-### Apps deployment
-
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=applications-publishing
-
-Go to Navigator https://navigator-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=admin
-
-Go to Connections  
-Click New Connection > App Service  
-Display name: PB  
-App Service endpoint URL: https://{{CP4BA_PROJECT_NAME}}-pbk-ae-service/v1/applications  
-Click Connect  
-Click Save and Close  
-
-You can import apps from Studio and create desktops for them (see referenced guide in this section)  
-You can also use full featured standalone AAE if deployed. Connection was created automatically.
-
 
 ## Business Automation Insights (BAI) (foundation pattern)
 
@@ -146,17 +129,20 @@ Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=m
 Download Eclipse 4.16 from https://archive.eclipse.org/eclipse/downloads/drops4/R-4.16-202006040540/ (Platform Runtime Binary section)  
 Open it, Help > Install New Software > Select *Work with: All Available Sites* > In *type filter text* Search for *Eclipse Marketplace*  
 Select *Marketplace Client* and install it (Next, Next, Accept, Finish).  
+Wait for installation to complete in the bottom right corner.  
 Restart eclipse.  
-In the following URL you may want to use different rule designer version, replace 8105 with the appropriate version you need.  
-TODO verify  Go to https://marketplace.eclipse.org/content/ibm-operational-decision-manager-developers-v-8110-rule-designer  
+In the following URL you may want to use different rule designer version, replace 81100 with the appropriate version you need.  
+Go to https://marketplace.eclipse.org/content/ibm-operational-decision-manager-developers-v-81100-rule-designer  
 Drag and drop Install button in your eclipse.  
 Confirm > Accept license > Finish  
-Confirm pop-up with Install anyway  
 Wait for the installation completion.  
 Restart eclipse  
 Window > Perspective > Open Perspective > Other > Rule  
 
+Note: You may fase JAXB exceptions when connecting to ODM. Using JDK8 resolve this error.
+
 ### Rule designer IAM OpenID Connect
+
 Based on https://www.ibm.com/docs/en/odm/8.11.0?topic=parties-configuring-rule-designer
 
 Copy and edit oidc-providers.json (available in *automagic* Project in odm-oidc-providers Config Map) to you eclipse directory  
@@ -177,15 +163,14 @@ Add the following to eclipse.ini
 ```
 
 When configuring RES connection in Deployment use  
-URL: https://odm-decisionserverconsole-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/res  
+URL: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/odm/res  
 Method: OpenID Connect  
 Provider: iam  
 
 When configuring Decision Center use  
-URL: https://odm-decisioncenter-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/teamserver  
+URL: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/odm/decisioncenter  
 Authentication: OpenID Connect  
 Provider: iam
-
 
 ## Automation Decision Services (ADS) (decisions_ads pattern)
 
@@ -239,7 +224,7 @@ Credentials type: MAVEN
 
 ### Develop custom libraries
 
-TODO vefiry link  To find out how to create and add External libraries to ADS, follow https://github.com/icp4a/automation-decision-services-samples/tree/21.0.3/samples/ExternalLibraryStart
+To find out how to create and add External libraries to ADS, follow https://github.com/icp4a/automation-decision-services-samples/tree/21.0.3/samples/ExternalLibraryStartTutorial
 
 To be able to follow the above guide from my environment, I needed to perform the following.
 
@@ -270,21 +255,16 @@ Watch video and follow with your own google account and Client ID you used in th
 [Video fncm-es-google-oidc-post.mp4 download](https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/blob/main/assets/fncm-es-google-oidc-post.mp4?raw=true) 
 #TODO errata for redirect uris when this starts to work
 
-### BAN desktop for OS1
-
-If desktop OS1 already exists, modify its viewer map
+### BAN desktop OS1 Viewer map
 
 Go to Navigator  
-https://navigator-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=admin  
+https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/icn/navigator/?desktop=admin  
 
 Go to *Desktops*  
-Click *New Desktop*  
-Choose *Platform and Content*  
+Click *OS1*  
+Click *Edit*  
 
-New Desktop screen  
-Name: OS1  
-ID: OS1  
-Connection: OS1  
+In Desktop Configuration section  
 Viewer map: Virtual Viewer  
 
 Click *Save and Close*  
@@ -298,7 +278,7 @@ If you plan to use External Share
 Configure SMTP  
 Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=users-configuring-content-platform-engine-external-sharing point 3
 
-Go to Acce console https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/acce/  
+Go to Acce console https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/acce/    
 Login with Enterprise LDAP with cpadmin / {{UNIVERSAL_PASSWORD}}  
 On P8DOMAIN domain navigate to *SMTP Subsystem*  
 Check *Enable email services*  
@@ -315,7 +295,7 @@ Configure external LDAP in FNCM CPE
 If you plan to use external LDAP for External Share  
 Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=users-configuring-content-platform-engine-external-sharing point 2
 
-Go to Acce console https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/acce/  
+Go to Acce console https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/acce/  
 On P8DOMAIN domain navigate to *Directory Configuration*  
 Click on ExternalRealm  
 find *Exclude From Authenticated Users* property and set it to True  
@@ -327,7 +307,7 @@ Document class access
 If you plan to use external LDAP for External Share  
 Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=users-configuring-content-platform-engine-external-sharing point 4  
 
-Go to Acce console https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/acce/  
+Go to Acce console https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/acce/  
 Navigate to OS1 object store > Data Design > Classes > Document > Security tab  
 Click Add Permissions > Add User/Group Permission  
 Search in realm: ExternalRealm (o=cpext)    
@@ -342,7 +322,7 @@ Folder class access
 If you plan to use external LDAP for External Share  
 Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=users-configuring-content-platform-engine-external-sharing point 5
 
-Go to Acce console https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/acce/  
+Go to Acce console https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/acce/    
 Navigate to OS1 object store > Data Design > Classes > Folder > Security tab  
 Click Add Permissions > Add User/Group Permission  
 Search in realm: ExternalRealm (o=cpext)  
@@ -421,12 +401,12 @@ If you want to share content, use https://ingress-es-{{CP4BA_PROJECT_NAME}}.{{OC
 
 ### Task manager settings
 
-Go to navigator https://ban-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/navigator/?desktop=admin  
+Go to navigator https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/icn/navigator/?desktop=admin  
 Go to Settings  
 Go to General  
-Go to Task Manager section  
+Go to Task Manager Configuration section  
 Switch Enable  
-Task manager service URL: https://tm-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/taskManagerWeb/api/v1  
+Task manager service URL: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/tm/api/v1  
 Task manager log directory: /opt/ibm/viewerconfig/logs/  
 Task manager administrator user ID: cpadmin  
 Task manager administrator password: {{UNIVERSAL_PASSWORD}}  
@@ -435,7 +415,7 @@ Refresh browser
 
 ## Automation Document Processing (ADP) (document_processing pattern)
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-document-processing?view=kc
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-document-processing
 
 ### Connect ADP project to Git
 

@@ -5,7 +5,7 @@ metadata:
 spec:
   license:
     accept: true
-    license: L-NCAN-C3CJ8D
+    license: L-PNAA-C68928
   version: "{{ASSET_REPO_VERSION}}"
   replicas: 1
   storage:

@@ -42,25 +42,24 @@ echo
 echo ">>>>Update HOME to internal folder"
 HOME=`pwd`
 
+echo
+echo ">>>>Configure automagic resiliency with PodDisruptionBudget"
+oc project automagic
+oc apply -f automagic/poddisruptionbudget.yaml
 
 if [[ $ACTION == "install" ]]; then
   echo
   echo ">>>>Starting install action"
-
-  echo
-  echo ">>>>Configure automagic resiliency with PodDisruptionBudget"
-  oc project automagic
-  oc apply -f automagic/poddisruptionbudget.yaml
-
   if [[ $CONTAINER_RUN_MODE == "true" ]]; then
     ./install.sh
-    exit $?
+    status=$?
+    oc remove -f automagic/poddisruptionbudget.yaml
+    exit $status
   else
     nohup ./install.sh &> nohup_install.log &
     sleep 1
     tail -f nohup_install.log
   fi
-
 fi
 
 if [[ $ACTION == "remove" ]]; then
@@ -68,7 +67,9 @@ if [[ $ACTION == "remove" ]]; then
   echo ">>>>Starting remove action"
   if [[ $CONTAINER_RUN_MODE == "true" ]]; then
     ./remove.sh
-    exit $?
+    status=$?
+    oc remove -f automagic/poddisruptionbudget.yaml
+    exit $status
   else
     nohup ./remove.sh &> nohup_remove.log &
     sleep 1

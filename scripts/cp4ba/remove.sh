@@ -101,6 +101,9 @@ oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/removeLdapUser.py -u bados
 echo
 echo ">>>>$(print_timestamp) Delete DB user bawaut"
 oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/removeLdapUser.py -u bawaut
+echo
+echo ">>>>$(print_timestamp) Delete DB user ch"
+oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/removeLdapUser.py -u ch
 
 echo
 echo ">>>>$(print_timestamp) Delete Mongo DBs"
@@ -111,6 +114,8 @@ db.dropDatabase()
 use ads-git
 db.dropDatabase()
 use ads-history
+db.dropDatabase()
+use ads-runtime
 db.dropDatabase()
 EOF
 EOSSH

@@ -20,11 +20,11 @@ spec:
       accept: true
     additionalAllowedAPIs: "GET:[*],PUT:[*],POST:[*],HEAD:[*],DELETE:[*]"
     nodegroupspecs:
-      - name: master-data
+      - name: data
         replicas: 1
         storage:
           class: "{{STORAGE_CLASS_NAME}}"
-          size: 55Gi
+          size: 50Gi
         template:
           pod:
             spec:
@@ -32,11 +32,27 @@ spec:
                 - name: elasticsearch
                   resources:
                     requests:
-                      cpu: 1000m
-                      memory: 2048Mi
+                      cpu: 500m
+                      memory: 820Mi
                     limits:
-                      cpu: 1000m
+                      cpu: 800m
                       memory: 2048Mi
+                - name: tls-proxy
+                  resources:
+                    requests:
+                      cpu: 100m
+                      memory: 512Mi
+                    limits:
+                      cpu: 200m
+                      memory: 512Mi
+        config:
+          - key: path.repo
+            value: '/usr/share/elasticsearch/snapshots/main'
+    snapshotStores:
+      - name: main
+        storage:
+          class: "{{STORAGE_CLASS_NAME}}"
+          size: 10Gi
   kafka:
     kafka:
       config:
@@ -50,7 +66,7 @@ spec:
           memory: 1024Mi
         limits:
           cpu: 1000m
-          memory: 1024Mi
+          memory: 2048Mi
       storage:
         type: persistent-claim
         size: 4Gi

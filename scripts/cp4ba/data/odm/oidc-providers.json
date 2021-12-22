@@ -1,10 +1,10 @@
 {
   "providers": [{
     "name": "iam",
-    "authorizationURL": "https://ums-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/oidc/endpoint/ums/authorize",
-    "tokenURL": "https://ums-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/oidc/endpoint/ums/token",
-    "clientId": "{{CP4BA_PROJECT_NAME}}-odm-oidc-client-id",
-    "clientSecret": "{{CP4BA_PROJECT_NAME}}-odm-oidc-client-id-secret-value",
+    "authorizationURL": "https://cp-console.{{OCP_APPS_ENDPOINT}}/idprovider/v1/auth/authorize",
+    "tokenURL": "https://cp-console.{{OCP_APPS_ENDPOINT}}/idprovider/v1/auth/token",
+    "clientId": "{{CP4BA_CR_META_NAME}}-odm-oidc-client-id",
+    "clientSecret": "{{CP4BA_CR_META_NAME}}-odm-oidc-client-id-secret-value",
     "callbackPort": "9081",
     "callbackHttps": true
   }]

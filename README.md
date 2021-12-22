@@ -127,12 +127,10 @@ Multiple command line tools are installed inside a container to make the install
 
 ## Environments used for installation 💻
 
-**If you want to run this on OpenShift 4.8.x** disable Process Mining installation in configmap by setting ```PM_ENABLED=false``` as it is not working.
-
 With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift, however it was executed on the following once.
 
 - ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
-OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ibmc-file-gold-gid Storage Class  
+OpenShift 4.7.x and 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ibmc-file-gold-gid Storage Class  
 Successfully installed
 
 - ARO - Azure Red Hat OpenShift allowing to run managed Red Hat OpenShift on Azure  
@@ -144,7 +142,7 @@ OpenShift 4.7.x and 4.8.x on vms - 7 Worker Nodes (16 CPU, 32GB Memory) - Manage
 Successfully installed
 
 - ROSA - Red Hat OpenShift Service on AWS  
-OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
+OpenShift 4.7.x and 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
 Successfully installed **but has issues** with passthrough Routes malfunction making it hard to access the platform.
 
 The following picture shows real idle utilization of Nodes with deployed platform on above mentioned ROKS as an example.

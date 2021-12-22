@@ -17,10 +17,10 @@ spec:
     externalConnection:
       secretName: rpa-db
     firstTenant:
-      groupMappings:
-        adminGroups: rpa-admins
-        superAdminsGroups: rpa-superadmins
-        userGroups: rpa-users
+      #groupMappings:
+      #  adminGroups: rpa-admins
+      #  superAdminsGroups: rpa-superadmins
+      #  userGroups: rpa-users
       name: ibm
       owner:
         email: cpadmin@cp.local
@@ -38,19 +38,11 @@ spec:
       archive:
         size: 11Gi
         class: "{{STORAGE_CLASS_NAME}}"
-    # Following increases probes for ROKS        
-    template:
-      pod:
-        spec:
-          containers:
-            - name: rpa-server
-              readinessProbe:
-                initialDelaySeconds: 100
-              livenessProbe:
-                initialDelaySeconds: 200            
   ui:
     replicas: 1
   ocr:
     replicas: 1
   antivirus:
-    replicas: 1    
+    replicas: 1
+  audit:
+    forwardingEnabled: false
