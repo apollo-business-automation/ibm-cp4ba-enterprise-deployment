@@ -76,6 +76,12 @@ oc create secret generic pm-tls-secret \
 --from-file=ca.crt=../global-ca/global-ca.crt
 
 echo
+echo ">>>>$(print_timestamp) Add icp4aclusters access to default SA"
+# Otherwise errors are observed in Process Mining operator
+oc apply -f role.yaml
+oc apply -f rolebinding.yaml
+
+echo
 echo ">>>>$(print_timestamp) Update Subscription"
 sed -f - subscription.yaml > subscription.target.yaml << SED_SCRIPT
 s|{{PM_OPERATOR_CHANNEL}}|${PM_OPERATOR_CHANNEL}|g

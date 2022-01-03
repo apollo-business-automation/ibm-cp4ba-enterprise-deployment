@@ -144,7 +144,7 @@ curl --insecure --request PUT "https://nexus.${OCP_APPS_ENDPOINT}/service/rest/v
 
 echo
 echo ">>>>$(print_timestamp) Replace maven settings file with real values"
-sed -f - maven-settings.yaml > maven-settings.target.yaml << SED_SCRIPT
+sed -f - maven-settings.xml > maven-settings.target.xml << SED_SCRIPT
 s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g
 s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
 SED_SCRIPT

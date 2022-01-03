@@ -57,6 +57,11 @@ echo ">>>>$(print_timestamp) Wait for PM CSV deletion"
 wait_for_k8s_resource_disappear ${CSV}
 
 echo
+echo ">>>>$(print_timestamp) Remove icp4aclusters access from default SA"
+oc delete rolebinding icp4aclusterslist
+oc delete role icp4aclusterslist
+
+echo
 echo ">>>>$(print_timestamp) Delete Tablespaces and Schema"
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
