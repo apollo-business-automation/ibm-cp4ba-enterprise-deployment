@@ -61,7 +61,7 @@ MSSQL_IMAGE_TAG=2019-CU14-rhel-8.4
 
 # Nexus #
 NEXUS_CHANNEL=stable
-NEXUS_STARTING_CSV=nxrm-operator-certified.v3.37.0-1
+# Past versions are deleted from channel NEXUS_STARTING_CSV=nxrm-operator-certified.v3.37.0-1
 
 # OpenLDAP + PHPLDAPAdmin #
 OPENLDAP_CHART_VERSION=2.1.6

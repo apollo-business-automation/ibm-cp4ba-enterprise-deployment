@@ -8,4 +8,3 @@ spec:
   name: nxrm-operator-certified
   source: certified-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: "{{NEXUS_STARTING_CSV}}"
