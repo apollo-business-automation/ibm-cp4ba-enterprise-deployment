@@ -17,10 +17,6 @@ spec:
     externalConnection:
       secretName: rpa-db
     firstTenant:
-      #groupMappings:
-      #  adminGroups: rpa-admins
-      #  superAdminsGroups: rpa-superadmins
-      #  userGroups: rpa-users
       name: ibm
       owner:
         email: cpadmin@cp.local
