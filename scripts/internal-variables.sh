@@ -37,7 +37,7 @@ CEREBRO_IMAGE_TAG=0.9.4
 
 # CPFS #
 CPFS_OPERATOR_CHANNEL=v3
-CPFS_STARTING_CSV=ibm-common-service-operator.v3.14.1
+CPFS_STARTING_CSV=ibm-common-service-operator.v3.14.2
 
 # DB2 #
 DB2_OPERATOR_CHANNEL=v1.1
