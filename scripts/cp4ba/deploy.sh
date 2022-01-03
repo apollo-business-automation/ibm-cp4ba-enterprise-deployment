@@ -420,10 +420,10 @@ wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.sta
 wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.odm.odmDecisionCenterService' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.odm.odmDecisionServerRuntimeService' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
-wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.odm.odmDecisionServerConsoleDeployment' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
-wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.odm.odmDecisionRunnerDeployment' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
-wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.odm.odmDecisionCenterDeployment' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
-wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.odm.odmDecisionServerRuntimeDeployment' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+#TODO report and wait for fix, operator doesn't wait for Deployment ready states wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.odm.odmDecisionServerConsoleDeployment' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+#TODO report and wait for fix, operator doesn't wait for Deployment ready states wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.odm.odmDecisionRunnerDeployment' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+#TODO report and wait for fix, operator doesn't wait for Deployment ready states wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.odm.odmDecisionCenterDeployment' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+#TODO report and wait for fix, operator doesn't wait for Deployment ready states wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.odm.odmDecisionServerRuntimeDeployment' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 echo
 echo ">>>>$(print_timestamp) Wait for AE Ready states"
