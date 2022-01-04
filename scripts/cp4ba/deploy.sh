@@ -268,18 +268,19 @@ echo
 echo ">>>>$(print_timestamp) Switch back to CP4BA Project"
 oc project ${CP4BA_PROJECT_NAME}
 
+#TODO hotfix remove when BTS pull secrets fixed
 echo
 echo ">>>>$(print_timestamp) Wait for BTS SA to be created"
 wait_for_k8s_resource_appear ServiceAccount/ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
-
-#TODO hotfix remove when BTS pull secrets fixed
+echo
+echo ">>>>$(print_timestamp) Wait for db job to Appear"
+wait_for_k8s_resource_appear_partial_unique pod ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+pod_name=`oc get pod -o name | grep ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts`
 echo
 echo ">>>>$(print_timestamp) Patch BTS SA to mitigate pull secret issue"
 oc get sa ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts -o json | jq '.imagePullSecrets += [ {name: "ibm-entitlement-key"} ]' | oc apply -f -
 echo
-echo ">>>>$(print_timestamp) Rstart BTS job"
-pod_name=`oc get pod -o name | grep ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts`
-wait_for_k8s_resource_condition ${pod_name} Initialized
+echo ">>>>$(print_timestamp) Restart BTS job"
 oc delete ${pod_name}
 
 echo
@@ -365,10 +366,10 @@ wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.sta
 
 echo
 echo ">>>>$(print_timestamp) Wait for ADP CDS Ready states"
-wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.contentDesignerService.cdsPersistentVolume' NotInstalled ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+#TODO wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.contentDesignerService.cdsPersistentVolume' NotInstalled ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.contentDesignerService.cdsZenInegration' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
-wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.contentDesignerService.cdsDeployment' NotInstalled ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
-wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.contentDesignerService.cdsService' NotInstalled ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+#TODO wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.contentDesignerService.cdsDeployment' NotInstalled ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+#TODO wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.contentDesignerService.cdsService' NotInstalled ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 echo
 echo ">>>>$(print_timestamp) Wait for BAN Ready states"

@@ -13,7 +13,7 @@ wait_for_k8s_resource_condition_generic () {
   while : ; do
     value=`oc get ${resourceName} -o json | jq -r "${jqStatement}"`
     if [ "$value" = "$testValue" ]; then
-      echo "Attempt #`expr ${attempt} + 1`/${attempts}: Success - Resource ${resourceName} met the condition"
+      echo "Attempt #`expr ${attempt} + 1`/${attempts}: Success - Resource '${resourceName}' met the condition"
       break
     else
       echo "Attempt #`expr ${attempt} + 1`/${attempts}: Waiting for condition to be satisfied"
@@ -40,7 +40,7 @@ wait_for_k8s_log_occurrence () {
     oc logs ${resourceName} | grep "${testValue}"
     status=$?
     if [ "$status" = "0" ]; then
-      echo "Attempt #`expr ${attempt} + 1`/${attempts}: Success - Resource ${resourceName} met the condition"
+      echo "Attempt #`expr ${attempt} + 1`/${attempts}: Success - Resource '${resourceName}' met the condition"
       break
     else
       echo "Attempt #`expr ${attempt} + 1`/${attempts}: Waiting for condition to be satisfied"
@@ -72,7 +72,7 @@ wait_for_k8s_resource_disappear () {
   echo "Successes are expected until the resource '${resourceName}' disappears"
   while : ; do
     echo "Attempt #`expr ${attempt} + 1`/${attempts}: " 
-    ! oc get ${resourceName} && echo "Success - Resource ${resourceName} disappeared" && break
+    ! oc get ${resourceName} && echo "Success - Resource '${resourceName}' disappeared" && break
     attempt=$((attempt+1))
     if ((attempt == attempts)); then
       echo "Failed - Resource '${resourceName}' didn't disappear, you need to troubleshoot"
@@ -92,10 +92,31 @@ wait_for_k8s_resource_appear () {
   echo "Errors are expected until the resource '${resourceName}' appears"
   while : ; do
     echo "Attempt #`expr ${attempt} + 1`/${attempts}: " 
-    oc get ${resourceName} && echo "Success - Resource ${resourceName} appeared" && break
+    oc get ${resourceName} && echo "Success - Resource '${resourceName}' appeared" && break
     attempt=$((attempt+1))
     if ((attempt == attempts)); then
       echo "Failed - Resource '${resourceName}' didn't appear, you need to troubleshoot"
+      exit 1
+    fi
+    sleep $delay
+  done
+}
+
+wait_for_k8s_resource_appear_partial_unique () {
+  local resourceType="${1}"
+  local resourcePartialName="${2}"
+  local attempts="${3:-${DEFAULT_ATTEMPTS}}"
+  local delay="${4:-${DEFAULT_DELAY}}"
+  
+  local attempt=0
+  echo "Waiting on resource of type '${resourceType}' with partial unique name of '${resourcePartialName}' to appear with '${attempts}' attempts with '${delay}' seconds delay each (total of `expr ${attempts} \* ${delay} / 60` minutes)." 
+  echo "Errors are expected until the resource of type '${resourceType}' with partial unique name of '${resourcePartialName}' appears"
+  while : ; do
+    echo "Attempt #`expr ${attempt} + 1`/${attempts}: " 
+    oc get ${resourceType} | grep ${resourcePartialName} && echo "Success - Resource of type '${resourceType}' with partial unique name of '${resourcePartialName}' appeared" && break
+    attempt=$((attempt+1))
+    if ((attempt == attempts)); then
+      echo "Failed - Resource of type '${resourceType}' with partial unique name of '${resourcePartialName}' didn't appear, you need to troubleshoot"
       exit 1
     fi
     sleep $delay
