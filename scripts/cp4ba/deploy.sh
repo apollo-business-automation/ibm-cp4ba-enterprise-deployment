@@ -218,7 +218,6 @@ oc apply -f data/cr.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Wait for CP4BA deployment to complete, this will take hours"
-#wait_for_cp4ba ${CP4BA_CR_META_NAME} ${CP4BA_ATTEMPTS} ${CP4BA_DELAY}
 
 echo
 echo ">>>>$(print_timestamp) Switch to Project ibm-common-services"
@@ -280,7 +279,8 @@ oc get sa ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts -o json |
 echo
 echo ">>>>$(print_timestamp) Rstart BTS job"
 pod_name=`oc get pod -o name | grep ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts`
-oc delete $pod_name
+wait_for_k8s_resource_condition ${pod_name} Initialized
+oc delete ${pod_name}
 
 echo
 echo ">>>>$(print_timestamp) Wait for BTS Ready state"
