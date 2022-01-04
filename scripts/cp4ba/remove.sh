@@ -133,4 +133,13 @@ curl --insecure --request DELETE "https://gitea.${OCP_APPS_ENDPOINT}/api/v1/orgs
 --user "cpadmin:${UNIVERSAL_PASSWORD}"
 
 echo
+echo ">>>>$(print_timestamp) Remove BTS CSV & Subscription"
+oc project ibm-common-services
+CSV=`oc get csv -o name | grep ibm-bts-operator`
+oc delete ${CSV}
+wait_for_k8s_resource_disappear ${CSV}
+oc delete subscription ibm-bts-operator
+wait_for_k8s_resource_disappear subscription/ibm-bts-operator
+
+echo
 echo ">>>>$(print_timestamp) CP4BA remove completed"

@@ -241,10 +241,13 @@ wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.sta
 wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.prereq.iamIntegrationStatus' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.prereq.rootCAStatus' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
+if [ "$DEPLOYMENT_PLATFORM" != "ROKS" ]; then
+# TODO simplify when RR waiting is updated for ROKS
 echo
 echo ">>>>$(print_timestamp) Wait for RR Ready states"
 wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components."resource-registry".rrCluster' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components."resource-registry".rrService' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+fi
 
 echo
 echo ">>>>$(print_timestamp) Approve Operators for BTS"
@@ -252,7 +255,7 @@ echo ">>>>$(print_timestamp) Approve Operators for BTS"
 echo
 echo ">>>>$(print_timestamp) Switch to Project ibm-common-services"
 oc project ibm-common-services
-			
+
 manage_manual_operator ibm-bts-operator ibm-bts-operator-controller-manager
 
 echo
@@ -274,8 +277,8 @@ echo ">>>>$(print_timestamp) Wait for BTS SA to be created"
 wait_for_k8s_resource_appear ServiceAccount/ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 echo
 echo ">>>>$(print_timestamp) Wait for db job to Appear"
-wait_for_k8s_resource_appear_partial_unique pod ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
-pod_name=`oc get pod -o name | grep ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts`
+wait_for_k8s_resource_appear_partial_unique pod ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts-1-initdb ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+pod_name=`oc get pod -o name | grep ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts-1-initdb`
 echo
 echo ">>>>$(print_timestamp) Patch BTS SA to mitigate pull secret issue"
 oc get sa ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts -o json | jq '.imagePullSecrets += [ {name: "ibm-entitlement-key"} ]' | oc apply -f -
