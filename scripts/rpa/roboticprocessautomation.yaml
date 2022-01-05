@@ -13,6 +13,9 @@ spec:
     caSecret:
       secretName: global-ca
       key: ca.crt 
+  systemQueueProvider:
+    storage:
+      class: "{{STORAGE_CLASS_NAME}}"      
   api:
     externalConnection:
       secretName: rpa-db
