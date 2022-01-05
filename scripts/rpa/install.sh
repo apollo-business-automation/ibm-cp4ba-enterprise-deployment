@@ -111,7 +111,7 @@ wait_for_k8s_resource_condition deployment/rpa-apiserver-rpa Available ${DEFAULT
 
 echo
 echo ">>>>$(print_timestamp) Generate RPA post deployment steps"
-sed -f - postdeploy.yaml > postdeploy.target.yaml << SED_SCRIPT
+sed -f - postdeploy.md > postdeploy.target.md << SED_SCRIPT
 s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g
 s|{{CP4BA_PROJECT_NAME}}|${CP4BA_PROJECT_NAME}|g
 s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
