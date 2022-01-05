@@ -8,7 +8,6 @@ The following list specifies when you need to perform particular post-deployment
     - [Add Daeja license](#add-daeja-license) - When you want to open MS Office documents in Navigator Daeja Viewer and use Permanent Redaction of content.
   - [Business Automation Studio (BAS) (foundation pattern)](#business-automation-studio-bas-foundation-pattern)
     - [Deploy toolkits and configurators](#deploy-toolkits-and-configurators) - When you want to call ODM from Business Application using Automation Services.
-    - [Apps deployment](#apps-deployment) - When you want to deploy or see which Business Applications were deployed in Playback Application Engine.
   - [Business Automation Insights (BAI) (foundation pattern)](#business-automation-insights-bai-foundation-pattern)
     - [Configure Workforce insights](#configure-workforce-insights) - When you want to use Workforce Insights.
   - [Operational Decision Manager (ODM) (decisions pattern)](#operational-decision-manager-odm-decisions-pattern)
@@ -120,7 +119,7 @@ Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=t
 
 ### BAI event emitter
 
-TODO link  After you have some rule project ready, configure it to emit BAI events using https://www.ibm.com/docs/en/odm/8.10?topic=properties-built-in-ruleset-odm-event-emitter
+After you have some rule project ready, configure it to emit BAI events using https://www.ibm.com/docs/en/odm/8.11.0?topic=properties-built-in-ruleset-odm-event-emitter
 
 ### Rule designer in eclipse
 
@@ -209,18 +208,6 @@ Repository URI: https://gitea.{{OCP_APPS_ENDPOINT}}/ads/sandbox.git  (adjust *sa
 Username: cpadmin  
 Password: {{UNIVERSAL_PASSWORD}}  
 Click Connect
-
-### Connect Nexus for external libraries
-
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=credentials-configuring-maven-repository-manager
-
-Open https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ads/admin-platform  
-Click New  
-ID: https://nexus.{{OCP_APPS_ENDPOINT}}/repository/maven-releases/  
-Authentication type: USERNAME  
-Username: cpadmin  
-Password: {{UNIVERSAL_PASSWORD}}  
-Credentials type: MAVEN  
 
 ### Develop custom libraries
 

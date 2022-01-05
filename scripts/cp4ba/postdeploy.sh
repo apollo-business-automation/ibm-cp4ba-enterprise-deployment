@@ -258,10 +258,9 @@ curl -k -X PUT https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/usermgmt/v
   "user_roles": ["'${ROLE_ID}'"]
 }'
 
-#TODO how to refresh groups? delete if this works
-#echo
-#echo ">>>>$(print_timestamp) Add Maven credential"
-## Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=credentials-configuring-maven-repository-manager
+echo
+echo ">>>>$(print_timestamp) Add Maven credential"
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=credentials-configuring-maven-repository-manager
 curl -k -X POST https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/ads/rest-api/api/admin/credential \
 --header 'Content-Type: application/json' \
 --header "Authorization: Bearer $TOKEN" \
