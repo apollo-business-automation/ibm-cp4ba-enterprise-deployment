@@ -271,20 +271,50 @@ echo
 echo ">>>>$(print_timestamp) Switch back to CP4BA Project"
 oc project ${CP4BA_PROJECT_NAME}
 
-#TODO hotfix remove when BTS pull secrets fixed
+#TODO hotfix remove when BTS pull secrets fixed START
 echo
 echo ">>>>$(print_timestamp) Wait for BTS SA to be created"
 wait_for_k8s_resource_appear ServiceAccount/ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 echo
-echo ">>>>$(print_timestamp) Wait for db job to Appear"
-wait_for_k8s_resource_appear_partial_unique pod ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts-1-initdb ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
-pod_name=`oc get pod -o name | grep ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts-1-initdb`
-echo
 echo ">>>>$(print_timestamp) Patch BTS SA to mitigate pull secret issue"
 oc get sa ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts -o json | jq '.imagePullSecrets += [ {name: "ibm-entitlement-key"} ]' | oc apply -f -
-echo
-echo ">>>>$(print_timestamp) Restart BTS job"
-oc delete ${pod_name}
+
+resolve_bts () {
+  local attempts=${DEFAULT_ATTEMPTS_3}
+  local delay=${DEFAULT_DELAY_3}
+  
+  local attempt=0
+  echo "Resolving BTS with '${attempts}' attempts with '${delay}' seconds delay each (total of `expr ${attempts} \* ${delay} / 60` minutes)." 
+  while : ; do
+    echo "Attempt #`expr ${attempt} + 1`/${attempts}: " 
+
+    oc get pod/ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts-1 && echo "Success - BTS resolved" && break
+
+    pod_name=`oc get pod -o name | grep ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts-1-initdb`
+
+    if [[ ! -z "$pod_name" ]]
+    then
+      value=`oc get ${pod_name} -o json | jq -r ".status.containerStatuses[0].state.waiting.reason"`
+      if [ "$value" = "ImagePullBackOff" ] || [ "$value" = "ErrImagePull" ]
+      then
+        oc delete ${pod_name}
+        echo "Success - BTS resolved"
+        break
+      fi
+    fi
+
+    attempt=$((attempt+1))
+    if ((attempt == attempts)); then
+      echo "Failed - BTS could not be resolved, you need to troubleshoot"
+      exit 1
+    fi
+    sleep $delay
+  done
+}
+
+resolve_bts
+
+#TODO hotfix remove when BTS pull secrets fixed END
 
 echo
 echo ">>>>$(print_timestamp) Wait for BTS Ready state"
@@ -417,7 +447,7 @@ wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.sta
 wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.odm.odmDecisionCenterZenIntegration' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.odm.odmDecisionServerRuntimeZenIntegration' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
-wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.odm.odmOIDCRegistrationJob' Successful ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+#TODO wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.odm.odmOIDCRegistrationJob' Successful ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.odm.odmDecisionServerConsoleService' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.odm.odmDecisionRunnerService' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}

@@ -13,7 +13,8 @@ scripts/.config
 scripts/.helm
 scripts/.m2
 scripts/cp4ba/ibm-cp-automation*
-scripts/cp4ba/*.log
+scripts/cp4ba/cp4ba-operator.log
+scripts/cp4ba/cp4ba-cr.yaml
 scripts/cp4ba/cert-kubernetes
 scripts/cp4ba/data/bai/workforce-insights-configuration.yaml
 scripts/cp4ba/data/bai/workforce-insights-configuration.json

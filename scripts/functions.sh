@@ -211,6 +211,17 @@ copy_cp4ba_operator_log() {
   fi
 }
 
+copy_cp4ba_cr() {
+  echo
+  echo ">>>>$(print_timestamp) Copy current CP4BA CR"
+  oc get -n ${CP4BA_PROJECT_NAME} ICP4ACluster/${CP4BA_CR_META_NAME} -o yaml > cp4ba-cr.yaml
+
+  if [[ $CONTAINER_RUN_MODE == "true" ]]; then
+    oc project automagic
+    oc create cm cp4ba-cr --from-file=cp4ba-cr.yaml=cp4ba-cr.yaml -o yaml --dry-run=client | oc apply -f -
+  fi
+}
+
 exit_test() {
   local exit_code="${1}"
   local fail_message="${2:-Failed}"

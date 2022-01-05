@@ -141,7 +141,7 @@ DEFAULT_DELAY_2=60
 ## Means wait for 60 minutes with combination of DEFAULT_DELAY_3. 
 ## Increase if you OCP is slow and you need to wait for things longer.
 DEFAULT_ATTEMPTS_3=30
-## Used e.g. for CPFS. Default attempts used when calling waiting scripts. 
+## Used e.g. for CP4BA pillars. Default attempts used when calling waiting scripts. 
 ## Means wait for 60 minutes with combination of DEFAULT_ATTEMPTS_3. 
 ## Increase if you OCP is slow and you need to wait for things longer.
 DEFAULT_DELAY_3=120
