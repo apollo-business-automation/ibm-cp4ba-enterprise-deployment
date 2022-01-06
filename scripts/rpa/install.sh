@@ -84,30 +84,30 @@ echo
 echo ">>>>$(print_timestamp) Wait for RPA API Server Deployment to be Available"
 wait_for_k8s_resource_condition deployment/rpa-apiserver-rpa Available ${DEFAULT_ATTEMPTS_1} ${DEFAULT_DELAY_1}
 
-#echo
-#echo ">>>>$(print_timestamp) Refresh Zen Roles"
+echo
+echo ">>>>$(print_timestamp) Refresh Zen Roles"
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-studio
 # TODO fix Zen permissions for Run section or wait for fix
 
-## Get access token for ZEN administrative initial user
-#INITIAL_PASSWORD=`oc get secret admin-user-details -o jsonpath='{.data.initial_admin_password}' | base64 -d`
-#ZEN_ACCESS_TOKEN=`oc exec deployment/zen-core -- curl -k -X POST https://zen-core-api-svc:4444/openapi/v1/authorize \
-#--header 'Content-Type: application/json' \
-#--header "Accept: application/json" \
-#--data-raw '{
-#  "username": "admin",
-#  "password": "'${INITIAL_PASSWORD}'"
-#}' \
-#| jq -r '.token'`
-#
-#DOC=`curl -k -X GET https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/usermgmt/v1/roles \
-#--header 'Content-Type: application/json' \
-#--header "Authorization: Bearer $ZEN_ACCESS_TOKEN" | jq -r '.rows | map(. | select(.id=="iaf-automation-admin")) | .[] | .doc | del(._id,.extension_id,.extension_name,.updated_at)'`
-#
-#curl -k -X PUT https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/usermgmt/v1/role/iaf-automation-admin \
-#--header 'Content-Type: application/json' \
-#--header "Authorization: Bearer $ZEN_ACCESS_TOKEN" \
-#--data-raw "${DOC}"
+# Get access token for ZEN administrative initial user
+INITIAL_PASSWORD=`oc get secret admin-user-details -o jsonpath='{.data.initial_admin_password}' | base64 -d`
+ZEN_ACCESS_TOKEN=`oc exec deployment/zen-core -- curl -k -X POST https://zen-core-api-svc:4444/openapi/v1/authorize \
+--header 'Content-Type: application/json' \
+--header "Accept: application/json" \
+--data-raw '{
+  "username": "admin",
+  "password": "'${INITIAL_PASSWORD}'"
+}' \
+| jq -r '.token'`
+
+DOC=`curl -k -X GET https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/usermgmt/v1/roles \
+--header 'Content-Type: application/json' \
+--header "Authorization: Bearer $ZEN_ACCESS_TOKEN" | jq -r '.rows | map(. | select(.id=="iaf-automation-admin")) | .[] | .doc | del(._id,.extension_id,.extension_name,.updated_at)'`
+
+curl -k -X PUT https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/usermgmt/v1/role/iaf-automation-admin \
+--header 'Content-Type: application/json' \
+--header "Authorization: Bearer $ZEN_ACCESS_TOKEN" \
+--data-raw "${DOC}"
 
 echo
 echo ">>>>$(print_timestamp) Generate RPA post deployment steps"
