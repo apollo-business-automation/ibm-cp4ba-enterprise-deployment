@@ -53,7 +53,7 @@ if [[ $ACTION == "install" ]]; then
   if [[ $CONTAINER_RUN_MODE == "true" ]]; then
     ./install.sh
     status=$?
-    oc delete -f automagic/poddisruptionbudget.yaml
+    oc delete -f automagic/poddisruptionbudget.yaml > /dev/null
     exit $status
   else
     nohup ./install.sh &> nohup_install.log &
@@ -68,7 +68,7 @@ if [[ $ACTION == "remove" ]]; then
   if [[ $CONTAINER_RUN_MODE == "true" ]]; then
     ./remove.sh
     status=$?
-    oc delete -f automagic/poddisruptionbudget.yaml
+    oc delete -f automagic/poddisruptionbudget.yaml > /dev/null
     exit $status
   else
     nohup ./remove.sh &> nohup_remove.log &
