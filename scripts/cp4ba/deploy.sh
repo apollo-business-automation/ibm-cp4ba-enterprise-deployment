@@ -274,14 +274,14 @@ oc project ${CP4BA_PROJECT_NAME}
 #TODO hotfix remove when BTS pull secrets fixed START
 echo
 echo ">>>>$(print_timestamp) Wait for BTS SA to be created"
-wait_for_k8s_resource_appear ServiceAccount/ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+wait_for_k8s_resource_appear ServiceAccount/ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts ${DEFAULT_ATTEMPTS} ${DEFAULT_DELAY}
 echo
 echo ">>>>$(print_timestamp) Patch BTS SA to mitigate pull secret issue"
 oc get sa ibm-bts-cnpg-${CP4BA_PROJECT_NAME}-${CP4BA_CR_META_NAME}-bts -o json | jq '.imagePullSecrets += [ {name: "ibm-entitlement-key"} ]' | oc apply -f -
 
 resolve_bts () {
-  local attempts=${DEFAULT_ATTEMPTS_3}
-  local delay=${DEFAULT_DELAY_3}
+  local attempts=${DEFAULT_ATTEMPTS}
+  local delay=${DEFAULT_DELAY}
   
   local attempt=0
   echo "Resolving BTS with '${attempts}' attempts with '${delay}' seconds delay each (total of `expr ${attempts} \* ${delay} / 60` minutes)." 
@@ -312,6 +312,8 @@ resolve_bts () {
   done
 }
 
+echo
+echo ">>>>$(print_timestamp) Resolve BTS"
 resolve_bts
 
 #TODO hotfix remove when BTS pull secrets fixed END

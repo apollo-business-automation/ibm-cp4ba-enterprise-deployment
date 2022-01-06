@@ -117,7 +117,7 @@ MONGODB_PM_HOSTNAME=mongodb-pm.mongodb-pm.svc.cluster.local
 ## Means wait for 20 minutes with combination of DEFAULT_DELAY. 
 ## Increase if you OCP is slow and you need to wait for things longer.
 DEFAULT_ATTEMPTS=80
-## Default attempts used when calling waiting scripts. 
+## Default delay used when calling waiting scripts. 
 ## Means wait for 20 minutes with combination of DEFAULT_ATTEMPTS. 
 ## Increase if you OCP is slow and you need to wait for things longer.
 DEFAULT_DELAY=15
@@ -133,7 +133,7 @@ DEFAULT_DELAY_1=30
 ## Means wait for 30 minutes with combination of DEFAULT_DELAY_2. 
 ## Increase if you OCP is slow and you need to wait for things longer.
 DEFAULT_ATTEMPTS_2=30
-## Used e.g. for CPFS. Default attempts used when calling waiting scripts. 
+## Used e.g. for CPFS. Default delay used when calling waiting scripts. 
 ## Means wait for 30 minutes with combination of DEFAULT_ATTEMPTS_2. 
 ## Increase if you OCP is slow and you need to wait for things longer.
 DEFAULT_DELAY_2=60
@@ -141,7 +141,7 @@ DEFAULT_DELAY_2=60
 ## Means wait for 60 minutes with combination of DEFAULT_DELAY_3. 
 ## Increase if you OCP is slow and you need to wait for things longer.
 DEFAULT_ATTEMPTS_3=30
-## Used e.g. for CP4BA pillars. Default attempts used when calling waiting scripts. 
+## Used e.g. for CP4BA pillars. Default delay used when calling waiting scripts. 
 ## Means wait for 60 minutes with combination of DEFAULT_ATTEMPTS_3. 
 ## Increase if you OCP is slow and you need to wait for things longer.
 DEFAULT_DELAY_3=120
@@ -149,7 +149,7 @@ DEFAULT_DELAY_3=120
 ## Means wait for 180 minutes with combination of DEFAULT_DELAY_4. 
 ## Increase if you OCP is slow and you need to wait for things longer.
 DEFAULT_ATTEMPTS_4=36
-## Used e.g. for CPFS. Default attempts used when calling waiting scripts. 
+## Used e.g. for CP4BA pillars. Default delay used when calling waiting scripts. 
 ## Means wait for 180 minutes with combination of DEFAULT_ATTEMPTS_4. 
 ## Increase if you OCP is slow and you need to wait for things longer.
 DEFAULT_DELAY_4=300
