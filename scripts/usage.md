@@ -258,9 +258,9 @@ For external share you need to use ingress prefixed set of endpoints.
 
 - ACCE console UI: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/acce  
 - CPE WSI endpoint: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/wsi/FNCEWS40MTOM  
-- CPE health check: https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/P8CE/Health (https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/P8CE/Health)
-- CPE ping page: https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/FileNet/Engine (https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/FileNet/Engine)
-- PE ping page: https://cpe-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/peengine/IOR/ping (https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/peengine/IOR/ping)
+- CPE health check: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/P8CE/Health
+- CPE ping page: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/FileNet/Engine
+- PE ping page: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/peengine/IOR/ping
 - PE details page: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/peengine/IOR/admin/help
 - CSS health check: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/cpe/P8CE/Health/CBRDashboard
 - CMIS definitions UI: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/openfncmis_wlp
@@ -312,7 +312,7 @@ For external share you need to use ingress prefixed set of endpoints.
 - OAS REST API Operations: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/bawaut/bpm/explorer/?url=/bawaut/ops/docs  
 - Original REST API: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/bawaut/bpmrest-ui  
 - PFS federated systems: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/pfs/rest/bpm/federated/v1/systems  
-- Workplace: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/icn/navigator/?desktop=workplace  
+- Workplace: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/icn/navigator/?desktop=workplace (If you encounter error stating that you are using self-signed certificates, clear you cookies)
 - Case monitor: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/icn/navigator/?desktop=bawmonitor  
 - Case Client: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/icn/navigator/?desktop=baw  
 - Case administration: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/icn/navigator/?desktop=bawadmin  
@@ -360,7 +360,7 @@ For external share you need to use ingress prefixed set of endpoints.
 #### Endpoints
 
 - Kafka: iaf-system-kafka-bootstrap-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}:443  
-- Apicurio: https://iaf-system-apicurio-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}  
+- Apicurio: https://iaf-system-apicurio-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}} (Not working, redirects to internal IP)
 - Apicurio OAS: https://iaf-system-apicurio-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/api-specifications/registry/v1/openapi.json
 - Apicurio API endpoint: https://iaf-system-apicurio-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/api
 
