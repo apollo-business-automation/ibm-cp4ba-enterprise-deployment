@@ -505,7 +505,7 @@ As DB server for RPA.
 
 #### Endpoints
 
-- Not exposed outside the cluster.
+- Exposed as NodePort as found in Project *mssql* in Service *mssql*.
 
 #### Credentials
 

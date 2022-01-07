@@ -5,6 +5,7 @@ metadata:
 spec:
   selector:
     app: mssql
+  type: NodePort
   ports:
     - protocol: TCP
       port: 1433
