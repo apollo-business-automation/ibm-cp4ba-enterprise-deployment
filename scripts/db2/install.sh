@@ -75,7 +75,7 @@ oc apply -f db2ucluster.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Wait for Db2uCluster instance Ready state"
-wait_for_k8s_resource_condition_generic Db2uCluster/db2ucluster ".status.state" Ready ${DEFAULT_ATTEMPTS_1} ${DEFAULT_DELAY_1}
+wait_for_k8s_resource_condition_generic Db2uCluster/db2ucluster ".status.state" Ready ${DEFAULT_ATTEMPTS_2} ${DEFAULT_DELAY_2}
 
 echo
 echo ">>>>$(print_timestamp) Delete BLUDB"
