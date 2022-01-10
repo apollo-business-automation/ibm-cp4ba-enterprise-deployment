@@ -48,7 +48,7 @@ oc delete secret rpa-apiserver-rpa-dashboard
 echo
 echo ">>>>$(print_timestamp) Delete MSSQL DBs"
 oc rsh -n mssql deployment/mssql << EOSSH
-/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "${UNIVERSAL_PASSWORD}" -Q "drop database [automation]; drop database [knowledge]; drop database [wordnet]; drop database [address]; drop database [audit]"
+/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "${UNIVERSAL_PASSWORD}" -Q "ALTER DATABASE [automation] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; drop database [automation]; ALTER DATABASE [knowledge] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; drop database [knowledge]; ALTER DATABASE [wordnet] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; drop database [wordnet]; ALTER DATABASE [address] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; drop database [address]; ALTER DATABASE [audit] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; drop database [audit]"
 EOSSH
 
 echo

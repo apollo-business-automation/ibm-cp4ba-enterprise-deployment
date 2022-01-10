@@ -281,7 +281,7 @@ data:
     ## so this one will also be automatically set as Default 
     ## For ROKS this class could be ibmc-file-gold-gid
     ## For NFS based class this could be managed-nfs-storage
-    ## For ODF (OCS) based class (e.g. on ARO or ROSA) this could be ocs-storagecluster-cephfs    
+    ## For ODF (OCS) based class (e.g. on ARO or ROSA) this could be ocs-storagecluster-cephfs
     STORAGE_CLASS_NAME=ibmc-file-gold-gid
 
     ## Options are OCP and ROKS

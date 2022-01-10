@@ -47,10 +47,22 @@ echo
 echo ">>>>$(print_timestamp) Delete DBs"
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
+db2 connect to CP4BA
+db2 force application all
+sleep 10
+db2 connect reset
 db2 deactivate db CP4BA
 db2 drop db CP4BA
+db2 connect to TENANT1
+db2 force application all
+sleep 10
+db2 connect reset
 db2 deactivate db TENANT1
 db2 drop db TENANT1
+db2 connect to TENANT2
+db2 force application all
+sleep 10
+db2 connect reset
 db2 deactivate db TENANT2
 db2 drop db TENANT2
 EOSSH
