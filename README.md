@@ -1,8 +1,8 @@
 # Installation of Cloud Pak for Business Automation on containers - One-shot enterprise deployment 🔫
 
-Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components  with all kinds of prerequisites and extras on OpenShift.
+Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components with all kinds of prerequisites and extras on OpenShift.
 
-Last installation was performed on TODO 2021-11-12 with CP4BA version 21.0.3 (also called 21.0.3 or 21.3.0)
+Last installation was performed on 2022-01-11 with CP4BA version 21.0.3 (also called 21.0.3 or 21.3.0)
 
 Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=overview-what-is-cloud-pak-business-automation.
 
@@ -51,7 +51,9 @@ Result of this Enterprise deployment is not fully supported:
 What is not included:
 - IER - missing IER object stores and configuration.
 - ICCs - not covered.
-- Caution! FNCM External share - login issues, do not configure, otherwise other capabilities will break as well - waiting for fixes here.
+- Caution! FNCM External share - login issues, do not configure, otherwise other capabilities will break as well - waiting for fixes.
+- Caution! RPA currently works only with one user cpadmin due to identity issue.
+- Caution! Process MIning currently doesn't work - IAF operator issues, BAI integration issues - waiting for fixes.
 - Workflow Server and Workstream Services - this is a dev deployment. BAW Authoring and (BAW + IAWS) are mutually exclusive in single project.
 
 ## What is in the package 📦
@@ -127,22 +129,22 @@ Multiple command line tools are installed inside a container to make the install
 
 ## Environments used for installation 💻
 
-With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift, however it was executed on the following once.
+With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift 4.8, however it was executed on the following once.
 
 - ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
-OpenShift 4.7.x and 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ibmc-file-gold-gid Storage Class  
+OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ibmc-file-gold-gid Storage Class  
 Successfully installed
 
 - ARO - Azure Red Hat OpenShift allowing to run managed Red Hat OpenShift on Azure  
-OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
+OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
 Successfully installed
 
 - Traditional OpenShift cluster created from scratch on top of virtualization platform  
-OpenShift 4.7.x and 4.8.x on vms - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
+OpenShift 4.8.x on vms - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
 Successfully installed
 
 - ROSA - Red Hat OpenShift Service on AWS  
-OpenShift 4.7.x and 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
+OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
 Successfully installed **but has issues** with passthrough Routes malfunction making it hard to access the platform.
 
 The following picture shows real idle utilization of Nodes with deployed platform on above mentioned ROKS as an example.
@@ -152,35 +154,35 @@ The following picture shows real idle utilization of Nodes with deployed platfor
 The following output shows CPU and Memory requests and limits on Nodes on above mentioned ROKS as an example.
 
 ```text
-node/10.162.243.118
+node/10.162.243.89
   Resource           Requests          Limits
-  cpu                11899m (74%)      54085m (340%)
-  memory             21465690Ki (74%)  56264992Ki (194%)
+  cpu                9346m (58%)       24270m (152%)
+  memory             19965459Ki (68%)  41767200Ki (144%)
 
-node/10.162.243.121
+node/10.163.57.136
   Resource           Requests          Limits
-  cpu                11144m (70%)      55080m (346%)
-  memory             23100946Ki (79%)  80256288Ki (276%)
+  cpu                10234m (64%)      22850m (143%)
+  memory             18918931Ki (65%)  33315104Ki (114%)
 
-node/10.162.243.125
+node/10.163.57.150
   Resource           Requests          Limits
-  cpu                5182m (32%)       5700m (35%)
-  memory             27267602Ki (94%)  26988832Ki (93%)
+  cpu                9096m (57%)       18400m (115%)
+  memory             18354707Ki (63%)  33843488Ki (116%)
 
-node/10.162.243.67
+node/10.163.57.152
   Resource           Requests          Limits
-  cpu                11860m (74%)      40250m (253%)
-  memory             22722066Ki (78%)  60561696Ki (208%)
+  cpu                10078m (63%)      23040m (145%)
+  memory             20524563Ki (70%)  44028192Ki (151%)
 
-node/10.162.243.85
+node/10.163.57.155
   Resource           Requests          Limits
-  cpu                11543m (72%)      40980m (258%)
-  memory             21248530Ki (73%)  56277280Ki (194%)
+  cpu                4948m (31%)       4600m (28%)
+  memory             26953235Ki (93%)  25973024Ki (89%)
 
-node/10.162.243.94
+node/10.163.57.231
   Resource           Requests          Limits
-  cpu                11301m (71%)      95040m (598%)
-  memory             21502482Ki (74%)  114686240Ki (395%)
+  cpu                11600m (73%)      18500m (116%)
+  memory             22577683Ki (77%)  28880160Ki (99%)  
 ```
 
 ## Pre-requisites ⬅️
@@ -304,8 +306,9 @@ data:
 
     # Always review these parameters for changes
 
+    ## Do NOT enable now!
     ## Set to false if you don't want to install (or remove) Process Mining
-    PM_ENABLED=true
+    PM_ENABLED=false
 
     ## Set to false if you don't want to install (or remove) Asset Repo
     ASSET_REPO_ENABLED=true

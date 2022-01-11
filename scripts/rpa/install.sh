@@ -87,7 +87,6 @@ wait_for_k8s_resource_condition deployment/rpa-apiserver-rpa Available ${DEFAULT
 echo
 echo ">>>>$(print_timestamp) Refresh Zen Roles"
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-studio
-# TODO fix Zen permissions for Run section or wait for fix
 
 # Get access token for ZEN administrative initial user
 INITIAL_PASSWORD=`oc get secret admin-user-details -o jsonpath='{.data.initial_admin_password}' | base64 -d`
@@ -121,6 +120,12 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   oc project automagic
   oc create cm rpa-postdeploy --from-file=postdeploy.md=postdeploy.target.md -o yaml --dry-run=client | oc apply -f -
 fi
+
+echo
+echo ">>>>$(print_timestamp) Hotfix cpadmin user"
+oc rsh -n mssql deployment/mssql << EOSSH
+/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "${UNIVERSAL_PASSWORD}" -Q "update [automation].[dbo].[User] set Email='cpadmin' where Email is null"
+EOSSH
 
 echo
 echo ">>>>$(print_timestamp) RPA install completed"
