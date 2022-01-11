@@ -441,39 +441,39 @@ echo ">>>>$(print_timestamp) Wait for BAWAUT StatefulSet Ready state"
 wait_for_k8s_resource_condition_generic StatefulSet/${CP4BA_CR_META_NAME}-workflow-authoring-baw-server ".status.readyReplicas" 2 ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 echo
-echo ">>>>$(print_timestamp) Wait for ADS Run Service Ready states"
+echo ">>>>$(print_timestamp) Wait for ADS Run Service Deployment Available state"
 wait_for_k8s_resource_condition Deployment/${CP4BA_CR_META_NAME}-ads-run-service Available ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 echo
-echo ">>>>$(print_timestamp) Wait for ADS Parsing Service Ready states"
+echo ">>>>$(print_timestamp) Wait for ADS Parsing Service Deployment Available state"
 wait_for_k8s_resource_condition Deployment/${CP4BA_CR_META_NAME}-ads-parsing-service Available ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 echo
-echo ">>>>$(print_timestamp) Wait for ADS Git Service Ready states"
+echo ">>>>$(print_timestamp) Wait for ADS Git Service Deployment Available state"
 wait_for_k8s_resource_condition Deployment/${CP4BA_CR_META_NAME}-ads-git-service Available ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 echo
-echo ">>>>$(print_timestamp) Wait for ADS Download Service Ready states"
+echo ">>>>$(print_timestamp) Wait for ADS Download Service Deployment Available state"
 wait_for_k8s_resource_condition Deployment/${CP4BA_CR_META_NAME}-ads-download-service Available ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 echo
-echo ">>>>$(print_timestamp) Wait for ADS REST API Ready states"
+echo ">>>>$(print_timestamp) Wait for ADS REST API Deployment Available state"
 wait_for_k8s_resource_condition Deployment/${CP4BA_CR_META_NAME}-ads-rest-api Available ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 echo
-echo ">>>>$(print_timestamp) Wait for ADS Front Ready states"
+echo ">>>>$(print_timestamp) Wait for ADS Front Deployment Available state"
 wait_for_k8s_resource_condition Deployment/${CP4BA_CR_META_NAME}-ads-front Available ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 echo
-echo ">>>>$(print_timestamp) Wait for ADS Build Service Ready states"
+echo ">>>>$(print_timestamp) Wait for ADS Build Service Deployment Available state"
 wait_for_k8s_resource_condition Deployment/${CP4BA_CR_META_NAME}-ads-embedded-build-service Available ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 echo
-echo ">>>>$(print_timestamp) Wait for ADS Credentials Service Ready states"
+echo ">>>>$(print_timestamp) Wait for ADS Credentials Service Deployment Available state"
 wait_for_k8s_resource_condition Deployment/${CP4BA_CR_META_NAME}-ads-credentials-service Available ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 echo
-echo ">>>>$(print_timestamp) Wait for ADS Runtime Service Ready states"
+echo ">>>>$(print_timestamp) Wait for ADS Runtime Service Deployment Available state"
 wait_for_k8s_resource_condition Deployment/${CP4BA_CR_META_NAME}-ads-runtime-service Available ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 wait_for_cp4ba ${CP4BA_CR_META_NAME} ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
