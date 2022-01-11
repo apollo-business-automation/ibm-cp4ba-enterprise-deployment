@@ -111,8 +111,6 @@ Part of WFI configuration has already been done automatically.
 
 Set up WFI following https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=dashboards-enabling-workforce-insights
 
-TODO automate or describe here
-
 ## Operational Decision Manager (ODM) (decisions pattern)
 
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-operational-decision-manager
