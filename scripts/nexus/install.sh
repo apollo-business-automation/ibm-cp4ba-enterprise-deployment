@@ -56,7 +56,7 @@ oc apply -f nexusrepo.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Wait for nexus Deployment to be Available"
-wait_for_k8s_resource_condition deployment/nexusrepo-sonatype-nexus Available ${DEFAULT_ATTEMPTS_1} ${DEFAULT_DELAY_1}
+wait_for_k8s_resource_condition deployment/nexusrepo-sonatype-nexus Available ${DEFAULT_ATTEMPTS_2} ${DEFAULT_DELAY_2}
 
 echo
 echo ">>>>$(print_timestamp) Create nexus Route"

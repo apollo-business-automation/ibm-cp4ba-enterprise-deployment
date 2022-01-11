@@ -31,16 +31,16 @@ spec:
     imagePullSecret: ''
     livenessProbe:
       failureThreshold: 6
-      initialDelaySeconds: 30
+      initialDelaySeconds: 60
       path: /
-      periodSeconds: 30
+      periodSeconds: 45
     nexusPort: 8081
     podAnnotations: {}
     readinessProbe:
       failureThreshold: 6
-      initialDelaySeconds: 30
+      initialDelaySeconds: 60
       path: /
-      periodSeconds: 30
+      periodSeconds: 45
     resources: {}
     securityContext:
       fsGroup: 

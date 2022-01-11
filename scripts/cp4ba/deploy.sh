@@ -397,7 +397,7 @@ echo ">>>>$(print_timestamp) ADP CA pods take long time to pull images on first 
 wait_for_k8s_resource_condition `oc get pod -o name | grep natural-language-extractor | head -n 1` Ready ${DEFAULT_ATTEMPTS_4} ${DEFAULT_DELAY_4}
 
 echo
-echo ">>>>$(print_timestamp) Wait for BAI Ready states"
+echo ">>>>$(print_timestamp) Wait for BAI Ready state"
 wait_for_k8s_resource_condition InsightsEngine/iaf-insights-engine Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 echo
