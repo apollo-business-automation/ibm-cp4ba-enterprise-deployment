@@ -1,6 +1,10 @@
 #!/bin/bash
 
 echo
+echo ">>>>Source internal variables"
+. ../internal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 

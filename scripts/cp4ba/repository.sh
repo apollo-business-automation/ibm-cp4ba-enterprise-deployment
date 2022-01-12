@@ -1,6 +1,10 @@
 #!/bin/bash
 
 echo
+echo ">>>>Source internal variables"
+. ../internal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 
@@ -17,7 +21,10 @@ echo ">>>>Init env"
 
 echo
 echo ">>>>$(print_timestamp) Download and extract installation repository"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=operator-preparing-log-file-storage
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=operator-preparing-log-file-storage
+rm ibm-cp-automation-${CP4BA_CASE_VERSION}.tgz
+rm -rf ibm-cp-automation
+rm -rf cert-kubernetes
 curl https://github.com/IBM/cloud-pak/raw/master/repo/case/ibm-cp-automation-${CP4BA_CASE_VERSION}.tgz -L -o ibm-cp-automation-${CP4BA_CASE_VERSION}.tgz
 exit_test $? "Download CP4BA CASE repository Failed"
 tar xzvf ibm-cp-automation-${CP4BA_CASE_VERSION}.tgz

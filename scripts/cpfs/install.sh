@@ -1,7 +1,11 @@
 #!/bin/bash
 
 # Based on https://www.ibm.com/docs/en/cpfs
-# Based on https://www.ibm.com/docs/en/cpfs?topic=online-installing-foundational-services-by-using-cli  
+# Based on https://www.ibm.com/docs/en/cpfs?topic=314-installing-foundational-services-by-using-cli
+
+echo
+echo ">>>>Source internal variables"
+. ../internal-variables.sh
 
 echo
 echo ">>>>Source variables"
@@ -54,16 +58,29 @@ echo ">>>>$(print_timestamp) Add OperatorGroup"
 oc apply -f operatorgroup.yaml
 
 echo
+echo ">>>>$(print_timestamp) Update Subscription"
+sed -f - subscription.yaml > subscription.target.yaml << SED_SCRIPT
+s|{{CPFS_OPERATOR_CHANNEL}}|${CPFS_OPERATOR_CHANNEL}|g
+s|{{CPFS_STARTING_CSV}}|${CPFS_STARTING_CSV}|g
+SED_SCRIPT
+
+echo
 echo ">>>>$(print_timestamp) Add Subscription"
-oc apply -f subscription.yaml
+oc apply -f subscription.target.yaml
+
+manage_manual_operator ibm-common-service-operator ibm-common-service-operator
 
 echo
 echo ">>>>$(print_timestamp) Switch to Project ibm-common-services"
 oc project ibm-common-services
 
-echo
-echo ">>>>$(print_timestamp) Wait for Operator Deployment to be Available"
-wait_for_k8s_resource_condition deployment/operand-deployment-lifecycle-manager Available ${DEFAULT_ATTEMPTS_1} ${DEFAULT_DELAY_1}
+manage_manual_operator ibm-common-service-operator ibm-common-service-operator
+manage_manual_operator ibm-namespace-scope-operator ibm-namespace-scope-operator
+manage_manual_operator operand-deployment-lifecycle-manager-app operand-deployment-lifecycle-manager
+
+#echo
+#echo ">>>>$(print_timestamp) Wait for Operator Deployment to be Available"
+#wait_for_k8s_resource_condition deployment/operand-deployment-lifecycle-manager Available ${DEFAULT_ATTEMPTS_1} ${DEFAULT_DELAY_1}
 
 echo
 echo ">>>>$(print_timestamp) Wait for OperandConfig CRD to be Established"
@@ -77,15 +94,30 @@ echo
 echo ">>>>$(print_timestamp) Patch authentication object to customize admin username"
 # Based on https://www.ibm.com/docs/en/cpfs?topic=services-configuring-foundational-by-using-custom-resource#default-admin for admin username
 INDEX=`oc get operandconfig common-service -o json | jq '[.spec.services[] | .name == "ibm-iam-operator"] | index(true)'`
-oc patch operandconfig common-service --type json -p '[{"op":"replace","path":"/spec/services/'$INDEX'/spec/authentication/config", "value":{}}]'
+oc patch operandconfig common-service --type json -p '[{"op":"add","path":"/spec/services/'$INDEX'/spec/authentication/config", "value":{}}]'
+oc patch operandconfig common-service --type json -p '[{"op":"add","path":"/spec/services/'$INDEX'/spec/authentication/config/defaultAdminUser", "value":"cpfsadmin"}]'
 
 echo
-echo ">>>>$(print_timestamp) Change admin username"
-oc patch operandconfig common-service --type json -p '[{"op":"replace","path":"/spec/services/'$INDEX'/spec/authentication/config/defaultAdminUser", "value":"cpfsadmin"}]'
+echo ">>>>$(print_timestamp) Set StorageClass for MongoDB"
+INDEX=`oc get operandconfig common-service -o json | jq '[.spec.services[] | .name == "ibm-mongodb-operator"] | index(true)'`	
+oc patch operandconfig common-service --type json -p '[{"op":"add","path":"/spec/services/'$INDEX'/spec/mongoDB/storageClass", "value":"'${STORAGE_CLASS_NAME}'"}]'
+
+echo
+echo ">>>>$(print_timestamp) Set StorageClass for Mustgather"
+INDEX=`oc get operandconfig common-service -o json | jq '[.spec.services[] | .name == "ibm-healthcheck-operator"] | index(true)'`	
+oc patch operandconfig common-service --type json -p '[{"op":"add","path":"/spec/services/'$INDEX'/spec/mustgatherService/persistentVolumeClaim", "value":{}}]'
+oc patch operandconfig common-service --type json -p '[{"op":"add","path":"/spec/services/'$INDEX'/spec/mustgatherService/persistentVolumeClaim/storageClassName", "value":"'${STORAGE_CLASS_NAME}'"}]'
+
+echo
+echo ">>>>$(print_timestamp) Add ICR secret (mainly for CPs installation)"
+oc create secret docker-registry ibm-entitlement-key --docker-username=cp --docker-password="${ICR_PASSWORD}" --docker-server="cp.icr.io"
 
 echo
 echo ">>>>$(print_timestamp) Apply OperandRequest instance"
 oc apply -f operandrequest.yaml
+
+manage_manual_operator ibm-commonui-operator ibm-commonui-operator
+manage_manual_operator ibm-ingress-nginx-operator ibm-ingress-nginx-operator
 
 echo
 echo ">>>>$(print_timestamp) Wait for OperandRequest instance Running phase"
@@ -110,9 +142,15 @@ oc create secret tls ibm-licensing-certs --key ../global-ca/wildcard.key --cert 
 oc patch IBMLicensing instance --type json -p '[{"op":"replace","path":"/spec/httpsCertsSource", "value":"custom"}]'
 
 echo
+echo ">>>>$(print_timestamp) Update License Service Reporter"
+sed -f - ibmlicenseservicereporter.yaml > ibmlicenseservicereporter.target.yaml << SED_SCRIPT
+s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
+SED_SCRIPT
+
+echo
 echo ">>>>$(print_timestamp) Add License Service Reporter"
 # Based on Based on https://www.ibm.com/docs/en/cpfs?topic=reporter-deploying-license-service
-oc apply -f ibmlicenseservicereporter.yaml
+oc apply -f ibmlicenseservicereporter.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Configure License Service Reporter"

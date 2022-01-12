@@ -1,6 +1,10 @@
 #!/bin/bash
 
 echo
+echo ">>>>Source internal variables"
+. ../internal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 
@@ -21,13 +25,16 @@ oc new-project kibana
 
 echo
 echo ">>>>$(print_timestamp) Update Deployment"
-sed -i "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" deployment.yaml
-sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" deployment.yaml
-sed -i "s|{{BASE64_ELASTIC_CREDENTIALS}}|"$(echo -n elasticsearch-admin:${UNIVERSAL_PASSWORD} | base64)"|g" deployment.yaml
+sed -f - deployment.yaml > deployment.target.yaml << SED_SCRIPT
+s|{{CP4BA_PROJECT_NAME}}|${CP4BA_PROJECT_NAME}|g
+s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+s|{{KIBANA_IMAGE_TAG}}|${KIBANA_IMAGE_TAG}|g
+s|{{BASE64_ELASTIC_CREDENTIALS}}|$(echo -n elasticsearch-admin:${UNIVERSAL_PASSWORD} | base64)|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Create Deployment"
-oc apply -f deployment.yaml
+oc apply -f deployment.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Create Service"

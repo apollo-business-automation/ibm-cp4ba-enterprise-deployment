@@ -5,8 +5,8 @@ metadata:
 spec:
   license:
     accept: true
-    license: L-NCAN-C3CJ8D
-  version: 2021.2.1-1
+    license: L-PNAA-C68928
+  version: "{{ASSET_REPO_VERSION}}"
   replicas: 1
   storage:
     assetDataVolume:

@@ -3,6 +3,10 @@
 # Based on https://github.com/tchiotludo/akhq
 
 echo
+echo ">>>>Source internal variables"
+. ../internal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 
@@ -38,14 +42,16 @@ trustore_base64=`base64 -w 0 truststore.jks`
 
 echo
 echo ">>>>$(print_timestamp) Update akhq helm values"
-sed -i "s|{{TRUST_STORE}}|${trustore_base64}|g" values.yaml
-sed -i "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" values.yaml
-sed -i "s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g" values.yaml
-sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" values.yaml
+sed -f - values.yaml > values.target.yaml << SED_SCRIPT
+s|{{TRUST_STORE}}|${trustore_base64}|g
+s|{{CP4BA_PROJECT_NAME}}|${CP4BA_PROJECT_NAME}|g
+s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g
+s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Install helm release"
-helm install akhq akhq/akhq --values values.yaml --version 0.2.3
+helm install akhq akhq/akhq --values values.target.yaml --version ${AKHQ_CHART_VERSION}
 
 echo
 echo ">>>>$(print_timestamp) Create akhq Route"

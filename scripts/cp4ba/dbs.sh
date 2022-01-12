@@ -1,6 +1,10 @@
 #!/bin/bash
 
 echo
+echo ">>>>Source internal variables"
+. ../internal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 
@@ -20,14 +24,8 @@ echo ">>>>$(print_timestamp) Create DB users"
 # Based on https://www.ibm.com/docs/en/db2/11.5?topic=ldap-managing-users
 ldap_pod=$(oc get pod -n db2 -o name | grep ldap)
 echo
-echo ">>>>$(print_timestamp) Create DB user ums"
-oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/addLdapUser.py -u ums -p ${UNIVERSAL_PASSWORD} -r user
-echo
-echo ">>>>$(print_timestamp) Create DB user umsts"
-oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/addLdapUser.py -u umsts -p ${UNIVERSAL_PASSWORD} -r user
-echo
 echo ">>>>$(print_timestamp) Create DB user icndb"
-# Needs to be ICNDB as container counts on such name internally for schema name
+# Needs to be ICNDB as container counts on such name internally for schema name (also for TaskManager)
 oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/addLdapUser.py -u icndb -p ${UNIVERSAL_PASSWORD} -r user
 echo
 echo ">>>>$(print_timestamp) Create DB user pb"
@@ -68,6 +66,9 @@ oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/addLdapUser.py -u bados -p ${UNI
 echo
 echo ">>>>$(print_timestamp) Create DB user bawaut"
 oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/addLdapUser.py -u bawaut -p ${UNIVERSAL_PASSWORD} -r user
+echo
+echo ">>>>$(print_timestamp) Create DB user ch"
+oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/addLdapUser.py -u ch -p ${UNIVERSAL_PASSWORD} -r user
 
 echo
 echo ">>>>$(print_timestamp) Create & configure CP4BA DB"
@@ -81,48 +82,12 @@ db2 DROP TABLESPACE USERSPACE1
 EOSSH
 
 echo
-echo ">>>>$(print_timestamp) User Management Services (UMS) (foundation pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=capabilities-preparing-install-user-management-services
-
-echo
-echo ">>>>$(print_timestamp) UMS DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=database-preparing-db2
-oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
-su - db2inst1
-db2 CONNECT TO CP4BA;
-db2 CREATE REGULAR TABLESPACE UMS_TS PAGESIZE 32 K BUFFERPOOL CP4BA_BP_32K;
-db2 CREATE USER TEMPORARY TABLESPACE UMS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-db2 CREATE SYSTEM TEMPORARY TABLESPACE UMS_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-
-db2 GRANT DBADM ON DATABASE TO user ums;
-db2 GRANT USE OF TABLESPACE UMS_TS TO user ums;
-db2 GRANT USE OF TABLESPACE UMS_TEMP_TS TO user ums;
-db2 CONNECT RESET;
-EOSSH
-
-echo
-echo ">>>>$(print_timestamp) UMSTS DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=database-preparing-db2
-oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
-su - db2inst1
-db2 CONNECT TO CP4BA;
-db2 CREATE REGULAR TABLESPACE UMSTS_TS PAGESIZE 32 K BUFFERPOOL CP4BA_BP_32K;
-db2 CREATE USER TEMPORARY TABLESPACE UMSTS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-db2 CREATE SYSTEM TEMPORARY TABLESPACE UMSTS_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-
-db2 GRANT DBADM ON DATABASE TO user umsts;
-db2 GRANT USE OF TABLESPACE UMSTS_TS TO user umsts;
-db2 GRANT USE OF TABLESPACE UMSTS_TEMP_TS TO user umsts;
-db2 CONNECT RESET;
-EOSSH
-
-echo
 echo ">>>>$(print_timestamp) Business Automation Navigator (BAN) (foundation pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=capabilities-preparing-install-business-automation-navigator
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=capabilities-business-automation-navigator
 
 echo
 echo ">>>>$(print_timestamp) BAN DB"
-# Based on https://www.ibm.com/docs/en/content-navigator/[BAN_KC_VERSION]?topic=navigator-creating-db2-database-content
+# Based on https://www.ibm.com/docs/en/content-navigator/3.0.11?topic=navigator-creating-db2-database-content
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
 db2 CONNECT TO CP4BA;
@@ -138,11 +103,11 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) Business Automation Studio (BAS) (foundation pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=capabilities-preparing-install-business-automation-studio
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=capabilities-business-automation-studio
 
 echo
 echo ">>>>$(print_timestamp) PB DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=studio-creating-databases
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=studio-creating-databases
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
 db2 CONNECT TO CP4BA;
@@ -158,7 +123,7 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) BAS DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=studio-creating-databases
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=studio-creating-databases
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
 db2 CONNECT TO CP4BA;
@@ -177,11 +142,11 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) Operational Decision Manager (ODM) (decisions pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=capabilities-preparing-install-operational-decision-manager
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=capabilities-operational-decision-manager
 
 echo
 echo ">>>>$(print_timestamp) ODM DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=manager-configuring-external-database
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=manager-configuring-external-database
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
 db2 CONNECT TO CP4BA;
@@ -197,11 +162,11 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) FileNet Content Manager (FNCM) (content pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=capabilities-preparing-install-filenet-content-manager
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=capabilities-filenet-content-manager
 
 echo
 echo ">>>>$(print_timestamp) Set DB2_WORKLOAD"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=manager-preparing-databases
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=manager-preparing-databases
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
 db2set DB2_WORKLOAD=FILENET_CM
@@ -209,7 +174,7 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) GCD DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=manager-preparing-databases
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=manager-preparing-databases
 # Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-space-content-platform-engine-gcd
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
@@ -228,7 +193,7 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) OS1 DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=manager-preparing-databases
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=manager-preparing-databases
 # Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
@@ -247,11 +212,11 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) Automation Application Engine (AAE) (application pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=pc-preparing-install-business-automation-workflow-runtime-workstream-services
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=capabilities-application-engine
 
 echo
 echo ">>>>$(print_timestamp) AAE DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=engine-creating-database
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=engine-creating-database
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
 db2 CONNECT TO CP4BA;
@@ -267,7 +232,7 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) AAE Data persistence DB"
-# Based on https://www.ibm.com/docs/en/filenet-p8-platform/[FNCM_KC_VERSION]?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
 db2 CONNECT TO CP4BA;
@@ -285,11 +250,11 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) Automation Document Processing (ADP) (document_processing pattern)"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=capabilities-preparing-install-automation-document-processing
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=capabilities-document-processing
 
 echo
 echo ">>>>$(print_timestamp) BASE DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=processing-preparing-db2-databases-document
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-preparing-db2-databases-document
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
 db2 CONNECT TO CP4BA;
@@ -305,7 +270,7 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) TENANT1 DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=processing-preparing-db2-databases-document
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-preparing-db2-databases-document
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
 db2 create database TENANT1 automatic storage YES USING CODESET UTF-8 TERRITORY DEFAULT COLLATE USING SYSTEM PAGESIZE 32768;
@@ -330,7 +295,7 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) TENANT2 DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=processing-preparing-db2-databases-document
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-preparing-db2-databases-document
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
 db2 create database TENANT2 automatic storage YES USING CODESET UTF-8 TERRITORY DEFAULT COLLATE USING SYSTEM PAGESIZE 32768;
@@ -355,7 +320,7 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) DEVOS1 DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=processing-preparing-db2-databases-document
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-preparing-db2-databases-document
 # DEVOS Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
@@ -430,7 +395,7 @@ echo ">>>>$(print_timestamp) Business Automation Workflow Authoring (BAWAUT)"
 
 echo
 echo ">>>>$(print_timestamp) Set DB2_WORKLOAD"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=authoring-creating-required-databases
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=authoring-creating-required-databases
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
 db2set DB2_WORKLOAD=FILENET_CM
@@ -438,7 +403,7 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) BADOCS DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=authoring-creating-required-databases
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=authoring-creating-required-databases
 # BADOCS, BATOS, BADOS Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
@@ -457,7 +422,7 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) BATOS DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=authoring-creating-required-databases
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=authoring-creating-required-databases
 # BADOCS, BATOS, BADOS Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
@@ -476,7 +441,7 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) BADOS DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=authoring-creating-required-databases
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=authoring-creating-required-databases
 # BADOCS, BATOS, BADOS Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
@@ -495,8 +460,8 @@ EOSSH
 
 echo
 echo ">>>>$(print_timestamp) BAWAUT DB"
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=authoring-creating-required-databases
-# BAWAUTDB Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=crd-creating-required-databases-in-db2
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=authoring-creating-required-databases
+# BAWAUTDB Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=crd-creating-required-databases-in-db2
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
 db2 CONNECT TO CP4BA;
@@ -510,6 +475,24 @@ db2 GRANT USE OF TABLESPACE BAWAUT_TEMP_TS TO user bawaut;
 
 db2 UPDATE DB CFG FOR CP4BA USING LOGFILSIZ 16384 DEFERRED; #largest value
 db2 UPDATE DB CFG FOR CP4BA USING LOGSECOND 64 IMMEDIATE; #largest value
+db2 CONNECT RESET;
+EOSSH
+
+echo
+echo ">>>>$(print_timestamp) CH (Case History) DB"
+# Based on https://www.ibm.com/docs/en/baw/20.x?topic=system-preparing-database-case-history-store
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=bawraws-optional-enabling-timeline-visualizer-widget-display-business-automation-workflow-process-activity-flow
+oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
+su - db2inst1
+db2 CONNECT TO CP4BA;
+db2 CREATE LARGE TABLESPACE CH_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+db2 CREATE USER TEMPORARY TABLESPACE CH_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+db2 CREATE SYSTEM TEMPORARY TABLESPACE CH_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+
+db2 GRANT DBADM ON DATABASE TO user ch;
+db2 GRANT USE OF TABLESPACE CH_TS TO user ch;
+db2 GRANT USE OF TABLESPACE CH_TEMP_TS TO user ch;
+
 db2 CONNECT RESET;
 EOSSH
 
@@ -531,6 +514,16 @@ add_db2mc_connection TENANT1
 sleep 5
 add_db2mc_connection TENANT2
 sleep 5
+
+echo
+echo ">>>>$(print_timestamp) Create CP4BA Mongo DBs"
+oc rsh -n mongodb deployment/mongodb << EOSSH
+mongo --username root --password ${UNIVERSAL_PASSWORD} --authenticationDatabase admin <<EOF
+use ads
+use ads-git
+use ads-history
+EOF
+EOSSH
 
 echo
 echo ">>>>$(print_timestamp) CP4BA dbs install completed"

@@ -3,8 +3,9 @@ kind: Subscription
 metadata:
   name: processmining-subscription
 spec:
-  channel: v1.0
-  installPlanApproval: Automatic
+  channel: "{{PM_OPERATOR_CHANNEL}}"
+  installPlanApproval: Manual
   name: ibm-automation-processmining
   source: ibm-operator-catalog
   sourceNamespace: openshift-marketplace
+  startingCSV: "{{PM_STARTING_CSV}}"

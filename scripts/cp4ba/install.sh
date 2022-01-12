@@ -1,6 +1,10 @@
 #!/bin/bash
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-enterprise-deployments
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=openshift-installing-production-deployments
+
+echo
+echo ">>>>Source internal variables"
+. ../internal-variables.sh
 
 echo
 echo ">>>>Source variables"
@@ -38,6 +42,7 @@ echo ">>>>$(print_timestamp) Deploy"
 deploy_exit_code=$?
 if [[ "$deploy_exit_code" != "0" ]]; then
   copy_cp4ba_operator_log
+  copy_cp4ba_cr
 fi
 exit_test ${deploy_exit_code} "CP4BA Deploy Failed"
 

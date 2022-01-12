@@ -1,6 +1,10 @@
 #!/bin/bash
 
 echo
+echo ">>>>Source internal variables"
+. ../internal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 
@@ -27,6 +31,10 @@ echo
 echo ">>>>$(print_timestamp) Delete DB2MC DB"
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
+db2 connect to DB2MC
+db2 force application all
+sleep 10
+db2 connect reset
 db2 deactivate db DB2MC
 db2 drop db DB2MC
 EOSSH

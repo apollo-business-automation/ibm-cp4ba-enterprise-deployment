@@ -3,8 +3,9 @@ kind: Subscription
 metadata:
   name: rpa-subscription
 spec:
-  channel: v1.1
-  installPlanApproval: Automatic
+  channel: "{{RPA_OPERATOR_CHANNEL}}"
+  installPlanApproval: Manual
   name: ibm-automation-rpa
   source: ibm-operator-catalog
   sourceNamespace: openshift-marketplace
+  startingCSV: "{{RPA_STARTING_CSV}}"

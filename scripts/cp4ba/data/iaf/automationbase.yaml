@@ -4,7 +4,7 @@ metadata:
   name: foundation-iaf
 spec:
   description: IAF CR for Foundation
-  version: v1.1
+  version: "{{CP4BA_AUTOMATION_BASE_VERSION}}"
   license:
     accept: true
   tls:
@@ -15,16 +15,16 @@ spec:
       secretName: global-ca
       key: ca.crt
   elasticsearch:
-    version: v1.1
+    version: "{{CP4BA_AUTOMATION_BASE_VERSION}}"
     license:
       accept: true
     additionalAllowedAPIs: "GET:[*],PUT:[*],POST:[*],HEAD:[*],DELETE:[*]"
     nodegroupspecs:
-      - name: master-data
+      - name: data
         replicas: 1
         storage:
           class: "{{STORAGE_CLASS_NAME}}"
-          size: 55Gi
+          size: 50Gi
         template:
           pod:
             spec:
@@ -32,21 +32,41 @@ spec:
                 - name: elasticsearch
                   resources:
                     requests:
-                      cpu: 1000m
-                      memory: 2048Mi
+                      cpu: 500m
+                      memory: 820Mi
                     limits:
-                      cpu: 1000m
+                      cpu: 800m
                       memory: 2048Mi
+                - name: tls-proxy
+                  resources:
+                    requests:
+                      cpu: 100m
+                      memory: 512Mi
+                    limits:
+                      cpu: 200m
+                      memory: 512Mi
+        config:
+          - key: path.repo
+            value: '/usr/share/elasticsearch/snapshots/main'
+    snapshotStores:
+      - name: main
+        storage:
+          class: "{{STORAGE_CLASS_NAME}}"
+          size: 10Gi
   kafka:
     kafka:
-      replicas: 3
+      config:
+        offsets.topic.replication.factor: 1
+        transaction.state.log.min.isr: 1
+        transaction.state.log.replication.factor: 1    
+      replicas: 1
       resources:
-        limits:
-          cpu: 1000m
-          memory: 1024Mi
         requests:
           cpu: 1000m
           memory: 1024Mi
+        limits:
+          cpu: 1000m
+          memory: 2048Mi
       storage:
         type: persistent-claim
         size: 4Gi
@@ -54,10 +74,10 @@ spec:
     zookeeper:
       replicas: 1
       resources:
-        limits:
+        requests:
           cpu: 1000m
           memory: 1024Mi
-        requests:
+        limits:
           cpu: 1000m
           memory: 1024Mi
       storage:

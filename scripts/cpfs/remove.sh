@@ -3,6 +3,10 @@
 #Based on https://www.ibm.com/docs/en/cpfs?topic=issues-uninstallation-is-not-successful
 
 echo
+echo ">>>>Source internal variables"
+. ../internal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 

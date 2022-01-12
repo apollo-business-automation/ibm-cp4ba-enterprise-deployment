@@ -27,22 +27,20 @@ spec:
       - name: NEXUS_SECURITY_RANDOMPASSWORD
         value: 'false'
     hostAliases: []
-    imageName: >-
-      registry.connect.redhat.com/sonatype/nexus-repository-manager@sha256:4d816619ae0add7010dcc297d7593ceace9c92c060ed01764dd3d84e804c42f0
     imagePullPolicy: IfNotPresent
     imagePullSecret: ''
     livenessProbe:
       failureThreshold: 6
-      initialDelaySeconds: 30
+      initialDelaySeconds: 60
       path: /
-      periodSeconds: 30
+      periodSeconds: 45
     nexusPort: 8081
     podAnnotations: {}
     readinessProbe:
       failureThreshold: 6
-      initialDelaySeconds: 30
+      initialDelaySeconds: 60
       path: /
-      periodSeconds: 30
+      periodSeconds: 45
     resources: {}
     securityContext:
       fsGroup: 
@@ -54,6 +52,7 @@ spec:
     accessMode: ReadWriteMany
     enabled: true
     storageSize: 8Gi
+    storageClass: "{{STORAGE_CLASS_NAME}}"
   replicaCount: 1
   route:
     enabled: false

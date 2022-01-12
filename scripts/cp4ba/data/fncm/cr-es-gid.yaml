@@ -28,13 +28,13 @@ spec:
           cpe: internal-idp-oidc-google-secret
           graphql: internal-idp-oidc-google-secret
         token_reuse: true
-  #initialize_configuration:
-  #  ic_ldap_managed_realm:
-  #    - managed_realm_name: externalManaged
-  #      managed_realm_base_dn: dc=externalManaged,dc=managed
-  #      managed_realm_principal_cat: External
-  #      managed_realm_exclude_from_auth_user: false
-  #      # TODO Broken in 21.0.2.3, uncomment when fixed in 21.0.3
-  #      #managed_realm_identity_rules:
-  #      #  - identity_rule_type: ""
-  #      #    email_suffix: ""
+# TODO Not working due to CPE java API bug, report, wait for fix
+#  initialize_configuration:
+#    ic_ldap_managed_realm:
+#      - managed_realm_name: externalManaged
+#        managed_realm_base_dn: dc=externalManaged,dc=managed
+#        managed_realm_principal_cat: External
+#        managed_realm_exclude_from_auth_user: false
+#        managed_realm_identity_rules:
+#          - identity_rule_type: "ALLOW_SELF_REGISTER"
+#            email_suffix: "gmail.com"

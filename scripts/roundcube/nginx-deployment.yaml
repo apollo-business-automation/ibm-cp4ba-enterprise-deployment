@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: roundcubenginx
-          image: nginx:1.21.1-alpine
+          image: "nginx:{{ROUNDCUBE_NGINX_IMAGE_TAG}}"
           imagePullPolicy: ""
           env:
           - name: NGINX_HOST

@@ -3,6 +3,10 @@
 # Based on https://github.com/osixia/docker-openldap & https://github.com/jp-gouin/helm-openldap
 
 echo
+echo ">>>>Source internal variables"
+. ../internal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 
@@ -32,14 +36,17 @@ helm repo update
 
 echo
 echo ">>>>$(print_timestamp) Update OpenLDAP helm values"
-yq w -i values.yaml persistence.storageClass "${STORAGE_CLASS_NAME}"
-sed -i "s|{{BASE64_UNIVERSAL_PASSWORD}}|$(echo -n ${UNIVERSAL_PASSWORD} | base64)|g" values.yaml
-sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" values.yaml
+sed -f - values.yaml > values.target.yaml << SED_SCRIPT
+s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
+s|{{BASE64_UNIVERSAL_PASSWORD}}|$(echo -n ${UNIVERSAL_PASSWORD} | base64)|g
+s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+s|{{LDAP_HOSTNAME}}|${LDAP_HOSTNAME}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Install helm release"
 # Custom chema LDIF based on https://stackoverflow.com/questions/45511696/creating-a-new-objectclass-and-attribute-in-openldap
-helm install openldap helm-openldap/openldap-stack-ha --values values.yaml --version 2.1.5
+helm install openldap helm-openldap/openldap-stack-ha --values values.target.yaml --version ${OPENLDAP_CHART_VERSION}
 
 echo
 echo ">>>>$(print_timestamp) Create phpLDAPadmin Route"

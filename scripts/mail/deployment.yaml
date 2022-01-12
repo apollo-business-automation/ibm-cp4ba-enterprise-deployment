@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: docker-mailserver
-          image: mailserver/docker-mailserver:10.0.0
+          image: "mailserver/docker-mailserver:{{MAIL_IMAGE_TAG}}"
           imagePullPolicy: IfNotPresent
           securityContext:
             capabilities:
@@ -62,6 +62,9 @@ spec:
             - name: public-dir-pipe-folder
               mountPath: /var/mail-state/spool-postfix/public
               subPath: public
+            - name: private-dir-pipe-folder
+              mountPath: /var/mail-state/spool-postfix/private
+              subPath: public
             - name: data
               mountPath: /var/log/mail
               subPath: log
@@ -93,8 +96,11 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: mail-storage
-        # Cannot create named pipes on connected storage class NFS, must be in. Risk of loosing data.
+        # Cannot create named pipes on connected storage class, must be in. Risk of loosing data.
         - name: public-dir-pipe-folder
+          emptyDir: {}
+        # Cannot create named pipes on connected storage class, must be in. Risk of loosing data.
+        - name: private-dir-pipe-folder
           emptyDir: {}
         - name: tls
           secret:

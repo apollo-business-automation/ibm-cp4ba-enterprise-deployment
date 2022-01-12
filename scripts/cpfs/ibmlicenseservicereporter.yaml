@@ -8,3 +8,5 @@ metadata:
     operator.ibm.com/opreq-control: 'true'
   name: instance
   namespace: ibm-common-services
+spec:
+  storageClass: "{{STORAGE_CLASS_NAME}}"

@@ -1,0 +1,17 @@
+<properties>
+  <server merge="mergeChildren">
+    <email merge="mergeChildren">
+      <!-- SMTP server that mail should be sent to -->
+      <smtp-server merge="replace">{{MAIL_HOSTNAME}}</smtp-server>
+        <mail-template>
+          <process merge="replace">externalmailprocessworkplace_{0}.html</process>
+          <use-gadget>true</use-gadget>
+        </mail-template> 
+      <valid-from-required merge="replace">true</valid-from-required>
+      <default-from-address merge="replace">system@cp.local</default-from-address>
+      <send-external-email merge="replace">true</send-external-email>
+      <send-email-notifications-to-list merge="replace">false</send-email-notifications-to-list>
+      <send-email-notifications-async merge="replace">false</send-email-notifications-async>
+    </email>
+  </server>
+</properties>

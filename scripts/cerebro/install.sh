@@ -3,6 +3,10 @@
 # Based on https://github.com/lmenezes/cerebro
 
 echo
+echo ">>>>Source internal variables"
+. ../internal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 
@@ -27,16 +31,24 @@ oc adm policy add-scc-to-user anyuid system:serviceaccount:cerebro:default
 
 echo
 echo ">>>>$(print_timestamp) Update ConfigMap"
-sed -i "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" configmap.yaml
-sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" configmap.yaml
+sed -f - configmap.yaml > configmap.target.yaml << SED_SCRIPT
+s|{{CP4BA_PROJECT_NAME}}|${CP4BA_PROJECT_NAME}|g
+s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Create ConfigMap"
-oc apply -f configmap.yaml
+oc apply -f configmap.target.yaml
+
+echo
+echo ">>>>$(print_timestamp) Update Deployment"
+sed -f - deployment.yaml > deployment.target.yaml << SED_SCRIPT
+s|{{CEREBRO_IMAGE_TAG}}|${CEREBRO_IMAGE_TAG}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Create Deployment"
-oc apply -f deployment.yaml
+oc apply -f deployment.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Wait for Deployment to be Available"

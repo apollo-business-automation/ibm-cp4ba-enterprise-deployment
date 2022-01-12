@@ -3,6 +3,10 @@
 # Based on https://www.ibm.com/docs/en/db2-data-mgr-console/3.1.x?topic=configuring-setting-up-db2-data-management-console
 
 echo
+echo ">>>>Source internal variables"
+. ../internal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 
@@ -31,16 +35,21 @@ oc create secret generic wildcard --from-file=cert.pem=../global-ca/wildcard.crt
 
 echo
 echo ">>>>$(print_timestamp) Update PVC"
-yq w -i pvc.yaml spec.storageClassName "${STORAGE_CLASS_NAME}"
+sed -f - pvc.yaml > pvc.target.yaml << SED_SCRIPT
+s|{{STORAGE_CLASS_NAME}}|${STORAGE_CLASS_NAME}|g
+SED_SCRIPT
 
 echo
 echo ">>>>$(print_timestamp) Create PVC"
-oc apply -f pvc.yaml
+oc apply -f pvc.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Deploy Deployment"
-sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" deployment.yaml
-oc apply -f deployment.yaml
+sed -f - deployment.yaml > deployment.target.yaml << SED_SCRIPT
+s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+s|{{DB2MC_IMAGE_TAG}}|${DB2MC_IMAGE_TAG}|g
+SED_SCRIPT
+oc apply -f deployment.target.yaml
 
 echo
 echo ">>>>$(print_timestamp) Wait for Deployment to be Available"
@@ -67,6 +76,7 @@ su - db2inst1
 db2 CREATE DATABASE DB2MC AUTOMATIC STORAGE YES PAGESIZE 32 K;
 db2 activate db DB2MC
 EOSSH
+sleep 90 # Wait for new DB2 DB to become available
 
 echo
 echo ">>>>$(print_timestamp) Get auth token"

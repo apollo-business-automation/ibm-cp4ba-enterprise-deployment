@@ -1,6 +1,10 @@
 #!/bin/bash
 
 echo
+echo ">>>>Source internal variables"
+. ../internal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . ../variables.sh
 
@@ -17,11 +21,11 @@ echo ">>>>Init env"
 
 echo
 echo ">>>>$(print_timestamp) Force delete Project cp4ba"
-./force-uninstall.sh -n ${PROJECT_NAME}
+./force-uninstall.sh -n ${CP4BA_PROJECT_NAME}
 
 echo
 echo ">>>>$(print_timestamp) Wait for project cp4ba deletion"
-wait_for_k8s_resource_disappear project/${PROJECT_NAME}
+wait_for_k8s_resource_disappear project/${CP4BA_PROJECT_NAME}
 
 echo
 echo ">>>>$(print_timestamp) Remove DBs from DB2MC"
@@ -43,10 +47,22 @@ echo
 echo ">>>>$(print_timestamp) Delete DBs"
 oc rsh -n db2 -c db2u c-db2ucluster-db2u-0 << EOSSH
 su - db2inst1
+db2 connect to CP4BA
+db2 force application all
+sleep 10
+db2 connect reset
 db2 deactivate db CP4BA
 db2 drop db CP4BA
+db2 connect to TENANT1
+db2 force application all
+sleep 10
+db2 connect reset
 db2 deactivate db TENANT1
 db2 drop db TENANT1
+db2 connect to TENANT2
+db2 force application all
+sleep 10
+db2 connect reset
 db2 deactivate db TENANT2
 db2 drop db TENANT2
 EOSSH
@@ -55,12 +71,6 @@ echo
 echo ">>>>$(print_timestamp) Delete DB users"
 # Based on https://www.ibm.com/docs/en/db2/11.5?topic=ldap-managing-users
 ldap_pod=$(oc get pod -n db2 -o name | grep ldap)
-echo
-echo ">>>>$(print_timestamp) Delete DB user ums"
-oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/removeLdapUser.py -u ums
-echo
-echo ">>>>$(print_timestamp) Delete DB user umsts"
-oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/removeLdapUser.py -u umsts
 echo
 echo ">>>>$(print_timestamp) Delete DB user icndb"
 oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/removeLdapUser.py -u icndb
@@ -103,6 +113,24 @@ oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/removeLdapUser.py -u bados
 echo
 echo ">>>>$(print_timestamp) Delete DB user bawaut"
 oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/removeLdapUser.py -u bawaut
+echo
+echo ">>>>$(print_timestamp) Delete DB user ch"
+oc rsh -n db2 ${ldap_pod} /opt/ibm/ldap_scripts/removeLdapUser.py -u ch
+
+echo
+echo ">>>>$(print_timestamp) Delete Mongo DBs"
+oc rsh -n mongodb deployment/mongodb << EOSSH
+mongo --username root --password ${UNIVERSAL_PASSWORD} --authenticationDatabase admin <<EOF
+use ads
+db.dropDatabase()
+use ads-git
+db.dropDatabase()
+use ads-history
+db.dropDatabase()
+use ads-runtime
+db.dropDatabase()
+EOF
+EOSSH
 
 echo
 echo ">>>>$(print_timestamp) Remove ADS organization in Gitea if empty"
@@ -115,6 +143,15 @@ echo ">>>>$(print_timestamp) Remove ADP organization in Gitea if empty"
 curl --insecure --request DELETE "https://gitea.${OCP_APPS_ENDPOINT}/api/v1/orgs/adp" \
 --header  "Content-Type: application/json" \
 --user "cpadmin:${UNIVERSAL_PASSWORD}"
+
+echo
+echo ">>>>$(print_timestamp) Remove BTS CSV & Subscription"
+oc project ibm-common-services
+CSV=`oc get csv -o name | grep ibm-bts-operator`
+oc delete ${CSV}
+wait_for_k8s_resource_disappear ${CSV}
+oc delete subscription ibm-bts-operator
+wait_for_k8s_resource_disappear subscription/ibm-bts-operator
 
 echo
 echo ">>>>$(print_timestamp) CP4BA remove completed"

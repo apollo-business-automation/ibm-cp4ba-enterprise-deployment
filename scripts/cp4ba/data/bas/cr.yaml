@@ -2,7 +2,7 @@ spec:
   bastudio_configuration:
     admin_secret_name: bas-admin-secret
     admin_user: cpadmin
-    replica_size: 2 #TODO lower to 1 when PDB is resolved
+    replica_size: 2 # to fulfill PDB requirement
     database:
       type: db2
       host: "{{DB2_HOSTNAME}}"
@@ -16,10 +16,9 @@ spec:
         use_dynamic_provisioning: true
         storage_class: "{{ shared_configuration.storage_configuration.sc_fast_file_storage_classname }}"
     playback_server:
-      hostname: "pb-{{ shared_configuration.sc_deployment_hostname_suffix }}"
       admin_secret_name: playback-server-admin-secret
       admin_user: cpadmin
-      replica_size: 2
+      replica_size: 2 # to fulfill PDB requirement
       autoscaling:
         enabled: false
       database:

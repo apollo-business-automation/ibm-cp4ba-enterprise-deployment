@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: cerebro
-          image: lmenezes/cerebro:0.9.4
+          image: "lmenezes/cerebro:{{CEREBRO_IMAGE_TAG}}"
           imagePullPolicy: IfNotPresent
           args: 
             - "-Dplay.ws.ssl.loose.acceptAnyCertificate=true"

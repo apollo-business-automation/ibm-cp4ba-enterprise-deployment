@@ -1,6 +1,10 @@
 #!/bin/bash
 
 echo
+echo ">>>>Source internal variables"
+. internal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . variables.sh
 
@@ -47,6 +51,20 @@ cd pm
 ./remove.sh
 exit_test $? "Remove PM Failed"
 cd ..
+
+echo
+echo ">>>>$(print_timestamp) Remove Mongo Express PM"
+cd mongo-express-pm
+./remove.sh
+exit_test $? "Remove Mongo Express PM Failed"
+cd ..
+
+echo
+echo ">>>>$(print_timestamp) Remove MongoDB PM"
+cd mongodb-pm
+./remove.sh
+exit_test $? "Remove MongoDB PM Failed"
+cd ..
 fi
 
 echo
@@ -61,6 +79,20 @@ echo ">>>>$(print_timestamp) Remove CPFS"
 cd cpfs
 ./remove.sh
 exit_test $? "Remove CPFS Failed"
+cd ..
+
+echo
+echo ">>>>$(print_timestamp) Remove Mongo Express"
+cd mongo-express
+./remove.sh
+exit_test $? "Remove Mongo Express Failed"
+cd ..
+
+echo
+echo ">>>>$(print_timestamp) Remove MongoDB"
+cd mongodb
+./remove.sh
+exit_test $? "Remove MongoDB Failed"
 cd ..
 
 echo

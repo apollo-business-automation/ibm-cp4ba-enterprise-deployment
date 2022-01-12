@@ -1,6 +1,10 @@
 #!/bin/bash
 
 echo
+echo ">>>>Source internal variables"
+. internal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . variables.sh
 
@@ -17,13 +21,15 @@ echo ">>>>Init env"
 
 echo
 echo ">>>>$(print_timestamp) Generate Usage documentation"
-sed -i "s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g" usage.md
-sed -i "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" usage.md
-sed -i "s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g" usage.md
+sed -f - usage.md > usage.target.md << SED_SCRIPT
+s|{{OCP_APPS_ENDPOINT}}|${OCP_APPS_ENDPOINT}|g
+s|{{CP4BA_PROJECT_NAME}}|${CP4BA_PROJECT_NAME}|g
+s|{{UNIVERSAL_PASSWORD}}|${ESCAPED_UNIVERSAL_PASSWORD}|g
+SED_SCRIPT
 
 if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   oc project automagic
-  oc create cm usage --from-file=usage.md=usage.md -o yaml --dry-run=client | oc apply -f -
+  oc create cm usage --from-file=usage.md=usage.target.md -o yaml --dry-run=client | oc apply -f -
 fi
 
 echo
@@ -119,6 +125,20 @@ exit_test $? "Install Kibana Failed"
 cd ..
 
 echo
+echo ">>>>$(print_timestamp) Install MongoDB"
+cd mongodb
+./install.sh
+exit_test $? "Install MongoDB Failed"
+cd ..
+
+echo
+echo ">>>>$(print_timestamp) Install Mongo Express"
+cd mongo-express
+./install.sh
+exit_test $? "Install Mongo Express Failed"
+cd ..
+
+echo
 echo ">>>>$(print_timestamp) Install CPFS"
 cd cpfs
 ./install.sh
@@ -133,6 +153,20 @@ exit_test $? "Install CP4BA Failed"
 cd ..
 
 if [[ $PM_ENABLED == "true" ]]; then
+echo
+echo ">>>>$(print_timestamp) Install MongoDB PM"
+cd mongodb-pm
+./install.sh
+exit_test $? "Install MongoDB PM Failed"
+cd ..
+
+echo
+echo ">>>>$(print_timestamp) Install Mongo Express PM"
+cd mongo-express-pm
+./install.sh
+exit_test $? "Install Mongo Express PM Failed"
+cd ..
+
 echo
 echo ">>>>$(print_timestamp) Install PM"
 cd pm

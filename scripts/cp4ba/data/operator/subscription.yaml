@@ -3,8 +3,9 @@ kind: Subscription
 metadata:
   name: ibm-cp4a-operator
 spec:
-  channel: "{{OPERATOR_UPDATE_CHANNEL}}"
-  installPlanApproval: Automatic
+  channel: "{{CP4BA_OPERATOR_UPDATE_CHANNEL}}"
+  installPlanApproval: Manual
   name: ibm-cp4a-operator
   source: ibm-operator-catalog
   sourceNamespace: openshift-marketplace
+  startingCSV: "{{CP4BA_STARTING_CSV}}"

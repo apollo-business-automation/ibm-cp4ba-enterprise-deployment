@@ -7,6 +7,10 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
 fi
 
 echo
+echo ">>>>Source internal variables"
+. internal-variables.sh
+
+echo
 echo ">>>>Source variables"
 . variables.sh
 
@@ -40,3 +44,7 @@ echo
 echo ">>>>Update HOME to internal folder"
 echo "HOME=`pwd`" >> ~/.bash_profile
 echo "export HOME" >> ~/.bash_profile
+
+echo
+echo ">>>>Add aliases"
+echo "alias ll='ls -la'" >> ~/.bash_profile

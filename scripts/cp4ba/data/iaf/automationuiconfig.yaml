@@ -7,12 +7,14 @@ spec:
   license:
     accept: true
   zen: true
-  version: v1.1
+  version: "{{CP4BA_AUTOMATION_UI_CONFIG_VERSION}}"
   tls: 
     certificateSecret: 
       secretName: external-tls-secret
     caSecret:
       secretName: external-tls-secret
       key: ca.crt
-  storage:
-    class: "{{STORAGE_CLASS_NAME}}"
+  zenService:
+    iamIntegration: true
+    storageClass: "{{STORAGE_CLASS_NAME}}"
+    zenCoreMetaDbStorageClass: "{{STORAGE_CLASS_NAME}}"

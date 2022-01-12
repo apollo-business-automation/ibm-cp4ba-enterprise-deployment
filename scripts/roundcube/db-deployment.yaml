@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: roundcubedb
-        image: postgres:9.6.22-alpine
+        image: "postgres:{{ROUNDCUBE_DB_IMAGE_TAG}}"
         imagePullPolicy: ""
         env:
         - name: POSTGRES_DB

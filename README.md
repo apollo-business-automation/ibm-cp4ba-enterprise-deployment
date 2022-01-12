@@ -1,10 +1,10 @@
 # Installation of Cloud Pak for Business Automation on containers - One-shot enterprise deployment 🔫
 
-Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components  with all kinds of prerequisites and extras on OpenShift.
+Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components with all kinds of prerequisites and extras on OpenShift.
 
-Last installation was performed on 2021-11-12 with CP4BA version 21.0.2-IF005 (also called 21.0.2.5 or 21.2.5)
+Last installation was performed on 2022-01-11 with CP4BA version 21.0.3 (also called 21.0.3 or 21.3.0)
 
-Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=kubernetes-installing-enterprise-deployments.
+Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=overview-what-is-cloud-pak-business-automation.
 
 Deployment of other parts is also based on respective official documentations.
 
@@ -18,11 +18,18 @@ Deployment of other parts is also based on respective official documentations.
 
 This is **not** an official IBM documentation.  
 Absolutely no warranties, no support, no responsibility for anything.  
-Use it on your own risk and always follow the official IBM documentations.
+Use it on your own risk and always follow the official IBM documentations.  
+It is always your responsibility to make sure you are license compliant when using this repository to install IBM Cloud Pak for Business Automation.
 
 Please do not hesitate to create an issue here if needed. Your feedback is appreciated.
 
 Not for production use. Suitable for Demo and PoC environments - but with enterprise deployment.  
+
+**!Important** - Keep in mind that the platform contains DB2 which is licensed with Standard Edition license available from CP4BA and it must adhere to the *Additional IBM DB2 Standard Edition Detail* in official license information at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument (or its newer revision).
+
+**!Important** - Keep in mind that this deployment contains capabilities (the ones which are not bundled with CP4BA) which are not eligible to run on Worker Nodes covered by CP4BA OCP Restricted licenses. More info on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=clusters-restricted-openshift-entitlement.
+
+**!Important** - Keep in mind that this deployment contains *IBM Daeja ViewONE Virtual Module for Microsoft Office* and *IBM Daeja ViewONE Virtual Module for Permanent Redaction* enabled which require additional licenses as per official license information at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument (or its newer revision).
 
 ## Benefits 🚀
 
@@ -42,14 +49,12 @@ Result of this Enterprise deployment is not fully supported:
 - For convenience and lower resource consumption, it uses one containerized DB2 database and schemas for majority of required DBs - in real deployments a supported DB option described on "[Compatibility matrix](https://www.ibm.com/software/reports/compatibility/clarity-reports/report/html/softwareReqsForProduct?deliverableId=F883F7E084D911EB986DCF4EEFB38D3F&osPlatforms=Linux|Mac%20OS|Windows&duComponentIds=D010|D009|D011|S013|S012|S002|S003|C020|C025|C014|C029|C018|C022|C026|C017|C028|C023|C021|C027|C019|C024|C015|C016|C001&mandatoryCapIds=71|26&optionalCapIds=134|62|127|9|401|132|20|161) > Supported Software > Databases" would be used
 
 What is not included:
-- IER - cannot use UMS, missing IER object stores and configuration.
-- ICCs - cannot use UMS, not covered.
-- Caution! FNCM External share - login issues, do not configure, otherwise other capabilities will break as well - waiting for fixes here.
+- IER - missing IER object stores and configuration.
+- ICCs - not covered.
+- Caution! FNCM External share - login issues, do not configure, otherwise other capabilities will break as well - waiting for fixes.
+- Caution! RPA currently works only with one user cpadmin due to identity issue.
+- Caution! Process MIning currently doesn't work - IAF operator issues, BAI integration issues - waiting for fixes.
 - Workflow Server and Workstream Services - this is a dev deployment. BAW Authoring and (BAW + IAWS) are mutually exclusive in single project.
-
-**!Important** - Keep in mind that the platform contains DB2 which is licensed with Standard Edition license available from CP4BA and it must adhere to the *Additional IBM DB2 Standard Edition Detail* in official license information at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument (or its newer revision).
-
-**!Important** - Keep in mind that this deployment contains capabilities (the ones which are not bundled with CP4BA) which are not eligible to run on Worker Nodes covered by CP4BA OCP Restricted licenses. More info on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=clusters-restricted-openshift-entitlement.
 
 ## What is in the package 📦
 
@@ -72,16 +77,17 @@ Contains extra software which makes working with the platform even easier.
 - AKHQ - Web UI kafka browser automatically connected to Kafka instance deployed with CP4BA.
 - Kibana - Web UI elastic search dashboarding tool automatically connected to ES instance deployed with CP4BA.
 - Mail server - For various mail integrations e.g. from BAN, BAW and RPA.
-  
+- Mongo Express - Web UI for Mongo DB databases for CP4BA and Process Mining to easier troubleshoot DB.
+
 ### CP4BA (Cloud Pak for Business Automation) section
 
 #### CP4BA capabilities
 
 Purple color is used for CP4BA capabilities.
 
-More info for these capabilities is available in official docs at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x.
+More info for these capabilities is available in official docs at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3.
 
-More specifically in overview of patterns at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=capabilities-enterprise-deployments.
+More specifically in overview of patterns at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=deployment-capabilities-production-deployments.
 
 #### IAF (IBM Automation Foundation) capabilities
 
@@ -93,7 +99,7 @@ More info for these capabilities is available in official docs at https://www.ib
 
 Contains services which are reused by Cloud Paks.
 
-More info available in official docs at https://www.ibm.com/support/knowledgecenter/en/SSHKN6/kc_welcome_cs.html.
+More info available in official docs at https://www.ibm.com/docs/en/cpfs.
 
 - Monitoring - Contains Grafana instance for custom dashboarding.
 - License metering - Tracks license usage. License Reporter as Web UI is also installed.
@@ -107,39 +113,38 @@ Contains prerequisites for the whole platform.
 - DB2 - Database storage for Capabilities which need it.
 - OpenLDAP - Directory solution for users and groups definition.
 - MSSQL server - Database storage for RPA server.
+- MongoDB - Database storage for ADS and Process Mining.
 
 ### Deployment job section
 
 Multiple command line tools are installed inside a container to make the installation possible.
 
-- JDK9 - Used for keytool command to generate certificates for ODM and for Maven (https://manpages.debian.org/unstable/openjdk-8-jre-headless/keytool.1.en.html https://openjdk.java.net/).
+- JDK9 - Used for keytool command to generate certificates for ODM and for Maven (https://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html https://openjdk.java.net/).
 - jq - Needed for JSON files manipulation from command line (https://stedolan.github.io/jq/manual/).
 - yq - Needed for YAML files manipulation from command line; version 3 is used (https://mikefarah.gitbook.io/yq/).
-- oc - Used to communicate with OpenShift from command line (https://docs.openshift.com/container-platform/4.7/cli_reference/openshift_cli/getting-started-cli.html#cli-using-cli_cli-developer-commands).
+- oc - Used to communicate with OpenShift from command line (https://docs.openshift.com/container-platform/4.8/cli_reference/openshift_cli/getting-started-cli.html#cli-using-cli_cli-developer-commands).
 - Global CA - Generated self-signed Certification Authority via OpenSSL to make trusting the platform easier. It is also possible to provide your own CA and how to do so is described later in this doc.
 - helm - Used for helm charts installation (https://helm.sh/docs/).
 - maven - Used for pushing ADS library jars to Nexus (https://maven.apache.org/). This enables custom ADS JARs development.
 
 ## Environments used for installation 💻
 
-**If you want to run this on OpenShift 4.8.x** disable Process Mining installation in configmap by setting ```PM_ENABLED=false``` as it is not working.
-
-With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift, however it was executed on the following once.
+With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift 4.8, however it was executed on the following once.
 
 - ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
-OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ibmc-file-gold-gid Storage Class  
+OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ibmc-file-gold-gid Storage Class  
 Successfully installed
 
 - ARO - Azure Red Hat OpenShift allowing to run managed Red Hat OpenShift on Azure  
-OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
+OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
 Successfully installed
 
 - Traditional OpenShift cluster created from scratch on top of virtualization platform  
-OpenShift 4.7.x and 4.8.x on vms - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
+OpenShift 4.8.x on vms - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
 Successfully installed
 
 - ROSA - Red Hat OpenShift Service on AWS  
-OpenShift 4.7.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
+OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
 Successfully installed **but has issues** with passthrough Routes malfunction making it hard to access the platform.
 
 The following picture shows real idle utilization of Nodes with deployed platform on above mentioned ROKS as an example.
@@ -149,44 +154,44 @@ The following picture shows real idle utilization of Nodes with deployed platfor
 The following output shows CPU and Memory requests and limits on Nodes on above mentioned ROKS as an example.
 
 ```text
-node/10.162.243.118
+node/10.162.243.89
   Resource           Requests          Limits
-  cpu                11899m (74%)      54085m (340%)
-  memory             21465690Ki (74%)  56264992Ki (194%)
+  cpu                9346m (58%)       24270m (152%)
+  memory             19965459Ki (68%)  41767200Ki (144%)
 
-node/10.162.243.121
+node/10.163.57.136
   Resource           Requests          Limits
-  cpu                11144m (70%)      55080m (346%)
-  memory             23100946Ki (79%)  80256288Ki (276%)
+  cpu                10234m (64%)      22850m (143%)
+  memory             18918931Ki (65%)  33315104Ki (114%)
 
-node/10.162.243.125
+node/10.163.57.150
   Resource           Requests          Limits
-  cpu                5182m (32%)       5700m (35%)
-  memory             27267602Ki (94%)  26988832Ki (93%)
+  cpu                9096m (57%)       18400m (115%)
+  memory             18354707Ki (63%)  33843488Ki (116%)
 
-node/10.162.243.67
+node/10.163.57.152
   Resource           Requests          Limits
-  cpu                11860m (74%)      40250m (253%)
-  memory             22722066Ki (78%)  60561696Ki (208%)
+  cpu                10078m (63%)      23040m (145%)
+  memory             20524563Ki (70%)  44028192Ki (151%)
 
-node/10.162.243.85
+node/10.163.57.155
   Resource           Requests          Limits
-  cpu                11543m (72%)      40980m (258%)
-  memory             21248530Ki (73%)  56277280Ki (194%)
+  cpu                4948m (31%)       4600m (28%)
+  memory             26953235Ki (93%)  25973024Ki (89%)
 
-node/10.162.243.94
+node/10.163.57.231
   Resource           Requests          Limits
-  cpu                11301m (71%)      95040m (598%)
-  memory             21502482Ki (74%)  114686240Ki (395%)
+  cpu                11600m (73%)      18500m (116%)
+  memory             22577683Ki (77%)  28880160Ki (99%)  
 ```
 
 ## Pre-requisites ⬅️
 
 - OpenShift cluster sized according with the system requirements
-  - Cloud Pak: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=pei-system-requirements
+  - Cloud Pak: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=ppd-system-requirements
   - RPA: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=openshift-pre-installation-requirements
   - Process Mining: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=platform-pre-installation-requirements
-  - IAF : https://www.ibm.com/docs/en/cloud-paks/1.0?topic=p-system-requirement
+  - IAF : https://www.ibm.com/docs/en/cloud-paks/1.0?topic=p-system-requirements
   - CPFS: https://www.ibm.com/docs/en/cpfs?topic=services-hardware-requirements-starterset-profile
 - OpenShift cluster admin access
 - Access to public internet from OpenShift
@@ -278,7 +283,7 @@ data:
     ## so this one will also be automatically set as Default 
     ## For ROKS this class could be ibmc-file-gold-gid
     ## For NFS based class this could be managed-nfs-storage
-    ## For ODF (OCS) based class (e.g. on ARO or ROSA) this could be ocs-storagecluster-cephfs    
+    ## For ODF (OCS) based class (e.g. on ARO or ROSA) this could be ocs-storagecluster-cephfs
     STORAGE_CLASS_NAME=ibmc-file-gold-gid
 
     ## Options are OCP and ROKS
@@ -301,8 +306,9 @@ data:
 
     # Always review these parameters for changes
 
+    ## Do NOT enable now!
     ## Set to false if you don't want to install (or remove) Process Mining
-    PM_ENABLED=true
+    PM_ENABLED=false
 
     ## Set to false if you don't want to install (or remove) Asset Repo
     ASSET_REPO_ENABLED=true
@@ -322,111 +328,12 @@ data:
     ## Set to false if you don't want to install (or remove) Roundcube
     ROUNDCUBE_ENABLED=true
 
-
-    # Update these parameters if needed #
-
-    ## Default attempts used when calling waiting scripts. 
-    ## Means wait for 20 minutes with combination of DEFAULT_DELAY. 
-    ## Increase if you OCP is slow and you need to wait for things longer.
-    DEFAULT_ATTEMPTS=80
-
-    ## Default attempts used when calling waiting scripts. 
-    ## Means wait for 20 minutes with combination of DEFAULT_ATTEMPTS. 
-    ## Increase if you OCP is slow and you need to wait for things longer.
-    DEFAULT_DELAY=15
-
-    ## Used e.g. for DB2. Default attempts used when calling waiting scripts. 
-    ## Means wait for 20 minutes with combination of DEFAULT_DELAY_1. 
-    ## Increase if you OCP is slow and you need to wait for things longer.
-    DEFAULT_ATTEMPTS_1=40
-
-    ## Used e.g. for DB2. Default delay used when calling waiting scripts. 
-    ## Means wait for 20 minutes with combination of DEFAULT_ATTEMPTS_1. 
-    ## Increase if you OCP is slow and you need to wait for things longer.
-    DEFAULT_DELAY_1=30
-
-    ## Used e.g. for CPFS. Default attempts used when calling waiting scripts. 
-    ## Means wait for 30 minutes with combination of DEFAULT_DELAY_2. 
-    ## Increase if you OCP is slow and you need to wait for things longer.
-    DEFAULT_ATTEMPTS_2=30
-
-    ## Used e.g. for CPFS. Default attempts used when calling waiting scripts. 
-    ## Means wait for 30 minutes with combination of DEFAULT_ATTEMPTS_2. 
-    ## Increase if you OCP is slow and you need to wait for things longer.
-    DEFAULT_DELAY_2=60
-
-    ## Used e.g. for CP4BA pillars. Default attempts used when calling waiting scripts. 
-    ## Means wait for 60 minutes with combination of DEFAULT_DELAY_3. 
-    ## Increase if you OCP is slow and you need to wait for things longer.
-    DEFAULT_ATTEMPTS_3=30
-
-    ## Used e.g. for CPFS. Default attempts used when calling waiting scripts. 
-    ## Means wait for 60 minutes with combination of DEFAULT_ATTEMPTS_3. 
-    ## Increase if you OCP is slow and you need to wait for things longer.
-    DEFAULT_DELAY_3=120
-
-    ## Used e.g. for CP4BA pillars. Default attempts used when calling waiting scripts. 
-    ## Means wait for 180 minutes with combination of DEFAULT_DELAY_4. 
-    ## Increase if you OCP is slow and you need to wait for things longer.
-    DEFAULT_ATTEMPTS_4=36
-
-    ## Used e.g. for CPFS. Default attempts used when calling waiting scripts. 
-    ## Means wait for 180 minutes with combination of DEFAULT_ATTEMPTS_4. 
-    ## Increase if you OCP is slow and you need to wait for things longer.
-    DEFAULT_DELAY_4=300
-
     ## Do NOT enable now. Set to true if you want to use FNCM External Share with Google ID. 
     ## You then need to provide also the following parameters (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET). 
     ## Video on how to get these values is in assets/fncm-es-google-oidc-pre.mp4
     EXTERNAL_SHARE_GOOGLE=false
     GOOGLE_CLIENT_ID=TODO_GOOGLE_CLIENT_ID
     GOOGLE_CLIENT_SECRET=TODO_GOOGLE_CLIENT_SECRET
-
-
-    # Touch these parameters only if you know what you are doing! #
-
-    ## Should not be changed in particular guide version. 
-    ## Version of Cloud Pak e.g. 20.0.2.1, 20.0.3
-    CP4BA_VERSION=21.0.2 
-    ## Should not be changed in particular guide version. 
-    ## Version of Cloud Pak CASE archive as found on 
-    ## https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cp-automation e.g. 3.0.1
-    CP4BA_CASE_VERSION=3.1.3
-    ## Should not be changed in particular guide version. 
-    ## Version of cert-kubernetes folder from Cloud Pak CASE archive e.g. 21.0.1
-    CP4BA_CASE_CERT_K8S_VERSION=21.0.2
-    ## Should not be changed in particular guide version. 
-    ## Version of the Subscription channel as defined on 
-    ## https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.x?topic=cluster-setting-up-by-installing-operator-catalog
-    OPERATOR_UPDATE_CHANNEL=v21.2
-    ## Hostname of server where DB2 is running
-    DB2_HOSTNAME=c-db2ucluster-db2u.db2
-    ## Hostname of server where MSSQL is running
-    MSSQL_HOSTNAME=mssql.mssql
-    ## Name of OCP CP4BA project
-    PROJECT_NAME=cp4ba
-    ## Name of the CP4BA instance in cr.yaml at path metadata.name
-    CR_META_NAME=cp4ba
-    ## Hostname of server where LDAP is running
-    LDAP_HOSTNAME=openldap-openldap-stack-ha.openldap
-    ## Hostname of server where SMTP is running
-    MAIL_HOSTNAME=mailserver.mail
-    ## OCP API endpoint used for oc login command in --server parameter.
-    ## E.g. something like https://api.[ocp_hostname]:6443 for OCP 
-    ## and https://[endpoint_part].jp-tok.containers.cloud.ibm.com:[port] for ROKS
-    OCP_API_ENDPOINT=TODO_OCP_API_ENDPOINT
-    ## Provide either OCP_CLUSTER_ADMIN + OCP_CLUSTER_ADMIN_PASSWORD 
-    ## or OCP_CLUSTER_TOKEN (e.g. for ROKS)
-    ## Cluster admin of OCP username used for 
-    ## oc login command in --username paremeter.
-    OCP_CLUSTER_ADMIN=TODO_OCP_CLUSTER_ADMIN_USERNAME
-    ## Cluster admin of OCP password used for 
-    ## oc login command in --password paremeter.
-    OCP_CLUSTER_ADMIN_PASSWORD=TODO_OCP_CLUSTER_ADMIN_PASSWORD
-    ## Login token of Cluster admin of OCP (useful for ROKS) used for 
-    ## oc login command in --token paremeter. 
-    ## Replace this value before every interaction to make sure your token is valid long enough.
-    OCP_CLUSTER_TOKEN=TODO_OCP_CLUSTER_ADMIN_TOKEN
 
   global-ca.crt: |
     -----BEGIN CERTIFICATE-----
@@ -648,9 +555,7 @@ Now continue with the [Post removal steps](#post-removal-steps-%EF%B8%8F).
 
 ## Post removal steps ➡️
 
-StorageClass defined in ConfigMap *automagic* in *variables.sh* in variable *STORAGE_CLASS_NAME* was set as Default, you may want choose some other Default Storage Class.  
-
-On ROKS, you may want to revert the actions of node labeling for DB2 "no root squash" from https://www.ibm.com/docs/en/db2/11.5?topic=requirements-cloud-file-storage
+On ROKS, you may want to revert the actions of node labeling for DB2 "no root squash" from https://www.ibm.com/docs/en/db2/11.5?topic=SSEPGG_11.5.0/com.ibm.db2.luw.db2u_openshift.doc/aese-cfg-nfs-filegold.html
 
 During deployment various CustomResourceDefinitions were created, you may want to remove them.
 
