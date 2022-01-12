@@ -77,8 +77,8 @@ Contains extra software which makes working with the platform even easier.
 - AKHQ - Web UI kafka browser automatically connected to Kafka instance deployed with CP4BA.
 - Kibana - Web UI elastic search dashboarding tool automatically connected to ES instance deployed with CP4BA.
 - Mail server - For various mail integrations e.g. from BAN, BAW and RPA.
-- Mongo Express - Web UI for MOngo DB databases for CP4BA and Process Mining to easier troubleshoot DB.
-  
+- Mongo Express - Web UI for Mongo DB databases for CP4BA and Process Mining to easier troubleshoot DB.
+
 ### CP4BA (Cloud Pak for Business Automation) section
 
 #### CP4BA capabilities
