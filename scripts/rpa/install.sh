@@ -39,7 +39,7 @@ oc apply -f subscription.target.yaml
 manage_manual_operator rpa-subscription ibm-rpa-operator-controller-manager
 
 echo
-echo ">>>>$(print_timestamp) Wait for ProcessMining CRD to be Established"
+echo ">>>>$(print_timestamp) Wait for RoboticProcessAutomations CRD to be Established"
 wait_for_k8s_resource_condition CustomResourceDefinition/roboticprocessautomations.rpa.automation.ibm.com Established
 
 echo
