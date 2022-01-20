@@ -99,11 +99,13 @@ oc patch operandconfig common-service --type json -p '[{"op":"add","path":"/spec
 
 echo
 echo ">>>>$(print_timestamp) Set StorageClass for MongoDB"
+# Based on https://www.ibm.com/docs/en/cpfs?topic=services-configuring-foundational-by-using-custom-resource#mongodb
 INDEX=`oc get operandconfig common-service -o json | jq '[.spec.services[] | .name == "ibm-mongodb-operator"] | index(true)'`	
 oc patch operandconfig common-service --type json -p '[{"op":"add","path":"/spec/services/'$INDEX'/spec/mongoDB/storageClass", "value":"'${STORAGE_CLASS_NAME}'"}]'
 
 echo
 echo ">>>>$(print_timestamp) Set StorageClass for Mustgather"
+# Based on https://www.ibm.com/docs/en/cpfs?topic=services-configuring-foundational-by-using-custom-resource#mustgather_service
 INDEX=`oc get operandconfig common-service -o json | jq '[.spec.services[] | .name == "ibm-healthcheck-operator"] | index(true)'`	
 oc patch operandconfig common-service --type json -p '[{"op":"add","path":"/spec/services/'$INDEX'/spec/mustgatherService/persistentVolumeClaim", "value":{}}]'
 oc patch operandconfig common-service --type json -p '[{"op":"add","path":"/spec/services/'$INDEX'/spec/mustgatherService/persistentVolumeClaim/storageClassName", "value":"'${STORAGE_CLASS_NAME}'"}]'
