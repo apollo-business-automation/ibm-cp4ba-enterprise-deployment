@@ -242,9 +242,9 @@ wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.sta
 wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components.prereq.rootCAStatus' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 echo
-echo ">>>>$(print_timestamp) Wait for one RR to Ready state"
-wait_for_k8s_resource_appear_partial_unique pod ${CP4BA_CR_META_NAME}-dba-rr ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
-wait_for_k8s_resource_condition `oc get pod -o name | grep ${CP4BA_CR_META_NAME}-dba-rr | head -n 1` Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+echo ">>>>$(print_timestamp) Wait for RR Ready states"
+wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components."resource-registry".rrCluster' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components."resource-registry".rrService' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 echo
 echo ">>>>$(print_timestamp) Approve Operators for BTS"
