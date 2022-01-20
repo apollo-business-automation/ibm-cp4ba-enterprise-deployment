@@ -243,8 +243,10 @@ wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.sta
 
 echo
 echo ">>>>$(print_timestamp) Wait for RR Ready states"
-wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components."resource-registry".rrCluster' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
-wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components."resource-registry".rrService' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+wait_for_k8s_resource_appear_partial_unique pod ${CP4BA_CR_META_NAME}-dba-rr ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+# TODO uncomment when fixed for slow ROKS binding
+#wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components."resource-registry".rrCluster' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
+#wait_for_k8s_resource_condition_generic ICP4ACluster/${CP4BA_CR_META_NAME} '.status.components."resource-registry".rrService' Ready ${DEFAULT_ATTEMPTS_3} ${DEFAULT_DELAY_3}
 
 echo
 echo ">>>>$(print_timestamp) Approve Operators for BTS"
