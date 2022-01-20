@@ -1,0 +1,6 @@
+- name: ICP4A Deploy
+  debug:
+    msg: "Start ICP4A Deploy"
+- name: Install Global CA
+  include_role:
+    name: 'global-ca'
