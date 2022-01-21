@@ -271,12 +271,12 @@ metadata:
   name: automagic
   namespace: automagic
 data:
-  variables.sh: |
+  variables.yml: |
     # Always set these parameters to your values #
 
     ## Entitlement key from the IBM Container software library. 
     ## (https://myibm.ibm.com/products-services/containerlibrary)  
-    ICR_PASSWORD=TODO_ICR_PASSWORD
+    icr_password: TODO_ICR_PASSWORD
 
     ## Name of the OCP storage class used for all PVCs. 
     ## Must be RWX and Fast. Some pillars don't allow to specify storage class, 
@@ -284,56 +284,56 @@ data:
     ## For ROKS this class could be ibmc-file-gold-gid
     ## For NFS based class this could be managed-nfs-storage
     ## For ODF (OCS) based class (e.g. on ARO or ROSA) this could be ocs-storagecluster-cephfs
-    STORAGE_CLASS_NAME=ibmc-file-gold-gid
+    storage_class_name: ibmc-file-gold-gid
 
     ## Options are OCP and ROKS
     ## OCP option also applies to other managed OpenShifts
-    DEPLOYMENT_PLATFORM=ROKS
+    deployment_platform: ROKS
 
     ## By default false, which means that new self signed CA will be generated 
     ## and all certificates will be signed using it. 
     ## Set true if you want to provide your own global-ca.key and global-ca.crt.
     ## Contents of these two files are provided in this ConfigMap in keys which are at the bottom of this file.
     ## Files cannot be password protected.
-    GLOBAL_CA_PROVIDED=false
+    global_ca_provided: false
 
     ## In the Platform, multiple users and keystores and other encrypted entries need a password.
     ## To make working with the Platform easier all places which require a password share the same one from this variable.
     ## Make this password strong to ensure that no one from the outside world can login to your Platform.
     ## Password must be alphanumeric (upper and lower case; no special characters allowed).
-    UNIVERSAL_PASSWORD=Passw0rd
+    universal_password: Passw0rd
 
 
     # Always review these parameters for changes
 
     ## Do NOT enable now!
     ## Set to false if you don't want to install (or remove) Process Mining
-    PM_ENABLED=false
+    pm_enabled: false
 
     ## Set to false if you don't want to install (or remove) Asset Repo
-    ASSET_REPO_ENABLED=true
+    asset_repo_enabled: true
 
     ## Set to false if you don't want to install (or remove) RPA
-    RPA_ENABLED=true
+    rpa_enabled: true
 
     ## Set to false if you don't want to install (or remove) AKHQ
-    AKHQ_ENABLED=true
+    akhq_enabled: true
 
     ## Set to false if you don't want to install (or remove) Cerebro
-    CEREBRO_ENABLED=true
+    cerebro_enabled: true
 
     ## Set to false if you don't want to install (or remove) DB2 Management Console
-    DB2MC_ENABLED=true
+    db2mc_enabled: true
 
     ## Set to false if you don't want to install (or remove) Roundcube
-    ROUNDCUBE_ENABLED=true
+    roundcube_enabled: true
 
     ## Do NOT enable now. Set to true if you want to use FNCM External Share with Google ID. 
     ## You then need to provide also the following parameters (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET). 
     ## Video on how to get these values is in assets/fncm-es-google-oidc-pre.mp4
-    EXTERNAL_SHARE_GOOGLE=false
-    GOOGLE_CLIENT_ID=TODO_GOOGLE_CLIENT_ID
-    GOOGLE_CLIENT_SECRET=TODO_GOOGLE_CLIENT_SECRET
+    external_share_google: false
+    google_client_id: TODO_GOOGLE_CLIENT_ID
+    google_client_secret: TODO_GOOGLE_CLIENT_SECRET
 
   global-ca.crt: |
     -----BEGIN CERTIFICATE-----
