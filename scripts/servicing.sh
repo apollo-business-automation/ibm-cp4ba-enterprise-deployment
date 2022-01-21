@@ -21,6 +21,14 @@ echo
 echo ">>>>Source functions"
 . functions.sh
 
+echo
+echo ">>>>Update HOME to internal folder"
+echo "HOME=`pwd`" >> ~/.bash_profile
+echo "export HOME" >> ~/.bash_profile
+ORIGINAL_HOME=$HOME
+# Set HOME now to set context for Python packages install via Pip in tooling
+HOME=`pwd`
+
 cd tooling
 ./install.sh
 exit_test $? "Install Tooling Failed"
@@ -29,15 +37,9 @@ cd ..
 echo
 echo ">>>>Update PATH to include new tooling"
 REAL_PATH=`realpath tooling`
-echo "PATH=$REAL_PATH:$PATH" >> ~/.bash_profile
-echo "PATH=`python3 -m site --user-base`/bin:$PATH" >> ~/.bash_profile
-echo "export PATH" >> ~/.bash_profile
-
-echo
-echo ">>>>Update HOME to internal folder"
-echo "HOME=`pwd`" >> ~/.bash_profile
-echo "export HOME" >> ~/.bash_profile
+echo "PATH=`python3 -m site --user-base`/bin:$REAL_PATH:$PATH" >> $ORIGINAL_HOME/.bash_profile
+echo "export PATH" >> $ORIGINAL_HOME/.bash_profile
 
 echo
 echo ">>>>Add aliases"
-echo "alias ll='ls -la'" >> ~/.bash_profile
+echo "alias ll='ls -la'" >> $ORIGINAL_HOME/.bash_profile
