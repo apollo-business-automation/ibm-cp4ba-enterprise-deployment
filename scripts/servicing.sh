@@ -15,6 +15,8 @@ fi
 #   fi
 # fi
 
+find . -type f \( -iname \*.sh \) | xargs chmod u+x
+
 echo
 echo ">>>>Source functions"
 . functions.sh

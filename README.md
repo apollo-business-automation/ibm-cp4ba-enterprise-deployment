@@ -281,10 +281,10 @@ data:
     ## Name of the OCP storage class used for all PVCs. 
     ## Must be RWX and Fast. Some pillars don't allow to specify storage class, 
     ## so this one will also be automatically set as Default 
-    ## For ROKS this class could be ibmc-file-gold-gid
+    ## For ROKS this class could be ibmc-file-gold-gid (But strongly discouraged due to slow PVC binding)
     ## For NFS based class this could be managed-nfs-storage
     ## For ODF (OCS) based class (e.g. on ARO or ROSA) this could be ocs-storagecluster-cephfs
-    storage_class_name: ibmc-file-gold-gid
+    storage_class_name: managed-nfs-storage
 
     ## Options are OCP and ROKS
     ## OCP option also applies to other managed OpenShifts
