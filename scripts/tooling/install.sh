@@ -17,7 +17,7 @@ echo ">>>>$(print_timestamp) Tooling install started"
 
 if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   echo
-  echo ">>>>$(print_timestamp) Install OpenSSl package"
+  echo ">>>>$(print_timestamp) Install OpenSSL package"
   yum install openssl -y
   exit_test $? "Install OpenSSL Failed"
   sleep 5

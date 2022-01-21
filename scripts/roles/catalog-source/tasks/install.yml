@@ -1,0 +1,34 @@
+- name: Create Catalog Source directory for generated files
+  file:
+    path: "{{ catalog_source_output_directory }}"
+    state: directory
+
+- name: Prepare yaml file for CatalogSource
+  template:
+    src: catalogsource.yaml.j2
+    dest: "{{ catalog_source_output_directory }}/catalogsource.yaml"
+
+- name: Add CatalogSource
+  k8s:
+    api_key: "{{ catalog_source_k8s_api_key }}"
+    host: "{{catalog_source_k8s_host}}"
+    state: present
+    force: False
+    merge_type: merge
+    src: "{{ catalog_source_output_directory }}/catalogsource.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Wait for CatalogSource
+  k8s_info:
+    api_key: "{{ catalog_source_k8s_api_key }}"
+    host: "{{ catalog_source_k8s_host }}"
+    api_version: v1alpha1
+    kind: CatalogSource
+    name: ibm-operator-catalog
+    namespace: openshift-marketplace
+  register: catalogsource
+  retries: 40
+  delay: 5
+  until: ('READY' in catalogsource | json_query('resources[*].status.connectionState.lastObservedState')|unique)
