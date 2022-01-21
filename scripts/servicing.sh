@@ -30,7 +30,7 @@ echo
 echo ">>>>Update PATH to include new tooling"
 REAL_PATH=`realpath tooling`
 echo "PATH=$REAL_PATH:$PATH" >> ~/.bash_profile
-echo "PATH=`python3 -m site --user-base`:$PATH" >> ~/.bash_profile
+echo "PATH=`python3 -m site --user-base`/bin:$PATH" >> ~/.bash_profile
 echo "export PATH" >> ~/.bash_profile
 
 echo
