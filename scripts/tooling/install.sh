@@ -29,11 +29,20 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   exit_test $? "Setup Pip upgrade Failed"
 
   echo
-  echo ">>>>$(print_timestamp) Install ansible"
+  echo ">>>>$(print_timestamp) Install pip package ansible"
   pip3 install ansible==2.9.27 --user
-  exit_test $? "Install ansible failed"
+  exit_test $? "Install pip package ansible failed"
 fi
 
+echo
+echo ">>>>$(print_timestamp) Install pip package openshift"
+pip3 install --user openshift
+exit_test $? "Install pip package openshift failed"
+
+echo
+echo ">>>>$(print_timestamp) Install pip package jmespath"
+pip3 install --user jmespath
+exit_test $? "Install pip package jmespath failed"
 
 # if [[ $CONTAINER_RUN_MODE == "true" ]]; then
 #   echo

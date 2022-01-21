@@ -10,8 +10,8 @@
 
 - name: Add CatalogSource
   k8s:
-    api_key: "{{ catalog_source_k8s_api_key }}"
-    host: "{{catalog_source_k8s_host}}"
+    api_key: "{{ catalog_source_k8s_api_key | default(omit)}}"
+    host: "{{catalog_source_k8s_host | default(omit)}}"
     state: present
     force: False
     merge_type: merge
@@ -22,8 +22,8 @@
 
 - name: Wait for CatalogSource
   k8s_info:
-    api_key: "{{ catalog_source_k8s_api_key }}"
-    host: "{{ catalog_source_k8s_host }}"
+    api_key: "{{ catalog_source_k8s_api_key | default(omit) }}"
+    host: "{{ catalog_source_k8s_host | default(omit) }}"
     api_version: v1alpha1
     kind: CatalogSource
     name: ibm-operator-catalog
