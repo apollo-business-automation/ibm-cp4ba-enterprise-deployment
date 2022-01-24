@@ -9,9 +9,9 @@
   tasks:
     - name: Install CP4BA Enterprise
       include_tasks: install.yml
-      when: "action == 'install'"
+      when: "global_action == 'install'"
     
     - name: Remove CP4BA Enterprise
       include_tasks: remove.yml
-      when: "action == 'remove'"  
+      when: "global_action == 'remove'"  
     
