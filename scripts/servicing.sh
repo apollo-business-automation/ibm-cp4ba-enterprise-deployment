@@ -14,6 +14,7 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   if [[ $GLOBAL_CA_PROVIDED == "true" ]]; then
     echo
     echo ">>>>Copy Global CA files"  
+    mkdir -p /tmp/global-ca
     cp /config/global-ca.crt /tmp/global-ca/global-ca.crt
     cp /config/global-ca.key /tmp/global-ca/global-ca.key
   fi
