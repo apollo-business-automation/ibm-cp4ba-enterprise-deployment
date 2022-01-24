@@ -13,5 +13,5 @@
     
     - name: Remove CP4BA Enterprise
       include_tasks: remove.yml
-      when: "global_action == 'remove'"  
+      when: "global_action == 'remove'"
     

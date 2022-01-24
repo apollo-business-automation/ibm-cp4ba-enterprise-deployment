@@ -23,7 +23,7 @@ ansible localhost -m import_role \
 
 Run whole remove sequnce
 ```bash
-ansible-playbook main.yml -e global_action=remove	
+ansible-playbook main.yml -e global_action=remove
 ```
 
 Run particular role remove
