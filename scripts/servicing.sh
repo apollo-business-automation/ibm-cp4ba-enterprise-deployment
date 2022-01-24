@@ -2,7 +2,7 @@
 
 if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   echo
-  echo ">>>>Copy variables.sh"
+  echo ">>>>Copy variables.yml"
   cp /config/variables.yml variables.yml
 fi
 
