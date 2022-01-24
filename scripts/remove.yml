@@ -2,7 +2,3 @@
 - name: Remove Catalog Source
   include_role:
     name: catalog-source
-  vars: 
-    catalog_source_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
-    catalog_source_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
-    catalog_source_action: "{{ action }}"

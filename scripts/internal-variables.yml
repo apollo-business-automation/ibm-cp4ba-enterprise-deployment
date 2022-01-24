@@ -42,3 +42,8 @@ default_attempts_4: 36
 ## Means wait for 180 minutes with combination of DEFAULT_ATTEMPTS_4. 
 ## Increase if you OCP is slow and you need to wait for things longer.
 default_delay_4: 300
+
+
+catalog_source_k8s_api_key: "{{ ocp_cluster_token }}"
+catalog_source_k8s_host: "{{ ocp_api_endpoint }}"
+catalog_source_action: "{{ action }}"
