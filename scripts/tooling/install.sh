@@ -23,10 +23,15 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
 
   echo
   echo ">>>>$(print_timestamp) Setup Pip"
-  pip3 install --upgrade setuptools	
+  pip3 install --upgrade setuptools	--user
   exit_test $? "Setup Pip setuptools Failed"
-  pip3 install --upgrade pip
+  pip3 install --upgrade pip --user
   exit_test $? "Setup Pip upgrade Failed"
+
+  echo
+  echo ">>>>$(print_timestamp) Install pip package wheel"
+  pip3 install --user wheel
+  exit_test $? "Install pip package wheel failed"
 
   echo
   echo ">>>>$(print_timestamp) Install pip package ansible"
