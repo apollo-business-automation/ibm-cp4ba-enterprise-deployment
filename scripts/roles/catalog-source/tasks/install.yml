@@ -31,4 +31,4 @@
   register: catalogsource
   retries: 40
   delay: 5
-  until: ('READY' in catalogsource | json_query('resources[*].status.connectionState.lastObservedState')|unique)
+  until: ('READY' in catalogsource | json_query('resources[*].status.connectionState.lastObservedState') | unique)

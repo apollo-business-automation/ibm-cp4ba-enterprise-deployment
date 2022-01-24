@@ -1,4 +1,7 @@
 ---
+- name: Remove Mail
+  include_role:
+    name: catalog-source
 - name: Remove Catalog Source
   include_role:
     name: catalog-source

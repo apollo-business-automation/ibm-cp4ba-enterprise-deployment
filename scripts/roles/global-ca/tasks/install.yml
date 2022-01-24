@@ -1,0 +1,57 @@
+- name: Create Global CA directory for generated files
+  file:
+    path: "{{ global_ca_output_directory }}"
+    state: directory
+
+- name: Generate & save Global CA if not provided
+  block:
+    - name: Generate an OpenSSL private key
+      openssl_privatekey:
+        path: "{{ global_ca_output_directory }}/global-ca.key"
+
+    - name: Generate an OpenSSL Certificate Signing Request with Subject information
+      openssl_csr:
+        path: "{{ global_ca_output_directory }}/global-ca.csr"
+        privatekey_path: "{{ global_ca_output_directory }}/global-ca.key"
+        subject: "CN='Global CA'"
+        basic_constraints: 
+          - CA:TRUE
+        basic_constraints_critical: true
+
+    - name: Generate a Self Signed OpenSSL certificate
+      openssl_certificate:
+        path: "{{ global_ca_output_directory }}/global-ca.crt"
+        privatekey_path: "{{ global_ca_output_directory }}/global-ca.key"
+        csr_path: "{{ global_ca_output_directory }}/global-ca.csr"
+        provider: selfsigned
+        selfsigned_not_after: "+36500d"
+
+  when: "global_ca_provided == false"
+
+- name: Get OCP Apps domain
+  include_role:
+    name: apps-endpoint
+  vars:
+    apps_endpoint_k8s_api_key: "{{ global_ca_k8s_api_key | default(omit) }}"
+    apps_endpoint_k8s_host: "{{ global_ca_k8s_host | default(omit) }}"
+
+- name: Generate an OpenSSL private key
+  openssl_privatekey:
+    path: "{{ global_ca_output_directory }}/wildcard.key"
+
+- name: Generate an OpenSSL Certificate Signing Request with Subject information
+  openssl_csr:
+    path: "{{ global_ca_output_directory }}/wildcard.csr"
+    privatekey_path: "{{ global_ca_output_directory }}/wildcard.key"
+    subject: "CN=Wildcard"
+    subject_alt_name: "DNS:*.{{ apps_endpoint_domain }}"
+
+- name: Generate a Self Signed OpenSSL certificate
+  openssl_certificate:
+    path: "{{ global_ca_output_directory }}/wildcard.crt"
+    privatekey_path: "{{ global_ca_output_directory }}/wildcard.key"
+    csr_path: "{{ global_ca_output_directory }}/wildcard.csr"
+    provider: ownca
+    ownca_path: "{{ global_ca_output_directory }}/global-ca.crt"
+    ownca_privatekey_path: "{{ global_ca_output_directory }}/global-ca.key"
+    ownca_not_after: "+36500d"

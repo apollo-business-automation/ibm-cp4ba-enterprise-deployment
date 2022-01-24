@@ -1,39 +1,16 @@
-- name: Global CA
-  debug:
-    msg: "Global CA"
+- name: Set output directory variable
+  set_fact:
+    global_ca_output_directory: "{{ global_ca_base_dir }}/{{ global_ca_dir_name }}"
 
 - name: Remove Global CA directory for generated files
   file:
-    path: "{{ status_dir }}/global-ca"
+    path: "{{ global_ca_output_directory }}"
     state: absent
 
-- name: Create Global CA directory for generated files
-  file:
-    path: "{{ status_dir }}/global-ca"
-    state: directory  
+- name: Install Global CA
+  include_tasks: install.yml
+  when: "global_ca_action == 'install'"
 
-- name: Create Key Pair
-  block:
-    - name: Generate certificate key
-      shell: openssl genrsa -out {{ status_dir }}/global-ca/global-ca.key 4096
-
-    - name: Generate certificate crt
-      shell: openssl req -x509 -new -nodes -key {{ status_dir }}/global-ca/global-ca.key -sha256 -days 36500 -out {{ status_dir }}/global-ca/global-ca.crt -subj "/CN=Global CA"
-  when: global_ca_provided == false
-
-- name: Generate wildcard key
-  shell: openssl genrsa -out {{ status_dir }}/global-ca/wildcard.key 2048
-
-- name: Generate wildcard csr
-  shell: | 
-openssl req -new -sha256 \
--key {{ status_dir }}/global-ca/wildcard.key \
--subj "/CN=Wildcard" \
--addext "subjectAltName=DNS:*.{{ocp_apps_endpoint}}" \
--out {{ status_dir }}/global-ca/wildcard.csr
-
-- name: Generate wildcard crt
-  shell: | 
-openssl x509 -req -extfile <(printf "subjectAltName=DNS:*.{{ocp_apps_endpoint}}") -days 36500 \
--in {{ status_dir }}/global-ca/wildcard.csr -CA {{ status_dir }}/global-ca/global-ca.crt -CAkey {{ status_dir }}/global-ca/global-ca.key -CAcreateserial -out {{ status_dir }}/global-ca/wildcard.crt
-
+- name: Remove Global CA
+  include_tasks: remove.yml
+  when: "global_ca_action == 'remove'"  

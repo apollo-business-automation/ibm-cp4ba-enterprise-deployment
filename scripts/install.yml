@@ -2,3 +2,6 @@
 - name: Install Catalog Source
   include_role:
     name: catalog-source
+- name: Install Mail
+  include_role:
+    name: catalog-source
