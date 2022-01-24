@@ -6,6 +6,10 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   cp /config/variables.yml variables.yml
 fi
 
+if cat variables.yml | grep -q "global_ca_provided: true"; then
+  GLOBAL_CA_PROVIDED=true
+fi
+
 if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   if [[ $GLOBAL_CA_PROVIDED == "true" ]]; then
     echo

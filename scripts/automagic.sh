@@ -6,6 +6,10 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   cp /config/variables.yml variables.yml
 fi
 
+if cat variables.yml | grep -q "global_ca_provided: true"; then
+  GLOBAL_CA_PROVIDED=true
+fi
+
 if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   if [[ $GLOBAL_CA_PROVIDED == "true" ]]; then
     echo
@@ -16,14 +20,6 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
 fi
 
 find . -type f \( -iname \*.sh \) | xargs chmod u+x
-
-echo
-echo ">>>>Source internal variables"
-. internal-variables.sh
-
-echo
-echo ">>>>Source variables"
-. variables.sh
 
 echo
 echo ">>>>Source functions"
