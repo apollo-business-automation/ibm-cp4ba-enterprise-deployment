@@ -2,6 +2,9 @@
 - name: Install Catalog Source
   include_role:
     name: catalog-source
+- name: Install Global CA
+  include_role:
+    name: global-ca
 - name: Install Mail
   include_role:
-    name: catalog-source
+    name: mail

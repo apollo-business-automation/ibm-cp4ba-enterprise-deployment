@@ -1,7 +1,10 @@
 ---
 - name: Remove Mail
   include_role:
-    name: catalog-source
+    name: mail
+- name: Remove Global CA
+  include_role:
+    name: global-ca
 - name: Remove Catalog Source
   include_role:
     name: catalog-source

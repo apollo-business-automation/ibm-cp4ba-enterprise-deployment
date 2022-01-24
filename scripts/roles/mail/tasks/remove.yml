@@ -1,10 +1,12 @@
-- name: Remove Catalog Source
+- name: Remove Project mail
   k8s:
     state: absent
     api_key: "{{ mail_k8s_api_key | default(omit) }}"
     host: "{{ mail_k8s_host | default(omit) }}"
-    api_version: v1alpha1
-    kind: CatalogSource
-    name: ibm-operator-catalog
-    namespace: openshift-marketplace
+    api_version: project.openshift.io/v1
+    kind: Project
+    name: mail
+    namespace: mail
     wait: yes
+    wait_sleep: 15
+    wait_timeout: 60
