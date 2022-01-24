@@ -2,10 +2,10 @@
   set_fact:
     global_ca_output_directory: "{{ global_ca_base_dir }}/{{ global_ca_dir_name }}"
 
-- name: Remove Global CA directory for generated files
-  file:
-    path: "{{ global_ca_output_directory }}"
-    state: absent
+#- name: Remove Global CA directory for generated files
+#  file:
+#    path: "{{ global_ca_output_directory }}"
+#    state: absent
 
 - name: Install Global CA
   include_tasks: install.yml

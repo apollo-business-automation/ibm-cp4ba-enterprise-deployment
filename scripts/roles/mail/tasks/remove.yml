@@ -9,4 +9,4 @@
     namespace: mail
     wait: yes
     wait_sleep: 15
-    wait_timeout: 60
+    wait_timeout: 120
