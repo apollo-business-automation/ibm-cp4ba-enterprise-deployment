@@ -15,10 +15,10 @@ ansible-playbook main.yml -e global_action=install
 Run particular role install
 ```bash
 ansible localhost -m import_role \
-                  -a "name=catalog-source " \
-                  -e "@variables.yml" \
-									-e "@internal-variables.yml" \
-									-e global_action=install
+-a "name=catalog-source " \
+-e "@variables.yml" \
+-e "@internal-variables.yml" \
+-e global_action=install
 ```
 
 Run whole remove sequnce
@@ -29,8 +29,8 @@ ansible-playbook main.yml -e global_action=remove
 Run particular role remove
 ```bash
 ansible localhost -m import_role \
-                  -a "name=catalog-source " \
-                  -e "@variables.yml" \
-									-e "@internal-variables.yml" \
-									-e global_action=remove	
+-a "name=catalog-source " \
+-e "@variables.yml" \
+-e "@internal-variables.yml" \
+-e global_action=remove
 ```                  
