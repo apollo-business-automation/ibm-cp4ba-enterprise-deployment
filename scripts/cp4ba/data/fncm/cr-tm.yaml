@@ -1,4 +1,0 @@
-spec:
-  ecm_configuration:
-    tm:
-      replica_count: 1

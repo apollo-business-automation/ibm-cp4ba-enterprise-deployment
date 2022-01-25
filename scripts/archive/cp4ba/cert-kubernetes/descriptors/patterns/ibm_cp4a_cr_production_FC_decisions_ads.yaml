@@ -1,0 +1,356 @@
+###############################################################################
+##
+##Licensed Materials - Property of IBM
+##
+##(C) Copyright IBM Corp. 2021. All Rights Reserved.
+##
+##US Government Users Restricted Rights - Use, duplication or
+##disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+##
+###############################################################################
+apiVersion: icp4a.ibm.com/v1
+kind: ICP4ACluster
+metadata:
+  name: icp4adeploy
+  labels:
+    app.kubernetes.io/instance: ibm-dba
+    app.kubernetes.io/managed-by: ibm-dba
+    app.kubernetes.io/name: ibm-dba
+    release: 21.0.3
+spec:
+  appVersion: 21.0.3
+
+  ## MUST exist, used to accept ibm license, valid value only can be "accept" 
+  ibm_license: ""
+
+  #################################################################################################################
+  ##  The contents of this template CR file reflect only the specific parameters and configuration
+  ##  settings applicable to the represented ICP4A capability.
+  ##
+  ##  These values/configuration sections are to be used when manually assembling or updating the main
+  ##  ICP4A CR that is being applied in order to install and ICP4A environment.
+  ##
+  ##  If you are in the process of preparing a new install of an ICP4A environment, you should merge
+  ##  the required values and configuration sections from this file into the
+  ##  starting point CR template: ibm_cp4a_cr_enterprise[_FC]_foundation.yaml available in the
+  ##  same location as this template.
+  ##
+  ##  If you updating an existing ICP4A environment, you should merge the required values and configuration
+  ##  sections from this templated in the main ICP4A CR file already applied in the environment.
+  ##
+  ######################################################################################################################
+
+
+  ##########################################################################
+  ## This section contains the shared configuration for all CP4A components #
+  ##########################################################################
+  shared_configuration:
+
+    ## CP4A patterns or capabilities to be deployed. This CR represents the "decisions_ads" pattern that brings ADS Designer and ADS Runtime.
+    sc_deployment_patterns: decisions_ads
+
+    ## The optional components to be installed if listed here.
+    ## This is normally populated by the User script based on input from the user.
+    ## User can also manually specify the optional components to be deployed here.
+    ## ADS has two 'ads_designer' and 'ads_runtime' optional components. If 'ads_runtime' is here, it is possible to also add 'bai'.
+    ## If ads_designer is set, you also have to set the 'ads_configuration.decision_designer.enabled' flag to true to install it.
+    ## If ads_runtime is set, you also have to set the 'ads_configuration.decision_runtime.enabled' flag to true to install it.
+    sc_optional_components:
+
+    ## The deployment context, which has a default value of "CP4A".  Unless you are instructed to change this value or 
+    ## know the reason to change this value, please leave the default value.
+    sc_deployment_context: "CP4A"
+  ########################################################################
+  ########   IBM Business Automation Decision Services            ########
+  ########################################################################
+
+  ads_configuration:
+
+    # Optional: You can specify another pvc where ADS logs will be stored instead of the default pvc "cp4a-shared-log-pvc".
+    existing_pvc_for_logstore: cp4a-shared-log-pvc
+
+    # Optional: You can specify a profile size for ADS if different from CloudPak - valid values are small,medium,large - default is small.
+    # Resources in this file are reflecting small profile ones.
+    #deployment_profile_size: "small"
+
+    decision_designer:
+      enabled: false
+      admin_secret_name: ibm-dba-ads-designer-secret
+
+      # Optional: You can specify a profile size for ADS Designer if different from CloudPak or from ADS - valid values are small,medium,large - default is small.
+      # Resources in this file are reflecting small profile ones.
+      #deployment_profile_size: "small"
+
+      # Optional: You can set this property to false to disable pvc logging for designer.
+      #mount_pvc_for_logstore: true
+
+      # Config maps containing certificates to trust.
+      git_servers_certs:
+      ml_providers_certs:
+      other_trusted_certs:
+
+      embedded_build_and_run:
+        # Embedded build and run can be disabled.
+        enabled: true
+
+    decision_runtime:
+      enabled: false
+      admin_secret_name: ibm-dba-ads-runtime-secret
+      # Authentication mode can be "zen", basic" or "none". Default mode is "zen" if not specified.
+      authentication_mode: "zen"
+
+      # Optional: You can specify a profile size for ADS Runtime if different from CloudPak or from ADS - valid values are small,medium,large,extra-large - default is small.
+      # Resources in this file are reflecting small profile ones.
+      #deployment_profile_size: "small"
+
+      # Optional: You can set this property to false to disable pvc logging for runtime.²
+      #mount_pvc_for_logstore: true
+
+      # Optional, default "fs". Can be "fs" or "s3".
+      archive_storage_type: "fs"
+#       s3: # Optional, only used if archive_storage_type is "s3"
+#         # Following parameters must be set if archive_storage_type is "s3"
+#         bucket_name:
+#         region:
+#         server_url:
+#         # Optional
+#         secret_name:
+#         storage_region:
+#         connection_timeout:   # in milliseconds. Default value 0 meaning infinite.
+#         request_timeout:      # in milliseconds. Default value 0 meaning infinite.
+#         deployment_space_deletion_delay:  # in days. Default value 0 meaning immediate cleaning.
+
+
+      # Event emitter, needs Insight Engine (BAI).
+      event_emitter:
+        enabled: true  # default true, optional. Will be ignored if BAI is not installed.
+#        kafka_topic:  # default "ads-decision-execution-common-data", optional.
+#        kafka_properties_config_map_name: # default null, see KC for content. Optional.
+#        elasticsearch_index:  # default "ads-decision-execution-common-data", optional. See KC for elasticsearch indexes names criteria.
+#        allow_missing_events : # default true, optional.
+#        queue_capacity:  # default 50000, optional.
+#        dequeur_threads: # default null,  as startup time, optional.
+
+
+    rr_integration:
+      image:
+        repository: cp.icr.io/cp/cp4a/ads/ads-rrintegration
+        tag: 21.0.3
+
+      resources:
+        requests:
+          cpu: '200m'
+          memory: '256Mi'
+        limits:
+          cpu: '500m'
+          memory: '512Mi'
+
+    mongo:
+#      # Optional: defaulted to false. (true in starter mode)
+#      # Embedded mongoDB is not recommended in production. It is not enabled by default.
+#      use_embedded: false
+      # If you provide an external mongo db, fill the mongo connection string in the admin secret.
+      admin_secret_name: ibm-dba-ads-mongo-secret
+      image:
+        repository: cp.icr.io/cp/cp4a/ads/mongo
+        tag: 4.2.17
+
+      persistence:
+        use_dynamic_provisioning: true
+#       # Optional: defaulted to shared_configuration.storage_configuration.sc_dynamic_storage_classname
+#       # or shared_configuration.storage_configuration.sc_fast_file_storage_classname if use_dynamic_provisioning is false or shared_configuration.storage_configuration.sc_dynamic_storage_classname is not defined
+#        storage_class_name:
+        resources:
+          requests:
+            storage: 3Gi
+
+      resources:
+        requests:
+          cpu: '500m'
+          memory: '256Mi'
+        limits:
+          cpu: '1000m'
+          memory: '1Gi'
+
+    front:
+      image:
+        repository: cp.icr.io/cp/cp4a/ads/ads-front
+        tag: 21.0.3
+
+      replica_count: 1
+      resources:
+        requests:
+          cpu: '100m'
+          memory: '256Mi'
+        limits:
+          cpu: '300m'
+          memory: '256Mi'
+
+    download_service:
+      image:
+        repository: cp.icr.io/cp/cp4a/ads/ads-download
+        tag: 21.0.3
+
+      replica_count: 1
+      resources:
+        requests:
+          cpu: '100m'
+          memory: '200Mi'
+        limits:
+          cpu: '300m'
+          memory: '200Mi'
+
+    rest_api:
+      image:
+        repository: cp.icr.io/cp/cp4a/ads/ads-restapi
+        tag: 21.0.3
+      replica_count: 1
+
+      resources:
+        requests:
+          cpu: '500m'
+          memory: '800Mi'
+        limits:
+          cpu: '1000m'
+          memory: '1.5Gi'
+
+    credentials_service:
+      image:
+        repository: cp.icr.io/cp/cp4a/ads/ads-credentials
+        tag: 21.0.3
+      replica_count: 1
+
+      resources:
+        requests:
+          cpu: '250m'
+          memory: '800Mi'
+        limits:
+          cpu: '1000m'
+          memory: '1.5Gi'
+
+    git_service:
+      image:
+        repository: cp.icr.io/cp/cp4a/ads/ads-gitservice
+        tag: 21.0.3
+      replica_count: 1
+
+      resources:
+        requests:
+          cpu: '500m'
+          memory: '800Mi'
+        limits:
+          cpu: '1000m'
+          memory: '1.5Gi'
+
+    parsing_service:
+      image:
+        repository: cp.icr.io/cp/cp4a/ads/ads-parsing
+        tag: 21.0.3
+      replica_count: 1
+
+      resources:
+        requests:
+          cpu: '250m'
+          memory: '800Mi'
+        limits:
+          cpu: '1000m'
+          memory: '1.5Gi'
+
+    run_service:
+      image:
+        repository: cp.icr.io/cp/cp4a/ads/ads-run
+        tag: 21.0.3
+      replica_count: 1
+
+      resources:
+        requests:
+          cpu: '500m'
+          memory: '800Mi'
+        limits:
+          cpu: '1000m'
+          memory: '1.5Gi'
+
+    embedded_build_service:
+      image:
+        repository: cp.icr.io/cp/cp4a/ads/ads-build
+        tag: 21.0.3
+      replica_count: 1
+
+      executor_count: 1 # Number of Jenkins executors, default 1. A good guess is cpu limit -1. Too many executors can saturate the cpu and cause pod restarts.
+      resources:
+        requests:
+          cpu: '500m'
+          memory: '800Mi'
+        limits:
+          cpu: '2000m'
+          memory: '1.5Gi'
+
+    decision_runtime_service:
+      image:
+        repository: cp.icr.io/cp/cp4a/ads/ads-runtime
+        tag: 21.0.3
+      replica_count: 1
+
+      # Whether the decision runtime should include an exception stack trace when an incident occurs.
+      # This should only be used for debugging purposes, as a stack trace may expose sensitive internal data.
+      stack_trace_enabled: false
+
+      tls:
+        # Name of the config map holding the TLS certificates.
+        certs_config_map_name:
+        # Whether self-signed certificates are allowed.
+        allow_self_signed: false
+        verify_hostname: true
+
+      deployment_space_status_check_interval: 30000 # Interval in milliseconds between checks/updates of the deployment statuses of the cached decisions, default 30000, optional
+
+      cache:
+        config:
+          expiry: ''
+          resources: |-
+            <heap unit="entries">100</heap>
+
+      metadata:
+        cache:
+          config:
+            expiry: ''
+            check_interval: 30000
+            manager:
+              threads: 1
+            resources: |-
+              <heap unit="entries">100</heap>
+
+      decision_selection:
+        threads: 1
+        update_interval: 120000 # milliseconds (2 minutes)
+        query_interval: 1000 # milliseconds (1 minute)
+        cache:
+          config:
+             expiry: ''
+             resources: |-
+                <heap unit="entries">100</heap>
+
+      resources:
+        requests:
+          cpu: '500m'
+          memory: '2Gi'
+        limits:
+          cpu: '1000m'
+          memory: '3Gi'
+
+      # Persistence is only used if decision_runtime.archive_storage_type is unset or set to "fs"
+      persistence:
+        use_dynamic_provisioning: true
+#       # Optional: defaulted to shared_configuration.storage_configuration.sc_dynamic_storage_classname
+#       # or shared_configuration.storage_configuration.sc_fast_file_storage_classname if use_dynamic_provisioning is false or shared_configuration.storage_configuration.sc_dynamic_storage_classname is not defined
+#        storage_class_name:
+        resources:
+          requests:
+            storage: 1Gi
+
+
+      autoscaling:
+        enabled: false # Default value is true if decision runtime profile is set to "extra-large".
+        min_replicas: 2
+        max_replicas: 5
+        target_cpu_average_utilization: 160

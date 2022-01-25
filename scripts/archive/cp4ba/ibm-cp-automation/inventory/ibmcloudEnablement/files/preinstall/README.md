@@ -1,0 +1,3 @@
+Only a cluster administrator can run the script. The administrator must have an IAM policy assigned on the Red Hat OpenShift cluster service with the Operator or higher role. If you are not the cluster administrator, click **Share link**, copy the link, and provide it to your administrator to run.
+
+Run the script in the project that you selected for this deployment. The script creates customized security context constraints and grants access to the service accounts that are required for Cloud Pak for Business Automation to install successfully. It has the same affect regardless of the number of times it is ran.

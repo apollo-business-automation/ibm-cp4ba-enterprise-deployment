@@ -26,6 +26,8 @@
         provider: selfsigned
         selfsigned_not_after: "+36500d"
 
+# TODO add to configmap in OCP        
+
   when: "global_ca_provided == false"
 
 - name: Get OCP Apps domain

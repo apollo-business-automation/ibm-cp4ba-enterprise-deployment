@@ -1,0 +1,4 @@
+spec:
+  resource_registry_configuration:
+    admin_secret_name: resource-registry-admin-secret
+    replica_size: 3 # to fulfill PDB requirement

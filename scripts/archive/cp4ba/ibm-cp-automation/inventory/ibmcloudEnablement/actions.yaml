@@ -1,0 +1,36 @@
+actions:
+  metadata:
+    name: ibmcloudEnablement
+    description: "Installation for ibm cloud"
+  actionDefs:
+    preInstall:
+      metadata:
+        name: preInstall
+        description: "Prerequisites to installing Cloud Pak for Automation"
+      roles:
+      - clusterAdmin
+      requires:
+        "/case/prereqs/k8sDistros/ibmCloud"
+      k8sPermissions:
+        rules:
+        - rule:
+            group: "*"
+            resource: "*"
+            verbs:
+            - "*"
+
+    install:
+      metadata:
+        name: install
+        description: "Install the IBM Cloud Pak for Automation"
+      roles:
+      - namespaceAdmin
+      requires:
+        "/case/prereqs/k8sDistros/ibmCloud"
+      k8sPermissions:
+        rules:
+        - rule:
+            group: "*"
+            resource: "*"
+            verbs:
+            - "*"

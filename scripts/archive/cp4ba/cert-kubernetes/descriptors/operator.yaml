@@ -1,0 +1,122 @@
+###############################################################################
+#
+# Licensed Materials - Property of IBM
+#
+# (C) Copyright IBM Corp. 2021. All Rights Reserved.
+#
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+#
+###############################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ibm-cp4a-operator
+  labels:
+    app.kubernetes.io/instance: ibm-dba
+    app.kubernetes.io/managed-by: ibm-dba
+    app.kubernetes.io/name: ibm-dba
+    release: 21.0.3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: ibm-cp4a-operator
+  template:
+    metadata:
+      labels:
+        name: ibm-cp4a-operator
+        app.kubernetes.io/instance: ibm-dba
+        app.kubernetes.io/managed-by: ibm-dba
+        app.kubernetes.io/name: ibm-dba
+        release: 21.0.3
+      annotations:
+        productID: "5737-I23"
+        productName: "IBM Cloud Pak for Business Automation"
+        productVersion: "21.0.3"
+        productChargedContainers: ""
+        productMetric: "VIRTUAL_PROCESSOR_CORE"
+        cloudpakId: "94a9c8c358bb43ba8fbdea62e7e166a5"
+        cloudpakName: "IBM Cloud Pak for Business Automation"
+        cloudpakVersion: "21.0.3"
+    spec:
+      hostNetwork: false
+      hostPID: false
+      hostIPC: false
+      securityContext:
+        runAsNonRoot: true
+      serviceAccountName: ibm-cp4a-operator
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+                - s390x
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 3
+            preference:
+              matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+                - s390x
+      containers:
+        - name: operator
+          # Replace this with the built image name
+          image: cp.icr.io/cp/cp4a/icp4a-operator@sha256:8c88f9268d06d1f8f86b572cfd0a481758f13ea2fb67011a473a1cc4a99523ac
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: false
+            # Uncomment below for OCP 3.11
+            # runAsUser: 1001
+            capabilities:
+              drop:
+              - ALL
+          resources:
+            limits:
+              cpu: '1'
+              memory: 2Gi
+            requests:
+              cpu: 500m
+              memory: 256Mi
+          volumeMounts:
+          - mountPath: /logs
+            name: logs-backup
+          - mountPath: /opt/ansible/share
+            name: operator-shared-folder
+          args:
+          - '--zap-encoder=console'
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "ibm-cp4a-operator"
+            - name: WORKER_ICP4ACLUSTER_ICP4A_IBM_COM
+              value: "10"
+            - name: ANSIBLE_GATHERING
+              value: smart
+            # MUST exist, used to accept dba license, valid value only can be "accept"
+            - name: dba_license
+              value: "accept"
+      imagePullSecrets:
+      - name: "admin.registrykey"
+      volumes:
+        - name: logs-backup
+          persistentVolumeClaim:
+            claimName: "cp4a-shared-log-pvc"
+        - name: "operator-shared-folder"
+          persistentVolumeClaim:
+            claimName: "operator-shared-pvc"

@@ -1,0 +1,7 @@
+inventory:
+  metadata:
+    name: cp4aOperatorSdk
+    description: Installs cp4a
+    displayName: cp4a installer
+    displayDescription: Installs CP4A into the cluster 
+  k8sScope: namespace

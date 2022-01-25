@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-integration-asset-repository
+spec:
+  channel: "{{ASSET_REPO_OPERATOR_CHANNEL}}"
+  installPlanApproval: Manual
+  name: ibm-integration-asset-repository
+  source: ibm-operator-catalog
+  sourceNamespace: openshift-marketplace
+  startingCSV: "{{ASSET_REPO_STARTING_CSV}}"

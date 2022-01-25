@@ -1,0 +1,305 @@
+resources:
+  metadata:
+    name: cp4aOperatorSetup
+  resourceDefs:
+    cases:
+    - case: ibm-cp-automation-foundation
+      mediaType: application/vnd.case.core.v1
+      metadata:
+        description: IBM Automation Foundation
+        name: ibmAutomationFoundation
+      repositoryURLs:
+      - https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case
+      version: ">=1.3.1"
+    - case: ibm-process-mining
+      mediaType: application/vnd.case.core.v1
+      metadata:
+        description: IBM Process Mining
+        name: ibmProcessMining
+      repositoryURLs:
+      - https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case
+      version: ">=1.0.2"
+    - case: ibm-robotic-process-automation
+      mediaType: application/vnd.case.core.v1
+      metadata:
+        description: IBM Robotic Process Automation
+        name: ibmRoboticProcessAutomation
+      repositoryURLs:
+      - https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case
+      version: ">=1.0.0"
+    - case: ibm-db2uoperator
+      mediaType: application/vnd.case.core.v1
+      metadata:
+        description: IBM Db2 Operator Bundle for the Db2 Operator
+        name: ibmDb2uOperator
+      repositoryURLs:
+      - https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case
+      version: ">=4.0.4"
+    - case: ibm-bts-bundle
+      mediaType: application/vnd.case.core.v1
+      metadata:
+        description: IBM BTS Operator
+        name: ibmBtsBundle
+      repositoryURLs:
+      - https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case
+      version: ">=1.0.1"
+    containerImages:
+    - image: cp/cp4a/icp4a-operator
+      tag: 21.0.3
+      digest: sha256:293a72734263751197de4ec0034356c2731e5c86ca8b5e8024b6d2c0a1674e40
+      mediaType: application/vnd.docker.distribution.manifest.list.v2
+      registries:
+      - host: cp.icr.io
+      manifests:
+      - digest: sha256:bb18181e0bfcf69165d8b5fbe360d8d523dd6609e02fcfe3d08fe55a6fac13d4
+        mediaType: application/vnd.docker.distribution.manifest.v2
+        tag: 21.0.3-amd64
+        platform:
+          architecture: amd64
+          os: linux
+      - digest: sha256:d19c2b4d43f88e59dac6799b965aa115ec39d9fe42fd09c0e1ec4fdd2fe2b058
+        mediaType: application/vnd.docker.distribution.manifest.v2
+        tag: 21.0.3-s390x
+        platform:
+          architecture: s390x
+          os: linux
+      groups:
+        ibmcp4baProd: {}
+        ibmcp4baStarter: {}
+    - image: cp/cp4a/workflow-ps/workflow-ps-operator
+      tag: 21.0.3
+      digest: sha256:f5cfc21e89c961a71f48296fd9fe163aaa03a893ba9f38cdfe6b5d9695ea0d43
+      mediaType: application/vnd.docker.distribution.manifest.list.v2
+      registries:
+      - host: cp.icr.io
+      manifests:
+      - digest: sha256:d220e0c588c74f1792a1b5cd06a7079d8c0f7b00c917a643aaea121a2d45a6dc
+        mediaType: application/vnd.docker.distribution.manifest.v2
+        tag: 21.0.3-amd64
+        platform:
+          architecture: amd64
+          os: linux
+      groups:
+        ibmcp4baProd: {}
+        ibmcp4baStarter: {}
+    - metadata:
+        name: workflow_ps_operator_bundle
+        displayName: IBM Workflow Process Server Operator bundle
+        operators_operatorframework_io:
+          bundle:
+            mediaType: registry+v1
+            cpcicd_ibm_com:
+              targetCatalogs:
+                catalogRefs:
+                - ibm-public: {}
+      registries:
+      - host: icr.io
+      image: cpopen/workflow-ps-operator-bundle
+      mediaType: application/vnd.docker.distribution.manifest.v2
+      digest: sha256:b36e612f8f8a1369171dc1fb0fbbba52ffcdbd56519e1e16ec9f1ae78da0dd26
+      tag: 21.3.0
+      platform:
+        architecture: amd64
+        os: linux
+      groups:
+        ibmcp4baProd: {}
+        ibmcp4baStarter: {}
+    - metadata:
+        name: icp4a_operator_bundle
+        displayName: IBM Cloud Pak for Business Automation Operator Bundle
+        operators_operatorframework_io:
+          bundle:
+            mediaType: registry+v1
+            cpcicd_ibm_com:
+              targetCatalogs:
+                catalogRefs:
+                - ibm-public: {}
+      registries:
+      - host: icr.io
+      image: cpopen/icp4a-operator-bundle
+      mediaType: application/vnd.docker.distribution.manifest.list.v2
+      digest: sha256:7d475d3616046452bb82c1d4ebfe2ddd288aa2d1fa4669fdb76416ea42ef59c0
+      tag: 21.3.0
+      manifests:
+      - digest: sha256:6ac59324aa99b664041184bdcd99d0e9be07a4e2b47083266d822730564131b6
+        mediaType: application/vnd.docker.distribution.manifest.v2
+        tag: 21.3.0-linux.amd64
+        platform:
+          architecture: amd64
+          os: linux
+      - digest: sha256:97fa4e58645ca7297c7d15a11f6365923ade87a24cf8f638eaebfe9d8c41fafc
+        mediaType: application/vnd.docker.distribution.manifest.v2
+        tag: 21.3.0-linux.s390x
+        platform:
+          architecture: s390x
+          os: linux
+      groups:
+        ibmcp4baProd: {}
+        ibmcp4baStarter: {}
+    - metadata:
+        name: icp4a_operator_bundle
+        displayName: IBM Cloud Pak for Business Automation Operator Bundle
+        operators_operatorframework_io:
+          bundle:
+            mediaType: registry+v1
+            cpcicd_ibm_com:
+              targetCatalogs:
+                catalogRefs:
+                - ibm-public: {}
+      registries:
+      - host: icr.io
+      image: cpopen/icp4a-operator-bundle
+      mediaType: application/vnd.docker.distribution.manifest.v2
+      digest: sha256:d4ce85bd1823e5db7f96f3bb680bd834118b7f0c7b6a052a2870a91d0031f044
+      tag: 21.2.6
+      platform:
+        architecture: amd64
+        os: linux
+      groups:
+        ibmcp4baProd: {}
+        ibmcp4baStarter: {}
+    - metadata:
+        name: workflow_ps_operator_bundle
+        displayName: IBM Workflow Process Server Operator bundle
+        operators_operatorframework_io:
+          bundle:
+            mediaType: registry+v1
+            cpcicd_ibm_com:
+              targetCatalogs:
+                catalogRefs:
+                - ibm-public: {}
+      registries:
+      - host: icr.io
+      image: cpopen/icp4a-operator-bundle
+      mediaType: application/vnd.docker.distribution.manifest.v2
+      digest: sha256:3e9985dae60c6d00186b5876e8b1d9bd1f3726bbe4d95ab84c3af439b1ad2211
+      tag: 21.2.5
+      platform:
+        architecture: amd64
+        os: linux
+      groups:
+        ibmcp4baProd: {}
+        ibmcp4baStarter: {}
+    - metadata:
+        name: workflow_ps_operator_bundle
+        displayName: IBM Workflow Process Server Operator bundle
+        operators_operatorframework_io:
+          bundle:
+            mediaType: registry+v1
+            cpcicd_ibm_com:
+              targetCatalogs:
+                catalogRefs:
+                - ibm-public: {}
+      registries:
+      - host: icr.io
+      image: cpopen/icp4a-operator-bundle
+      mediaType: application/vnd.docker.distribution.manifest.v2
+      digest: sha256:de250d72137ff89452346a01f28a726abecab5fdb8cf38fc482ea50679a65957
+      tag: 21.2.4
+      platform:
+        architecture: amd64
+        os: linux
+      groups:
+        ibmcp4baProd: {}
+        ibmcp4baStarter: {}
+    - metadata:
+        name: icp4a_operator_bundle
+        displayName: IBM Cloud Pak for Business Automation Operator Bundle
+        operators_operatorframework_io:
+          bundle:
+            mediaType: registry+v1
+            cpcicd_ibm_com:
+              targetCatalogs:
+                catalogRefs:
+                - ibm-public: {}
+      registries:
+      - host: icr.io
+      image: cpopen/icp4a-operator-bundle
+      mediaType: application/vnd.docker.distribution.manifest.v2
+      digest: sha256:5980b40ed670384f7af046d55f54f3e4d5b72a703e506355eb944d62da962200
+      tag: 21.2.3
+      platform:
+        architecture: amd64
+        os: linux
+      groups:
+        ibmcp4baProd: {}
+        ibmcp4baStarter: {}
+    - metadata:
+        name: icp4a_operator_bundle
+        displayName: IBM Cloud Pak for Business Automation Operator Bundle
+        operators_operatorframework_io:
+          bundle:
+            mediaType: registry+v1
+            cpcicd_ibm_com:
+              targetCatalogs:
+                catalogRefs:
+                - ibm-public: {}
+      registries:
+      - host: icr.io
+      image: cpopen/icp4a-operator-bundle
+      mediaType: application/vnd.docker.distribution.manifest.v2
+      digest: sha256:b8de1ac9c6ef497f7f06a75dcac8554fb012654b780357ecd5f3ce642e12be8f
+      tag: 21.2.2
+      platform:
+        architecture: amd64
+        os: linux
+      groups:
+        ibmcp4baProd: {}
+        ibmcp4baStarter: {}
+    - metadata:
+        operators_operatorframework_io:
+          catalog:
+            mediaType: registry+v1
+      image: cp/cp4a/ibm-cp-automation-catalog
+      tag: v21.3.0-20211216.233754-3D36A0709
+      digest: sha256:eeb912caf2c6e9021dfe8b32e7840b77950462daf5a2cfd6ab089c1d930f9704
+      mediaType: application/vnd.docker.distribution.manifest.list.v2
+      registries:
+      - host: cp.icr.io
+      manifests:
+      - digest: sha256:f38785b7aff65ad79a39c067018aa69f8dbffcfb8860dcf0a37c82fc98095189
+        mediaType: application/vnd.docker.distribution.manifest.v2
+        tag: v21.3.0-20211216.233754-3D36A0709-linux.amd64
+        platform:
+          architecture: amd64
+          os: linux
+      - digest: sha256:737610a19ec0c5da14ad73685176ee376de7bc9adc8a9c9665358c303bdac36c
+        mediaType: application/vnd.docker.distribution.manifest.v2
+        tag: v21.3.0-20211216.233754-3D36A0709-linux.s390x
+        platform:
+          architecture: s390x
+          os: linux
+      groups:
+        ibmcp4baProd: {}
+        ibmcp4baStarter: {}
+    files:
+    - ref: airgap.sh
+      mediaType: application/vnd.case.resource.script.bash.v1
+    - ref: launch.sh
+      mediaType: application/vnd.case.resource.script.bash.v1+launcher
+    - ref: launch-impl.sh
+      mediaType: application/vnd.case.resource.script.bash.v1
+    - ref: op-cli/operator.yaml
+      mediaType: application/vnd.case.resource.k8s.v1+yaml
+    - ref: op-cli/role_binding.yaml
+      mediaType: application/vnd.case.resource.k8s.v1+yaml
+    - ref: op-cli/role.yaml
+      mediaType: application/vnd.case.resource.k8s.v1+yaml
+    - ref: op-cli/service_account.yaml
+      mediaType: application/vnd.case.resource.k8s.v1+yaml
+    - ref: op-cli/icp4a_v1_icp4a_crd.yaml
+      mediaType: application/vnd.case.resource.k8s.v1+yaml
+    - ref: op-cli/operator-shared-pvc.yaml
+      mediaType: application/vnd.case.resource.k8s.v1+yaml
+    - ref: op-olm/operator_group.yaml
+      mediaType: application/vnd.case.resource.k8s.v1+yaml
+    - ref: op-olm/subscription.yaml
+      mediaType: application/vnd.case.resource.k8s.v1+yaml
+    - ref: op-olm/catalog_source.yaml
+      mediaType: application/vnd.case.resource.k8s.v1+yaml
+    - ref: op-olm/cv_catalog_source.yaml
+      mediaType: application/vnd.case.resource.k8s.v1+yaml
+    - ref: op-olm/test_catalog_source.yaml
+      mediaType: application/vnd.case.resource.k8s.v1+yaml
+    - ref: op-olm/cp4a_catalogsource.yaml
+      mediaType: application/vnd.case.resource.k8s.v1+yaml

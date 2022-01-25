@@ -1,0 +1,47 @@
+apiVersion: ibmevents.ibm.com/v1beta2
+kind: KafkaUser
+metadata:
+  name: cpadmin
+  labels:
+    ibmevents.ibm.com/cluster: iaf-system
+spec:
+  authentication:
+    type: scram-sha-512
+  authorization:
+    acls:
+      - host: '*'
+        operation: All
+        resource:
+          name: icp4ba
+          patternType: prefix
+          type: topic
+      - host: '*'
+        operation: All
+        resource:
+          name: icp4ba
+          patternType: prefix
+          type: group
+      - host: '*'
+        operation: Read
+        resource:
+          name: __schema_icp4ba
+          patternType: prefix
+          type: topic
+      - host: '*'
+        operation: Alter
+        resource:
+          name: __schema_icp4ba
+          patternType: prefix
+          type: topic
+      - host: '*'
+        operation: Describe
+        resource:
+          type: cluster
+      - host: '*'
+        operation: Read
+        resource:
+          name: __schema_
+          patternType: prefix
+          type: topic
+    type: simple
+

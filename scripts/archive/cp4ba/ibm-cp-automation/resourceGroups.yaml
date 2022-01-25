@@ -1,0 +1,21 @@
+resourceGroups:
+  resourceGroupsDefs:
+    demo:
+      groups:
+      - name: "ibmcp4baStarter"
+    prod:
+      metadata:
+        default: true
+      groups:
+      - name: "ibmcp4baProd"
+      - name: "ibmcp4baODMImages"
+      - name: "ibmcp4baFNCMImages"
+      - name: "ibmcp4baBANImages"
+      - name: "ibmcp4baBAWImages"
+      - name: "ibmcp4baWFPSImages"
+      - name: "ibmcp4baADSImages"
+      - name: "ibmcp4baUMSImages"
+      - name: "ibmcp4baBASImages"
+      - name: "ibmcp4baAAEImages"
+      - name: "ibmcp4baADPImages"
+      - name: "ibmcp4baBAIImages"

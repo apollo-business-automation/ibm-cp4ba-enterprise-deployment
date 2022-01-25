@@ -1,0 +1,18 @@
+certification:
+  metadata:
+    name: ibmccp
+    displayName: Certified Cloud Pak
+    description: Certification for ibm-cp-automation
+  id: ebe46a8a-7ff4-4a18-b451-3184ae29c268
+  provider: ibm
+  type: ccp
+  issueDate: 04/23/2021
+  expirationDate: 04/30/2022
+  terms: >-
+    Valid from date of issue. Security vulnerability management and enhancements
+    are delivered on the latest version of the chart and images
+resources:
+  resourceDefs:
+    files:
+      - ref: ExternalSecurityReport.pdf
+        mediaType: application/pdf

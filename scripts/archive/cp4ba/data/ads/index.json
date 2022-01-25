@@ -1,0 +1,88 @@
+{
+  "format": 1,
+  "resources": {
+    "annotations_maven_plugin": {
+      "path": "annotations_1.0.12.jar",
+      "version": "1.0.12",
+      "maven_coordinates": {
+        "groupId": "com.ibm.decision",
+        "artifactId": "annotations",
+        "version": "1.0.12",
+        "packaging": "jar"
+      }
+    },
+    "foundation_maven_plugin": {
+      "path": "foundation_6.1.5.jar",
+      "version": "6.1.5",
+      "maven_coordinates": {
+        "groupId": "com.ibm.decision",
+        "artifactId": "foundation",
+        "version": "6.1.5",
+        "packaging": "jar"
+      }
+    },
+    "build_command_maven_plugin": {
+      "path": "build-maven-plugin_6.1.5.jar",
+      "version": "6.1.5",
+      "pom_path": "build-maven-plugin_6.1.5.pom",
+      "maven_coordinates": {
+        "groupId": "com.ibm.decision",
+        "artifactId": "build-maven-plugin",
+        "version": "6.1.5",
+        "packaging": "jar"
+      }
+    },
+    "import_maven_plugin": {
+      "path": "import-maven-plugin_6.1.5.jar",
+      "version": "6.1.5",
+      "pom_path": "import-maven-plugin_6.1.5.pom",
+      "maven_coordinates": {
+        "groupId": "com.ibm.decision",
+        "artifactId": "import-maven-plugin",
+        "version": "6.1.5",
+        "packaging": "jar"
+      }
+    },
+    "import_maven_archetype_plugin": {
+      "path": "maven-archetype-external-library_6.1.5.jar",
+      "version": "6.1.5",
+      "maven_coordinates": {
+        "groupId": "com.ibm.decision",
+        "artifactId": "maven-archetype-external-library",
+        "version": "6.1.5",
+        "packaging": "jar"
+      }
+    },
+    "engine_maven_plugin": {
+      "path": "engine-compact-runtime_2.10.1.jar",
+      "version": "2.10.1",
+      "maven_coordinates": {
+        "groupId": "com.ibm.decision",
+        "artifactId": "engine-compact-runtime",
+        "version": "2.10.1",
+        "packaging": "jar"
+      }
+    },
+    "engine_de_api_maven_plugin": {
+      "path": "engine-de-api_2.10.0.jar",
+      "version": "2.10.0",
+      "maven_coordinates": {
+        "groupId": "com.ibm.decision",
+        "artifactId": "engine-de-api",
+        "version": "2.10.0",
+        "packaging": "jar"
+      }
+    },
+    "ml_integration_maven_plugin": {
+      "path": "ml-integration-runtime_22.0.2.jar",
+      "version": "22.0.2",
+      "pom_path": "ml-integration-runtime_22.0.2.pom",
+      "maven_coordinates": {
+        "groupId": "com.ibm.decision",
+        "artifactId": "ml-integration-runtime",
+        "version": "22.0.2",
+        "packaging": "jar"
+      }
+    }
+  }
+}

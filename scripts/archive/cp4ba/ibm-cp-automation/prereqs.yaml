@@ -1,0 +1,88 @@
+# Defines any external dependencies that are not directly supplied by this CASE
+# The dependencies are handled by dependency resolvers which evaluate the prerequiste
+# These values can be addressed canonically
+prereqs:
+  prereqDefs:
+    k8sResources:                       # Kubernetes resource instance resolver
+      workerIntelLinux:                 # At least one amd64 node
+        metadata:
+          description: "Cluster has at least one amd64 node"
+        kind: node
+        apiGroup: ""
+        version: v1
+        selector:
+          matchExpressions:
+          - {key: beta.kubernetes.io/arch, operator: In, values: [amd64]}
+          - {key: beta.kubernetes.io/os, operator: In, values: [linux]}
+          - {key: node-role.kubernetes.io/worker, operator: Exists}
+
+      restrictedSCC:                      
+        Selector: {}
+        apiGroup: security.openshift.io
+        kind: SecurityContextConstraints
+        metadata:
+          description: Namespace is using the restricted SecurityContextConstraint
+        name: restricted
+        version: v1
+
+
+    k8sDistros:                              # Kubernetes Distributions resolver
+      openshift:
+        metadata:
+          description: "OpenShift Container Platform Kubernetes version is 1.19 or greater"
+        distribution: openshift
+        semver: ">=1.19.0"
+      kubernetes:
+        metadata:
+          description: "Kubernetes version is 1.19 or greater"
+        distribution: kubernetes
+        semver: ">=1.19.0"
+
+ #   helm: {}                       # If this is here at all, it requires the Helm client to be installed.
+
+    client:
+     # kubectl:
+     #   metadata:
+     #     description: "Client has kubectl version 1.14.0 or greater"
+     #   command: "kubectl"
+     #   versionArgs: "version"
+     #   versionRegex: "GitVersion:\"v1.1[4-9].[0-9]*"
+      docker:
+        metadata:
+          description: "Client has docker installed"
+        command: "docker"
+     #   versionArgs: "--version"
+     #   versionRegex: "1[8-9].d*.d*"
+      podman:
+        metadata:
+          description: "Client has podman installed"
+        command: "podman"
+      oc:
+        metadata:
+          description: "Client has oc version 4.4.0 or greater"
+        command: "oc"
+        versionArgs: "version --client"
+        versionRegex: "4\\.([4-9]|[1-9][0-9]+)\\.[0-9]+"
+      skopeo:
+        metadata:
+          description: "Client has skopeo version 1.0.0 or greater"
+        command: "skopeo"
+        versionArgs: "--version"
+        versionRegex: "1.[0-9]+.[0-9]+"
+      cloudctl:
+        metadata:
+          description: "Client has cloudctl version v3.4 or greater"
+        command: "cloudctl"
+        versionArgs: "version"
+        versionRegex: "v3\\.([4-9]|[1-9][0-9]+)\\.[0-9]+"
+      # checking for the presence of below utilities and not checking for any specifc version
+      openssl:
+        metadata:
+          description: "openssl"
+        command: "which"
+        versionArgs: "openssl"
+      htpasswd:
+        metadata:
+          description: "htpasswd"
+        command: "which"
+        versionArgs: "htpasswd"

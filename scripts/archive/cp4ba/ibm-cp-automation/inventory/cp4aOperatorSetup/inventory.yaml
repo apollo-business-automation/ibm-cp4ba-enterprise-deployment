@@ -1,0 +1,9 @@
+
+
+inventory:
+  metadata:
+    name: cp4aOperatorSetup
+    description: Setup cp4a Operator
+    displayName: CP4A Operator Setup
+    displayDescription: Setup the cp4a operator so it can install cp4a.
+  k8sScope: cluster

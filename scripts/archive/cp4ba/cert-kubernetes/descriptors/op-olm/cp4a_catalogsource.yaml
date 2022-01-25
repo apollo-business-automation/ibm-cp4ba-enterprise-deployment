@@ -1,0 +1,112 @@
+################################################################################
+#
+# Licensed Materials - Property of IBM
+#
+# (C) Copyright IBM Corp. 2019. All Rights Reserved.
+#
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+#
+###############################################################################
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-cp4a-operator-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: ibm-cp4a-operator
+  publisher: IBM
+  sourceType: grpc
+  image: cp.stg.icr.io/cp/cp4a/ibm-cp-automation-catalog:21.0.3
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
+#apiVersion: operators.coreos.com/v1alpha1
+#kind: CatalogSource
+#metadata:
+  #name: iaf-operators
+  #namespace: openshift-marketplace
+#spec:
+  #displayName: IAF Operators
+  #publisher: IBM
+  #sourceType: grpc
+  #image: cp.stg.icr.io/cp/ibm-cp-automation-foundation-catalog:1.3.1
+  #updateStrategy:
+    #registryPoll:
+      #interval: 45m
+---
+#apiVersion: operators.coreos.com/v1alpha1
+#kind: CatalogSource
+#metadata:
+  #name: iaf-core-operators
+  #namespace: openshift-marketplace
+#spec:
+  #displayName: IAF Core Operators
+  #publisher: IBM
+  #sourceType: grpc
+  #image: cp.stg.icr.io/cp/ibm-automation-foundation-core-catalog:1.3.1
+  #updateStrategy:
+    #registryPoll:
+      #interval: 45m
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-operator-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: "IBM Operator Catalog"
+  image: icr.io/cpopen/ibm-operator-catalog
+  publisher: IBM
+  sourceType: grpc
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
+ #apiVersion: operators.coreos.com/v1alpha1
+ #kind: CatalogSource
+ #metadata:
+  #name: opencloud-operators
+  #namespace: openshift-marketplace
+ #spec:
+  #displayName: IBMCS Operators
+  #publisher: IBM
+  #sourceType: grpc
+  #image: quay.io/opencloudio/ibm-common-service-catalog:latest
+  #image: icr.io/cpopen/ibm-common-service-catalog:latest
+  #image: hyc-cloud-private-daily-docker-local.artifactory.swg-devops.com/ibmcom/ibm-common-service-catalog:efix-20211215-0157
+ # image: hyc-cloud-private-daily-docker-local.artifactory.swg-devops.com/ibmcom/ibm-common-service-catalog:3.13.0
+  #updateStrategy:
+    #registryPoll:
+      #interval: 45m
+---
+#apiVersion: operators.coreos.com/v1alpha1
+#kind: CatalogSource
+#metadata:
+  #name: ibm-db2u-operator
+  #namespace: openshift-marketplace
+#spec:
+  #sourceType: grpc
+  #image: docker.io/ibmcom/ibm-db2uoperator-catalog@sha256:5347c6f194868eb7531bd15cf584dabb0dc82b8674409e8ffbbea2c5bc4bcafe
+  #displayName: IBM Db2U Catalog
+  #publisher: IBM
+  #updateStrategy:
+    #registryPoll:
+      #interval: 45m
+---
+# image to be updated after November 4, when the bts operator catalog is released
+ #apiVersion: operators.coreos.com/v1alpha1
+ #kind: CatalogSource
+ #metadata:
+  #name: bts-operator
+  #namespace: openshift-marketplace
+ #spec:
+  #displayName: BTS Operator
+  #publisher: IBM
+  #sourceType: grpc
+  #image: hyc-cloud-private-daily-docker-local.artifactory.swg-devops.com/ibmcom/ibm-bts-operator-catalog:3.15.0
+  #image: quay.io/opencloudio/ibm-bts-operator-catalog:latest
+  #updateStrategy:
+    #registryPoll:
+      #interval: 45m

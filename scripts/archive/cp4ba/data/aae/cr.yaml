@@ -1,0 +1,16 @@
+spec:
+  application_engine_configuration:
+    - name: instance1
+      admin_secret_name: cp4ba-instance1-aae-app-engine-admin-secret
+      admin_user: cpadmin
+      replica_size: 2 # to fulfill PDB requirement
+      data_persistence:
+        enable: false
+        object_store_name: AEOS
+      autoscaling:
+        enabled: false
+      database:
+        host: "{{DB2_HOSTNAME}}"
+        name: CP4BA
+        port: "50000"
+        current_schema: AAE

@@ -1,0 +1,117 @@
+actions:
+  actionDefs:
+    install:
+      roles: []
+      requires:
+        and:
+        - "/case/prereqs/k8sDistros/kubernetes"
+        - "/case/prereqs/k8sDistros/openshift"
+      k8sPermissions:
+        rules:
+        - rule:
+            group: ""
+            resource: pods
+            verbs:
+            - '*'
+            version: ""
+        - rule:
+            group: ""
+            resource: services
+            verbs:
+            - '*'
+            version: ""
+        - rule:
+            group: ""
+            resource: endpoints
+            verbs:
+            - '*'
+            version: ""
+        - rule:
+            group: ""
+            resource: persistentvolumeclaims
+            verbs:
+            - '*'
+            version: ""
+        - rule:
+            group: ""
+            resource: events
+            verbs:
+            - '*'
+            version: ""
+        - rule:
+            group: ""
+            resource: configmaps
+            verbs:
+            - '*'
+            version: ""
+        - rule:
+            group: ""
+            resource: secrets
+            verbs:
+            - '*'
+            version: ""
+        - rule:
+            group: apps
+            resource: deployments
+            verbs:
+            - '*'
+            version: ""
+        - rule:
+            group: apps
+            resource: daemonsets
+            verbs:
+            - '*'
+            version: ""
+        - rule:
+            group: apps
+            resource: replicasets
+            verbs:
+            - '*'
+            version: ""
+        - rule:
+            group: apps
+            resource: statefulsets
+            verbs:
+            - '*'
+            version: ""
+        - rule:
+            group: monitoring.coreos.com
+            resource: servicemonitors
+            verbs:
+            - get
+            - create
+            version: ""
+        - rule:
+            group: apps
+            resource: deployments/finalizers
+            verbs:
+            - update
+            version: ""
+        - rule:
+            group: icp4a.ibm.com
+            resource: '*'
+            verbs:
+            - '*'
+            version: ""
+        - rule:
+            group: ""
+            resource: pods/exec
+            verbs:
+            - '*'
+            version: ""
+        - rule:
+            group: autoscaling
+            resource: horizontalpodautoscalers
+            verbs:
+            - '*'
+            version: ""
+        - rule:
+            group: security.openshift.io
+            resource: securitycontextconstraints
+            verbs:
+            - create
+            - delete
+            - get
+            - use
+            - patch
+            version: ""
