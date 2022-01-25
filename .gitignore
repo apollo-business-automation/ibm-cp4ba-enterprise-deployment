@@ -30,3 +30,4 @@ scripts/cpfs/cluster-monitoring-config.yaml
 nohup*
 #ansibles
 scripts/variables.yml
+.vscode
