@@ -1,4 +1,6 @@
 db2_action: install
+db2_base_dir: /tmp
+db2_dir_name: db2
 db2_universal_password: ""
 db2_storage_class_name: ""
 db2_operator_channel: v1.1
