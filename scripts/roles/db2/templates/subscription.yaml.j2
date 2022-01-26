@@ -3,9 +3,9 @@ kind: Subscription
 metadata:
   name: db2u-operator
 spec:
-  channel: "{{DB2_OPERATOR_CHANNEL}}"
+  channel: "{{ db2_operator_channel }}"
   installPlanApproval: Manual
   name: db2u-operator
   source: ibm-operator-catalog
   sourceNamespace: openshift-marketplace
-  startingCSV: "{{DB2_STARTING_CSV}}"
+  startingCSV: "{{ db2_starting_csv }}"

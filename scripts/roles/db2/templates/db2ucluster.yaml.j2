@@ -11,7 +11,7 @@ spec:
     privileged: true
     imagePullSecrets:
       - ibm-entitlement-key
-  version: "{{DB2_VERSION}}"
+  version: "{{ db2_version }}"
   size: 1
   podConfig:
     db2u:
@@ -26,10 +26,10 @@ spec:
   environment:
     dbType: db2oltp
     instance:
-      password: '{{UNIVERSAL_PASSWORD}}'
+      password: '{{ universal_password }}'
     ldap:
-      blueAdminPassword: '{{UNIVERSAL_PASSWORD}}'
-      password: '{{UNIVERSAL_PASSWORD}}'
+      blueAdminPassword: '{{ universal_password }}'
+      password: '{{ universal_password }}'
     database:
       settings:
         dftPageSize: "32768"
@@ -42,4 +42,4 @@ spec:
         resources:
           requests:
             storage: 110Gi
-        storageClassName: "{{STORAGE_CLASS_NAME}}"
+        storageClassName: "{{ storage_class_name }}"

@@ -60,3 +60,7 @@ mail_storage_class_name: "{{ storage_class_name }}"
 mail_ca_key_path: "{{ ca_key_path }}"
 mail_ca_crt_path: "{{ ca_crt_path }}"
 mail_universal_password: "{{ universal_password }}"
+
+db2_action: "{{ global_action }}"
+db2_universal_password: "{{ universal_password }}"
+db2_storage_class_name: "{{ storage_class_name }}"
