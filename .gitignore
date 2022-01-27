@@ -5,3 +5,4 @@ scripts/tooling/remove.sh
 nohup*
 #ansibles
 scripts/variables.yml
+.vscode
