@@ -1,9 +1,0 @@
---base DB changes
-connect to $base_db_name ;
-set schema $base_db_user ;
-
-alter table tenantinfo add column opt_flags bigint with default 0;
-reorg table tenantinfo;
-update tenantinfo set TENANTDBVERSION='21.0.3', bacaversion='21.0.3';
-
-connect reset;

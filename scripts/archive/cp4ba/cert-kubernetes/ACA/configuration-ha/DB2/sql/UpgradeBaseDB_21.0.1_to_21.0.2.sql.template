@@ -1,9 +1,0 @@
---base DB changes
-connect to $base_db_name ;
-set schema $base_db_user ;
-
-update tenantinfo set TENANTDBVERSION='21.0.2', bacaversion='21.0.2';
-
-reorg table tenantinfo;
-
-connect reset;
