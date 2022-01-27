@@ -141,3 +141,19 @@
 
   when:  subscription | json_query('resources[*].status.installedCSV') | length == 0 
 
+- name: Wait for DB2uCluster CRD to be Established
+  k8s_info:
+    api_key: "{{ db2_k8s_api_key | default(omit) }}"
+    host: "{{ db2_k8s_host | default(omit) }}"
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: db2uclusters.db2u.databases.ibm.com
+    namespace: db2
+  register: db2ucluster_crd
+  retries: 10
+  delay: 1
+  until: ('True' in db2ucluster_crd | json_query(condition_query))
+  vars:
+    condition_query: "resources[0].status.conditions[?type == 'Established'].status"
+
+
