@@ -31,3 +31,109 @@
   retries: 10
   delay: 1
   until: ('Active' in project | json_query('resources[*].status.phase') | unique)
+
+- block:
+
+    - name: Prepare yaml for No Root Squash DB2 Service Account for NFS on IBM Cloud
+      template:
+        src: service-account.yaml.j2
+        dest: "{{ db2_output_directory }}/service-account.yaml"
+        
+    - name: Add No Root Squash DB2 Service Account for NFS on IBM Cloud
+      k8s:
+        api_key: "{{ db2_k8s_api_key | default(omit) }}"
+        host: "{{ db2_k8s_host | default(omit )}}"
+        state: present
+        force: False
+        merge_type: merge
+        src: "{{ db2_output_directory }}/privileged-scc-clusterrolebinding.yaml"
+        wait: true
+        wait_sleep: 15
+        wait_timeout: 15
+
+    - name: Give the Service Account privileged security context constraints (SCC)
+      shell: oc adm policy add-scc-to-user privileged system:serviceaccount:kube-system:norootsquash
+
+    - name: Prepare yaml for No Root Squash DB2 Daemon Set
+      template:
+        src: daemon-set.yaml.j2
+        dest: "{{ db2_output_directory }}/daemon-set.yaml"
+        
+    - name: Add No Root Squash DB2 Daemon Set
+      k8s:
+        api_key: "{{ db2_k8s_api_key | default(omit) }}"
+        host: "{{ db2_k8s_host | default(omit )}}"
+        state: present
+        force: False
+        merge_type: merge
+        src: "{{ db2_output_directory }}/daemon-set.yaml"
+        wait: true
+        wait_sleep: 15
+        wait_timeout: 15
+
+  when: storage_class_name == "ibmc-file-gold-gid"
+
+- name: Prepare yaml file for the Operator Group
+  template:
+    src: operatorgroup.yaml.j2
+    dest: "{{ db2_output_directory }}/operatorgroup.yaml"
+
+- name: Add the Operator Group
+  k8s:
+    api_key: "{{ db2_k8s_api_key | default(omit)}}"
+    host: "{{db2_k8s_host | default(omit)}}"
+    state: present
+    force: False
+    merge_type: merge
+    src: "{{ db2_output_directory }}/operatorgroup.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Prepare yaml file for the Operator Subscription
+  template:
+    src: subscription.yaml.j2
+    dest: "{{ db2_output_directory }}/subscription.yaml"
+
+- name: Add the Operator Subscription
+  k8s:
+    api_key: "{{ db2_k8s_api_key | default(omit)}}"
+    host: "{{db2_k8s_host | default(omit)}}"
+    state: present
+    force: False
+    merge_type: merge
+    src: "{{ db2_output_directory }}/subscription.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Wait for Operator Subscription
+  k8s_info:
+    api_key: "{{ db2_k8s_api_key | default(omit) }}"
+    host: "{{ db2_k8s_host | default(omit) }}"
+    api_version: operators.coreos.com/v1alpha1
+    kind: Subscription
+    name: db2u-operator
+    namespace: db2
+  register: subscription
+  retries: 5
+  delay: 1
+  until: ( 'InstallPlan' in subscription | json_query('resources[0].status.installplan.kind') | unique)
+
+- name: Get Install Plan Resource name
+  set_fact: 
+    install_plan_name: "{{ subscription | json_query('resources[0].status.installplan.name') }}"
+
+- name: Approve Install Plan
+  k8s:
+    api_key: "{{ db2_k8s_api_key | default(omit)}}"
+    host: "{{db2_k8s_host | default(omit)}}"
+    state: patched
+    api_version: operators.coreos.com/v1alpha1
+    kind: InstallPlan
+    name: "{{ install_plan_name }}"
+    namespace: db2
+    definition:
+      spec:
+        approved: true
+

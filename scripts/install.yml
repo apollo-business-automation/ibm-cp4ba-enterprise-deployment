@@ -8,3 +8,6 @@
 - name: Install Mail
   include_role:
     name: mail
+- name: Install DB2
+  include_role:
+    name: db2
