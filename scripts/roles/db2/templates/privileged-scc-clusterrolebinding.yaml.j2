@@ -4,9 +4,9 @@ metadata:
   name: 'db2privileged'
 subjects:
   - kind: ServiceAccount
-    name: default
+    name: norootsquash
     namespace: db2
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: 'system:serviceaccount:db2:norootsquash'
+  name: 'system:openshift:scc:privileged'
