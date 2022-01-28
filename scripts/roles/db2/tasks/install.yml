@@ -30,7 +30,9 @@
   register: project
   retries: 10
   delay: 1
-  until: ('Active' in project | json_query('resources[*].status.phase') | unique)
+  until: ('Active' in project | json_query(phase_query) | unique)
+  vars:
+    phase_query: 'resources[*].status.phase' 
 
 - block:
 
@@ -132,7 +134,9 @@
   register: subscription
   retries: 10
   delay: 1
-  until: ( 'InstallPlan' in subscription | json_query('resources[*].status.installplan.kind') | unique) 
+  until: ( 'InstallPlan' in subscription | json_query(install_plan_kind_query) | unique) 
+  vars:
+    install_plan_kind_query: 'resources[*].status.installplan.kind'
 
 - block: 
 
@@ -153,7 +157,9 @@
           spec:
             approved: true
 
-  when:  subscription | json_query('resources[*].status.installedCSV') | length == 0 
+  when:  subscription | json_query(installed_csv_query) | length == 0 
+  vars: 
+    installed_csv_query: 'resources[*].status.installedCSV'
 
 - name: Wait for DB2 Operator Deployment to be Available
   k8s_info:
@@ -169,6 +175,7 @@
   until: ('True' in db2_operator_deployment | json_query(condition_query) | unique )
   vars:
     condition_query: "resources[0].status.conditions[?type == 'Available'].status"
+
 - name: Wait for DB2uCluster CRD to be Established
   k8s_info:
     api_key: "{{ db2_k8s_api_key | default(omit) }}"
