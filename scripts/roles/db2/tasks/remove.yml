@@ -44,4 +44,4 @@
     name: db2privileged
     wait: yes
     wait_sleep: 15
-    wait_timeout: 240
+    wait_timeout: 600
