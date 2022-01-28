@@ -85,7 +85,7 @@
         wait_sleep: 15
         wait_timeout: 60
 
-  when: storage_class_name == "ibmc-file-gold-gid"
+  when: db2_deployment_platform == "ROKS"
 
 - name: Prepare yaml file for the Operator Group
   template:
