@@ -76,6 +76,7 @@ https://cp-console.${OCP_APPS_ENDPOINT}/idprovider/v1/auth/identitytoken \
 
 echo
 echo ">>>>$(print_timestamp) Exchange IAM access token for Zen token"
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-data/4.0?topic=resources-generating-authorization-token
 TOKEN=$(curl -sk "https://cpd-${CP4BA_PROJECT_NAME}.${OCP_APPS_ENDPOINT}/v1/preauth/validateAuth" -H "username:cpadmin" -H "iam-token: $ACCESS_TOKEN" | jq -r .accessToken)
 
 echo
