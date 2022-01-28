@@ -156,4 +156,23 @@
   vars:
     condition_query: "resources[0].status.conditions[?type == 'Established'].status"
 
+- name: Set Docker Registry Json
+  set_fact: 
+    docker_registry_json: '{{ {"auths": {"cp.icr.io": {"username": "cp", "password": icr_password}}} | to_json | b64encode }}'
 
+- name: Prepare yaml file for Docker Registry Secret
+  template:
+    src: docker-secret.yaml.j2
+    dest: "{{ db2_output_directory }}/docker-secret.yaml"
+
+- name: Add the Docker Registry Secret
+  k8s:
+    api_key: "{{ db2_k8s_api_key | default(omit)}}"
+    host: "{{db2_k8s_host | default(omit)}}"
+    state: present
+    force: False
+    merge_type: merge
+    src: "{{ db2_output_directory }}/docker-secret.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
