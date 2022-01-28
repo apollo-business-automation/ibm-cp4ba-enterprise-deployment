@@ -242,3 +242,24 @@
   retries: 60
   delay: 15
   until: ( 'Ready' in db2ucluster | json_query('resources[*].status.state') | unique) 
+
+- name: Delete BLUDB to tidy up the DB2 memory space
+  kubernetes.core.k8s_exec: 
+    api_key: "{{ db2_k8s_api_key | default(omit) }}"
+    host: "{{ db2_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: |
+      su - db2inst1
+      sleep 30 #for db2start to finish
+      db2 deactivate db BLUDB
+      db2 force application ALL
+      sleep 60 #for force aplication to finish
+      db2 drop db BLUDB
+  register: command_status
+  ignore_errors: True
+
+- name: Debug Print Command Status
+  debug:
+    msg: "Command Status: {{ command_status }}"
+  when: command_status.rc != 0
