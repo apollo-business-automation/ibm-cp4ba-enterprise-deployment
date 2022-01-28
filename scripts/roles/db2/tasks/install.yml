@@ -144,7 +144,7 @@
       k8s:
         api_key: "{{ db2_k8s_api_key | default(omit)}}"
         host: "{{db2_k8s_host | default(omit)}}"
-        state: patched
+        state: present
         api_version: operators.coreos.com/v1alpha1
         kind: InstallPlan
         name: "{{ install_plan_name }}"
@@ -166,13 +166,13 @@
   register: db2ucluster_crd
   retries: 10
   delay: 1
-  until: ('True' in db2ucluster_crd | json_query(condition_query))
+  until: ('True' in db2ucluster_crd | json_query(condition_query) | unique )
   vars:
     condition_query: "resources[0].status.conditions[?type == 'Established'].status"
 
 - name: Set Docker Registry Json
   set_fact: 
-    docker_registry_json: '{{ {"auths": {"cp.icr.io": {"username": "cp", "password": icr_password}}} | to_json | b64encode }}'
+    docker_registry_json: '{{ {"auths": {"cp.icr.io": {"username": "cp", "password": db2_icr_password}}} | to_json | b64encode }}'
 
 - name: Prepare yaml file for Docker Registry Secret
   template:
@@ -190,7 +190,6 @@
     wait: true
     wait_sleep: 15
     wait_timeout: 15
-
 
 # Based on LI at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument DB2 Standard Edition is a supporting program with limitation of 16 CPU and 128 Memory
 - name: Prepare yaml file for DB2uCluster Instance
