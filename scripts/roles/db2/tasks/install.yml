@@ -155,6 +155,20 @@
 
   when:  subscription | json_query('resources[*].status.installedCSV') | length == 0 
 
+- name: Wait for DB2 Operator Deployment to be Available
+  k8s_info:
+    api_key: "{{ db2_k8s_api_key | default(omit) }}"
+    host: "{{ db2_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Deployment
+    name: db2u-operator-manager
+    namespace: db2
+  register: db2_operator_deployment
+  retries: 10
+  delay: 1
+  until: ('True' in db2_operator_deployment | json_query(condition_query) | unique )
+  vars:
+    condition_query: "resources[0].status.conditions[?type == 'Available'].status"
 - name: Wait for DB2uCluster CRD to be Established
   k8s_info:
     api_key: "{{ db2_k8s_api_key | default(omit) }}"
