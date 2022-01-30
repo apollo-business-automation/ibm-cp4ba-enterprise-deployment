@@ -72,3 +72,83 @@
     release_namespace: openldap
     values_files:
       - "{{ openldap_output_directory }}/values.yaml"
+
+- name: Get Ingress 
+  k8s_info:
+    api_key: "{{ openldap_k8s_api_key | default(omit) }}"
+    host: "{{ openldap_k8s_host | default(omit) }}"
+    api_version: config.openshift.io/v1
+    kind: Ingress
+    name: cluster
+  register: ingress
+  retries: 10
+  delay: 1
+
+- set_fact:
+    apps_endpoint_domain: "{{ingress.resources[0].spec.domain}}"
+
+- name: Generate an OpenSSL private key
+  openssl_privatekey:
+    path: "{{ openldap_output_directory }}/openldapserver.key"
+
+- name: Generate an OpenSSL Certificate Signing Request with Subject information
+  openssl_csr:
+    path: "{{ openldap_output_directory }}/openldapserver.csr"
+    privatekey_path: "{{ openldap_output_directory }}/openldapserver.key"
+    subject: "CN=openldapserver"
+    subject_alt_name: DNS:openldapserver
+
+- name: Generate a Self Signed OpenSSL certificate
+  openssl_certificate:
+    path: "{{ openldap_output_directory }}/openldapserver.crt"
+    privatekey_path: "{{ openldap_output_directory }}/openldapserver.key"
+    csr_path: "{{ openldap_output_directory }}/openldapserver.csr"
+    provider: ownca
+    ownca_path: "{{ openldap_ca_crt_path }}"
+    ownca_privatekey_path: "{{ openldap_ca_key_path }}"
+    ownca_not_after: "+36500d"
+
+- name: Load TLS key data
+  slurp:
+    src: '{{ openldap_output_directory }}/openldapserver.key'
+  register: slurped_key_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _tls_key: "{{ slurped_key_data.content }}"
+
+- name: Load TLS key data
+  slurp:
+    src: '{{ openldap_output_directory }}/openldapserver.crt'
+  register: slurped_crt_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _tls_crt: "{{ slurped_crt_data.content }}"
+
+- name: Load TLS ca data
+  slurp:
+    src: '{{ openldap_ca_crt_path }}'
+  register: slurped_ca_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _ca_crt: "{{ slurped_ca_data.content }}"
+
+- name: Prepare yaml file for phpLDAPadmin Route
+  template:
+    src: php-ldap-route.yaml.j2
+    dest: "{{ openldap_output_directory }}/php-ldap-route.yaml"
+
+- name: Create phpLDAPadmin Route
+  k8s:
+    api_key: "{{ openldap_k8s_api_key | default(omit)}}"
+    host: "{{ openldap_k8s_host | default(omit)}}"
+    state: present
+    force: False
+    merge_type: merge
+    namespace: openldap
+    src: "{{ openldap_output_directory }}/php-ldap-route.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15    

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Route
+metadata:
+  name: openldap-phpldapadmin
+spec:
+  host: "phpldapadmin.{{ apps_endpoint_domain }}"
+  to:
+    kind: Service
+    name: openldap-phpldapadmin
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+    key: "{{_tls_key}}"
+    certificate: "{{_tls_crt}}"
+    caCertificate: "{{_ca_crt}}"
