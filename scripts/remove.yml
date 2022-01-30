@@ -8,3 +8,6 @@
 - name: Remove Catalog Source
   include_role:
     name: catalog-source
+- name: Remove DB2
+  include_role:
+    name: db2
