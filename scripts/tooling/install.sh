@@ -97,16 +97,16 @@ exit_test $? "Install pip package jmespath failed"
 # exit_test $? "oc setup Failed"
 # sleep 5
 
-# echo
-# echo ">>>>$(print_timestamp) Install helm"
-# curl -O https://get.helm.sh/helm-v3.6.0-linux-amd64.tar.gz
-# exit_test $? "Download helm Failed"
-# tar -zxvf helm-v3.6.0-linux-amd64.tar.gz linux-amd64/helm
-# mv linux-amd64/helm helm
-# chmod u+x helm
-# ./helm version
-# exit_test $? "helm setup Failed"
-# sleep 5
+echo
+echo ">>>>$(print_timestamp) Install helm"
+curl -O https://get.helm.sh/helm-v3.6.0-linux-amd64.tar.gz
+exit_test $? "Download helm Failed"
+tar -zxvf helm-v3.6.0-linux-amd64.tar.gz linux-amd64/helm
+mv linux-amd64/helm helm
+chmod u+x helm
+./helm version
+exit_test $? "helm setup Failed"
+sleep 5
 
 # echo
 # echo ">>>>$(print_timestamp) Install maven"
