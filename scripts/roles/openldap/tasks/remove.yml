@@ -1,0 +1,12 @@
+- name: Remove Project openldap
+  k8s:
+    state: absent
+    api_key: "{{ openldap_k8s_api_key | default(omit) }}"
+    host: "{{ openldap_k8s_host | default(omit) }}"
+    api_version: project.openshift.io/v1
+    kind: Project
+    name: openldap
+    namespace: openldap
+    wait: yes
+    wait_sleep: 15
+    wait_timeout: 120

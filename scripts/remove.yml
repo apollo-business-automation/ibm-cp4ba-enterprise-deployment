@@ -11,3 +11,6 @@
 - name: Remove DB2
   include_role:
     name: db2
+- name: Remove openldap
+  include_role:
+    name: openldap
