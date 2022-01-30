@@ -33,3 +33,42 @@
   until: ('Active' in project | json_query(phase_query) | unique)
   vars:
     phase_query: 'resources[*].status.phase' 
+
+- name: Prepare yaml file for anyuid ClusterRoleBinding
+  template:
+    src: anyuid-scc-clusterrolebinding.yaml.j2
+    dest: "{{ openldap_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
+
+- name: Add anyuid ClusterRoleBinding
+  k8s:
+    api_key: "{{ openldap_k8s_api_key | default(omit)}}"
+    host: "{{ openldap_k8s_host | default(omit)}}"
+    state: present
+    force: False
+    merge_type: merge
+    src: "{{ openldap_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Add helm-openldap chart repo
+  kubernetes.core.helm_repository:
+    name: helm-openldap
+    repo_url: "https://jp-gouin.github.io/helm-openldap/"
+
+# Custom chema LDIF based on https://stackoverflow.com/questions/45511696/creating-a-new-objectclass-and-attribute-in-openldap
+- name: Prepare yaml file for values of helm chart
+  template:
+    src: values.yaml.j2
+    dest: "{{ openldap_output_directory }}/values.yaml"
+
+- name: Deploy openldap chart using values files on target
+  kubernetes.core.helm:
+    api_key: "{{ openldap_k8s_api_key | default(omit) }}"
+    host: "{{ openldap_k8s_host | default(omit) }}"
+    name: openldap
+    chart_ref: helm-openldap/openldap-stack-ha
+    chart_version: "{{ openldap_chart_version }}"
+    release_namespace: openldap
+    values_files:
+      - "{{ openldap_output_directory }}/values.yaml"

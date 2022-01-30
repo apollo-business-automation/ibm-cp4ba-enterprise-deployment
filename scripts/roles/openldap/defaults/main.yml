@@ -4,3 +4,4 @@ openldap_dir_name: openldap
 openldap_universal_password: ""
 openldap_storage_class_name: ""
 openldap_chart_version: 2.1.6
+openldap_hostname: openldap-openldap-stack-ha.openldap.svc.cluster.local
