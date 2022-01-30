@@ -10,6 +10,9 @@ spec:
   tls:
     termination: edge
     insecureEdgeTerminationPolicy: Redirect
-    key: "{{_tls_key}}"
-    certificate: "{{_tls_crt}}"
-    caCertificate: "{{_ca_crt}}"
+    key: |-
+      {{ _tls_key | b64decode | indent(6) }}
+    certificate: |-
+      {{ _tls_crt | b64decode | indent(6) }}
+    caCertificate: |-
+      {{ _ca_crt | b64decode | indent(6) }}

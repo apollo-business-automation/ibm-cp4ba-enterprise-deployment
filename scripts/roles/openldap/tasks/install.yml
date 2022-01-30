@@ -73,44 +73,14 @@
     values_files:
       - "{{ openldap_output_directory }}/values.yaml"
 
-- name: Get Ingress 
-  k8s_info:
-    api_key: "{{ openldap_k8s_api_key | default(omit) }}"
-    host: "{{ openldap_k8s_host | default(omit) }}"
-    api_version: config.openshift.io/v1
-    kind: Ingress
-    name: cluster
-  register: ingress
-  retries: 10
-  delay: 1
-
-- set_fact:
-    apps_endpoint_domain: "{{ingress.resources[0].spec.domain}}"
-
-- name: Generate an OpenSSL private key
-  openssl_privatekey:
-    path: "{{ openldap_output_directory }}/openldapserver.key"
-
-- name: Generate an OpenSSL Certificate Signing Request with Subject information
-  openssl_csr:
-    path: "{{ openldap_output_directory }}/openldapserver.csr"
-    privatekey_path: "{{ openldap_output_directory }}/openldapserver.key"
-    subject: "CN=openldapserver"
-    subject_alt_name: DNS:openldapserver
-
-- name: Generate a Self Signed OpenSSL certificate
-  openssl_certificate:
-    path: "{{ openldap_output_directory }}/openldapserver.crt"
-    privatekey_path: "{{ openldap_output_directory }}/openldapserver.key"
-    csr_path: "{{ openldap_output_directory }}/openldapserver.csr"
-    provider: ownca
-    ownca_path: "{{ openldap_ca_crt_path }}"
-    ownca_privatekey_path: "{{ openldap_ca_key_path }}"
-    ownca_not_after: "+36500d"
+- name: Ensure we have CA certificates and wildcards
+  include_role:
+    name: global-ca
+  when: global_ca_output_directory is not defined
 
 - name: Load TLS key data
   slurp:
-    src: '{{ openldap_output_directory }}/openldapserver.key'
+    src: '{{ global_ca_output_directory }}/wildcard.key'
   register: slurped_key_data
 
 - name: Decode data and store as fact
@@ -119,7 +89,7 @@
 
 - name: Load TLS key data
   slurp:
-    src: '{{ openldap_output_directory }}/openldapserver.crt'
+    src: '{{ global_ca_output_directory }}/wildcard.crt'
   register: slurped_crt_data
 
 - name: Decode data and store as fact
@@ -134,6 +104,11 @@
 - name: Decode data and store as fact
   set_fact:
     _ca_crt: "{{ slurped_ca_data.content }}"
+
+- name: Get Apps Endpoint
+  include_role:
+    name: apps-endpoint
+  when: apps_endpoint_domain is not defined
 
 - name: Prepare yaml file for phpLDAPadmin Route
   template:
@@ -152,3 +127,33 @@
     wait: true
     wait_sleep: 15
     wait_timeout: 15    
+
+- name: Wait for the phpldapadmin Deployment to be Available
+  k8s_info:
+    api_key: "{{ openldap_k8s_api_key | default(omit) }}"
+    host: "{{ openldap_k8s_host | default(omit) }}"
+    api_version: apps/v1
+    kind: Deployment
+    name: openldap-phpldapadmin
+    namespace: openldap
+  register: openldap_phpldapadmin
+  retries: 60
+  delay: 15
+  until: ('True' in openldap_phpldapadmin | json_query(condition_query) | unique )
+  vars:
+    condition_query: "resources[0].status.conditions[?type == 'Available'].status"
+
+- name: Wait for the phpldapadmin pod to be Ready
+  k8s_info:
+    api_key: "{{ openldap_k8s_api_key | default(omit) }}"
+    host: "{{ openldap_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    name: openldap-openldap-stack-ha-0
+    namespace: openldap
+  register: openldap_openldap_stack_ha_0
+  retries: 60
+  delay: 15
+  until: ('True' in openldap_openldap_stack_ha_0 | json_query(condition_query) | unique )
+  vars:
+    condition_query: "resources[0].status.conditions[?type == 'Ready'].status"

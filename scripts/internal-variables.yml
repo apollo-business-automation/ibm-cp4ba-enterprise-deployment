@@ -46,6 +46,9 @@ default_delay_4: 300
 ca_key_path: /tmp/global-ca/global-ca.key
 ca_crt_path: /tmp/global-ca/global-ca.crt
 
+apps_endpoint_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+apps_endpoint_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+
 catalog_source_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 catalog_source_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
 catalog_source_action: "{{ global_action }}"
