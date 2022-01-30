@@ -10,7 +10,7 @@
     name: mail
 - name: Install DB2
   include_role:
-    name: db
+    name: db2
 - name: Install openldap
   include_role:
     name: openldap
