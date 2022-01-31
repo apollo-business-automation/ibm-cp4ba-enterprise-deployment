@@ -123,74 +123,23 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Wait for Operator Subscription
-  k8s_info:
-    api_key: "{{ db2_k8s_api_key | default(omit) }}"
-    host: "{{ db2_k8s_host | default(omit) }}"
-    api_version: operators.coreos.com/v1alpha1
-    kind: Subscription
-    name: db2u-operator
-    namespace: db2
-  register: subscription
-  retries: 10
-  delay: 1
-  until: ( 'InstallPlan' in subscription | json_query(install_plan_kind_query) | unique) 
+- name: Manage Manual Operator common-service
+  include_role:
+    name: manage-manual-operator
   vars:
-    install_plan_kind_query: 'resources[*].status.installplan.kind'
-
-- block: 
-
-    - name: Get Install Plan Resource name
-      set_fact: 
-        install_plan_name: "{{ subscription | json_query('resources[0].status.installplan.name') }}"
-
-    - name: Approve Install Plan
-      k8s:
-        api_key: "{{ db2_k8s_api_key | default(omit)}}"
-        host: "{{db2_k8s_host | default(omit)}}"
-        state: present
-        api_version: operators.coreos.com/v1alpha1
-        kind: InstallPlan
-        name: "{{ install_plan_name }}"
-        namespace: db2
-        definition:
-          spec:
-            approved: true
-
-  when:  subscription | json_query(installed_csv_query) | length == 0 
-  vars: 
-    installed_csv_query: 'resources[*].status.installedCSV'
-
+    manage_manual_operator_k8s_api_key: "{{ db2_k8s_api_key | default(omit)  }}"
+    manage_manual_operator_k8s_host: "{{ db2_k8s_host | default(omit) }}"
+    manage_manual_operator_namespace: db2
+    manage_manual_operator_subscription: db2u-operator
+    manage_manual_operator_deployment: db2u-operator-manager
 
 - name: Wait for DB2uCluster CRD to be Established
-  k8s_info:
-    api_key: "{{ db2_k8s_api_key | default(omit) }}"
-    host: "{{ db2_k8s_host | default(omit) }}"
-    api_version: apiextensions.k8s.io/v1
-    kind: CustomResourceDefinition
-    name: db2uclusters.db2u.databases.ibm.com
-    namespace: db2
-  register: db2ucluster_crd
-  retries: 10
-  delay: 1
-  until: ('True' in db2ucluster_crd | json_query(condition_query) | unique )
+  include_role:
+    name: wait-crd
   vars:
-    condition_query: "resources[0].status.conditions[?type == 'Established'].status"
-
-- name: Wait for DB2 Operator Deployment to be Available
-  k8s_info:
-    api_key: "{{ db2_k8s_api_key | default(omit) }}"
-    host: "{{ db2_k8s_host | default(omit) }}"
-    api_version: v1
-    kind: Deployment
-    name: db2u-operator-manager
-    namespace: db2
-  register: db2_operator_deployment
-  retries: 10
-  delay: 1
-  until: ('True' in db2_operator_deployment | json_query(condition_query) | unique )
-  vars:
-    condition_query: "resources[0].status.conditions[?type == 'Available'].status"
+    wait_crd_k8s_api_key: "{{ db2_k8s_api_key | default(omit)  }}"
+    wait_crd_k8s_host: "{{ db2_k8s_host | default(omit) }}"
+    wait_crd_name: db2uclusters.db2u.databases.ibm.com
 
 - name: Set Docker Registry Json
   set_fact: 
