@@ -2,18 +2,20 @@
   file:
     path: "{{ mail_output_directory }}"
     state: directory
+    mode: u+rwx
 
 - name: Prepare yaml file for Project
   template:
     src: project.yaml.j2
     dest: "{{ mail_output_directory }}/project.yaml"
+    mode: u+rwx
 
 - name: Add Project
   k8s:
-    api_key: "{{ mail_k8s_api_key | default(omit)}}"
-    host: "{{mail_k8s_host | default(omit)}}"
+    api_key: "{{ mail_k8s_api_key | default(omit) }}"
+    host: "{{ mail_k8s_host | default(omit) }}"
     state: present
-    force: False
+    force: false
     merge_type: merge
     src: "{{ mail_output_directory }}/project.yaml"
     wait: true
@@ -36,13 +38,14 @@
   template:
     src: privileged-scc-clusterrolebinding.yaml.j2
     dest: "{{ mail_output_directory }}/privileged-scc-clusterrolebinding.yaml"
+    mode: u+rwx
 
 - name: Add privileged ClusterRoleBinding
   k8s:
-    api_key: "{{ mail_k8s_api_key | default(omit)}}"
-    host: "{{mail_k8s_host | default(omit)}}"
+    api_key: "{{ mail_k8s_api_key | default(omit) }}"
+    host: "{{ mail_k8s_host | default(omit) }}"
     state: present
-    force: False
+    force: false
     merge_type: merge
     src: "{{ mail_output_directory }}/privileged-scc-clusterrolebinding.yaml"
     wait: true
@@ -53,13 +56,14 @@
   template:
     src: anyuid-scc-clusterrolebinding.yaml.j2
     dest: "{{ mail_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
+    mode: u+rwx
 
 - name: Add anyuid ClusterRoleBinding
   k8s:
-    api_key: "{{ mail_k8s_api_key | default(omit)}}"
-    host: "{{mail_k8s_host | default(omit)}}"
+    api_key: "{{ mail_k8s_api_key | default(omit) }}"
+    host: "{{ mail_k8s_host | default(omit) }}"
     state: present
-    force: False
+    force: false
     merge_type: merge
     src: "{{ mail_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
     wait: true
@@ -109,13 +113,14 @@
   template:
     src: secret.yaml.j2
     dest: "{{ mail_output_directory }}/secret.yaml"
+    mode: u+rwx
 
 - name: Add Secret
   k8s:
-    api_key: "{{ mail_k8s_api_key | default(omit)}}"
-    host: "{{mail_k8s_host | default(omit)}}"
+    api_key: "{{ mail_k8s_api_key | default(omit) }}"
+    host: "{{ mail_k8s_host | default(omit) }}"
     state: present
-    force: False
+    force: false
     merge_type: merge
     namespace: mail
     src: "{{ mail_output_directory }}/secret.yaml"
@@ -127,49 +132,52 @@
   template:
     src: pvc.yaml.j2
     dest: "{{ mail_output_directory }}/pvc.yaml"
+    mode: u+rwx
 
 - name: Add PVC
   k8s:
-    api_key: "{{ mail_k8s_api_key | default(omit)}}"
-    host: "{{mail_k8s_host | default(omit)}}"
+    api_key: "{{ mail_k8s_api_key | default(omit) }}"
+    host: "{{ mail_k8s_host | default(omit) }}"
     state: present
-    force: False
+    force: false
     merge_type: merge
     namespace: mail
     src: "{{ mail_output_directory }}/pvc.yaml"
     wait: true
     wait_sleep: 15
-    wait_timeout: 15    
+    wait_timeout: 15
 
 - name: Prepare yaml file for Config Maps
   template:
     src: configmaps.yaml.j2
     dest: "{{ mail_output_directory }}/configmaps.yaml"
+    mode: u+rwx
 
 - name: Add Config Maps
   k8s:
-    api_key: "{{ mail_k8s_api_key | default(omit)}}"
-    host: "{{mail_k8s_host | default(omit)}}"
+    api_key: "{{ mail_k8s_api_key | default(omit) }}"
+    host: "{{ mail_k8s_host | default(omit) }}"
     state: present
-    force: False
+    force: false
     merge_type: merge
     namespace: mail
     src: "{{ mail_output_directory }}/configmaps.yaml"
     wait: true
     wait_sleep: 15
-    wait_timeout: 15    
+    wait_timeout: 15
 
 - name: Prepare yaml file for Deployment
   template:
     src: deployment.yaml.j2
     dest: "{{ mail_output_directory }}/deployment.yaml"
+    mode: u+rwx
 
 - name: Add Deployment
   k8s:
-    api_key: "{{ mail_k8s_api_key | default(omit)}}"
-    host: "{{mail_k8s_host | default(omit)}}"
+    api_key: "{{ mail_k8s_api_key | default(omit) }}"
+    host: "{{ mail_k8s_host | default(omit) }}"
     state: present
-    force: False
+    force: false
     merge_type: merge
     namespace: mail
     src: "{{ mail_output_directory }}/deployment.yaml"
@@ -181,13 +189,14 @@
   template:
     src: service.yaml.j2
     dest: "{{ mail_output_directory }}/service.yaml"
+    mode: u+rwx
 
 - name: Add Service
   k8s:
-    api_key: "{{ mail_k8s_api_key | default(omit)}}"
-    host: "{{mail_k8s_host | default(omit)}}"
+    api_key: "{{ mail_k8s_api_key | default(omit) }}"
+    host: "{{ mail_k8s_host | default(omit) }}"
     state: present
-    force: False
+    force: false
     merge_type: merge
     namespace: mail
     src: "{{ mail_output_directory }}/service.yaml"

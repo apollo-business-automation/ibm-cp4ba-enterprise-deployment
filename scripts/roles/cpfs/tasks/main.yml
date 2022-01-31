@@ -13,4 +13,4 @@
 
 - name: Remove CPFS
   include_tasks: remove.yml
-  when: "cpfs_action == 'remove'"  
+  when: "cpfs_action == 'remove'"

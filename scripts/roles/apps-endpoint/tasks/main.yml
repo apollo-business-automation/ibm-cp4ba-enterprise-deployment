@@ -1,4 +1,4 @@
-- name: Get Ingress 
+- name: Get Ingress
   k8s_info:
     api_key: "{{ apps_endpoint_k8s_api_key | default(omit) }}"
     host: "{{ apps_endpoint_k8s_host | default(omit) }}"
@@ -9,5 +9,6 @@
   retries: 10
   delay: 1
 
-- set_fact:
-    apps_endpoint_domain: "{{ingress.resources[0].spec.domain}}"
+- name: Set apps endpoint
+  set_fact:
+    apps_endpoint_domain: "{{ ingress.resources[0].spec.domain }}"

@@ -2,18 +2,20 @@
   file:
     path: "{{ catalog_source_output_directory }}"
     state: directory
+    mode: u+rwx
 
 - name: Prepare yaml file for CatalogSource
   template:
     src: catalogsource.yaml.j2
     dest: "{{ catalog_source_output_directory }}/catalogsource.yaml"
+    mode: u+rwx
 
 - name: Add CatalogSource
   k8s:
-    api_key: "{{ catalog_source_k8s_api_key | default(omit)}}"
-    host: "{{catalog_source_k8s_host | default(omit)}}"
+    api_key: "{{ catalog_source_k8s_api_key | default(omit) }}"
+    host: "{{ catalog_source_k8s_host | default(omit) }}"
     state: present
-    force: False
+    force: false
     merge_type: merge
     src: "{{ catalog_source_output_directory }}/catalogsource.yaml"
     wait: true

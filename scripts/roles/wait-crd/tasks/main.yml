@@ -1,4 +1,4 @@
-- name: Wait for {{ wait_crd_name }} CRD to be Established
+- name: Wait for '{{ wait_crd_name }}' CRD to be Established
   k8s_info:
     api_key: "{{ wait_crd_k8s_api_key | default(omit) }}"
     host: "{{ wait_crd_k8s_host | default(omit) }}"

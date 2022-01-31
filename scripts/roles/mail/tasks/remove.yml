@@ -7,6 +7,6 @@
     kind: Project
     name: mail
     namespace: mail
-    wait: yes
+    wait: true
     wait_sleep: 15
     wait_timeout: 120

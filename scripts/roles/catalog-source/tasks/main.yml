@@ -13,4 +13,4 @@
 
 - name: Remove Catalog Source
   include_tasks: remove.yml
-  when: "catalog_source_action == 'remove'"  
+  when: "catalog_source_action == 'remove'"

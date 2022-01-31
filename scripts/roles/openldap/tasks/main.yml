@@ -13,4 +13,4 @@
 
 - name: Remove openldap
   include_tasks: remove.yml
-  when: "openldap_action == 'remove'"  
+  when: "openldap_action == 'remove'"

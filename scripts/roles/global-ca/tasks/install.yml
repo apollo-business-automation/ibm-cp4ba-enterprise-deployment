@@ -2,6 +2,7 @@
   file:
     path: "{{ global_ca_output_directory }}"
     state: directory
+    mode: u+rwx
 
 - name: Generate & save Global CA if not provided
   block:
@@ -14,7 +15,7 @@
         path: "{{ global_ca_output_directory }}/global-ca.csr"
         privatekey_path: "{{ global_ca_output_directory }}/global-ca.key"
         subject: "CN='Global CA'"
-        basic_constraints: 
+        basic_constraints:
           - CA:TRUE
         basic_constraints_critical: true
 
@@ -48,19 +49,20 @@
       template:
         src: secret.yaml.j2
         dest: "{{ global_ca_output_directory }}/secret.yaml"
+        mode: u+rwx
 
     - name: Add Secret
       k8s:
-        api_key: "{{ mail_k8s_api_key | default(omit)}}"
-        host: "{{mail_k8s_host | default(omit)}}"
+        api_key: "{{ mail_k8s_api_key | default(omit) }}"
+        host: "{{ mail_k8s_host | default(omit) }}"
         state: present
-        force: True
+        force: true
         merge_type: merge
         namespace: automagic
         src: "{{ global_ca_output_directory }}/secret.yaml"
         wait: true
         wait_sleep: 15
-        wait_timeout: 15    
+        wait_timeout: 15
 
   when: "global_ca_provided == false"
 

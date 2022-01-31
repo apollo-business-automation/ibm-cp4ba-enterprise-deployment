@@ -13,4 +13,4 @@
 
 - name: Remove Mail
   include_tasks: remove.yml
-  when: "mail_action == 'remove'"  
+  when: "mail_action == 'remove'"
