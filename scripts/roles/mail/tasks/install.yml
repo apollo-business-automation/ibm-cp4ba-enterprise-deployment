@@ -96,7 +96,7 @@
   set_fact:
     _tls_key: "{{ slurped_key_data.content }}"
 
-- name: Load TLS key data
+- name: Load TLS crt data
   slurp:
     src: '{{ mail_output_directory }}/mailserver.crt'
   register: slurped_crt_data
@@ -121,7 +121,7 @@
     src: "{{ mail_output_directory }}/secret.yaml"
     wait: true
     wait_sleep: 15
-    wait_timeout: 15    
+    wait_timeout: 15
 
 - name: Prepare yaml file for PVC
   template:
