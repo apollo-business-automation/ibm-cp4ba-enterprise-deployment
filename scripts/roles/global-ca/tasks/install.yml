@@ -26,7 +26,41 @@
         provider: selfsigned
         selfsigned_not_after: "+36500d"
 
-# TODO add to configmap in OCP        
+    - name: Load TLS key data
+      slurp:
+        src: '{{ global_ca_output_directory }}/global-ca.key'
+      register: slurped_key_data
+
+    - name: Decode data and store as fact
+      set_fact:
+        _global_ca_key: "{{ slurped_key_data.content }}"
+
+    - name: Load TLS crt data
+      slurp:
+        src: '{{ global_ca_output_directory }}/global-ca.crt'
+      register: slurped_crt_data
+
+    - name: Decode data and store as fact
+      set_fact:
+        _global_ca_crt: "{{ slurped_crt_data.content }}"
+
+    - name: Prepare yaml file for Secret
+      template:
+        src: secret.yaml.j2
+        dest: "{{ global_ca_output_directory }}/secret.yaml"
+
+    - name: Add Secret
+      k8s:
+        api_key: "{{ mail_k8s_api_key | default(omit)}}"
+        host: "{{mail_k8s_host | default(omit)}}"
+        state: present
+        force: True
+        merge_type: merge
+        namespace: automagic
+        src: "{{ global_ca_output_directory }}/secret.yaml"
+        wait: true
+        wait_sleep: 15
+        wait_timeout: 15    
 
   when: "global_ca_provided == false"
 
