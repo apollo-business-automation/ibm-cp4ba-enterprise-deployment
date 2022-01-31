@@ -1,0 +1,3 @@
+wait_crd_k8s_api_key: ""
+wait_crd_k8s_host: ""
+wait_crd_name: ""

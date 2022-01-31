@@ -1,0 +1,5 @@
+manage_manual_operator_k8s_api_key: ""
+manage_manual_operator_k8s_host: ""
+manage_manual_operator_namespace: ""
+manage_manual_operator_subscription: ""
+manage_manual_operator_deployment: ""
