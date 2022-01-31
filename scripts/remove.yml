@@ -1,16 +1,18 @@
----
+- name: Remove CPFS
+  include_role:
+    name: cpfs
 - name: Remove Mail
   include_role:
     name: mail
+- name: Remove openldap
+  include_role:
+    name: openldap
+- name: Remove DB2
+  include_role:
+    name: db2
 - name: Remove Global CA
   include_role:
     name: global-ca
 - name: Remove Catalog Source
   include_role:
     name: catalog-source
-- name: Remove DB2
-  include_role:
-    name: db2
-- name: Remove openldap
-  include_role:
-    name: openldap
