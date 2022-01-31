@@ -1,4 +1,4 @@
-- name: Create Catalog Source directory for generated files
+- name: Create Mail directory for generated files
   file:
     path: "{{ mail_output_directory }}"
     state: directory
