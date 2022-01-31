@@ -1,0 +1,196 @@
+- name: Create Catalog Source directory for generated files
+  file:
+    path: "{{ mail_output_directory }}"
+    state: directory
+
+- name: Prepare yaml file for Project
+  template:
+    src: project.yaml.j2
+    dest: "{{ mail_output_directory }}/project.yaml"
+
+- name: Add Project
+  k8s:
+    api_key: "{{ mail_k8s_api_key | default(omit)}}"
+    host: "{{mail_k8s_host | default(omit)}}"
+    state: present
+    force: False
+    merge_type: merge
+    src: "{{ mail_output_directory }}/project.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Wait for Project
+  k8s_info:
+    api_key: "{{ mail_k8s_api_key | default(omit) }}"
+    host: "{{ mail_k8s_host | default(omit) }}"
+    api_version: project.openshift.io/v1
+    kind: Project
+    name: mail
+  register: project
+  retries: 10
+  delay: 1
+  until: ('Active' in project | json_query('resources[*].status.phase') | unique)
+
+- name: Prepare yaml file for privileged ClusterRoleBinding
+  template:
+    src: privileged-scc-clusterrolebinding.yaml.j2
+    dest: "{{ mail_output_directory }}/privileged-scc-clusterrolebinding.yaml"
+
+- name: Add privileged ClusterRoleBinding
+  k8s:
+    api_key: "{{ mail_k8s_api_key | default(omit)}}"
+    host: "{{mail_k8s_host | default(omit)}}"
+    state: present
+    force: False
+    merge_type: merge
+    src: "{{ mail_output_directory }}/privileged-scc-clusterrolebinding.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Prepare yaml file for anyuid ClusterRoleBinding
+  template:
+    src: anyuid-scc-clusterrolebinding.yaml.j2
+    dest: "{{ mail_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
+
+- name: Add anyuid ClusterRoleBinding
+  k8s:
+    api_key: "{{ mail_k8s_api_key | default(omit)}}"
+    host: "{{mail_k8s_host | default(omit)}}"
+    state: present
+    force: False
+    merge_type: merge
+    src: "{{ mail_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Generate an OpenSSL private key
+  openssl_privatekey:
+    path: "{{ mail_output_directory }}/mailserver.key"
+
+- name: Generate an OpenSSL Certificate Signing Request with Subject information
+  openssl_csr:
+    path: "{{ mail_output_directory }}/mailserver.csr"
+    privatekey_path: "{{ mail_output_directory }}/mailserver.key"
+    subject: "CN=mailserver"
+    subject_alt_name: DNS:mailserver
+
+- name: Generate a Self Signed OpenSSL certificate
+  openssl_certificate:
+    path: "{{ mail_output_directory }}/mailserver.crt"
+    privatekey_path: "{{ mail_output_directory }}/mailserver.key"
+    csr_path: "{{ mail_output_directory }}/mailserver.csr"
+    provider: ownca
+    ownca_path: "{{ mail_ca_crt_path }}"
+    ownca_privatekey_path: "{{ mail_ca_key_path }}"
+    ownca_not_after: "+36500d"
+
+- name: Load TLS key data
+  slurp:
+    src: '{{ mail_output_directory }}/mailserver.key'
+  register: slurped_key_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _tls_key: "{{ slurped_key_data.content }}"
+
+- name: Load TLS crt data
+  slurp:
+    src: '{{ mail_output_directory }}/mailserver.crt'
+  register: slurped_crt_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _tls_crt: "{{ slurped_crt_data.content }}"
+
+- name: Prepare yaml file for Secret
+  template:
+    src: secret.yaml.j2
+    dest: "{{ mail_output_directory }}/secret.yaml"
+
+- name: Add Secret
+  k8s:
+    api_key: "{{ mail_k8s_api_key | default(omit)}}"
+    host: "{{mail_k8s_host | default(omit)}}"
+    state: present
+    force: False
+    merge_type: merge
+    namespace: mail
+    src: "{{ mail_output_directory }}/secret.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Prepare yaml file for PVC
+  template:
+    src: pvc.yaml.j2
+    dest: "{{ mail_output_directory }}/pvc.yaml"
+
+- name: Add PVC
+  k8s:
+    api_key: "{{ mail_k8s_api_key | default(omit)}}"
+    host: "{{mail_k8s_host | default(omit)}}"
+    state: present
+    force: False
+    merge_type: merge
+    namespace: mail
+    src: "{{ mail_output_directory }}/pvc.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15    
+
+- name: Prepare yaml file for Config Maps
+  template:
+    src: configmaps.yaml.j2
+    dest: "{{ mail_output_directory }}/configmaps.yaml"
+
+- name: Add Config Maps
+  k8s:
+    api_key: "{{ mail_k8s_api_key | default(omit)}}"
+    host: "{{mail_k8s_host | default(omit)}}"
+    state: present
+    force: False
+    merge_type: merge
+    namespace: mail
+    src: "{{ mail_output_directory }}/configmaps.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15    
+
+- name: Prepare yaml file for Deployment
+  template:
+    src: deployment.yaml.j2
+    dest: "{{ mail_output_directory }}/deployment.yaml"
+
+- name: Add Deployment
+  k8s:
+    api_key: "{{ mail_k8s_api_key | default(omit)}}"
+    host: "{{mail_k8s_host | default(omit)}}"
+    state: present
+    force: False
+    merge_type: merge
+    namespace: mail
+    src: "{{ mail_output_directory }}/deployment.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 600
+
+- name: Prepare yaml file for Service
+  template:
+    src: service.yaml.j2
+    dest: "{{ mail_output_directory }}/service.yaml"
+
+- name: Add Service
+  k8s:
+    api_key: "{{ mail_k8s_api_key | default(omit)}}"
+    host: "{{mail_k8s_host | default(omit)}}"
+    state: present
+    force: False
+    merge_type: merge
+    namespace: mail
+    src: "{{ mail_output_directory }}/service.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15

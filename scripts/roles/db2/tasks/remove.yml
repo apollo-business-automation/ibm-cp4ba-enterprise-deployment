@@ -16,7 +16,7 @@
     kind: DB2uCluster
     name: db2ucluster
     namespace: db2
-    wait: yes
+    wait: true
     wait_sleep: 15
     wait_timeout: 120
   when: clusters.resources | length > 0
@@ -30,7 +30,7 @@
     kind: Project
     name: db2
     namespace: db2
-    wait: yes
+    wait: true
     wait_sleep: 15
     wait_timeout: 120
 
@@ -42,6 +42,6 @@
     api_version: rbac.authorization.k8s.io/v1
     kind: ClusterRoleBinding
     name: db2privileged
-    wait: yes
+    wait: true
     wait_sleep: 15
     wait_timeout: 600

@@ -1,19 +1,21 @@
-- name: Create Catalog Source directory for generated files
+- name: Create DB2 directory for generated files
   file:
     path: "{{ db2_output_directory }}"
     state: directory
+    mode: u+rwx
 
 - name: Prepare yaml file for Project
   template:
     src: project.yaml.j2
     dest: "{{ db2_output_directory }}/project.yaml"
+    mode: u+rwx
 
 - name: Add Project
   k8s:
-    api_key: "{{ db2_k8s_api_key | default(omit)}}"
-    host: "{{db2_k8s_host | default(omit)}}"
+    api_key: "{{ db2_k8s_api_key | default(omit) }}"
+    host: "{{ db2_k8s_host | default(omit) }}"
     state: present
-    force: False
+    force: false
     merge_type: merge
     src: "{{ db2_output_directory }}/project.yaml"
     wait: true
@@ -32,7 +34,7 @@
   delay: 1
   until: ('Active' in project | json_query(phase_query) | unique)
   vars:
-    phase_query: 'resources[*].status.phase' 
+    phase_query: 'resources[*].status.phase'
 
 - block:
 
@@ -40,30 +42,32 @@
       template:
         src: service-account.yaml.j2
         dest: "{{ db2_output_directory }}/service-account.yaml"
-        
+        mode: u+rwx
+
     - name: Add No Root Squash DB2 Service Account for NFS on IBM Cloud
       k8s:
         api_key: "{{ db2_k8s_api_key | default(omit) }}"
-        host: "{{ db2_k8s_host | default(omit )}}"
+        host: "{{ db2_k8s_host | default(omit ) }}"
         state: present
-        force: False
+        force: false
         merge_type: merge
         src: "{{ db2_output_directory }}/service-account.yaml"
         wait: true
         wait_sleep: 15
         wait_timeout: 15
-        
+
     - name: Prepare yaml for No Root Squash DB2 Role Binding for NFS on IBM Cloud
       template:
         src: privileged-scc-clusterrolebinding.yaml.j2
         dest: "{{ db2_output_directory }}/privileged-scc-clusterrolebinding.yaml"
+        mode: u+rwx
 
     - name: Add No Root Squash DB2 Role Binding for NFS on IBM Cloud
       k8s:
         api_key: "{{ db2_k8s_api_key | default(omit) }}"
-        host: "{{ db2_k8s_host | default(omit )}}"
+        host: "{{ db2_k8s_host | default(omit ) }}"
         state: present
-        force: True
+        force: true
         merge_type: merge
         src: "{{ db2_output_directory }}/privileged-scc-clusterrolebinding.yaml"
         wait: true
@@ -74,13 +78,14 @@
       template:
         src: daemon-set.yaml.j2
         dest: "{{ db2_output_directory }}/daemon-set.yaml"
-        
+        mode: u+rwx
+
     - name: Add No Root Squash DB2 Daemon Set
       k8s:
         api_key: "{{ db2_k8s_api_key | default(omit) }}"
-        host: "{{ db2_k8s_host | default(omit )}}"
+        host: "{{ db2_k8s_host | default(omit ) }}"
         state: present
-        force: False
+        force: false
         merge_type: merge
         src: "{{ db2_output_directory }}/daemon-set.yaml"
         wait: true
@@ -93,13 +98,14 @@
   template:
     src: operatorgroup.yaml.j2
     dest: "{{ db2_output_directory }}/operatorgroup.yaml"
+    mode: u+rwx
 
 - name: Add the Operator Group
   k8s:
-    api_key: "{{ db2_k8s_api_key | default(omit)}}"
-    host: "{{db2_k8s_host | default(omit)}}"
+    api_key: "{{ db2_k8s_api_key | default(omit) }}"
+    host: "{{ db2_k8s_host | default(omit) }}"
     state: present
-    force: False
+    force: false
     merge_type: merge
     src: "{{ db2_output_directory }}/operatorgroup.yaml"
     wait: true
@@ -110,13 +116,14 @@
   template:
     src: subscription.yaml.j2
     dest: "{{ db2_output_directory }}/subscription.yaml"
+    mode: u+rwx
 
 - name: Add the Operator Subscription
   k8s:
-    api_key: "{{ db2_k8s_api_key | default(omit)}}"
-    host: "{{db2_k8s_host | default(omit)}}"
+    api_key: "{{ db2_k8s_api_key | default(omit) }}"
+    host: "{{ db2_k8s_host | default(omit) }}"
     state: present
-    force: False
+    force: false
     merge_type: merge
     src: "{{ db2_output_directory }}/subscription.yaml"
     wait: true
@@ -142,38 +149,41 @@
     wait_crd_name: db2uclusters.db2u.databases.ibm.com
 
 - name: Set Docker Registry Json
-  set_fact: 
-    docker_registry_json: '{{ {"auths": {"cp.icr.io": {"username": "cp", "password": db2_icr_password}}} | to_json | b64encode }}'
+  set_fact:
+    docker_registry_json: '{{ {"auths": {"cp.icr.io": {"username": "cp", "password": db2_icr_password} }} | to_json | b64encode }}'
 
 - name: Prepare yaml file for Docker Registry Secret
   template:
     src: docker-secret.yaml.j2
     dest: "{{ db2_output_directory }}/docker-secret.yaml"
+    mode: u+rwx
 
 - name: Add the Docker Registry Secret
   k8s:
-    api_key: "{{ db2_k8s_api_key | default(omit)}}"
-    host: "{{db2_k8s_host | default(omit)}}"
+    api_key: "{{ db2_k8s_api_key | default(omit) }}"
+    host: "{{ db2_k8s_host | default(omit) }}"
     state: present
-    force: False
+    force: false
     merge_type: merge
     src: "{{ db2_output_directory }}/docker-secret.yaml"
     wait: true
     wait_sleep: 15
     wait_timeout: 15
 
-# Based on LI at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument DB2 Standard Edition is a supporting program with limitation of 16 CPU and 128 Memory
+# Based on LI at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument
+# DB2 Standard Edition is a supporting program with limitation of 16 CPU and 128 Memory
 - name: Prepare yaml file for DB2uCluster Instance
   template:
     src: db2ucluster.yaml.j2
     dest: "{{ db2_output_directory }}/db2ucluster.yaml"
+    mode: u+rwx
 
 - name: Add the DB2uCluster Instance
   k8s:
-    api_key: "{{ db2_k8s_api_key | default(omit)}}"
-    host: "{{db2_k8s_host | default(omit)}}"
+    api_key: "{{ db2_k8s_api_key | default(omit) }}"
+    host: "{{ db2_k8s_host | default(omit) }}"
     state: present
-    force: False
+    force: false
     merge_type: merge
     src: "{{ db2_output_directory }}/db2ucluster.yaml"
     wait: true
@@ -191,12 +201,12 @@
   register: db2ucluster
   retries: 60
   delay: 15
-  until: ( 'Ready' in db2ucluster | json_query(state_query) | unique) 
+  until: ('Ready' in db2ucluster | json_query(state_query) | unique)
   vars:
     state_query: 'resources[*].status.state'
 
 - name: Delete BLUDB to tidy up the DB2 memory space
-  kubernetes.core.k8s_exec: 
+  kubernetes.core.k8s_exec:
     api_key: "{{ db2_k8s_api_key | default(omit) }}"
     host: "{{ db2_k8s_host | default(omit) }}"
     namespace: db2
@@ -209,7 +219,7 @@
       sleep 60 #for force aplication to finish
       db2 drop db BLUDB
   register: command_status
-  ignore_errors: True
+  ignore_errors: true
 
 - name: Debug Print Command Status
   debug:

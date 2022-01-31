@@ -13,4 +13,4 @@
 
 - name: Remove DB2
   include_tasks: remove.yml
-  when: "db2_action == 'remove'"  
+  when: "db2_action == 'remove'"
