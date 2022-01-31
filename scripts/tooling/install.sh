@@ -50,9 +50,9 @@ pip3 install --user jmespath
 exit_test $? "Install pip package jmespath failed"
 
 echo
-echo ">>>>$(print_timestamp) Install kubernetes.core ansible modules"
-ansible-galaxy collection install kubernetes.core
-exit_test $? "Install kubernetes.core failed"
+echo ">>>>$(print_timestamp) Install required ansible modules"
+ansible-galaxy collection install -r ../requirements.yml 
+exit_test $? "Install required ansible modules failed"
 
 # if [[ $CONTAINER_RUN_MODE == "true" ]]; then
 #   echo
