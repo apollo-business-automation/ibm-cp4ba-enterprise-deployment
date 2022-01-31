@@ -49,6 +49,11 @@ echo ">>>>$(print_timestamp) Install pip package jmespath"
 pip3 install --user jmespath
 exit_test $? "Install pip package jmespath failed"
 
+echo
+echo ">>>>$(print_timestamp) Install kubernetes.core ansible modules"
+ansible-galaxy collection install kubernetes.core
+exit_test $? "Install kubernetes.core failed"
+
 # if [[ $CONTAINER_RUN_MODE == "true" ]]; then
 #   echo
 #   echo ">>>>$(print_timestamp) Install OpenSSL package"
