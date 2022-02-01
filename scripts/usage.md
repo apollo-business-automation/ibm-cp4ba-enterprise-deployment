@@ -285,6 +285,7 @@ For external share you need to use ingress prefixed set of endpoints.
 #### Endpoints
 
 - AAE Server apps list: https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ae-instance1/v2/applications  
+- AAE API Docs https://cpd-{{CP4BA_PROJECT_NAME}}.{{OCP_APPS_ENDPOINT}}/ae-instance1/public/apidoc
 
 ####  Credentials
 
