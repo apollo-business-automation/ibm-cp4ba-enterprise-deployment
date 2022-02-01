@@ -7,8 +7,8 @@
     name: "{{ manage_manual_operator_subscription }}"
     namespace: "{{ manage_manual_operator_namespace }}"
   register: subscription
-  retries: 10
-  delay: 1
+  retries: 40
+  delay: 30
   until: ('InstallPlan' in subscription | json_query(condition_query) | unique)
   vars:
     condition_query: 'resources[*].status.installplan.kind'
@@ -44,8 +44,8 @@
     name: "{{ manage_manual_operator_deployment }}"
     namespace: "{{ manage_manual_operator_namespace }}"
   register: deployment
-  retries: 10
-  delay: 1
+  retries: 80
+  delay: 15
   until: (['True'] in deployment | json_query(condition_query) | unique )
   vars:
     condition_query: "resources[*].status.conditions[?type == 'Available'].status"
