@@ -144,7 +144,7 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Manage Manual Operator ibm-common-service-operator
+- name: Manage Manual Operator ibm-common-service-operator in common-service
   include_role:
     name: manage-manual-operator
   vars:
@@ -154,7 +154,7 @@
     manage_manual_operator_subscription: ibm-common-service-operator
     manage_manual_operator_deployment: ibm-common-service-operator
 
-- name: Manage Manual Operator ibm-common-service-operator
+- name: Manage Manual Operator ibm-common-service-operator in ibm-common-services
   include_role:
     name: manage-manual-operator
   vars:
@@ -164,7 +164,7 @@
     manage_manual_operator_subscription: ibm-common-service-operator
     manage_manual_operator_deployment: ibm-common-service-operator
 
-- name: Manage Manual Operator common-service
+- name: Manage Manual Operator ibm-namespace-scope-operator
   include_role:
     name: manage-manual-operator
   vars:
@@ -174,7 +174,7 @@
     manage_manual_operator_subscription: ibm-namespace-scope-operator
     manage_manual_operator_deployment: ibm-namespace-scope-operator
 
-- name: Manage Manual Operator common-service
+- name: Manage Manual Operator operand-deployment-lifecycle-manager-app
   include_role:
     name: manage-manual-operator
   vars:
@@ -192,7 +192,7 @@
     wait_crd_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
     wait_crd_name: operandconfigs.operator.ibm.com
 
-- name: Wait for OperandConfig instance Initialized state
+- name: Wait for OperandConfig instance Initialized or Running state
   k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
@@ -203,9 +203,10 @@
   register: operand_config
   retries: 10
   delay: 15
-  until: ('Initialized' in operand_config | json_query(condition_query) | unique)
+  until: ('Initialized' in phase or 'Running' in phase)
   vars:
     condition_query: "resources[*].status.phase"
+    phase: "{{ operand_config | json_query(condition_query) | unique }}"
 
 - name: Get OperandConfig
   k8s_info:
@@ -322,3 +323,70 @@
     wait: true
     wait_sleep: 15
     wait_timeout: 15
+
+- name: Prepare yaml file for the OperandRequest instance
+  template:
+    src: operandrequest.yaml.j2
+    dest: "{{ cpfs_output_directory }}/operandrequest.yaml"
+    mode: u+rwx
+
+- name: Apply OperandRequest instance
+  k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cpfs_output_directory }}/operandrequest.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Manage Manual Operator ibm-commonui-operator
+  include_role:
+    name: manage-manual-operator
+  vars:
+    manage_manual_operator_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    manage_manual_operator_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    manage_manual_operator_namespace: ibm-common-services
+    manage_manual_operator_subscription: ibm-commonui-operator
+    manage_manual_operator_deployment: ibm-commonui-operator
+
+- name: Manage Manual Operator ibm-ingress-nginx-operator
+  include_role:
+    name: manage-manual-operator
+  vars:
+    manage_manual_operator_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    manage_manual_operator_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    manage_manual_operator_namespace: ibm-common-services
+    manage_manual_operator_subscription: ibm-ingress-nginx-operator
+    manage_manual_operator_deployment: ibm-ingress-nginx-operator
+
+- name: Wait for OperandRequest instance Running phase
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: operator.ibm.com/v1alpha1
+    kind: OperandRequest
+    name: common-service
+    namespace: ibm-common-services
+  register: operand_request
+  retries: 10
+  delay: 15
+  until: ('Running' in operand_request | json_query(condition_query) | unique)
+  vars:
+    condition_query: "resources[*].status.phase"
+
+- name: Wait for IAM Ready status as an indicator that CPFS is installed
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    kind: ConfigMap
+    name: ibm-common-services-status
+    namespace: kube-public
+  register: config_map
+  retries: 30
+  delay: 60
+  until: ('Ready' in config_map | json_query(condition_query) | unique)
+  vars:
+    condition_query: "resources[*].data.iamstatus"
