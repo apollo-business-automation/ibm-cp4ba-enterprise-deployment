@@ -206,3 +206,97 @@
   until: ('Initialized' in operand_config | json_query(condition_query) | unique)
   vars:
     condition_query: "resources[*].status.phase"
+
+- name: Get OperandConfig
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: operator.ibm.com/v1alpha1
+    kind: OperandConfig
+    name: common-service
+    namespace: ibm-common-services
+  register: operand_config
+  retries: 10
+  delay: 1
+
+- name: Patch authentication object to customize admin username if not done already
+  block:
+    - name: Get index of ibm-iam-operator
+      set_fact:
+        service_index: "{{ index | int }}"
+      loop: "{{ operand_config | json_query('resources[0].spec.services') | flatten(levels=1) }}"
+      when: item.name == "ibm-iam-operator"
+      loop_control:
+        index_var: index
+
+    # Based on https://www.ibm.com/docs/en/cpfs?topic=services-configuring-foundational-by-using-custom-resource#default-admin for admin username
+    - name: Patch authentication object to customize admin username
+      kubernetes.core.k8s_json_patch:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        api_version: operator.ibm.com/v1alpha1
+        kind: OperandConfig
+        name: common-service
+        namespace: ibm-common-services
+        patch:
+          - op: add
+            path: "/spec/services/{{ service_index }}/spec/authentication/config/defaultAdminUser"
+            value: "cpfsadmin"
+
+  when: (operand_config | json_query(condition_query) | unique | length == 0 )
+  vars:
+    condition_query: "resources[0].spec.services[?name == 'ibm-iam-operator'].spec.authentication.config.defaultAdminUser"
+
+- name: Set StorageClass for MongoDB if not done already
+  block:
+    - name: Get index of ibm-mongodb-operator
+      set_fact:
+        service_index: "{{ index | int }}"
+      loop: "{{ operand_config | json_query('resources[0].spec.services') | flatten(levels=1) }}"
+      when: item.name == "ibm-mongodb-operator"
+      loop_control:
+        index_var: index
+
+    - name: Set StorageClass for MongoDB
+      kubernetes.core.k8s_json_patch:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        api_version: operator.ibm.com/v1alpha1
+        kind: OperandConfig
+        name: common-service
+        namespace: ibm-common-services
+        patch:
+          - op: add
+            path: "/spec/services/{{ service_index }}/spec/mongoDB/storageClass"
+            value: "{{ cpfs_storage_class_name }}"
+
+  when: (operand_config | json_query(condition_query) | unique | length == 0 )
+  vars:
+    condition_query: "resources[0].spec.services[?name == 'ibm-mongodb-operator'].spec.mongoDB.storageClass"
+
+- name: Set StorageClass for Mustgather if not done already
+  block:
+    - name: Get index of ibm-healthcheck-operator
+      set_fact:
+        service_index: "{{ index | int }}"
+      loop: "{{ operand_config | json_query('resources[0].spec.services') | flatten(levels=1) }}"
+      when: item.name == "ibm-healthcheck-operator"
+      loop_control:
+        index_var: index
+
+    - name: Set StorageClass for Mustgather
+      kubernetes.core.k8s_json_patch:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        api_version: operator.ibm.com/v1alpha1
+        kind: OperandConfig
+        name: common-service
+        namespace: ibm-common-services
+        patch:
+          - op: add
+            path: "/spec/services/{{ service_index }}/spec/mustgatherService/persistentVolumeClaim"
+            value: '{ "storageClassName": "{{ cpfs_storage_class_name }}"}'
+
+  when: (operand_config | json_query(condition_query) | unique | length == 0 )
+  vars:
+    condition_query: "resources[0].spec.services[?name == 'ibm-healthcheck-operator'].spec.mustgatherService.persistentVolumeClaim.storageClassName"
