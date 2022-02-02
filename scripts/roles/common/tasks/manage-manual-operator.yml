@@ -1,0 +1,51 @@
+- name: Wait for Operator Subscription {{ common_subscription_name }}
+  k8s_info:
+    api_key: "{{ common_k8s_api_key | default(omit) }}"
+    host: "{{ common_k8s_host | default(omit) }}"
+    api_version: operators.coreos.com/v1alpha1
+    kind: Subscription
+    name: "{{ common_subscription_name }}"
+    namespace: "{{ common_namespace_name }}"
+  register: common_subscription
+  retries: 40
+  delay: 30
+  until: ('InstallPlan' in common_subscription | json_query(condition_query) | unique)
+  vars:
+    condition_query: 'resources[*].status.installplan.kind'
+
+- block:
+    - name: Get Install Plan Resource name
+      set_fact:
+        common_install_plan_name: "{{ common_subscription | json_query('resources[0].status.installplan.name') }}"
+
+    - name: Approve Install Plan
+      k8s:
+        api_key: "{{ common_k8s_api_key | default(omit) }}"
+        host: "{{ common_k8s_host | default(omit) }}"
+        state: present
+        api_version: operators.coreos.com/v1alpha1
+        kind: InstallPlan
+        name: "{{ common_install_plan_name }}"
+        namespace: "{{ common_namespace_name }}"
+        definition:
+          spec:
+            approved: true
+
+  when: common_subscription | json_query(condition_query) | length == 0
+  vars:
+    condition_query: 'resources[*].status.installedCSV'
+
+- name: Wait for Operator Deployment {{ common_deployment_name }} to be Available
+  k8s_info:
+    api_key: "{{ common_k8s_api_key | default(omit) }}"
+    host: "{{ common_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Deployment
+    name: "{{ common_deployment_name }}"
+    namespace: "{{ common_namespace_name }}"
+  register: common_deployment
+  retries: 80
+  delay: 15
+  until: (['True'] in common_deployment | json_query(condition_query) | unique )
+  vars:
+    condition_query: "resources[*].status.conditions[?type == 'Available'].status"

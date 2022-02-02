@@ -1,0 +1,14 @@
+- name: Get Ingress
+  k8s_info:
+    api_key: "{{ common_k8s_api_key | default(omit) }}"
+    host: "{{ common_k8s_host | default(omit) }}"
+    api_version: config.openshift.io/v1
+    kind: Ingress
+    name: cluster
+  register: common_ingress
+  retries: 10
+  delay: 1
+
+- name: Set apps endpoint
+  set_fact:
+    apps_endpoint_domain: "{{ common_ingress.resources[0].spec.domain }}"

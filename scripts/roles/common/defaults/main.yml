@@ -1,0 +1,7 @@
+common_k8s_api_key: ""
+common_k8s_host: ""
+common_namespace_name: ""
+common_subscription_name: ""
+common_deployment_name: ""
+common_crd_name: ""
+common_output: ""

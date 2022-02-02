@@ -7,12 +7,12 @@
 - name: Install DB2
   include_role:
     name: db2
-- name: Install openldap
-  include_role:
-    name: openldap
-- name: Install Mail
-  include_role:
-    name: mail
-- name: Install CPFS
-  include_role:
-    name: cpfs
+# - name: Install openldap
+#   include_role:
+#     name: openldap
+# - name: Install Mail
+#   include_role:
+#     name: mail
+# - name: Install CPFS
+#   include_role:
+#     name: cpfs

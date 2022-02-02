@@ -132,21 +132,23 @@
 
 - name: Manage Manual Operator common-service
   include_role:
-    name: manage-manual-operator
+    name: common
+    tasks_from: manage-manual-operator
   vars:
-    manage_manual_operator_k8s_api_key: "{{ db2_k8s_api_key | default(omit)  }}"
-    manage_manual_operator_k8s_host: "{{ db2_k8s_host | default(omit) }}"
-    manage_manual_operator_namespace: db2
-    manage_manual_operator_subscription: db2u-operator
-    manage_manual_operator_deployment: db2u-operator-manager
+    common_k8s_api_key: "{{ db2_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ db2_k8s_host | default(omit) }}"
+    common_namespace_name: db2
+    common_subscription_name: db2u-operator
+    common_deployment_name: db2u-operator-manager
 
 - name: Wait for DB2uCluster CRD to be Established
   include_role:
-    name: wait-crd
+    name: common
+    tasks_from: wait-crd
   vars:
-    wait_crd_k8s_api_key: "{{ db2_k8s_api_key | default(omit)  }}"
-    wait_crd_k8s_host: "{{ db2_k8s_host | default(omit) }}"
-    wait_crd_name: db2uclusters.db2u.databases.ibm.com
+    common_k8s_api_key: "{{ db2_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ db2_k8s_host | default(omit) }}"
+    common_crd_name: db2uclusters.db2u.databases.ibm.com
 
 - name: Set Docker Registry Json
   set_fact:
