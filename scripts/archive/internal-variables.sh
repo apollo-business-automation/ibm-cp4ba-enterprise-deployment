@@ -78,8 +78,8 @@ ROUNDCUBE_NGINX_IMAGE_TAG=1.21.4-alpine
 
 # RPA #
 RPA_OPERATOR_CHANNEL=v1.2
-RPA_STARTING_CSV=ibm-automation-rpa.v1.2.0
-RPA_VERSION=1.2.0
+RPA_STARTING_CSV=ibm-automation-rpa.v1.2.1
+RPA_VERSION=1.2.1
 
 # MongoDB #
 MONGODB_CHART_VERSION=8.3.2 # specific version bringing 4.2 version for ADS, ADP
