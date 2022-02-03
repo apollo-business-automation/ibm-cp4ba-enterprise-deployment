@@ -11,4 +11,4 @@
 
 - name: Set apps endpoint
   set_fact:
-    apps_endpoint_domain: "{{ common_ingress.resources[0].spec.domain }}"
+    "{{ common_output }}": "{{ common_ingress.resources[0].spec.domain }}"
