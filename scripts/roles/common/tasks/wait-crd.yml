@@ -1,3 +1,14 @@
+# Example of the functionality call
+# 
+# - name: Wait for CRD
+#   include_role:
+#     name: common
+#     tasks_from: wait-crd
+#   vars:
+#     common_k8s_api_key: "{{ prefix_k8s_api_key | default(omit)  }}"
+#     common_k8s_host: "{{ prefix_k8s_host | default(omit) }}"
+#     common_crd_name: crd_name
+    
 - name: Wait for '{{ common_crd_name }}' CRD to be Established
   k8s_info:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
