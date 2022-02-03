@@ -1,5 +1,5 @@
 # Example of the functionality call
-# 
+#
 # - name: Get OCP Apps domain
 #   include_role:
 #     name: common
