@@ -390,3 +390,45 @@
   until: ('Ready' in config_map | json_query(condition_query) | unique)
   vars:
     condition_query: "resources[*].data.iamstatus"
+
+- name: Ensure we have CA certificates and wildcards
+  include_role:
+    name: global-ca
+  when: global_ca_output_directory is not defined
+
+- name: Load TLS key data
+  slurp:
+    src: '{{ global_ca_output_directory }}/wildcard.key'
+  register: slurped_key_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _tls_key: "{{ slurped_key_data.content }}"
+
+- name: Load TLS key data
+  slurp:
+    src: '{{ global_ca_output_directory }}/wildcard.crt'
+  register: slurped_crt_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _tls_crt: "{{ slurped_crt_data.content }}"
+
+- name: Prepare yaml file for Secret
+  template:
+    src: license-service-secret.yaml.j2
+    dest: "{{ cpfs_output_directory }}/license-service-secret.yaml"
+    mode: u+rwx
+
+# Based on https://www.ibm.com/docs/en/cpfs?topic=operator-using-custom-certificates
+- name: Add Secret
+  k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cpfs_output_directory }}/license-service-secret.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
