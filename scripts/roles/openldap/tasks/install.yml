@@ -109,9 +109,13 @@
   set_fact:
     _ca_crt: "{{ slurped_ca_data.content }}"
 
-- name: Get Apps Endpoint
+- name: Get OCP Apps Endpoint
   include_role:
-    name: apps-endpoint
+    name: common
+    tasks_from: apps-endpoint
+  vars:
+    common_k8s_api_key: "{{ openldap_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ openldap_k8s_host | default(omit) }}"
   when: apps_endpoint_domain is not defined
 
 - name: Prepare yaml file for phpLDAPadmin Route

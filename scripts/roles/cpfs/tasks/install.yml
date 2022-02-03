@@ -146,51 +146,56 @@
 
 - name: Manage Manual Operator ibm-common-service-operator in common-service
   include_role:
-    name: manage-manual-operator
+    name: common
+    tasks_from: manage-manual-operator
   vars:
-    manage_manual_operator_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
-    manage_manual_operator_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
-    manage_manual_operator_namespace: common-service
-    manage_manual_operator_subscription: ibm-common-service-operator
-    manage_manual_operator_deployment: ibm-common-service-operator
-
-- name: Manage Manual Operator ibm-common-service-operator in ibm-common-services
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: common-service
+    common_subscription_name: ibm-common-service-operator
+    common_deployment_name: ibm-common-service-operator
+    
+- name: Manage Manual Operator ibm-common-service-operator in ibm-common-service
   include_role:
-    name: manage-manual-operator
+    name: common
+    tasks_from: manage-manual-operator
   vars:
-    manage_manual_operator_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
-    manage_manual_operator_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
-    manage_manual_operator_namespace: ibm-common-services
-    manage_manual_operator_subscription: ibm-common-service-operator
-    manage_manual_operator_deployment: ibm-common-service-operator
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_subscription_name: ibm-common-service-operator
+    common_deployment_name: ibm-common-service-operator
 
 - name: Manage Manual Operator ibm-namespace-scope-operator
   include_role:
-    name: manage-manual-operator
+    name: common
+    tasks_from: manage-manual-operator
   vars:
-    manage_manual_operator_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
-    manage_manual_operator_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
-    manage_manual_operator_namespace: ibm-common-services
-    manage_manual_operator_subscription: ibm-namespace-scope-operator
-    manage_manual_operator_deployment: ibm-namespace-scope-operator
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_subscription_name: ibm-namespace-scope-operator
+    common_deployment_name: ibm-namespace-scope-operator
 
 - name: Manage Manual Operator operand-deployment-lifecycle-manager-app
   include_role:
-    name: manage-manual-operator
+    name: common
+    tasks_from: manage-manual-operator
   vars:
-    manage_manual_operator_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
-    manage_manual_operator_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
-    manage_manual_operator_namespace: ibm-common-services
-    manage_manual_operator_subscription: operand-deployment-lifecycle-manager-app
-    manage_manual_operator_deployment: operand-deployment-lifecycle-manager
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_subscription_name: operand-deployment-lifecycle-manager-app
+    common_deployment_name: operand-deployment-lifecycle-manager
 
 - name: Wait for OperandConfig CRD to be Established
   include_role:
-    name: wait-crd
+    name: common
+    tasks_from: wait-crd
   vars:
-    wait_crd_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
-    wait_crd_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
-    wait_crd_name: operandconfigs.operator.ibm.com
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_crd_name: operandconfigs.operator.ibm.com
 
 - name: Wait for OperandConfig instance Initialized or Running state
   k8s_info:
@@ -344,23 +349,25 @@
 
 - name: Manage Manual Operator ibm-commonui-operator
   include_role:
-    name: manage-manual-operator
+    name: common
+    tasks_from: manage-manual-operator
   vars:
-    manage_manual_operator_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
-    manage_manual_operator_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
-    manage_manual_operator_namespace: ibm-common-services
-    manage_manual_operator_subscription: ibm-commonui-operator
-    manage_manual_operator_deployment: ibm-commonui-operator
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_subscription_name: ibm-commonui-operator
+    common_deployment_name: ibm-commonui-operator
 
 - name: Manage Manual Operator ibm-ingress-nginx-operator
   include_role:
-    name: manage-manual-operator
+    name: common
+    tasks_from: manage-manual-operator
   vars:
-    manage_manual_operator_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
-    manage_manual_operator_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
-    manage_manual_operator_namespace: ibm-common-services
-    manage_manual_operator_subscription: ibm-ingress-nginx-operator
-    manage_manual_operator_deployment: ibm-ingress-nginx-operator
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_subscription_name: ibm-ingress-nginx-operator
+    common_deployment_name: ibm-ingress-nginx-operator
 
 - name: Wait for OperandRequest instance Running phase
   k8s_info:
