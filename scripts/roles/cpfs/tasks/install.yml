@@ -686,58 +686,117 @@
   vars:
     condition_query: 'resources[0].spec.ignoreRouteCert'
 
-# TODO omit if admin password already have the desired value?
-# Based on https://www.ibm.com/docs/en/cpfs?topic=configurations-changing-cluster-administrator-access-credentials#pwd
-# cloudctl command replaced with actual Secret and Pod restarts
-- name: Change cpfsadmin user password in secret
-  k8s:
+- name: Get cpfsadmin user password in secret
+  k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
-    state: present
     api_version: v1
     kind: Secret
     name: platform-auth-idp-credentials
     namespace: ibm-common-services
-    definition:
-      data:
-        admin_password: "{{ cpfs_universal_password | b64encode }}"
+  register: cpfs_admin_secret
+  retries: 40
+  delay: 30
 
-- name: Delete pods which use cpfsadmin secret
-  kubernetes.core.k8s:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    state: absent
-    api_version: v1
-    kind: Pod
-    namespace: ibm-common-services
-    label_selectors:
-      - "{{ item }}"
-  with_items:
-    - app=auth-pap
-    - app=auth-idp
-    - app=auth-pdp
-    - app=oidcclient-watcher
-    - app=secret-watcher
+- block:
 
-- name: Wait for Deployments which use cpfsadmin secret to be Available
+    # Based on https://www.ibm.com/docs/en/cpfs?topic=configurations-changing-cluster-administrator-access-credentials#pwd
+    # cloudctl command replaced with actual Secret and Pod restarts
+    - name: Change cpfsadmin user password in secret
+      k8s:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        state: present
+        api_version: v1
+        kind: Secret
+        name: platform-auth-idp-credentials
+        namespace: ibm-common-services
+        definition:
+          data:
+            admin_password: "{{ cpfs_universal_password | b64encode }}"
+
+    - name: Delete pods which use cpfsadmin secret
+      kubernetes.core.k8s:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        state: absent
+        api_version: v1
+        kind: Pod
+        namespace: ibm-common-services
+        label_selectors:
+          - "{{ item }}"
+      with_items:
+        - app=auth-pap
+        - app=auth-idp
+        - app=auth-pdp
+        - app=oidcclient-watcher
+        - app=secret-watcher
+
+    - name: Wait for Deployments which use cpfsadmin secret to be Available
+      include_role:
+        name: common
+        tasks_from: wait-resource-condition
+      vars:
+        common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+        common_api_version: v1
+        common_resource_kind: Deployment
+        common_resource_name: "{{ item }}"
+        common_resource_namespace: ibm-common-services
+        common_condition_name: Available
+        common_retries: 80
+        common_delay: 15
+      with_items:
+        - auth-pap
+        - auth-idp
+        - auth-pdp
+        - secret-watcher
+        - oidcclient-watcher
+
+  when: cpfs_admin_secret | json_query(condition_query) | b64decode !=  cpfs_universal_password
+  vars:
+    condition_query: 'resources[0].data.admin_password'
+
+- name: Get OCP Apps domain
   include_role:
     name: common
-    tasks_from: wait-resource-condition
+    tasks_from: apps-endpoint
   vars:
     common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
-    common_api_version: v1
-    common_resource_kind: Deployment
-    common_resource_name: "{{ item }}"
-    common_resource_namespace: ibm-common-services
-    common_condition_name: Available
-    common_retries: 80
-    common_delay: 15
-  with_items:
-    - auth-pap
-    - auth-idp
-    - auth-pdp
-    - secret-watcher
-    - oidcclient-watcher
+    common_output_to_var: "apps_endpoint_domain"
 
-# TODO Connect IAM to LDAP"
+- name: Get access token for administrative user
+  uri:
+    url: "https://cp-console.{{ apps_endpoint_domain }}/idprovider/v1/auth/identitytoken"
+    method: POST
+    body_format: form-urlencoded
+    body:
+      grant_type: password
+      username: cpfsadmin
+      password: "{{ cpfs_universal_password }}"
+      scope: openid
+    status_code: 200
+    validate_certs: false
+  register: auth_token_response
+
+- name: Set access token for administrative user
+  set_fact:
+    access_token: "{{ auth_token_response.json | json_query('access_token') }}"
+
+- name: Prepare JSON file for LDAP connection
+  template:
+    src: ldap-connection.json.j2
+    dest: "{{ cpfs_output_directory }}/ldap-connection.json"
+    mode: u+rwx
+
+- name: Add LDAP connection
+  uri:
+    url: "https://cp-console.{{ apps_endpoint_domain }}/idmgmt/identity/api/v1/directory/ldap/onboardDirectory"
+    method: POST
+    headers:
+      Authorization: Bearer {{ access_token }}
+    body_format: json
+    src: "{{ cpfs_output_directory }}/ldap-connection.json"
+    status_code: [200, 422]
+    validate_certs: false

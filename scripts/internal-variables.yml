@@ -45,6 +45,7 @@ ca_key_path: /tmp/global-ca/global-ca.key
 ca_crt_path: /tmp/global-ca/global-ca.crt
 wildcard_key_path: /tmp/global-ca/wildcard.key
 wildcard_crt_path: /tmp/global-ca/wildcard.crt
+ldap_hostname: openldap-openldap-stack-ha.openldap.svc.cluster.local
 
 apps_endpoint_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 apps_endpoint_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
@@ -88,3 +89,4 @@ cpfs_storage_class_name: "{{ storage_class_name }}"
 cpfs_key_path: "{{ wildcard_key_path }}"
 cpfs_crt_path: "{{ wildcard_crt_path }}"
 cpfs_icr_password: "{{ icr_password }}"
+cpfs_ldap_hostname: "{{ ldap_hostname }}"
