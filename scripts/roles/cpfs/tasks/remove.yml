@@ -1,0 +1,39 @@
+# Based on https://www.ibm.com/docs/en/cpfs?topic=online-uninstalling-foundational-services
+
+- name: Get IBM Cloud Pak foundational services operator Subscription
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    kind: Subscription
+    name: ibm-common-service-operator
+    namespace: ibm-common-services
+  register: subscription
+  retries: 10
+  delay: 1
+
+- name: Get CSV
+  set_fact:
+    csv: '{{ subscription | json_query("resources[0].status.currentCSV") }}'
+
+- name: Remove IBM Cloud Pak foundational services operator Subscription
+  k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: absent
+    kind: Subscription
+    name: ibm-common-service-operator
+    namespace: ibm-common-services
+  register: subscription
+  retries: 10
+  delay: 1
+
+- name: Remove IBM Cloud Pak foundational services operator CSV
+  k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: absent
+    kind: ClusterServiceVersion
+    name: "{{ csv }}"
+    namespace: ibm-common-services
+  retries: 10
+  delay: 1
