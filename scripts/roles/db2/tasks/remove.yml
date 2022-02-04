@@ -32,7 +32,7 @@
     namespace: db2
     wait: true
     wait_sleep: 15
-    wait_timeout: 120
+    wait_timeout: 240
 
 - name: Remove ClusterRoleBinding for Norootsquash
   k8s:
