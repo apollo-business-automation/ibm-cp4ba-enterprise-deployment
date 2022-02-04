@@ -1,0 +1,20 @@
+exclude_paths:
+  - ./assets/
+  - ./scripts/archive
+  - ./scripts/automagic
+  - .ansible-lint
+  - ./scripts/install.yml
+  - ./scripts/remove.yml
+  - ./scripts/requirements.yml
+  - ./scripts/variables.yml
+  - ./scripts/internal-variables.yml
+  - ./scripts/storage-class
+  - ./scripts/tooling
+
+use_default_rules: true
+
+rulesdir:
+  - ./scripts/ansible-lint-rules/
+    
+skip_list:
+  - var-naming
