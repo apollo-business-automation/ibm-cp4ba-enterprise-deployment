@@ -16,7 +16,7 @@ CP4BA_CASE_CERT_K8S_VERSION=21.0.3
 ## Version of the Subscription channel as defined on 
 ## https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=cluster-setting-up-in-openshift-console
 CP4BA_OPERATOR_UPDATE_CHANNEL=v21.3
-CP4BA_STARTING_CSV=ibm-cp4a-operator.v21.3.0
+CP4BA_STARTING_CSV=ibm-cp4a-operator.v21.3.4
 ## Name of the CP4BA instance in cr.yaml at path metadata.name
 CP4BA_CR_META_NAME=cp4ba
 ## Name of OCP CP4BA project
@@ -37,7 +37,7 @@ CEREBRO_IMAGE_TAG=0.9.4
 
 # CPFS #
 CPFS_OPERATOR_CHANNEL=v3
-CPFS_STARTING_CSV=ibm-common-service-operator.v3.14.2
+CPFS_STARTING_CSV=ibm-common-service-operator.v3.15.0
 
 # DB2 #
 DB2_OPERATOR_CHANNEL=v1.1
