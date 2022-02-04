@@ -8,3 +8,6 @@
 
 - name: Repository
   include_tasks: repository.yml
+
+- name: DBs
+  include_tasks: dbs.yml

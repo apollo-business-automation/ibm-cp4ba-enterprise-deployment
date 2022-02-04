@@ -1,0 +1,35 @@
+- name: Get DB2 LDAP pod
+  kubernetes.core.k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: db2
+    label_selectors:
+      - role=ldap
+  register: ldap_pod
+
+- name: Set DB2 LDAP pod name
+  set_fact:
+    db2_ldap_pod_name: "{{ ldap_pod.resources[0].metadata.name }}"
+
+# - name: Delete BLUDB to tidy up the DB2 memory space
+#   kubernetes.core.k8s_exec:
+#     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+#     host: "{{ cp4ba_k8s_host | default(omit) }}"
+#     namespace: db2
+#     pod: "{{ db2_ldap_pod_name }}"
+#     command: |
+#       su - db2inst1
+#       sleep 30 #for db2start to finish
+#       db2 deactivate db BLUDB
+#       db2 force application ALL
+#       sleep 60 #for force aplication to finish
+#       db2 drop db BLUDB
+#   register: command_status
+#   ignore_errors: true
+
+
+# - name: debug
+#   debug:
+#     msg: "{{ ldap_pod.resources[0].metadata.name }}"
