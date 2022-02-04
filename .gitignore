@@ -6,3 +6,4 @@ nohup*
 #ansibles
 scripts/variables.yml
 .vscode
+scripts/ansible-lint-rules/__pycache__
