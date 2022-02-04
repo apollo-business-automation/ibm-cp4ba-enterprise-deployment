@@ -701,7 +701,9 @@
 - block:
 
     # Based on https://www.ibm.com/docs/en/cpfs?topic=configurations-changing-cluster-administrator-access-credentials#pwd
-    # cloudctl command replaced with actual Secret and Pod restarts
+    # cloudctl command replaced with actual Secret and Pod restarts because per
+    # https://www.ibm.com/docs/en/cloud-paks/cp-integration/2020.3?topic=SSGT7J_20.3/cloudctl/3.x.x/cli_pm_commands.html#update-secret
+    # it does "Update a secret and restart deployments that use the secret."
     - name: Change cpfsadmin user password in secret
       k8s:
         api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
