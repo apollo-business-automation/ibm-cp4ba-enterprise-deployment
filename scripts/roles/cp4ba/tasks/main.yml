@@ -1,0 +1,16 @@
+- name: Set output directory variable
+  set_fact:
+    cp4ba_output_directory: "{{ cp4ba_base_dir }}/{{ cp4ba_dir_name }}"
+
+- name: Remove CP4BA directory for generated files
+  file:
+    path: "{{ cp4ba_output_directory }}"
+    state: absent
+
+- name: Install CP4BA
+  include_tasks: install.yml
+  when: "cp4ba_action == 'install'"
+
+- name: Remove CP4BA
+  include_tasks: remove.yml
+  when: "cp4ba_action == 'remove'"
