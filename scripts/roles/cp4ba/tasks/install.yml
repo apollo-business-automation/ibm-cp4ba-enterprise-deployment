@@ -8,6 +8,12 @@
 
 - name: Repository
   include_tasks: repository.yml
+  when: _cp4ba_run_repository == true
 
 - name: DBs
   include_tasks: dbs.yml
+  when: _cp4ba_run_dbs == true
+
+- name: Predeploy
+  include_tasks: predeploy.yml
+  when: _cp4ba_run_predeploy == true

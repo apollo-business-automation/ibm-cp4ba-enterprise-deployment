@@ -1,0 +1,54 @@
+- name: Create Project
+  include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: "{{ cp4ba_project_name }}"
+    common_output_directory: "{{ cp4ba_output_directory }}"
+
+- name: Prepare yaml file for shared PVC
+  template:
+    src: operator/sharedpvc.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/sharedpvc.yaml"
+    mode: u+rwx
+
+- name: Add Shared PVC
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/sharedpvc.yaml"
+
+- name: Prepare yaml file for Log PVC
+  template:
+    src: operator/logpvc.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/logpvc.yaml"
+    mode: u+rwx
+
+- name: Add log PVC
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/logpvc.yaml"
+
+- name: Create ICR Secret
+  include_role:
+    name: common
+    tasks_from: create-icr-secret
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_output_directory: "{{ cp4ba_output_directory }}"
+    common_icr_secret_name: "{{ item }}"
+    common_icr_password: "{{ cp4ba_icr_password }}"
+    common_namespace_name: "{{ cp4ba_project_name }}"
+  with_items:
+    - admin.registrykey
+    - ibm-entitlement-key
