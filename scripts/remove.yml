@@ -1,6 +1,9 @@
 - name: Remove CPFS
   include_role:
     name: cpfs
+- name: Remove Kibana
+  include_role:
+    name: kibana
 - name: Remove Mail
   include_role:
     name: mail

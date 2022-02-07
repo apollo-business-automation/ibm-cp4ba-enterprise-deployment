@@ -45,34 +45,15 @@
       set_fact:
         _global_ca_crt: "{{ slurped_crt_data.content }}"
 
-    - name: Prepare yaml file for Project
-      template:
-        src: project.yaml.j2
-        dest: "{{ global_ca_output_directory }}/project.yaml"
-        mode: u+rwx
-
-    - name: Add Project
-      k8s:
-        api_key: "{{ global_ca_k8s_api_key | default(omit) }}"
-        host: "{{ global_ca_k8s_host | default(omit) }}"
-        state: present
-        force: false
-        merge_type: merge
-        src: "{{ global_ca_output_directory }}/project.yaml"
-        wait: true
-        wait_sleep: 15
-        wait_timeout: 15
-
-    - name: Wait for Project
-      k8s_info:
-        api_key: "{{ global_ca_k8s_api_key | default(omit) }}"
-        host: "{{ global_ca_k8s_host | default(omit) }}"
-        api_version: project.openshift.io/v1
-        kind: Project
-        name: automagic
-      register: project
-      retries: 10
-      delay: 1
+    - name: Create Project
+      include_role:
+        name: common
+        tasks_from: create-project
+      vars:
+        common_k8s_api_key: "{{ global_ca_k8s_api_key | default(omit) }}"
+        common_k8s_host: "{{ global_ca_k8s_host | default(omit) }}"
+        common_namespace_name: automagic
+        common_output_directory: "{{ global_ca_output_directory }}"
 
     - name: Prepare yaml file for Secret
       template:
