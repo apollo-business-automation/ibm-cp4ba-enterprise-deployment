@@ -1,0 +1,87 @@
+apiVersion: base.automation.ibm.com/v1beta1
+kind: AutomationBase
+metadata:
+  name: foundation-iaf
+spec:
+  description: IAF CR for Foundation
+  version: "{{CP4BA_AUTOMATION_BASE_VERSION}}"
+  license:
+    accept: true
+  tls:
+    issuerRef:
+      name: iaf-issuer
+      kind: Issuer
+    caSecret:
+      secretName: global-ca
+      key: ca.crt
+  elasticsearch:
+    version: "{{CP4BA_AUTOMATION_BASE_VERSION}}"
+    license:
+      accept: true
+    additionalAllowedAPIs: "GET:[*],PUT:[*],POST:[*],HEAD:[*],DELETE:[*]"
+    nodegroupspecs:
+      - name: data
+        replicas: 1
+        storage:
+          class: "{{STORAGE_CLASS_NAME}}"
+          size: 50Gi
+        template:
+          pod:
+            spec:
+              containers:
+                - name: elasticsearch
+                  resources:
+                    requests:
+                      cpu: 500m
+                      memory: 820Mi
+                    limits:
+                      cpu: 800m
+                      memory: 2048Mi
+                - name: tls-proxy
+                  resources:
+                    requests:
+                      cpu: 100m
+                      memory: 512Mi
+                    limits:
+                      cpu: 200m
+                      memory: 512Mi
+        config:
+          - key: path.repo
+            value: '/usr/share/elasticsearch/snapshots/main'
+    snapshotStores:
+      - name: main
+        storage:
+          class: "{{STORAGE_CLASS_NAME}}"
+          size: 10Gi
+  kafka:
+    kafka:
+      config:
+        offsets.topic.replication.factor: 1
+        transaction.state.log.min.isr: 1
+        transaction.state.log.replication.factor: 1    
+      replicas: 1
+      resources:
+        requests:
+          cpu: 1000m
+          memory: 1024Mi
+        limits:
+          cpu: 1000m
+          memory: 2048Mi
+      storage:
+        type: persistent-claim
+        size: 4Gi
+        class: "{{STORAGE_CLASS_NAME}}"
+    zookeeper:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 1000m
+          memory: 1024Mi
+        limits:
+          cpu: 1000m
+          memory: 1024Mi
+      storage:
+        type: persistent-claim
+        size: 2Gi
+        class: "{{STORAGE_CLASS_NAME}}"
+  apicurio: {}
