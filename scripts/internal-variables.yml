@@ -100,3 +100,4 @@ cp4ba_storage_class_name: "{{ storage_class_name }}"
 cp4ba_icr_password: "{{ icr_password }}"
 cp4ba_ldap_hostname: "{{ ldap_hostname }}"
 cp4ba_db2_hostname: "{{ db2_hostname }}"
+cp4ba_project_name: cp4ba
