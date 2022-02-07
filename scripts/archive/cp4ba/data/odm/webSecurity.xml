@@ -28,7 +28,7 @@
   <variable name="odm.resMonitors.user2" value="user:customRealm/{{CP4BA_PROJECT_NAME}}-{{CP4BA_CR_META_NAME}}-odm-oidc-client-id"/>
   <variable name="odm.resExecutors.user2" value="user:customRealm/{{CP4BA_PROJECT_NAME}}-{{CP4BA_CR_META_NAME}}-odm-oidc-client-id"/>
   
-  <!-- Give all roles to the IAM clientID -->
+  <!-- Give all roles to the IAM clientID TODO this shoul dnot be needed from IF004 -->
   <variable name="odm.rtsAdministrators.user3" value="user:customRealm/{{CP4BA_CR_META_NAME}}-odm-oidc-client-id"/>
   <variable name="odm.rtsInstallers.user3" value="user:customRealm/{{CP4BA_CR_META_NAME}}-odm-oidc-client-id"/>
   <variable name="odm.rtsConfigManagers.user3" value="user:customRealm/{{CP4BA_CR_META_NAME}}-odm-oidc-client-id"/>
