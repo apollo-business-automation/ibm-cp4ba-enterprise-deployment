@@ -4,35 +4,15 @@
     state: directory
     mode: u+rwx
 
-- name: Prepare yaml file for Project
-  template:
-    src: project.yaml.j2
-    dest: "{{ mail_output_directory }}/project.yaml"
-    mode: u+rwx
-
-- name: Add Project
-  k8s:
-    api_key: "{{ mail_k8s_api_key | default(omit) }}"
-    host: "{{ mail_k8s_host | default(omit) }}"
-    state: present
-    force: false
-    merge_type: merge
-    src: "{{ mail_output_directory }}/project.yaml"
-    wait: true
-    wait_sleep: 15
-    wait_timeout: 15
-
-- name: Wait for Project
-  k8s_info:
-    api_key: "{{ mail_k8s_api_key | default(omit) }}"
-    host: "{{ mail_k8s_host | default(omit) }}"
-    api_version: project.openshift.io/v1
-    kind: Project
-    name: mail
-  register: project
-  retries: 10
-  delay: 1
-  until: ('Active' in project | json_query('resources[*].status.phase') | unique)
+- name: Create Project
+  include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ mail_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ mail_k8s_host | default(omit) }}"
+    common_namespace_name: mail
+    common_output_directory: "{{ mail_output_directory }}"
 
 - name: Prepare yaml file for privileged ClusterRoleBinding
   template:
