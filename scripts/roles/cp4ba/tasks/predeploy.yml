@@ -23,7 +23,7 @@
     merge_type: merge
     src: "{{ cp4ba_output_directory }}/sharedpvc.yaml"
 
-- name: Prepare yaml file for Log PVC
+- name: Prepare yaml file for log PVC
   template:
     src: operator/logpvc.yaml.j2
     dest: "{{ cp4ba_output_directory }}/logpvc.yaml"
@@ -52,3 +52,105 @@
   with_items:
     - admin.registrykey
     - ibm-entitlement-key
+
+- name: Prepare yaml file for OperatorGroup
+  template:
+    src: operator/operatorgroup.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/operatorgroup.yaml"
+    mode: u+rwx
+
+- name: Add OperatorGroup
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/operatorgroup.yaml"
+
+- name: Prepare yaml file for Subscription
+  template:
+    src: operator/subscription.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/subscription.yaml"
+    mode: u+rwx
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=cluster-setting-up-in-openshift-console
+- name: Add Subscription
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/subscription.yaml"
+
+- name: Manage Manual Operator ibm-cp4a-operator
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: "{{ cp4ba_project_name }}"
+    common_subscription_name: ibm-cp4a-operator
+    common_deployment_name: ibm-cp4a-operator
+
+- name: Wait for ICP4ACluster CRD to be Established
+  include_role:
+    name: common
+    tasks_from: wait-crd
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_crd_name: icp4aclusters.icp4a.ibm.com
+
+- name: Create CP4BA jdbc directory
+  file:
+    path: "{{ cp4ba_output_directory }}/jdbc/db2/"
+    state: directory
+    mode: u+rwx
+
+- name: Download DB2 JDBC license
+  kubernetes.core.k8s_cp:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    remote_path: /opt/ibm/db2/V11.5.0.0/java/db2jcc_license_cu.jar
+    local_path: "{{ cp4ba_output_directory }}/jdbc/db2/db2jcc_license_cu.jar"
+    state: from_pod
+
+- name: Download DB2 JDBC driver
+  kubernetes.core.k8s_cp:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    remote_path: /opt/ibm/db2/V11.5.0.0/java/db2jcc4.jar
+    local_path: "{{ cp4ba_output_directory }}/jdbc/db2/db2jcc4.jar"
+    state: from_pod
+
+- name: Get CP4BA operator pod
+  kubernetes.core.k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
+    label_selectors:
+      - name=ibm-cp4a-operator
+  register: cp4ba_operator_pod
+
+- name: Set CP4BA operator pod name
+  set_fact:
+    cp4ba_operator_pod_name: "{{ cp4ba_operator_pod.resources[0].metadata.name }}"
+
+- name: Copy DB2 JDBC driver and license to CP4BA operator pod
+  kubernetes.core.k8s_cp:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: "{{ cp4ba_project_name }}"
+    pod: "{{ cp4ba_operator_pod_name }}"
+    remote_path: /opt/ansible/share/jdbc
+    local_path: "{{ cp4ba_output_directory }}/jdbc"
+    state: to_pod
