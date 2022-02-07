@@ -1,0 +1,12 @@
+- name: Remove Project Kibana
+  k8s:
+    state: absent
+    api_key: "{{ kibana_k8s_api_key | default(omit) }}"
+    host: "{{ kibana_k8s_host | default(omit) }}"
+    api_version: project.openshift.io/v1
+    kind: Project
+    name: kibana
+    namespace: kibana
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 120
