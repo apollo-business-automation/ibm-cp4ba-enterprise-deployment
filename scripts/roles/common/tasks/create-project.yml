@@ -10,13 +10,13 @@
 #     common_namespace_name: _project_name
 #     common_output_directory: "{{ prefix_output_directory }}" 
 
-- name: Prepare yaml file for Project
+- name: Prepare yaml file for Project {{ common_namespace_name }}
   template:
     src: project.yaml.j2
     dest: "{{ common_output_directory }}/project.yaml"
     mode: u+rwx
 
-- name: Add Project
+- name: Add Project {{ common_namespace_name }}
   k8s:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
     host: "{{ common_k8s_host | default(omit) }}"
@@ -28,7 +28,7 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Wait for Project
+- name: Wait for Project {{ common_namespace_name }}
   k8s_info:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
     host: "{{ common_k8s_host | default(omit) }}"
