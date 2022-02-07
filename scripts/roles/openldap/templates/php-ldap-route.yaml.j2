@@ -11,8 +11,8 @@ spec:
     termination: edge
     insecureEdgeTerminationPolicy: Redirect
     key: |-
-      {{ _tls_key | b64decode | indent(6) }}
+      {{ openldap_tls_key | b64decode | indent(6) }}
     certificate: |-
-      {{ _tls_crt | b64decode | indent(6) }}
+      {{ openldap_tls_crt | b64decode | indent(6) }}
     caCertificate: |-
-      {{ _ca_crt | b64decode | indent(6) }}
+      {{ openldap_ca_crt | b64decode | indent(6) }}

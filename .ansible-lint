@@ -10,8 +10,13 @@ exclude_paths:
   - ./scripts/internal-variables.yml
   - ./scripts/storage-class
   - ./scripts/tooling
+  - ./scripts/servicing-pod.yaml
+  - .pre-commit-config.yaml
 
 use_default_rules: true
+
+enable_list:
+  - yaml
 
 rulesdir:
   - ./scripts/ansible-lint-rules/
