@@ -13,6 +13,9 @@
 - name: Install Mail
   include_role:
     name: mail
+- name: Install Kibana
+  include_role:
+    name: kibana
 - name: Install CPFS
   include_role:
     name: cpfs
