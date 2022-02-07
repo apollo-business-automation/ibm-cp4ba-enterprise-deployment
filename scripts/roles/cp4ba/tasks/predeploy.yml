@@ -154,3 +154,63 @@
     remote_path: /opt/ansible/share/jdbc
     local_path: "{{ cp4ba_output_directory }}/jdbc"
     state: to_pod
+
+- name: Check that the {{ cp4ba_wildcard_key_path }} exists
+  stat:
+    path: "{{ cp4ba_wildcard_key_path }}"
+  register: cp4ba_wildcard_key_file
+
+- name: Check that the {{ cp4ba_ca_crt_path }} exists
+  stat:
+    path: "{{ cp4ba_ca_crt_path }}"
+  register: cp4ba_ca_crt_file
+
+- name: Ensure we have CA certificates and wildcards
+  include_role:
+    name: global_ca
+  when: not cp4ba_wildcard_key_file.stat.exists or not cp4ba_ca_crt_file.stat.exists
+
+- name: Load TLS key data
+  slurp:
+    src: '{{ cp4ba_wildcard_key_path }}'
+  register: slurped_key_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _tls_key: "{{ slurped_key_data.content }}"
+
+- name: Load TLS crt data
+  slurp:
+    src: '{{ cp4ba_wildcard_crt_path }}'
+  register: slurped_crt_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _tls_crt: "{{ slurped_crt_data.content }}"
+
+- name: Load CA TLS crt data
+  slurp:
+    src: '{{ cp4ba_ca_crt_path }}'
+  register: slurped_ca_crt_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _ca_tls_crt: "{{ slurped_ca_crt_data.content }}"
+
+- name: Prepare yaml file for custom IAF TLS Secret
+  template:
+    src: iaf/iaf-tls-secret.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/iaf-tls-secret.yaml"
+    mode: u+rwx
+
+- name: Add custom IAF TLS Secret
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/iaf-tls-secret.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15

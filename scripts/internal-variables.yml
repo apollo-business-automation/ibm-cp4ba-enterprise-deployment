@@ -103,6 +103,9 @@ cp4ba_icr_password: "{{ icr_password }}"
 cp4ba_ldap_hostname: "{{ ldap_hostname }}"
 cp4ba_db2_hostname: "{{ db2_hostname }}"
 cp4ba_project_name: cp4ba
+cp4ba_ca_crt_path: "{{ ca_crt_path }}"
+cp4ba_wildcard_key_path: "{{ wildcard_key_path }}"
+cp4ba_wildcard_crt_path: "{{ wildcard_crt_path }}"
 
 kibana_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 kibana_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
