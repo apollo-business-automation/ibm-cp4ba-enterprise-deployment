@@ -15,10 +15,6 @@
   retries: 10
   delay: 1
 
-- name: debug
-  debug:
-    msg: "{{ configmap }}"
-
 - name: Manage Config Map
   block:
     - name: Prepare yaml file for Cluster Monitoring ConfigMap

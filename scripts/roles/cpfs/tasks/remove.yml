@@ -237,3 +237,28 @@
     wait: true
     wait_sleep: 5
     wait_timeout: 50
+
+- name: Get Cluster Monitoring ConfigMap
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    kind: ConfigMap
+    name: cluster-monitoring-config
+    namespace: openshift-monitoring
+  register: configmap
+  retries: 10
+  delay: 1
+
+- name: Remove Cluster Monitoring ConfigMap
+  k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: absent
+    force: false
+    merge_type: merge
+    name: cluster-monitoring-config
+    namespace: openshift-monitoring
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+  when: configmap | json_query('resources[0].data.automagic') | bool
