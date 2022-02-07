@@ -188,6 +188,15 @@
   set_fact:
     _tls_crt: "{{ slurped_crt_data.content }}"
 
+- name: Load CA TLS key data
+  slurp:
+    src: '{{ cp4ba_ca_key_path }}'
+  register: slurped_ca_key_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _ca_tls_key: "{{ slurped_ca_key_data.content }}"
+
 - name: Load CA TLS crt data
   slurp:
     src: '{{ cp4ba_ca_crt_path }}'
@@ -276,3 +285,28 @@
     common_condition_name: Ready
     common_retries: 80
     common_delay: 15
+
+- name: Prepare yaml file for root CA Secret
+  template:
+    src: root-ca-secret.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/root-ca-secret.yaml"
+    mode: u+rwx
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=certificates-providing-root-ca-certificate
+- name: Add root CA Secret
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/root-ca-secret.yaml"
+
+# TODO verify if we need this when Zen front door is used. Maybe for External Share ingress Routes?
+# echo
+# echo ">>>>$(print_timestamp) Create wildcard certificate Secret"
+# # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=certificates-providing-external-routes
+# oc create secret tls cp4ba-wildcard --cert ../global-ca/wildcard.crt --key ../global-ca/wildcard.key
+# # TODO needed the same for ADP CDS pod with different name, report bug, wait for fix. roles\common\tasks\fncm\fncm-ext-tls-certification.yml
+# doesnt ganarate this secret, CDS deployment counts on it exist. temporarily resolved by omitting external_tls_certificate_secret from main cr.yaml
+# # oc create secret tls cp4ba-fncm-ext-tls-secret --cert ../global-ca/wildcard.crt --key ../global-ca/wildcard.key
