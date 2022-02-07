@@ -8,7 +8,7 @@
 #     common_k8s_api_key: "{{ prefix_k8s_api_key | default(omit) }}"
 #     common_k8s_host: "{{ prefix_k8s_host | default(omit) }}"
 #     common_namespace_name: _project_name
-#     common_output_directory: "{{ prefix_output_directory }}" 
+#     common_output_directory: "{{ prefix_output_directory }}"
 
 - name: Prepare yaml file for Project {{ common_namespace_name }}
   template:

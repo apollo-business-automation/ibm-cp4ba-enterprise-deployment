@@ -1,9 +1,9 @@
 - name: Install Catalog Source
   include_role:
-    name: catalog-source
+    name: catalog_source
 - name: Install Global CA
   include_role:
-    name: global-ca
+    name: global_ca
 - name: Install DB2
   include_role:
     name: db2

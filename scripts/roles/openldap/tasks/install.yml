@@ -77,38 +77,6 @@
     values_files:
       - "{{ openldap_output_directory }}/values.yaml"
 
-- name: Ensure we have CA certificates and wildcards
-  include_role:
-    name: global-ca
-  when: global_ca_output_directory is not defined
-
-- name: Load TLS key data
-  slurp:
-    src: '{{ global_ca_output_directory }}/wildcard.key'
-  register: slurped_key_data
-
-- name: Decode data and store as fact
-  set_fact:
-    _tls_key: "{{ slurped_key_data.content }}"
-
-- name: Load TLS key data
-  slurp:
-    src: '{{ global_ca_output_directory }}/wildcard.crt'
-  register: slurped_crt_data
-
-- name: Decode data and store as fact
-  set_fact:
-    _tls_crt: "{{ slurped_crt_data.content }}"
-
-- name: Load TLS ca data
-  slurp:
-    src: '{{ openldap_ca_crt_path }}'
-  register: slurped_ca_data
-
-- name: Decode data and store as fact
-  set_fact:
-    _ca_crt: "{{ slurped_ca_data.content }}"
-
 - name: Get OCP Apps Endpoint
   include_role:
     name: common
@@ -119,24 +87,20 @@
     common_output_to_var: "apps_endpoint_domain"
   when: apps_endpoint_domain is not defined
 
-- name: Prepare yaml file for phpLDAPadmin Route
-  template:
-    src: php-ldap-route.yaml.j2
-    dest: "{{ openldap_output_directory }}/php-ldap-route.yaml"
-    mode: u+rwx
-
-- name: Create phpLDAPadmin Route
-  k8s:
-    api_key: "{{ openldap_k8s_api_key | default(omit) }}"
-    host: "{{ openldap_k8s_host | default(omit) }}"
-    state: present
-    force: false
-    merge_type: merge
-    namespace: openldap
-    src: "{{ openldap_output_directory }}/php-ldap-route.yaml"
-    wait: true
-    wait_sleep: 15
-    wait_timeout: 15
+- name: Crete Edge Route
+  include_role:
+    name: common
+    tasks_from: create-edge-route
+  vars:
+    common_k8s_api_key: "{{ openldap_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ openldap_k8s_host | default(omit) }}"
+    common_namespace_name: openldap
+    common_service_name: openldap-phpldapadmin
+    common_wildcard_crt_path: "{{ openldap_wildcard_crt_path }}"
+    common_wildcard_key_path: "{{ openldap_wildcard_key_path }}"
+    common_ca_crt_path: "{{ openldap_ca_crt_path }}"
+    common_apps_endpoint_domain: "{{ apps_endpoint_domain }}"
+    common_output_directory: "{{ openldap_output_directory }}"
 
 - name: Wait for the phpldapadmin Deployment to be Available
   k8s_info:
