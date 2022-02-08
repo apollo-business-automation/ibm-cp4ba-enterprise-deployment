@@ -49,6 +49,7 @@ ldap_hostname: openldap-openldap-stack-ha.openldap.svc.cluster.local
 db2_hostname: c-db2ucluster-db2u.db2.svc.cluster.local
 mongodb_hostname: mongodb.mongodb.svc.cluster.local
 mail_hostname: mailserver.mail.svc.cluster.local
+kibana_url: http://kibana.kibana.svc.cluster.local:5601
 
 apps_endpoint_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 apps_endpoint_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
@@ -106,6 +107,7 @@ cp4ba_ldap_hostname: "{{ ldap_hostname }}"
 cp4ba_db2_hostname: "{{ db2_hostname }}"
 cp4ba_mongodb_hostname: "{{ mongodb_hostname }}"
 cp4ba_mail_hostname: "{{ mail_hostname }}"
+cp4ba_kibana_url: "{{ kibana_url }}"
 cp4ba_project_name: cp4ba
 cp4ba_ca_key_path: "{{ ca_key_path }}"
 cp4ba_ca_crt_path: "{{ ca_crt_path }}"
@@ -114,6 +116,7 @@ cp4ba_wildcard_crt_path: "{{ wildcard_crt_path }}"
 cp4ba_external_share_google: "{{ external_share_google }}"
 cp4ba_google_client_id: "{{ google_client_id }}"
 cp4ba_google_client_secret: "{{ google_client_secret }}"
+cp4ba_deployment_platform: "{{ deployment_platform }}"
 
 kibana_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 kibana_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"

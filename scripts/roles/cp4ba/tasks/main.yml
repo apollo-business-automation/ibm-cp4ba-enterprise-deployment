@@ -13,6 +13,7 @@
     _cp4ba_run_repository: true
     _cp4ba_run_dbs: true
     _cp4ba_run_predeploy: true
+    _cp4ba_run_deploy: true
   when: "cp4ba_action == 'install'"
 
 - name: Remove CP4BA

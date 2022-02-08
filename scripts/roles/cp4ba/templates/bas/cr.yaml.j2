@@ -1,0 +1,31 @@
+spec:
+  bastudio_configuration:
+    admin_secret_name: bas-admin-secret
+    admin_user: cpadmin
+    replica_size: 2 # to fulfill PDB requirement
+    database:
+      type: db2
+      host: "{{ cp4ba_db2_hostname }}"
+      name: CP4BA
+      port: "50000"
+    autoscaling:
+      enabled: false
+    jms_server:
+      storage:
+        persistent: true
+        use_dynamic_provisioning: true
+        storage_class: "{{ cp4ba_storage_class_name }}"
+    playback_server:
+      admin_secret_name: playback-server-admin-secret
+      admin_user: cpadmin
+      replica_size: 2 # to fulfill PDB requirement
+      autoscaling:
+        enabled: false
+      database:
+        host: "{{ cp4ba_db2_hostname }}"
+        name: CP4BA
+        port: "50000"
+        type: db2
+        current_schema: PB
+      env:
+        server_env_type: development

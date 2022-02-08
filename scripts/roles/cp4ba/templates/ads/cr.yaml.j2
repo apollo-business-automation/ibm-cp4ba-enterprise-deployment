@@ -1,0 +1,31 @@
+spec:
+  ads_configuration:
+    decision_designer:
+      enabled: true
+    embedded_build_service:
+      replica_count: 1
+    front:
+      replica_count: 1
+    download_service:
+      replica_count: 1
+    rest_api:
+      replica_count: 1
+    credentials_service:
+      replica_count: 1
+    git_service:
+      replica_count: 1
+    parsing_service:
+      replica_count: 1
+    run_service:
+      replica_count: 1
+    decision_runtime:
+      enabled: true
+      autoscaling:
+        enabled: false
+      admin_secret_name: ibm-dba-ads-runtime-secret
+    decision_runtime_service:
+      replica_count: 1
+      tls:
+        allow_self_signed: true
+      autoscaling:
+        enabled: false

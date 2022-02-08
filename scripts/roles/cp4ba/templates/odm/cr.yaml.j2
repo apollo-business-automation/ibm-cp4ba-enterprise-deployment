@@ -1,0 +1,12 @@
+spec:
+  datasource_configuration:
+    dc_odm_datasource:
+      dc_database_type: db2
+      database_servername: "{{ cp4ba_db2_hostname }}"
+      dc_common_database_port: "50000"
+      dc_common_database_name: CP4BA
+      dc_common_database_instance_secret: odm-db-secret
+  odm_configuration:
+    customization:
+      securitySecretRef: odm-tls-secret
+      authSecretRef: odm-web-security-secret
