@@ -2,9 +2,10 @@ apiVersion: base.automation.ibm.com/v1beta1
 kind: AutomationBase
 metadata:
   name: foundation-iaf
+  namespace: "{{ cp4ba_project_name }}"
 spec:
   description: IAF CR for Foundation
-  version: "{{CP4BA_AUTOMATION_BASE_VERSION}}"
+  version: "{{ cp4ba_automation_base_version }}"
   license:
     accept: true
   tls:
@@ -15,7 +16,7 @@ spec:
       secretName: global-ca
       key: ca.crt
   elasticsearch:
-    version: "{{CP4BA_AUTOMATION_BASE_VERSION}}"
+    version: "{{ cp4ba_automation_base_version }}"
     license:
       accept: true
     additionalAllowedAPIs: "GET:[*],PUT:[*],POST:[*],HEAD:[*],DELETE:[*]"
@@ -23,7 +24,7 @@ spec:
       - name: data
         replicas: 1
         storage:
-          class: "{{STORAGE_CLASS_NAME}}"
+          class: "{{ cp4ba_storage_class_name }}"
           size: 50Gi
         template:
           pod:
@@ -51,7 +52,7 @@ spec:
     snapshotStores:
       - name: main
         storage:
-          class: "{{STORAGE_CLASS_NAME}}"
+          class: "{{ cp4ba_storage_class_name }}"
           size: 10Gi
   kafka:
     kafka:
@@ -70,7 +71,7 @@ spec:
       storage:
         type: persistent-claim
         size: 4Gi
-        class: "{{STORAGE_CLASS_NAME}}"
+        class: "{{ cp4ba_storage_class_name }}"
     zookeeper:
       replicas: 1
       resources:
@@ -83,5 +84,5 @@ spec:
       storage:
         type: persistent-claim
         size: 2Gi
-        class: "{{STORAGE_CLASS_NAME}}"
+        class: "{{ cp4ba_storage_class_name }}"
   apicurio: {}
