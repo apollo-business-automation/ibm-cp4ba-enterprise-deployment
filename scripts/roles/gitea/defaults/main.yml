@@ -1,0 +1,7 @@
+gitea_action: install
+gitea_base_dir: /tmp
+gitea_dir_name: gitea
+gitea_universal_password: ""
+gitea_storage_class_name: ""
+gitea_ldap_hostname: ""
+gitea_chart_version: 4.1.1
