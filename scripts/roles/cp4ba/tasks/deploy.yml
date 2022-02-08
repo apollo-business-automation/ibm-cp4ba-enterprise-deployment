@@ -354,6 +354,7 @@
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
     label_selectors:
       - app.kubernetes.io/component=etcd-server
   register: pod
@@ -596,3 +597,19 @@
     common_delay: 120
 
 # TODO do we want to also check not ready pods?
+# - name: Wait for all remaining pods to become Ready
+#   kubernetes.core.k8s_info:
+#     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+#     host: "{{ cp4ba_k8s_host | default(omit) }}"
+#     kind: Pod
+#     namespace: "{{ cp4ba_project_name }}"
+#     field_selectors:
+#       - status.phase!=Running
+#       - status.phase!=Succeeded
+#       - status.phase!=Failed
+#   register: pod
+#   retries: 30
+#   delay: 120
+#   until: (['True'] in pod | json_query(condition_query) | unique )
+#   vars:
+#     condition_query: "resources[*].status.conditions[?type == 'Ready'].status"
