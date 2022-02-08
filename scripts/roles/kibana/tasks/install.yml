@@ -67,6 +67,7 @@
     common_k8s_api_key: "{{ kibana_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ kibana_k8s_host | default(omit) }}"
     common_namespace_name: kibana
+    common_route_name: kibana
     common_service_name: kibana
     common_wildcard_crt_path: "{{ kibana_wildcard_crt_path }}"
     common_wildcard_key_path: "{{ kibana_wildcard_key_path }}"
