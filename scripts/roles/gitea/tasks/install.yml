@@ -1,0 +1,108 @@
+- name: Create directory for generated files
+  file:
+    path: "{{ gitea_output_directory }}"
+    state: directory
+    mode: u+rwx
+
+- name: Create Project
+  include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ gitea_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ gitea_k8s_host | default(omit) }}"
+    common_namespace_name: gitea
+    common_output_directory: "{{ gitea_output_directory }}"
+
+- name: Prepare yaml for privileged role binding
+  template:
+    src: privileged-scc-clusterrolebinding.yaml.j2
+    dest: "{{ gitea_output_directory }}/privileged-scc-clusterrolebinding.yaml"
+    mode: u+rwx
+
+- name: Add Gitea priveleged role binding
+  k8s:
+    api_key: "{{ gitea_k8s_api_key | default(omit) }}"
+    host: "{{ gitea_k8s_host | default(omit ) }}"
+    state: present
+    force: true
+    merge_type: merge
+    src: "{{ gitea_output_directory }}/privileged-scc-clusterrolebinding.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Get OCP Apps Endpoint
+  include_role:
+    name: common
+    tasks_from: apps-endpoint
+  vars:
+    common_k8s_api_key: "{{ kibana_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ kibana_k8s_host | default(omit) }}"
+    common_output_to_var: "apps_endpoint_domain"
+  when: apps_endpoint_domain is not defined
+
+- name: Add gitea chart repo
+  kubernetes.core.helm_repository:
+    name: gitea-charts
+    repo_url: "https://dl.gitea.io/charts/"
+
+- name: Prepare yaml file for values of helm chart
+  template:
+    src: values.yaml.j2
+    dest: "{{ gitea_output_directory }}/values.yaml"
+    mode: u+rwx
+
+- name: Deploy gitea chart using values files on target
+  kubernetes.core.helm:
+    api_key: "{{ gitea_k8s_api_key | default(omit) }}"
+    host: "{{ gitea_k8s_host | default(omit) }}"
+    name: gitea
+    chart_ref: gitea-charts/gitea
+    chart_version: "{{ gitea_chart_version }}"
+    release_namespace: gitea
+    values_files:
+      - "{{ gitea_output_directory }}/values.yaml"
+
+- name: Crete Edge Route
+  include_role:
+    name: common
+    tasks_from: create-edge-route
+  vars:
+    common_k8s_api_key: "{{ gitea_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ gitea_k8s_host | default(omit) }}"
+    common_namespace_name: gitea
+    common_route_name: gitea
+    common_service_name: gitea-http
+    common_wildcard_crt_path: "{{ gitea_wildcard_crt_path }}"
+    common_wildcard_key_path: "{{ gitea_wildcard_key_path }}"
+    common_ca_crt_path: "{{ gitea_ca_crt_path }}"
+    common_apps_endpoint_domain: "{{ apps_endpoint_domain }}"
+    common_output_directory: "{{ gitea_output_directory }}"
+
+- name: Wait for gitea pod to be ready
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ gitea_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ gitea_k8s_host | default(omit) }}"
+    common_api_version: v1
+    common_resource_kind: Pod
+    common_resource_name: gitea-0
+    common_resource_namespace: gitea
+    common_condition_name: Ready
+    common_retries: 80
+    common_delay: 15
+
+- name: Sync LDAP Users
+  uri:
+    url: "https://gitea.{{ apps_endpoint_domain }}/api/v1/admin/cron/sync_external_users"
+    method: POST
+    headers:
+      Accept: application/json
+    user: giteaadmin
+    password: "{{ gitea_universal_password }}"
+    validate_certs: false
+    force_basic_auth: true
+    status_code: 204
