@@ -1,0 +1,8 @@
+mongodb_action: install
+mongodb_base_dir: /tmp
+mongodb_dir_name: mongodb
+mongodb_universal_password: ""
+mongodb_storage_class_name: ""
+# specific version bringing 4.2 version for ADS, ADP
+mongodb_chart_version: 8.3.2
+mongodb_image_tag: 4.2.18-debian-10-r32

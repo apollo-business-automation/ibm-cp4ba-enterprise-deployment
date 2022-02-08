@@ -1,6 +1,9 @@
 - name: Remove CPFS
   include_role:
     name: cpfs
+- name: Remove MongoDB
+  include_role:
+    name: mongodb
 - name: Remove Kibana
   include_role:
     name: kibana

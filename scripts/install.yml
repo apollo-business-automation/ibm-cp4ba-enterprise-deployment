@@ -16,6 +16,9 @@
 - name: Install Kibana
   include_role:
     name: kibana
+- name: Install MongoDB
+  include_role:
+    name: mongodb
 - name: Install CPFS
   include_role:
     name: cpfs

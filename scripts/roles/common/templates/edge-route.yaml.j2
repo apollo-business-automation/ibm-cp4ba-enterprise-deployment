@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Route
 metadata:
-  name: "{{ common_service_name }}-route"
+  name: "{{ common_route_name }}"
 spec:
-  host: "kibana.{{ common_apps_endpoint_domain }}"
+  host: "{{ common_route_name }}.{{ common_apps_endpoint_domain }}"
   to:
     kind: Service
     name: "{{ common_service_name }}"
