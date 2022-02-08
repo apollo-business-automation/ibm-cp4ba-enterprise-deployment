@@ -1,0 +1,12 @@
+- name: Remove Project mongodb
+  k8s:
+    state: absent
+    api_key: "{{ mongodb_k8s_api_key | default(omit) }}"
+    host: "{{ mongodb_k8s_host | default(omit) }}"
+    api_version: project.openshift.io/v1
+    kind: Project
+    name: mongodb
+    namespace: mongodb
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 120
