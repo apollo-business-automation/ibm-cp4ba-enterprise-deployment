@@ -3,7 +3,7 @@ kind: Route
 metadata:
   name: "{{ common_service_name }}-route"
 spec:
-  host: "kibana.{{ common_apps_endpoint_domain }}"
+  host: "{{ common_service_name }}.{{ common_apps_endpoint_domain }}"
   to:
     kind: Service
     name: "{{ common_service_name }}"
