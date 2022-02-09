@@ -13,6 +13,9 @@
 - name: Install gitea
   include_role:
     name: gitea
+- name: Install nexus
+  include_role:
+    name: nexus
 - name: Install Mail
   include_role:
     name: mail

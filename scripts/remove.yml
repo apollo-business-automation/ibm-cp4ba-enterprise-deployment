@@ -10,6 +10,9 @@
 - name: Remove Mail
   include_role:
     name: mail
+- name: Remove nexus
+  include_role:
+    name: nexus
 - name: Remove gitea
   include_role:
     name: gitea
