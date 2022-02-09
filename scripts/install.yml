@@ -28,3 +28,6 @@
 - name: Install CPFS
   include_role:
     name: cpfs
+- name: Install CP4BA
+  include_role:
+    name: cp4ba
