@@ -1,3 +1,7 @@
+
+- name: Remove CP4BA
+  include_role:
+    name: cp4ba
 - name: Remove CPFS
   include_role:
     name: cpfs
