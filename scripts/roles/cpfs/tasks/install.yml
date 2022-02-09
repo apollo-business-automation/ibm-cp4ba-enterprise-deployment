@@ -340,28 +340,47 @@
   vars:
     condition_query: "resources[*].data.iamstatus"
 
+- name: Check that the {{ cpfs_wildcard_key_path }} exists
+  stat:
+    path: "{{ cpfs_wildcard_key_path }}"
+  register: cpfs_wildcard_key_file
+
+- name: Check that the {{ cpfs_ca_crt_path }} exists
+  stat:
+    path: "{{ cpfs_ca_crt_path }}"
+  register: cpfs_ca_crt_file
+
 - name: Ensure we have CA certificates and wildcards
   include_role:
-    name: global-ca
-  when: global_ca_output_directory is not defined
+    name: global_ca
+  when: not cpfs_wildcard_key_file.stat.exists or not cpfs_ca_crt_file.stat.exists
 
 - name: Load TLS key data
   slurp:
-    src: '{{ global_ca_output_directory }}/wildcard.key'
+    src: '{{ cpfs_wildcard_key_path }}'
   register: slurped_key_data
 
 - name: Decode data and store as fact
   set_fact:
     _tls_key: "{{ slurped_key_data.content }}"
 
-- name: Load TLS key data
+- name: Load TLS crt data
   slurp:
-    src: '{{ global_ca_output_directory }}/wildcard.crt'
+    src: '{{ cpfs_wildcard_crt_path }}'
   register: slurped_crt_data
 
 - name: Decode data and store as fact
   set_fact:
     _tls_crt: "{{ slurped_crt_data.content }}"
+
+- name: Load CA TLS crt data
+  slurp:
+    src: '{{ cpfs_ca_crt_path }}'
+  register: slurped_ca_crt_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _ca_tls_crt: "{{ slurped_ca_crt_data.content }}"
 
 - name: Prepare yaml file for Secret
   template:
@@ -539,33 +558,6 @@
         wait: true
         wait_sleep: 5
         wait_timeout: 50
-
-    - name: Load TLS key data
-      slurp:
-        src: '{{ global_ca_output_directory }}/wildcard.key'
-      register: slurped_key_data
-
-    - name: Decode data and store as fact
-      set_fact:
-        _tls_key: "{{ slurped_key_data.content }}"
-
-    - name: Load TLS crt data
-      slurp:
-        src: '{{ global_ca_output_directory }}/wildcard.crt'
-      register: slurped_crt_data
-
-    - name: Decode data and store as fact
-      set_fact:
-        _tls_crt: "{{ slurped_crt_data.content }}"
-
-    - name: Load TLS CA crt data
-      slurp:
-        src: '{{ global_ca_output_directory }}/global-ca.crt'
-      register: slurped_crt_data
-
-    - name: Decode data and store as fact
-      set_fact:
-        _ca_tls_crt: "{{ slurped_crt_data.content }}"
 
     - name: Prepare yaml file for Secret
       template:
