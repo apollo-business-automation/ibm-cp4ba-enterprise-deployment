@@ -443,29 +443,28 @@
     merge_type: merge
     src: "{{ cp4ba_output_directory }}/automationbase.yaml"
 
-# TODO uncomment when newer AB is working
-# - name: Manage Manual Operator ibm-crossplane-operator-app
-#   include_role:
-#     name: common
-#     tasks_from: manage-manual-operator
-#   vars:
-#     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
-#     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-#     common_namespace_name: ibm-common-services
-#     common_subscription_name: ibm-crossplane-operator-app
-#     common_deployment_name: ibm-crossplane
+- name: Manage Manual Operator ibm-crossplane-operator-app
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_subscription_name: ibm-crossplane-operator-app
+    common_deployment_name: ibm-crossplane
 
 
-# - name: Manage Manual Operator ibm-crossplane-provider-kubernetes-operator-app
-#   include_role:
-#     name: common
-#     tasks_from: manage-manual-operator
-#   vars:
-#     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
-#     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-#     common_namespace_name: ibm-common-services
-#     common_subscription_name: ibm-crossplane-provider-kubernetes-operator-app
-#     common_deployment_name: ibm-crossplane-provider-kubernetes-controller
+- name: Manage Manual Operator ibm-crossplane-provider-kubernetes-operator-app
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_subscription_name: ibm-crossplane-provider-kubernetes-operator-app
+    common_deployment_name: ibm-crossplane-provider-kubernetes-controller
 
 - name: Get Events Subscription
   k8s_info:
@@ -507,6 +506,8 @@
 
 # TODO can wait for InstallPlan ready state, get installed CSV from Subscription,
 # get Deployment name from it from install.spec.deployments[0].name and wait for deployment Available
+
+# TODO Kafka hotfix here
 
 - name: Wait for AutomationBase instance Ready state
   include_role:
