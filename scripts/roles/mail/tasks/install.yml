@@ -61,6 +61,21 @@
     subject: "CN=mailserver"
     subject_alt_name: DNS:mailserver
 
+- name: Check that the {{ mail_ca_key_path }} exists
+  stat:
+    path: "{{ mail_ca_key_path }}"
+  register: mail_ca_key_file
+
+- name: Check that the {{ mail_ca_crt_path }} exists
+  stat:
+    path: "{{ mail_ca_crt_path }}"
+  register: mail_ca_crt_file
+
+- name: Ensure we have CA certificates
+  include_role:
+    name: global_ca
+  when: not mail_ca_key_file.stat.exists or not mail_ca_crt_file.stat.exists
+
 - name: Generate a Self Signed OpenSSL certificate
   openssl_certificate:
     path: "{{ mail_output_directory }}/mailserver.crt"
