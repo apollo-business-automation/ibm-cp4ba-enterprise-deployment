@@ -23,4 +23,4 @@
     tasks_from: wait-resource-condition-generic
   vars:
     common_condition_query: "resources[*].status.conditions[?type == '{{ common_condition_name }}'].status"
-    common_condition_value: "['True']"
+    common_condition_value: ['True']
