@@ -1,0 +1,11 @@
+- name: Remove Project cp4ba
+  k8s:
+    state: absent
+    api_key: "{{ mail_k8s_api_key | default(omit) }}"
+    host: "{{ mail_k8s_host | default(omit) }}"
+    api_version: project.openshift.io/v1
+    kind: Project
+    name: "{{ cp4ba_project_name }}"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 600
