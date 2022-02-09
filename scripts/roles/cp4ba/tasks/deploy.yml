@@ -329,6 +329,26 @@
     common_retries: 36
     common_delay: 300
 
+# TODO IAF 1.3.3 + CPFS 3.15 Automationbase hotfix START
+
+- name: Patch KafkaClaim
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    api_version: shim.bedrock.ibm.com/v1alpha1
+    kind: KafkaClaim
+    name: icp4ba-kafka-auth-0
+    namespace: "{{ cp4ba_project_name }}"
+    definition:
+      metadata:
+        annotations:
+          bedrock.ibm.com/shared-service-namespace: "{{ cp4ba_project_name }}"
+  retries: 40
+  delay: 30
+
+# TODO IAF 1.3.3 + CPFS 3.15 Automationbase hotfix END
+
 - name: Wait for Prereqs Ready states
   include_role:
     name: common

@@ -517,7 +517,7 @@
     api_version: shim.bedrock.ibm.com/v1alpha1
     kind: KafkaClaim
     name: iaf-system
-    namespace: ibm-common-services
+    namespace: "{{ cp4ba_project_name }}"
     definition:
       metadata:
         annotations:
