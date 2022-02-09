@@ -45,6 +45,7 @@ ca_key_path: /tmp/global-ca/global-ca.key
 ca_crt_path: /tmp/global-ca/global-ca.crt
 wildcard_key_path: /tmp/global-ca/wildcard.key
 wildcard_crt_path: /tmp/global-ca/wildcard.crt
+nexus_mvn_repository_path: /tmp/nexus/maven-settings.xml
 ldap_hostname: openldap-openldap-stack-ha.openldap.svc.cluster.local
 db2_hostname: c-db2ucluster-db2u.db2.svc.cluster.local
 mongodb_hostname: mongodb.mongodb.svc.cluster.local
@@ -143,3 +144,13 @@ gitea_ca_crt_path: "{{ ca_crt_path }}"
 gitea_wildcard_key_path: "{{ wildcard_key_path }}"
 gitea_wildcard_crt_path: "{{ wildcard_crt_path }}"
 gitea_ldap_hostname: "{{ ldap_hostname }}"
+
+nexus_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+nexus_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+nexus_action: "{{ global_action }}"
+nexus_universal_password: "{{ universal_password }}"
+nexus_storage_class_name: "{{ storage_class_name }}"
+nexus_ca_crt_path: "{{ ca_crt_path }}"
+nexus_wildcard_key_path: "{{ wildcard_key_path }}"
+nexus_wildcard_crt_path: "{{ wildcard_crt_path }}"
+nexus_ldap_hostname: "{{ ldap_hostname }}"

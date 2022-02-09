@@ -1,0 +1,35 @@
+- name: Get nexus repo instalnces
+  k8s_info:
+    api_key: "{{ nexus_k8s_api_key | default(omit) }}"
+    host: "{{ nexus_k8s_host | default(omit) }}"
+    api_version: sonatype.com/v1alpha1
+    kind: NexusRepo
+    namespace: nexus
+  register: nexus_repos_response
+
+- name: Delete nexus instance
+  k8s:
+    state: absent
+    api_key: "{{ nexus_k8s_api_key | default(omit) }}"
+    host: "{{ nexus_k8s_host | default(omit) }}"
+    api_version: sonatype.com/v1alpha1
+    kind: NexusRepo
+    name: nexusrepo
+    namespace: nexus
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 120
+  when: nexus_repos_response.resources | length > 0
+
+- name: Remove Project nexus
+  k8s:
+    state: absent
+    api_key: "{{ nexus_k8s_api_key | default(omit) }}"
+    host: "{{ nexus_k8s_host | default(omit) }}"
+    api_version: project.openshift.io/v1
+    kind: Project
+    name: nexus
+    namespace: nexus
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 120
