@@ -259,27 +259,17 @@
   vars:
     condition_query: "resources[0].spec.services[?name == 'ibm-healthcheck-operator'].spec.mustgatherService.persistentVolumeClaim.storageClassName"
 
-- name: Set Container Registry Json
-  set_fact:
-    container_registry_json: '{{ {"auths": {"cp.icr.io": {"username": "cp", "password": cpfs_icr_password} }} | to_json | b64encode }}'
-
-- name: Prepare yaml file for Container Registry Secret
-  template:
-    src: icr-secret.yaml.j2
-    dest: "{{ cpfs_output_directory }}/icr-secret.yaml"
-    mode: u+rwx
-
-- name: Add the Container Registry Secret
-  k8s:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    state: present
-    force: false
-    merge_type: merge
-    src: "{{ cpfs_output_directory }}/icr-secret.yaml"
-    wait: true
-    wait_sleep: 15
-    wait_timeout: 15
+- name: Create ICR Secret
+  include_role:
+    name: common
+    tasks_from: create-icr-secret
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_output_directory: "{{ cpfs_output_directory }}"
+    common_icr_secret_name: ibm-entitlement-key
+    common_icr_password: "{{ cpfs_icr_password }}"
+    common_namespace_name: db2
 
 - name: Prepare yaml file for the OperandRequest instance
   template:
