@@ -29,3 +29,7 @@
   include_tasks: deploy.yml
   when: _cp4ba_run_deploy == true
 # TODO if failed, persist log and cr status copy_cp4ba_operator_log, copy_cp4ba_cr
+
+- name: Postdeploy
+  include_tasks: postdeploy.yml
+  when: _cp4ba_run_postdeploy == true
