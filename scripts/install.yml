@@ -1,33 +1,33 @@
-- name: Install Catalog Source
-  include_role:
-    name: catalog_source
-- name: Install Global CA
-  include_role:
-    name: global_ca
-- name: Install DB2
-  include_role:
-    name: db2
-- name: Install openldap
-  include_role:
-    name: openldap
-- name: Install gitea
-  include_role:
-    name: gitea
-- name: Install nexus
-  include_role:
-    name: nexus
-- name: Install Mail
-  include_role:
-    name: mail
-- name: Install Kibana
-  include_role:
-    name: kibana
-- name: Install MongoDB
-  include_role:
-    name: mongodb
-- name: Install CPFS
-  include_role:
-    name: cpfs
+# - name: Install Catalog Source
+#   include_role:
+#     name: catalog_source
+# - name: Install Global CA
+#   include_role:
+#     name: global_ca
+# - name: Install DB2
+#   include_role:
+#     name: db2
+# - name: Install openldap
+#   include_role:
+#     name: openldap
+# - name: Install gitea
+#   include_role:
+#     name: gitea
+# - name: Install nexus
+#   include_role:
+#     name: nexus
+# - name: Install Mail
+#   include_role:
+#     name: mail
+# - name: Install Kibana
+#   include_role:
+#     name: kibana
+# - name: Install MongoDB
+#   include_role:
+#     name: mongodb
+# - name: Install CPFS
+#   include_role:
+#     name: cpfs
 - name: Install CP4BA
   include_role:
     name: cp4ba
