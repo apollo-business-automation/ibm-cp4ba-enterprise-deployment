@@ -251,3 +251,46 @@
         ('duplicate key value' not in register_group_response.content)
 
   when: (409 in group_responses | json_query('results[*].status'))
+
+# Based on https://www.ibm.com/docs/en/cpfs?topic=apis-oidc-registration#get2 (Get access token by using username and password)
+- name: Get IAM access token
+  uri:
+    url: "https://cp-console.{{ apps_endpoint_domain }}/idprovider/v1/auth/identitytoken"
+    method: POST
+    headers:
+      Content-Type: application/x-www-form-urlencoded;charset=UTF-8
+    body_format: form-urlencoded
+    body:
+      grant_type: password
+      username: cpadmin
+      password: "{{ cp4ba_universal_password }}"
+      scope: openid
+    validate_certs: false
+    status_code:
+      - 200
+  register: token_response
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-data/4.0?topic=resources-generating-authorization-token
+- name: Exchange IAM access token for Zen token
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/v1/preauth/validateAuth"
+    method: GET
+    headers:
+      iam-token: "{{ token_response | json_query('json.access_token') }}"
+      username: cpadmin
+    validate_certs: false
+    status_code:
+      - 200
+  register: token_response
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=secrets-creating-custom-bpc-workforce-secret
+- name: Update Workforce Insights Secret
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/pfs/rest/bpm/federated/v1/systems"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ token_response | json_query('json.accessToken') }}"
+    validate_certs: false
+    status_code:
+      - 200
+  register: bpm_systems_response
