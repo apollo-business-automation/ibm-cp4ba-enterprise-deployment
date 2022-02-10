@@ -318,3 +318,42 @@
     wait: true
     wait_sleep: 15
     wait_timeout: 15
+
+- name: Get BPC Pods
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
+    label_selectors:
+      - component = iaf-insights-engine-cockpit
+  register: pods
+  retries: 40
+  delay: 15
+
+- name: Delete BPC pods
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    state: absent
+    namespace: "{{ cp4ba_project_name }}"
+    name: "{{ item.metadata.name }}"
+  loop: "{{ pods.resources }}"
+
+- name: Wait for BPC Deployment Available State
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: v1
+    common_resource_kind: Deployment
+    common_resource_name: iaf-insights-engine-cockpit
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_name: Available
+    common_retries: 80
+    common_delay: 15
