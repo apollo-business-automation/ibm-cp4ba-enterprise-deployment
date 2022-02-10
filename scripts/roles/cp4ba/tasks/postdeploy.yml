@@ -13,7 +13,7 @@
     namespace: "{{ cp4ba_project_name }}"
     label_selectors:
       - app = cp4ba-navigator-deploy
-  register: cp4ba_pods
+  register: pods
   retries: 40
   delay: 15
 
@@ -34,7 +34,7 @@
     pod: "{{ item.metadata.name }}"
     remote_path: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/
     local_path: "{{ cp4ba_output_directory }}/lic-server-virtual.v1"
-  loop: "{{ cp4ba_pods.resources }}"
+  loop: "{{ pods.resources }}"
 
 - name: Copy Daeja License
   kubernetes.core.k8s_cp:
@@ -44,4 +44,79 @@
     pod: "{{ item.metadata.name }}"
     remote_path: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/
     local_path: "{{ cp4ba_output_directory }}/lic-server.v1"
-  loop: "{{ cp4ba_pods.resources }}"
+  loop: "{{ pods.resources }}"
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-studio
+# Get access token for ZEN administrative initial user
+
+- name: Get Zen Initial Admin User Secret
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Secret
+    namespace: "{{ cp4ba_project_name }}"
+    name: admin-user-details
+  register: secret
+  retries: 40
+  delay: 15
+
+- name: Get Zen Core Pods
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
+    label_selectors:
+      - component = zen-core
+  register: pods
+  retries: 40
+  delay: 15
+
+- name: Get Zen Initial Admin User Acccess Token
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: cp4ba
+    pod: "{{ pods.resources[0].metadata.name }}"
+    command: >
+      curl -k -X POST https://zen-core-api-svc:4444/openapi/v1/authorize
+      --header 'Content-Type: application/json'
+      --header "Accept: application/json"
+      --data-raw '{
+        "username": "admin",
+        "password": "{{ secret.resources[0].data.initial_admin_password | b64decode }}"
+      }'
+  register: token_response
+
+- name: Get OCP Apps domain
+  include_role:
+    name: common
+    tasks_from: apps-endpoint
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_output_to_var: "apps_endpoint_domain"
+
+- name: Add All Roles to cpadmin User
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user/cpadmin?add_roles=true"
+    method: PUT
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{ token_response.stdout | from_json | json_query('token') }}"
+    body_format: json
+    body:
+      username: cpadmin
+      user_roles: "{{ user_roles }}"
+    validate_certs: false
+    status_code: 200
+  vars:
+    user_roles:
+      - zen_administrator_role
+      - iaf-automation-admin
+      - iaf-automation-analyst
+      - iaf-automation-developer
+      - iaf-automation-operator
+      - zen_user_role
