@@ -553,7 +553,7 @@
     - "{{ cp4ba_cr_meta_name }}-odm-decisionrunner"
     - "{{ cp4ba_cr_meta_name }}-instance1-aae-ae-deployment"
 
-- name: Wait for {{ item.name }} StatefulSet ready replicas
+- name: Wait for {{ cp4ba_cr_meta_name }}-pfs StatefulSet ready replicas
   include_role:
     name: common
     tasks_from: wait-resource-condition-generic
@@ -562,19 +562,44 @@
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_api_version: apps/v1
     common_resource_kind: StatefulSet
-    common_resource_name: "{{ item.name }}"
+    common_resource_name: "{{ cp4ba_cr_meta_name }}-pfs"
     common_resource_namespace: "{{ cp4ba_project_name }}"
     common_condition_query: resources[*].status.readyReplicas
-    common_condition_value: "{{ item.replicas }}"
+    common_condition_value: 2
     common_retries: 30
     common_delay: 120
-  with_items:
-    - name: "{{ cp4ba_cr_meta_name }}-pfs"
-      replicas: 2
-    - name: "{{ cp4ba_cr_meta_name }}-workflow-authoring-baw-jms"
-      replicas: 1
-    - name: "{{ cp4ba_cr_meta_name }}-workflow-authoring-baw-server"
-      replicas: 2
+
+- name: Wait for {{ cp4ba_cr_meta_name }}-workflow-authoring-baw-jms StatefulSet ready replicas
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition-generic
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: apps/v1
+    common_resource_kind: StatefulSet
+    common_resource_name: "{{ cp4ba_cr_meta_name }}-workflow-authoring-baw-jms"
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_query: resources[*].status.readyReplicas
+    common_condition_value: 1
+    common_retries: 30
+    common_delay: 120
+
+- name: Wait for {{ cp4ba_cr_meta_name }}-workflow-authoring-baw-server StatefulSet ready replicas
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition-generic
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: apps/v1
+    common_resource_kind: StatefulSet
+    common_resource_name: "{{ cp4ba_cr_meta_name }}-workflow-authoring-baw-server"
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_query: resources[*].status.readyReplicas
+    common_condition_value: 2
+    common_retries: 30
+    common_delay: 120
 
 - name: Wait for {{ item }} Deployment to be Available
   include_role:
@@ -616,20 +641,18 @@
     common_retries: 30
     common_delay: 120
 
-# TODO do we want to also check not ready pods?
-# - name: Wait for all remaining pods to become Ready
-#   kubernetes.core.k8s_info:
-#     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-#     host: "{{ cp4ba_k8s_host | default(omit) }}"
-#     kind: Pod
-#     namespace: "{{ cp4ba_project_name }}"
-#     field_selectors:
-#       - status.phase!=Running
-#       - status.phase!=Succeeded
-#       - status.phase!=Failed
-#   register: pod
-#   retries: 30
-#   delay: 120
-#   until: (['True'] in pod | json_query(condition_query) | unique )
-#   vars:
-#     condition_query: "resources[*].status.conditions[?type == 'Ready'].status"
+- name: Wait for all remaining pods to become Ready
+  kubernetes.core.k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
+    field_selectors:
+      - status.phase!=Succeeded
+      - status.phase!=Failed
+  register: pods
+  retries: 30
+  delay: 60
+  until: (['False'] not in pods | json_query(condition_query) | unique )
+  vars:
+    condition_query: "resources[*].status.conditions[?type == 'Ready'].status"
