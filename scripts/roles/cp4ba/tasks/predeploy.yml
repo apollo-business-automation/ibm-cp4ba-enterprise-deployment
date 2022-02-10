@@ -395,7 +395,6 @@
     merge_type: merge
     src: "{{ cp4ba_output_directory }}/iaf-issuer.yaml"
 
-# Zookeeper pod cannot run if AutomationBase is not given reference to pseudo TLS secret which containes tls.crt and tls.key
 - name: Prepare yaml file for Global CA certificate Secret
   template:
     src: iaf/global-ca-secret.yaml.j2
