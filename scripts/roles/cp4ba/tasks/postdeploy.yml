@@ -1,0 +1,47 @@
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-navigator
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-navigator point 2.
+# License files generated following https://www.ibm.com/docs/en/daeja-viewone/5.0.x?topic=modules-enabling-viewer-add-in-content-navigator
+# IBM Daeja ViewONE Virtual Permanent Redaction Server Module & IBM Daeja ViewONE Virtual Module for Microsoft Office are part of CP4BA
+#   as per LI at http://www-03.ibm.com/software/sla/sladb.nsf/lilookup/31BA4BF94C59AD55852586FE0060B39C?OpenDocument
+
+- name: Get Navigator Pod
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
+    label_selectors:
+      - app = cp4ba-navigator-deploy
+  register: cp4ba_pods
+  retries: 40
+  delay: 15
+
+- name: Copy Daeja License files to output dir
+  ansible.builtin.copy:
+    src: "files/ban/{{ item }}"
+    dest: "{{ cp4ba_output_directory }}/{{ item }}"
+    mode: 0664
+  with_items:
+    - lic-server-virtual.v1
+    - lic-server.v1
+
+- name: Copy Daeja License virtual
+  kubernetes.core.k8s_cp:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: "{{ cp4ba_project_name }}"
+    pod: "{{ item.metadata.name }}"
+    remote_path: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/
+    local_path: "{{ cp4ba_output_directory }}/lic-server-virtual.v1"
+  loop: "{{ cp4ba_pods.resources }}"
+
+- name: Copy Daeja License
+  kubernetes.core.k8s_cp:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: "{{ cp4ba_project_name }}"
+    pod: "{{ item.metadata.name }}"
+    remote_path: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/
+    local_path: "{{ cp4ba_output_directory }}/lic-server.v1"
+  loop: "{{ cp4ba_pods.resources }}"
