@@ -284,7 +284,7 @@
   register: token_response
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=secrets-creating-custom-bpc-workforce-secret
-- name: Update Workforce Insights Secret
+- name: Get BPM Systems Federated Response
   uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/pfs/rest/bpm/federated/v1/systems"
     method: GET
@@ -294,3 +294,27 @@
     status_code:
       - 200
   register: bpm_systems_response
+
+- name: Prepare yaml file for the Workforce Insights Secret
+  template:
+    src: bai/workforce-insights-config-secret.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/workforce-insights-config-secret.yaml"
+    mode: u+rwx
+  vars:
+    system_type_query: json.federationResult[?systemType=='SYSTEM_TYPE_WLE']
+    system_id: "{{ bpm_systems_response | json_query(system_type_query) | first | json_query('systemID') }}"
+    username: cpadmin
+    password: "{{ cp4ba_universal_password }}"
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut"
+
+- name: Add the Workforce Insights Secret
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    src: "{{ cp4ba_output_directory }}/workforce-insights-config-secret.yaml"
+    state: present
+    merge_type: merge
+    force: false
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
