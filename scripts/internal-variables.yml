@@ -41,6 +41,8 @@ default_attempts_4: 36
 ## Increase if you OCP is slow and you need to wait for things longer.
 default_delay_4: 300
 
+usage_directory: /tmp
+
 ca_key_path: /tmp/global-ca/global-ca.key
 ca_crt_path: /tmp/global-ca/global-ca.crt
 wildcard_key_path: /tmp/global-ca/wildcard.key

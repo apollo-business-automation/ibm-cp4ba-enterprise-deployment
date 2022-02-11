@@ -1,0 +1,545 @@
+# Usage & Operations
+
+This file contains endpoints, credentials and other useful information about capabilities installed in the platform.
+
+It is divided into sections similar to the main overview picture on the landing page [What is in the package](https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/tree/main#what-is-in-the-package-).
+
+- [Extras](#extras)
+- [CP4BA - CP4BA capabilities](#cp4ba---cp4ba-capabilities)
+- [CP4BA - IAF capabilities](#cp4ba---iaf-capabilities)
+- [CPFS](#cpfs)
+- [Pre-requisites](#pre-requisites)
+- [Deployment job](#deployment-job)
+
+## Extras
+
+### DB2MC
+
+As DB2 database management UI.
+
+#### Endpoints
+
+- DB2 Monitoring Console UI: https://db2mc.{{ apps_endpoint_domain }}/console  
+- DB2 Monitoring Console REST API docs: https://db2mc.{{ apps_endpoint_domain }}/dbapi/api/index_enterprise.html (If you encounter Content Security Policy error, use FireFox)  
+- DB2 Monitoring Console REST API endpoint: https://db2mc.{{ apps_endpoint_domain }}/dbapi/v4
+
+#### Credentials
+
+- cpadmin / {{ universal_password }}
+
+### Gitea
+
+As Git server provider.
+
+#### Endpoints
+
+UI: https://gitea.{{ apps_endpoint_domain }}
+OAS: https://gitea.{{ apps_endpoint_domain }}/api/swagger#/
+
+####  Credentials
+
+- Credentials you should use: cpadmin / {{ universal_password }}
+- Initial administrative user credentials: giteaadmin / {{ universal_password }}
+
+### Nexus
+
+As package manager.
+
+#### Endpoints
+
+UI: https://nexus.{{ apps_endpoint_domain }}/
+OAS: https://nexus.{{ apps_endpoint_domain }}/swagger-ui/
+
+#### Credentials
+
+- Credentials you should use: cpadmin / {{ universal_password }}
+- Initial administrative user credentials: admin / {{ universal_password }}
+
+### Roundcube
+
+As mail client.
+
+#### Endpoints
+
+- UI: https://roundcube.{{ apps_endpoint_domain }}
+
+#### Credentials
+
+- for cpadmin: cpadmin@cp.local / {{ universal_password }} (you can also use only *cpadmin* without domain as username to login)
+- for cpuser: cpuser@cp.local / {{ universal_password }} (you can also use only *cpuser* without domain as username to login)
+
+### Cerebro
+
+As elastic search browser.
+
+Pre-configured for IAF elastic search.
+
+#### Endpoints
+
+- UI: https://cerebro.{{ apps_endpoint_domain }}
+
+#### Credentials
+
+- elasticsearch-admin / {{ universal_password }}
+
+### AKHQ
+
+As kafka browser.
+
+Pre-configured for IAF Kafka with custom user (cpadmin / {{ universal_password }}). Admin credentials can be found in this doc in [IAF Kafka section](#ibm-automation-foundation-iaf---kafka--apicurio).
+
+#### Endpoints
+
+- UI: https://akhq.{{ apps_endpoint_domain }}
+
+### Kibana
+
+As elastic search content browser and for BAI dashboards.
+
+#### Endpoints
+
+- UI: https://kibana.{{ apps_endpoint_domain }}
+
+#### Credentials
+
+- elasticsearch-admin / {{ universal_password }}
+
+### Mail
+
+As mail server.
+
+Any email received at *\*@cp.local* except *cpadmin@cp.local* and *cpuser@cp.local* will be delivered to *cpadmin@cp.local*.
+
+#### Endpoints
+
+Not exposed outside the cluster.
+
+#### Credentials
+
+- for cpadmin: cpadmin@cp.local / {{ universal_password }}
+- for cpuser: cpuser@cp.local / {{ universal_password }}
+
+### Mongo Express
+
+As UI for MongoDB
+
+#### Endpoints
+
+- Mongo Express UI: https://mongo-express.{{ apps_endpoint_domain }}
+
+#### Credentials
+
+- cpadmin / {{ universal_password }}
+
+### Mongo Express PM
+
+As UI for MongoDB for Process Mining
+
+#### Endpoints
+
+- Mongo Express PM UI: https://mongo-express-pm.{{ apps_endpoint_domain }}
+
+#### Credentials
+
+- cpadmin / {{ universal_password }}
+
+## CP4BA - CP4BA capabilities
+
+### Useful info
+
+If you want to investigate the actual ansible code that is running in the operator, you can get it from running operator pod from /opt/ansible/ directory.
+```bash
+oc cp -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} --no-headers | grep cp4a-operator | awk '{print $1}'`:/opt/ansible/ ansible
+
+```
+
+Order of capabilities deployment can be found in operator code in */opt/ansible/roles/icp4a/tasks/main.yml*.
+
+To get logs from Operator.
+```bash
+oc logs deployment/ibm-cp4a-operator -c operator > cp4ba-operator.log
+
+```
+
+In operator log you can search for error using *playbook task failed*.
+
+Operator loop in cp4ba-operator.log begins with output *TASK [Gathering Facts]*.
+
+If you want to determine Operator version use the following command.
+```bash
+oc exec -it -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} | grep ibm-cp4a-operator | awk '{print $1}'` -- cat /opt/ibm/version.txt
+
+```
+
+### Resource Registry (RR) (foundation pattern)
+
+#### Reading content of ETCD from RR container terminal
+
+```bash
+etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ universal_password }}" --endpoints=https://{{ cp4ba_project_name }}-dba-rr-client.{{ cp4ba_project_name }}.svc:2379 --insecure-transport=true --cacert="/shared/resources/tls/ca-cert.pem"
+
+```
+
+### Business Automation Navigator (BAN) (foundation pattern)
+
+#### Endpoints
+
+- Admin desktop: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=admin  
+
+####  Credentials
+
+- cpadmin / {{ universal_password }}
+
+### Business Automation Studio (BAS) (foundation pattern)
+
+#### Endpoints
+
+- Playback AAE Server apps list: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ae-pbk/v2/applications  
+
+####  Credentials
+
+- cpadmin / {{ universal_password }}
+
+### Business Automation Insights (BAI) (foundation pattern)
+
+#### Endpoints
+
+- Business Performance Center UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bai-bpc  
+- Business Performance Center About JSON: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bai-bpc/about.json  
+- Business Performance Center UI in BAN: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=BAI  
+- Flink: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bai-flink-ui  
+
+####  Credentials
+
+- for BAI - cpadmin / {{ universal_password }}
+- for Flink - username: eventprocessing-admin (```oc get secret -n {{ cp4ba_project_name }} $(oc get InsightsEngine -n {{ cp4ba_project_name }} iaf-insights-engine -o jsonpath='{.status.components.flinkUi.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.username}' | base64 -d```) / password: ```oc get secret -n {{ cp4ba_project_name }} $(oc get InsightsEngine -n {{ cp4ba_project_name }} iaf-insights-engine -o jsonpath='{.status.components.flinkUi.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.password}' | base64 -d```
+
+#### Extracting generated templates from operator for debug
+
+```bash
+oc cp -n {{ cp4ba_project_name }} `oc get pod --no-headers -n {{ cp4ba_project_name }} | grep cp4a-operator | awk '{print $1}'`:/tmp/ansible-operator/runner/tmp/bai/templates/bai_all_in_one.yaml bai_all_in_one.yaml
+
+```
+
+### Operational Decision Manager (ODM) (decisions pattern)
+
+You may get 400 not authorized error when accessing endpoints. In this case clear cookies and refresh browser.  
+
+#### Endpoints
+
+- Decision Center UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter  
+- Decision Center OAS: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter-api  
+- Decision Runner UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/DecisionRunner  
+- Decision Server Console: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/res  
+- Decision Server Runtime: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/DecisionService  
+
+####  Credentials
+
+- cpadmin / {{ universal_password }}
+
+### Automation Decision Services (ADS) (decisions_ads pattern)
+
+#### Endpoints
+
+- Administration: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/admin-platform  
+- Runtime OAS: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/runtime/api/swagger-ui  
+- Runtime OAS JSON file: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/runtime/api/v1/openapi.json  
+- Runtime service invocation template: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/runtime/api/v1/deploymentSpaces/embedded/decisions/{decisionId}/operations/{operation}/execute (using ZenApiKey Authentication with Zen token (https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=administering-authorizing-http-requests-by-using-zen-api-key))  
+
+####  Credentials
+
+- cpadmin / {{ universal_password }}
+
+### FileNet Content Manager (FNCM) (content pattern)
+
+#### Endpoints
+
+For external share you need to use ingress prefixed set of endpoints.
+
+- ACCE console UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/acce  
+- CPE WSI endpoint: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/wsi/FNCEWS40MTOM  
+- CPE health check: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/P8CE/Health
+- CPE ping page: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/FileNet/Engine
+- PE ping page: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/peengine/IOR/ping
+- PE details page: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/peengine/IOR/admin/help
+- CSS health check: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/P8CE/Health/CBRDashboard
+- CMIS definitions UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/openfncmis_wlp
+- CMIS endpoint: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/openfncmis_wlp/services (e.g. for BAW CMIS)  
+- GraphiQL UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/content-services-graphql  
+- GraphQL endpoint: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/content-services-graphql/graphql  
+- OS1 Desktop: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=OS1  
+- External Share ingress for navigator: https://ingress-es-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/navigator/?desktop=admin
+- External Share ingress for plugin: https://ingress-es-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/contentapi/plugins/sharePlugin.jar  
+- External Share ingress for rest endpoint: https://ingress-es-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/contentapi/rest/share/v1/info  
+- External Share ingress for desktop: https://ingress-es-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/navigator/?desktop=OS1  
+- External Share ingress for external desktop: https://ingress-es-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/navigator/?desktop=ExternalShareOS1  
+- Task Manager API endpoint: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/tm/api/v1  
+- Task Manager Ping page: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/tm/api/v1/tasks/ping  
+
+####  Credentials
+
+- cpadmin / {{ universal_password }}
+
+### Automation Application Engine (AAE) (application pattern)
+
+#### Endpoints
+
+- AAE Server apps list: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ae-instance1/v2/applications  
+- AAE API Docs https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ae-instance1/public/apidoc
+
+####  Credentials
+
+- cpadmin / {{ universal_password }}
+
+### Automation Document Processing (ADP) (document_processing pattern)
+
+#### Endpoints
+
+- CDRA API: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/adp/cdra/cdapi/  
+- Content Project Deployment Service: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/adp/cpds/ibm-dba-content-deployment/ (Note: This URL is meant to use with ADP scripts and not to be accessed as is without context root)
+
+####  Credentials
+
+- cpadmin / {{ universal_password }}
+
+### Business Automation Workflow Authoring (BAWAUT)
+
+#### Endpoints
+
+- Process Portal: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut/ProcessPortal  
+- Process Admin: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut/ProcessAdmin  
+- Process Inspector: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut/ProcessInspector  
+- OAS REST API: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut/bpm/explorer  
+- OAS REST API Operations: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut/bpm/explorer/?url=/bawaut/ops/docs  
+- Original REST API: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut/bpmrest-ui  
+- PFS federated systems: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/pfs/rest/bpm/federated/v1/systems  
+- Workplace: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=workplace (If you encounter error stating that you are using self-signed certificates, clear you cookies)
+- Case monitor: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=bawmonitor  
+- Case Client: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=baw  
+- Case administration: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=bawadmin  
+
+####  Credentials
+
+- cpadmin / {{ universal_password }}
+
+## CP4BA - IAF capabilities
+
+### BTS
+
+#### Endpoints
+
+- Admin UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/teamserver/ui
+- API Explorer: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/teamserver/api/explorer
+- Teams API: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/teamserver/rest
+
+#### Credentials
+
+- cpadmin / {{ universal_password }}
+
+### Platform UI
+
+#### Endpoints
+
+- Platform UI (Zen UI): https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/zen/
+
+#### Credentials
+
+- cpadmin / {{ universal_password }}
+
+### Elastic Search
+
+#### Endpoints
+
+- Elastic Search: https://iaf-system-es-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}  
+
+#### Credentials
+
+- elasticsearch-admin / {{ universal_password }}
+
+### Kafka & Apicurio
+
+#### Endpoints
+
+- Kafka: iaf-system-kafka-bootstrap-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}:443  
+- Apicurio: https://iaf-system-apicurio-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }} (Not working, redirects to internal IP)
+- Apicurio OAS: https://iaf-system-apicurio-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/api-specifications/registry/v1/openapi.json
+- Apicurio API endpoint: https://iaf-system-apicurio-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/api
+
+#### Credentials
+
+- Username: icp4ba-kafka-auth-0 (```oc get kafkauser icp4ba-kafka-auth-0 -n {{ cp4ba_project_name }} -o jsonpath='{.status.username}'```)  
+- Password: ```oc get secret -n {{ cp4ba_project_name }} $(oc get kafkauser icp4ba-kafka-auth-0 -n {{ cp4ba_project_name }} -o jsonpath='{.status.secret}') -o jsonpath='{.data.password}' | base64 -d```  
+
+Apicurio has same credentials as Kafka.
+
+Alternative custom user: cpadmin / {{ universal_password }}
+
+#### Configuration for Kafka connection
+
+- Security protocol: Sasl Ssl  
+- Sasl Mechanism: SCRAM-SHA-512  
+- Root CA cert (used in *Path to root CA certificates file*): ```oc get kafka iaf-system -n {{ cp4ba_project_name }} -o jsonpath='{.status.listeners[1].certificates[0]}'```  
+
+### Process Mining
+
+#### Endpoints
+
+- Process Mining UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/processmining  
+- Task Mining UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/taskmining  
+
+####  Credentials
+
+- cpadmin / {{ universal_password }}
+
+#### Useful info
+
+If you want to investigate the actual ansible code that is running in the operator, you can get it from running operator pod from /opt/ansible/ directory.
+```bash
+oc cp -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} --no-headers | grep processmining-operator-controller-manager | awk '{print $1}'`:/opt/ansible/ pm-ansible
+```
+
+To get logs for Operator.
+```bash
+oc get pods -n {{ cp4ba_project_name }} -o name | grep processmining-operator-controller | xargs oc logs  > process-mining-operator.log
+```
+
+### Asset Repository
+
+#### Endpoints
+
+- UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/assets  
+
+####  Credentials
+
+- cpadmin / {{ universal_password }}
+
+### RPA
+
+#### Endpoints
+
+- UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/rpa/ui
+- API: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/rpa/api/v1.2/en/configuration
+
+####  Credentials
+
+- cpadmin / {{ universal_password }}
+
+## CPFS
+
+As Cloud Pak Foundational Services.
+
+#### Endpoints
+
+- Console UI: https://cp-console.{{ apps_endpoint_domain }}  
+- IAM login page: https://cp-console.{{ apps_endpoint_domain }}/oidc/login.jsp
+
+#### Credentials
+
+- for CPFS admin: cpfsadmin / {{ universal_password }} (IBM provided credentials (admin only))  
+- for CP4BA admin: cpadmin / {{ universal_password }} (Enterprise LDAP)  
+
+### License Service
+
+#### Endpoints
+
+- Base page: https://ibm-licensing-service-instance-ibm-common-services.{{ apps_endpoint_domain }}  
+- Direct status page: https://ibm-licensing-service-instance-ibm-common-services.{{ apps_endpoint_domain }}/status?token=[token] (*[token]* generated by `oc get secret ibm-licensing-token -o jsonpath={.data.token} -n ibm-common-services | base64 -d`)
+
+#### Getting license info
+
+Based on https://www.ibm.com/docs/en/cpfs?topic=service-obtaining-updating-api-token  
+Based on https://www.ibm.com/docs/en/cpfs?topic=pcfls-apis#auditSnapshot
+
+```bash
+TOKEN=`oc get secret ibm-licensing-token -o jsonpath={.data.token} -n ibm-common-services | base64 -d`
+curl -kL https:/ibm-licensing-service-instance-ibm-common-services.{{ apps_endpoint_domain }}/snapshot?token=$TOKEN --output snapshot.zip
+
+```
+
+## Pre-requisites
+
+### DB2
+
+As DB2 database storage for the platform.
+
+#### Endpoints
+
+- Exposed as NodePort as found in Project *db2* in Service *c-db2ucluster-db2u-engn-svc*.
+
+#### Credentials
+
+- db2inst1 / {{ universal_password }}
+
+### OpenLDAP + phpLDAPadmin
+
+As LDAP directory provider and management tool.
+
+#### Endpoints
+
+- PHP LDAP admin management console: https://phpldapadmin.{{ apps_endpoint_domain }}/
+
+#### Credentials
+
+- cn=admin,dc=cp / {{ universal_password }}
+
+#### Users and Groups
+
+LDAP contains the following users in ou=Users,dc=cp. All have password {{ universal_password }}:  
+- cpadmin  
+- cpadmin1  
+- cpadmin2  
+- cpuser  
+- cpuser1  
+- cpuser2  
+
+LDAP contains the following groups in ou=Groups,dc=cp:  
+- cpadmins - members: uid=cpadmin,ou=Users,dc=cp; uid=cpadmin1,ou=Users,dc=cp; uid=cpadmin2,ou=Users,dc=cp  
+- cpusers - members: uid=cpadmin,ou=Users,dc=cp; uid=cpadmin1,ou=Users,dc=cp; uid=cpadmin2,ou=Users,dc=cp; - uid=cpuser,ou=Users,dc=cp; uid=cpuser1,ou=Users,dc=cp; uid=cpuser2,ou=Users,dc=cp  
+- cpusers1 - members: uid=cpuser,ou=Users,dc=cp; uid=cpuser1,ou=Users,dc=cp; uid=cpuser2,ou=Users,dc=cp  
+- TaskAdmins - for FNCM TM - members: uid=cpadmin,ou=Users,dc=cp;  
+- TaskAuditors - for FNCM TM - members: uid=cpadmin,ou=Users,dc=cp;
+- TaskUsers - for FNCM TM - members: uid=cpadmin,ou=Users,dc=cp; uid=cpuser,ou=Users,dc=cp  
+
+### MSSQL
+
+As DB server for RPA.
+
+#### Endpoints
+
+- Exposed as NodePort as found in Project *mssql* in Service *mssql*.
+
+#### Credentials
+
+- sa / {{ universal_password }}
+
+### MongoDB
+
+As MongoDB database storage for the platform.
+
+#### Endpoints
+
+- Not exposed outside the cluster.
+
+#### Credentials
+
+- root / {{ universal_password }}
+
+### MongoDB PM
+
+As MongoDB database storage for Process Mining.
+
+#### Endpoints
+
+- Not exposed outside the cluster.
+
+#### Credentials
+
+- root / {{ universal_password }}
+
+## Deployment job
+
+### Global CA
+
+If you haven't provided your own key and crt pair in configuration, new one was generated in Project *automagic* in Secret *global-ca*.
+
+You can import *global-ca.crt* to you operating system or browser to automatically trust all the certificates used in the platform.

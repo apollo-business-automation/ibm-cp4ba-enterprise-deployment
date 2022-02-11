@@ -1,34 +1,44 @@
 
-- name: Remove CP4BA
-  include_role:
-    name: cp4ba
+# - name: Remove CP4BA
+#   include_role:
+#     name: cp4ba
+
 - name: Remove CPFS
   include_role:
     name: cpfs
+
 - name: Remove MongoDB
   include_role:
     name: mongodb
+
 - name: Remove Kibana
   include_role:
     name: kibana
+
 - name: Remove Mail
   include_role:
     name: mail
+
 - name: Remove nexus
   include_role:
     name: nexus
+
 - name: Remove gitea
   include_role:
     name: gitea
+
 - name: Remove openldap
   include_role:
     name: openldap
+
 - name: Remove DB2
   include_role:
     name: db2
+
 - name: Remove Global CA
   include_role:
     name: global-ca
+
 - name: Remove Catalog Source
   include_role:
     name: catalog-source
