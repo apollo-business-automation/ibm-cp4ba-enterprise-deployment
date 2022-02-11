@@ -5,4 +5,4 @@ metadata:
   namespace: "{{ nexus_output_namespace }}"
 data:
   settings.xml: |- 
-    {{ lookup('file', nexus_mvn_repository_path) | indent(4)}}
+    {{ lookup('file', nexus_mvn_repository_path) | indent(4) }}

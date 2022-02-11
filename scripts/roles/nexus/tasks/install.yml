@@ -165,7 +165,7 @@
     dest: "{{ nexus_output_directory }}/ldap-config.json"
     mode: u+rwx
 
-- name: Create LDP Connection
+- name: Create LDAP Connection
   uri:
     url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/security/ldap"
     method: POST

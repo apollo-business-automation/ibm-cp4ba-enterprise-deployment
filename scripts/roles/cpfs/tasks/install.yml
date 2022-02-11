@@ -531,7 +531,7 @@
       kubernetes.core.k8s_log:
         api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
         host: "{{ cpfs_k8s_host | default(omit) }}"
-        api_version: v1
+        api_version: apps/v1
         kind: Deployment
         name: ibm-management-ingress-operator
         namespace: ibm-common-services
