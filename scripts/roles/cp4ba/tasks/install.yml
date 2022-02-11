@@ -119,7 +119,7 @@
         src: "{{ cp4ba_output_directory }}/cp4ba-operator-log-configmap.yaml"
         wait: true
         wait_sleep: 15
-        wait_timeout: 15        
+        wait_timeout: 15
 
 - name: Postdeploy
   include_tasks: postdeploy.yml

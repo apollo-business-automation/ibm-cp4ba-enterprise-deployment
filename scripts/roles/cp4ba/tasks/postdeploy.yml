@@ -127,7 +127,7 @@
     body_format: json
     body:
       user_identifiers: []
-      ldap_groups: ["cn={{ group_response.json.group_name }},ou=Groups,dc=cp"]
+      ldap_groups: ["cn={{ group_response.json.name }},ou=Groups,dc=cp"]
     validate_certs: false
     status_code:
       - 200
@@ -206,7 +206,7 @@
     body_format: json
     body:
       user_identifiers: []
-      ldap_groups: ["cn={{ item.json.group_name }},ou=Groups,dc=cp"]
+      ldap_groups: ["cn={{ item.json.name }},ou=Groups,dc=cp"]
     validate_certs: false
     status_code:
       - 200
