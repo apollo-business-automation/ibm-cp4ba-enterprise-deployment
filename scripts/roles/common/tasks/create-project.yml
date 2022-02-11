@@ -9,11 +9,12 @@
 #     common_k8s_host: "{{ prefix_k8s_host | default(omit) }}"
 #     common_namespace_name: _project_name
 #     common_output_directory: "{{ prefix_output_directory }}"
+#     common_project_output_name: _project_output_name # Optional
 
 - name: Prepare yaml file for Project {{ common_namespace_name }}
   template:
     src: project.yaml.j2
-    dest: "{{ common_output_directory }}/project.yaml"
+    dest: "{{ common_output_directory }}/{{ common_project_output_name }}"
     mode: u+rwx
 
 - name: Add Project {{ common_namespace_name }}
@@ -23,7 +24,7 @@
     state: present
     force: false
     merge_type: merge
-    src: "{{ common_output_directory }}/project.yaml"
+    src: "{{ common_output_directory }}/{{ common_project_output_name }}"
     wait: true
     wait_sleep: 15
     wait_timeout: 15

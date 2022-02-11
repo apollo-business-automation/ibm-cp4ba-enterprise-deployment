@@ -1,52 +1,49 @@
-- name: Check for automagic Project
-  k8s_info:
+- name: Create Project
+  include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+    common_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+    common_namespace_name: automagic
+    common_output_directory: "{{ generic_directory }}"
+
+- name: Get OCP Apps domain
+  include_role:
+    name: common
+    tasks_from: apps-endpoint
+  vars:
+    common_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+    common_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+    common_output_to_var: "apps_endpoint_domain"
+
+- name: Prepare Usage md
+  template:
+    src: usage.md.j2
+    dest: "{{ generic_directory }}/usage.md"
+    mode: u+rwx
+
+- name: Set path to usage.md
+  set_fact: 
+    usage_path: "{{ generic_directory }}/usage.md"
+
+- name: Prepare usage Config Map
+  template:
+    src: usage-configmap.yaml.j2
+    dest: "{{ generic_directory }}/usage-configmap.yaml"
+    mode: u+rwx
+
+- name: Add the usage config map
+  k8s:
     api_key: "{{ ocp_cluster_token | default(omit) }}"
     host: "{{ ocp_api_endpoint | default(omit) }}"
-    api_version: project.openshift.io/v1
-    kind: Project
-    name: automagic
-  register: project
-  
-- block:
-
-    - name: Get OCP Apps domain
-      include_role:
-        name: common
-        tasks_from: apps-endpoint
-      vars:
-        common_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
-        common_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
-        common_output_to_var: "apps_endpoint_domain"
-
-    - name: Prepare Usage md
-      template:
-        src: usage.md.j2
-        dest: "{{ usage_directory }}/usage.md"
-        mode: u+rwx
-
-    - name: Set path to usage.md
-      set_fact: 
-        usage_path: "{{ usage_directory }}/usage.md"
-
-    - name: Prepare usage Config Map
-      template:
-        src: usage-configmap.yaml.j2
-        dest: "{{ usage_directory }}/usage-configmap.yaml"
-        mode: u+rwx
-
-    - name: Add the usage config map
-      k8s:
-        api_key: "{{ ocp_cluster_token | default(omit) }}"
-        host: "{{ ocp_api_endpoint | default(omit) }}"
-        state: present
-        force: false
-        merge_type: merge
-        src: "{{ usage_directory }}/usage-configmap.yaml"
-        wait: true
-        wait_sleep: 15
-        wait_timeout: 15
-
-  when: project.resources | length != 0
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ generic_directory }}/usage-configmap.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
 
 - name: Install Catalog Source
   include_role:

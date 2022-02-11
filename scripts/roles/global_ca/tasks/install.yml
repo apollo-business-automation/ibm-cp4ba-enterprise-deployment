@@ -52,7 +52,7 @@
       vars:
         common_k8s_api_key: "{{ global_ca_k8s_api_key | default(omit) }}"
         common_k8s_host: "{{ global_ca_k8s_host | default(omit) }}"
-        common_namespace_name: automagic
+        common_namespace_name: "{{ global_ca_output_namespace }}"
         common_output_directory: "{{ global_ca_output_directory }}"
 
     - name: Prepare yaml file for Secret
@@ -68,7 +68,6 @@
         state: present
         force: true
         merge_type: merge
-        namespace: automagic
         src: "{{ global_ca_output_directory }}/secret.yaml"
         wait: true
         wait_sleep: 15

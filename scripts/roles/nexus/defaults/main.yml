@@ -6,3 +6,4 @@ nexus_storage_class_name: ""
 nexus_operator_channel: stable
 nexus_mvn_repository_path: ""
 nexus_ldap_hostname: ""
+nexus_output_namespace: "automagic"

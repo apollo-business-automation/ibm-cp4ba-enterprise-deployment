@@ -222,6 +222,17 @@
     force_basic_auth: true
     status_code: 200
 
+- name: Create Project
+  include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ nexus_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ nexus_k8s_host | default(omit) }}"
+    common_namespace_name: "{{ nexus_output_namespace }}"
+    common_output_directory: "{{ nexus_output_directory }}"
+    common_project_output_name: "nexus-output-project.yaml"
+
 - name: Prepare Maven Settings
   template:
     src: maven-settings.xml.j2
@@ -230,8 +241,8 @@
 
 - name: Prepare Maven Config Map
   template:
-    src: config-map-maven.yaml.j2
-    dest: "{{ nexus_output_directory }}/config-map-maven.yaml"
+    src: nexus-maven-settings-configmap.yaml.j2
+    dest: "{{ nexus_output_directory }}/nexus-maven-settings-configmap.yaml"
     mode: u+rwx
 
 - name: Add the Nexus maven config map
@@ -241,7 +252,7 @@
     state: present
     force: false
     merge_type: merge
-    src: "{{ nexus_output_directory }}/config-map-maven.yaml"
+    src: "{{ nexus_output_directory }}/nexus-maven-settings-configmap.yaml"
     wait: true
     wait_sleep: 15
     wait_timeout: 15
