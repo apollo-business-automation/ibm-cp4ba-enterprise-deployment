@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: odm-oidc-providers
-  namespace: automagic
+  namespace: "{{ cp4ba_output_namespace }}"
 data:
   oidc-providers.json: |
     {

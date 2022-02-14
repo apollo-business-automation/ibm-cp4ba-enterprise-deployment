@@ -342,6 +342,17 @@
     common_retries: 80
     common_delay: 15
 
+- name: Create Project
+  include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: "{{ cp4ba_output_namespace }}"
+    common_output_directory: "{{ cp4ba_output_directory }}"
+    common_project_output_name: "cp4ba-output-project.yaml"
+
 - name: Prepare yaml file for ODM OIDC Providers Config Map
   template:
     src: odm/odm-oidc-providers-cm.yaml.j2
@@ -378,19 +389,18 @@
       website: ""
     user: cpadmin
     password: "{{ cp4ba_universal_password }}"
+    force_basic_auth: true
     validate_certs: false
     status_code:
-      - 200
       - 201
+      - 422
 
 - name: Download maven plugins definition from ADS
   uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/download/index.json"
-    method: POST
+    method: GET
     headers:
       Authorization: "Bearer {{ token_response | json_query('json.accessToken') }}"
     validate_certs: false
-    status_code:
-      - 200
-      - 201
+    status_code: 200
   register: ads_maven_plugins_response
