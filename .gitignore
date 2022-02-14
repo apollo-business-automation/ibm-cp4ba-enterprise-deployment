@@ -28,3 +28,5 @@ scripts/akhq/truststore.jks
 scripts/cpfs/cloudctl
 scripts/cpfs/cluster-monitoring-config.yaml
 nohup*
+variables.yml
+ansible-lint-rules
