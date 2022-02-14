@@ -341,3 +341,56 @@
     common_condition_name: Available
     common_retries: 80
     common_delay: 15
+
+- name: Prepare yaml file for ODM OIDC Providers Config Map
+  template:
+    src: odm/odm-oidc-providers-cm.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/odm-oidc-providers-cm.yaml"
+    mode: u+rwx
+
+- name: Add the ODM OIDC Providers Config Map
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    src: "{{ cp4ba_output_directory }}/odm-oidc-providers-cm.yaml"
+    state: present
+    merge_type: merge
+    force: false
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=gst-task-2-connecting-git-repository-sharing-decision-service
+- name: Create ADS organization in Gitea
+  uri:
+    url: "https://gitea.{{ apps_endpoint_domain }}/api/v1/orgs"
+    method: POST
+    headers:
+      Content-Type: application/json
+    body_format: json
+    body:
+      description: ""
+      full_name: ""
+      location: ""
+      repo_admin_change_team_access: true
+      username: ads
+      visibility: private
+      website: ""
+    user: cpadmin
+    password: "{{ cp4ba_universal_password }}"
+    validate_certs: false
+    status_code:
+      - 200
+      - 201
+
+- name: Download maven plugins definition from ADS
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/download/index.json"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ token_response | json_query('json.accessToken') }}"
+    validate_certs: false
+    status_code:
+      - 200
+      - 201
+  register: ads_maven_plugins_response
