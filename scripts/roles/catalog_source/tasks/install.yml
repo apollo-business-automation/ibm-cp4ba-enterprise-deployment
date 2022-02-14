@@ -1,3 +1,4 @@
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=cluster-setting-up-in-openshift-console
 - name: Create Catalog Source directory for generated files
   file:
     path: "{{ catalog_source_output_directory }}"
