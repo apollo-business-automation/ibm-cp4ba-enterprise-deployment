@@ -508,49 +508,49 @@
 
 # TODO IAF 1.3.3 + CPFS 3.15 Automationbase hotfix START
 
-- name: Patch KafkaClaim
-  k8s:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    state: present
-    api_version: shim.bedrock.ibm.com/v1alpha1
-    kind: KafkaClaim
-    name: iaf-system
-    namespace: "{{ cp4ba_project_name }}"
-    definition:
-      metadata:
-        annotations:
-          bedrock.ibm.com/shared-service-namespace: "{{ cp4ba_project_name }}"
-  retries: 40
-  delay: 30
+# - name: Patch KafkaClaim
+#   k8s:
+#     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+#     host: "{{ cp4ba_k8s_host | default(omit) }}"
+#     state: present
+#     api_version: shim.bedrock.ibm.com/v1alpha1
+#     kind: KafkaClaim
+#     name: iaf-system
+#     namespace: "{{ cp4ba_project_name }}"
+#     definition:
+#       metadata:
+#         annotations:
+#           bedrock.ibm.com/shared-service-namespace: "{{ cp4ba_project_name }}"
+#   retries: 40
+#   delay: 30
 
-- name: Get NamespaceScope
-  k8s_info:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    api_version: operator.ibm.com/v1
-    kind: NamespaceScope
-    name: common-service
-    namespace: ibm-common-services
-  register: namespace_scope
-  retries: 40
-  delay: 30
+# - name: Get NamespaceScope
+#   k8s_info:
+#     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+#     host: "{{ cp4ba_k8s_host | default(omit) }}"
+#     api_version: operator.ibm.com/v1
+#     kind: NamespaceScope
+#     name: common-service
+#     namespace: ibm-common-services
+#   register: namespace_scope
+#   retries: 40
+#   delay: 30
 
-- name: Patch NamespaceScope
-  k8s:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    state: present
-    api_version: operator.ibm.com/v1
-    kind: NamespaceScope
-    name: common-service
-    namespace: ibm-common-services
-    definition:
-      spec:
-        namespaceMembers: "{{ namespace_scope.resources[0].spec.namespaceMembers + [cp4ba_project_name] }}"
-  retries: 40
-  delay: 30
-  when: cp4ba_project_name not in namespace_scope.resources[0].spec.namespaceMembers
+# - name: Patch NamespaceScope
+#   k8s:
+#     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+#     host: "{{ cp4ba_k8s_host | default(omit) }}"
+#     state: present
+#     api_version: operator.ibm.com/v1
+#     kind: NamespaceScope
+#     name: common-service
+#     namespace: ibm-common-services
+#     definition:
+#       spec:
+#         namespaceMembers: "{{ namespace_scope.resources[0].spec.namespaceMembers + [cp4ba_project_name] }}"
+#   retries: 40
+#   delay: 30
+#   when: cp4ba_project_name not in namespace_scope.resources[0].spec.namespaceMembers
 
 # TODO IAF 1.3.3 + CPFS 3.15 Automationbase hotfix END
 
