@@ -38,9 +38,17 @@
     - lic-server-virtual.v1
     - lic-server.v1
 
+- name: Get OCP Apps domain
+  include_role:
+    name: common
+    tasks_from: apps-endpoint
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_output_to_var: "apps_endpoint_domain"
+
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-studio
 # Get access token for ZEN administrative initial user
-
 - name: Get Zen Initial Admin User Secret
   k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -53,43 +61,19 @@
   retries: 40
   delay: 15
 
-- name: Get Zen Core Pods
-  k8s_info:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    api_version: v1
-    kind: Pod
-    namespace: "{{ cp4ba_project_name }}"
-    label_selectors:
-      - component = zen-core
-  register: pods
-  retries: 40
-  delay: 15
-
+# Based on introspection of Zen NGINX configs in Deployment ibm-nginx in /user-home/_global_/nginx-conf.d/icp4d-open-api-configmap.conf
+# Based on CP4BA Operator code ansible\roles\AS-ID\tasks\iam-verify-and-add.yml@69+
 - name: Get Zen Initial Admin User Acccess Token
-  kubernetes.core.k8s_exec:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: cp4ba
-    pod: "{{ pods.resources[0].metadata.name }}"
-    command: >
-      curl -k -X POST https://zen-core-api-svc:4444/openapi/v1/authorize
-      --header 'Content-Type: application/json'
-      --header "Accept: application/json"
-      --data-raw '{
-        "username": "admin",
-        "password": "{{ secret.resources[0].data.initial_admin_password | b64decode }}"
-      }'
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icp4d-api/v1/authorize"
+    method: POST
+    body_format: json
+    body:
+      username: admin
+      password: "{{ secret.resources[0].data.initial_admin_password | b64decode }}"
+    validate_certs: false
+    status_code: 200
   register: token_response
-
-- name: Get OCP Apps domain
-  include_role:
-    name: common
-    tasks_from: apps-endpoint
-  vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_output_to_var: "apps_endpoint_domain"
 
 # Groups endpoint found based on the network dev tools in the browser
 - name: Add All Roles to cpadmins group
@@ -98,7 +82,7 @@
     method: POST
     headers:
       Content-Type: application/json
-      Authorization: "Bearer {{ token_response.stdout | from_json | json_query('token') }}"
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
     body_format: json
     body:
       name: cpadmins
@@ -123,7 +107,7 @@
     method: POST
     headers:
       Content-Type: application/json
-      Authorization: "Bearer {{ token_response.stdout | from_json | json_query('token') }}"
+      Authorization: "Bearer {{ token_response.json | from_json | json_query('token') }}"
     body_format: json
     body:
       user_identifiers: []
@@ -141,7 +125,7 @@
         method: GET
         headers:
           Accept: application/json
-          Authorization: "Bearer {{ token_response.stdout | from_json | json_query('token') }}"
+          Authorization: "Bearer {{ token_response.json | json_query('token') }}"
         validate_certs: false
         status_code: 200
       register: get_groups_response
@@ -152,7 +136,7 @@
         method: POST
         headers:
           Content-Type: application/json
-          Authorization: "Bearer {{ token_response.stdout | from_json | json_query('token') }}"
+          Authorization: "Bearer {{ token_response.json | json_query('token') }}"
         body_format: json
         body:
           user_identifiers: []
@@ -176,7 +160,7 @@
     method: POST
     headers:
       Content-Type: application/json
-      Authorization: "Bearer {{ token_response.stdout | from_json | json_query('token') }}"
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
     body_format: json
     body:
       name: "{{ item }}"
@@ -202,7 +186,7 @@
     method: POST
     headers:
       Content-Type: application/json
-      Authorization: "Bearer {{ token_response.stdout | from_json | json_query('token') }}"
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
     body_format: json
     body:
       user_identifiers: []
@@ -221,7 +205,7 @@
         method: GET
         headers:
           Accept: application/json
-          Authorization: "Bearer {{ token_response.stdout | from_json | json_query('token') }}"
+          Authorization: "Bearer {{ token_response.json | json_query('token') }}"
         validate_certs: false
         status_code: 200
       register: get_groups_response
@@ -232,7 +216,7 @@
         method: POST
         headers:
           Content-Type: application/json
-          Authorization: "Bearer {{ token_response.stdout | from_json | json_query('token') }}"
+          Authorization: "Bearer {{ token_response.json | json_query('token') }}"
         body_format: json
         body:
           user_identifiers: []
