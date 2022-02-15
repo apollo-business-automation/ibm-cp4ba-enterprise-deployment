@@ -12,7 +12,7 @@
     kind: Pod
     namespace: "{{ cp4ba_project_name }}"
     label_selectors:
-      - app = cp4ba-navigator-deploy
+      - app={{ cp4ba_cr_meta_name }}-navigator-deploy
   register: pods
   retries: 40
   delay: 15
@@ -505,3 +505,180 @@
     validate_certs: false
     status_code: 200
   register: ads_credential_response
+
+- name: Create ADP organization in Gitea
+  uri:
+    url: "https://gitea.{{ apps_endpoint_domain }}/api/v1/orgs"
+    method: POST
+    headers:
+      Content-Type: application/json
+    body_format: json
+    body:
+      description: ""
+      full_name: ""
+      location: ""
+      repo_admin_change_team_access: true
+      username: adp
+      visibility: private
+      website: ""
+    user: cpadmin
+    password: "{{ cp4ba_universal_password }}"
+    force_basic_auth: true
+    validate_certs: false
+    status_code:
+      - 201
+      - 422
+
+
+- name: Get Natural Language Extractor Pod
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
+    label_selectors:
+      - app={{ cp4ba_cr_meta_name }}-natural-language-extractor
+  register: pods
+  retries: 40
+  delay: 15
+
+- name: Determine size of Init Tenants scripts
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: "{{ cp4ba_project_name }}"
+    pod: "{{ pods.resources[0].metadata.name }}"
+    command: 'stat --printf="%s" /data-org/db_sample_data/imports.tar.xz'
+  register: command_status
+
+- name: Set size of Init Tenants scripts
+  set_fact:
+    init_scripts_size: "{{ command_status.stdout }}"
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-loading-default-sample-data
+- name: Download Init Tenants scripts
+  kubernetes.core.k8s_cp:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: "{{ cp4ba_project_name }}"
+    pod: "{{ pods.resources[0].metadata.name }}"
+    remote_path: /data-org/db_sample_data/imports.tar.xz
+    local_path: "{{ cp4ba_output_directory }}/imports.tar.xz"
+    state: from_pod
+
+- name: Copy Init Tenants scripts to DB2
+  kubernetes.core.k8s_cp:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    container: db2u
+    remote_path: /tmp/imports.tar.xz
+    local_path: "{{ cp4ba_output_directory }}/imports.tar.xz"
+    no_preserve: true
+    state: to_pod
+
+# This is needed as k8s_cp completes but the copying itsefl in openshift is still progressing
+- name: Wait for copy to complete in DB2 pod
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    container: db2u
+    command: 'stat --printf="%s" /tmp/imports.tar.xz'
+  register: command_status
+  retries: 60
+  delay: 5
+  until: command_status.stdout == init_scripts_size
+
+- name: Move Init Tenants files to be accessible by db2inst1 user
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: |
+      sudo mv -f /tmp/imports.tar.xz /mnt/blumeta0/home/db2inst1/sqllib/_adp_tmp/DB2/imports.tar.xz
+  register: command_status
+
+- name: Set Init Tenants files ownership
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: |
+      sudo chown -R db2inst1:db2iadm1 /mnt/blumeta0/home/db2inst1/sqllib/_adp_tmp/DB2/imports.tar.xz
+  register: command_status
+
+- name: Extract Init Tenants scripts
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: |
+      su - db2inst1 -c "
+      cd sqllib/_adp_tmp/DB2
+      tar -xvf imports.tar.xz
+      "
+  register: command_status
+
+- name: Run Init Tenants scripts
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: |
+      su - db2inst1 -c '
+      cd sqllib/_adp_tmp/DB2
+
+      # Init TENANT1 DB
+      echo "TENANT1
+      default
+      y" | ./LoadDefaultData.sh
+
+      # Init TENANT2 DB
+      echo "TENANT2
+      default
+      y" | ./LoadDefaultData.sh
+      '
+  register: command_status
+
+- name: Create Project
+  include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: "{{ cp4ba_output_namespace }}"
+    common_output_directory: "{{ cp4ba_output_directory }}"
+    common_project_output_name: "cp4ba-output-project.yaml"
+
+- name: Prepare post-deploy.md
+  template:
+    src: postdeploy.md.j2
+    dest: "{{ cp4ba_output_directory }}/postdeploy.md"
+    mode: u+rwx
+
+- name: Prepare post-deploy.md Config Map
+  template:
+    src: postdeploy-configmap.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/postdeploy-configmap.yaml"
+    mode: u+rwx
+
+- name: Add post-deploy.md Config Map
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/postdeploy-configmap.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
