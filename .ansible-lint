@@ -23,3 +23,4 @@ rulesdir:
     
 skip_list:
   - var-naming
+  - command-instead-of-module
