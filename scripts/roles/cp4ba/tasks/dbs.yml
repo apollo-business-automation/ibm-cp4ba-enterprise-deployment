@@ -622,18 +622,3 @@
 #     - CP4BA
 #     - TENANT1
 #     - TENANT2
-
-# TODO uncomment when Mongo implemented and ready
-# - name: Create CP4BA Mongo DBs
-#   kubernetes.core.k8s_exec:
-#     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-#     host: "{{ cp4ba_k8s_host | default(omit) }}"
-#     namespace: mongodb
-#     pod: c-db2ucluster-db2u-0
-#     command: |
-#       mongo --username root --password {{ cp4ba_universal_password }} --authenticationDatabase admin <<EOF
-#       use ads
-#       use ads-git
-#       use ads-history
-#       EOF
-#   register: command_status
