@@ -220,6 +220,8 @@ oc project ibm-common-services
 
 manage_manual_operator ibm-crossplane-operator-app ibm-crossplane
 
+manage_manual_operator ibm-crossplane-provider-kubernetes-operator-app ibm-crossplane-provider-kubernetes-controller
+
 echo
 echo ">>>>$(print_timestamp) Wait for Events InstallPlan to be created"
 wait_for_k8s_resource_condition_generic Subscription/ibm-events-operator ".status.installplan.kind" InstallPlan ${DEFAULT_ATTEMPTS_1} ${DEFAULT_DELAY_1}
