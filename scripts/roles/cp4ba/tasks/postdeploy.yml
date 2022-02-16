@@ -529,7 +529,6 @@
       - 201
       - 422
 
-
 - name: Get Natural Language Extractor Pod
   k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
