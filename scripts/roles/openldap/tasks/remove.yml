@@ -6,7 +6,6 @@
     api_version: project.openshift.io/v1
     kind: Project
     name: openldap
-    namespace: openldap
     wait: true
     wait_sleep: 15
     wait_timeout: 120
