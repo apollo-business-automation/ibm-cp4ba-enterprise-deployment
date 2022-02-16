@@ -80,9 +80,12 @@
     namespace: mssql
     pod: "{{ pods.resources[0].metadata.name }}"
     command: >
-      /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "{{ rpa_universal_password }}"
-      -Q "create database [automation]; create database [knowledge];
-      create database [wordnet]; create database [address]; create database [audit]"
+      /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "{{ rpa_universal_password }}" -Q
+      "create database [automation];
+      create database [knowledge];
+      create database [wordnet];
+      create database [address];
+      create database [audit]"
   register: command_status
 
 - name: Prepare yaml file for Secrets

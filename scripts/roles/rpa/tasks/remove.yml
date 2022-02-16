@@ -1,24 +1,90 @@
-- name: Delete AssetRepository instance
+- name: Delete RoboticProcessAutomation instance
   k8s:
     state: absent
-    api_key: "{{ asset_repok8s_api_key | default(omit) }}"
-    host: "{{ asset_repok8s_host | default(omit) }}"
-    api_version: integration.ibm.com/v1beta1
-    kind: AssetRepository
-    name: assets
-    namespace: "{{ asset_repo_project_name }}"
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
+    api_version: rpa.automation.ibm.com/v1beta1
+    kind: RoboticProcessAutomation
+    name: rpa
+    namespace: "{{ rpa_project_name }}"
     wait: true
     wait_sleep: 15
     wait_timeout: 120
 
-- name: Get ibm-integration-asset-repository operator Subscription
+- name: Delete {{ item }} Deployment
+  k8s:
+    state: absent
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
+    api_version: apps/v1
+    kind: Deployment
+    name: "{{ item }}"
+    namespace: "{{ rpa_project_name }}"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 120
+  with_items:
+    - rpa-ui-rpa
+    - rpa-apiserver-rpa
+
+- name: Delete {{ item }} Secret
+  k8s:
+    state: absent
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Secret
+    name: "{{ item }}"
+    namespace: "{{ rpa_project_name }}"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 120
+  with_items:
+    - rpa-db
+    - rpa-smtp
+    - rpa-apiserver-rpa-dashboard
+
+- name: Get MSSQL Pod
   k8s_info:
-    api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
-    host: "{{ asset_repo_k8s_host | default(omit) }}"
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: mssql
+    label_selectors:
+      - app=mssql
+  register: pods
+  retries: 40
+  delay: 15
+
+- name: Delete MSSQL DBs
+  kubernetes.core.k8s_exec:
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
+    namespace: mssql
+    pod: "{{ pods.resources[0].metadata.name }}"
+    command: >
+      /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "{{ rpa_universal_password }}" -Q
+      "ALTER DATABASE [automation] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+      drop database [automation];
+      ALTER DATABASE [knowledge] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+      drop database [knowledge];
+      ALTER DATABASE [wordnet] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+      drop database [wordnet];
+      ALTER DATABASE [address] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+      drop database [address];
+      ALTER DATABASE [audit] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+      drop database [audit]"
+  register: command_status
+
+- name: Get rpa-subscription operator Subscription
+  k8s_info:
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
     api_version: operators.coreos.com/v1alpha1
     kind: Subscription
-    name: ibm-integration-asset-repository
-    namespace: "{{ asset_repo_project_name }}"
+    name: rpa-subscription
+    namespace: "{{ rpa_project_name }}"
   register: subscription
   retries: 10
   delay: 1
@@ -29,28 +95,28 @@
 
 # Based on
 # https://docs.openshift.com/container-platform/4.8/operators/admin/olm-deleting-operators-from-cluster.html#olm-deleting-operator-from-a-cluster-using-cli_olm-deleting-operators-from-a-cluster
-- name: Remove ibm-integration-asset-repository operator Subscription
+- name: Remove rpa-subscription operator Subscription
   k8s:
-    api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
-    host: "{{ asset_repo_k8s_host | default(omit) }}"
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
     state: absent
     api_version: operators.coreos.com/v1alpha1
     kind: Subscription
-    name: ibm-integration-asset-repository
-    namespace: "{{ asset_repo_project_name }}"
+    name: rpa-subscription
+    namespace: "{{ rpa_project_name }}"
     wait: true
     wait_sleep: 5
     wait_timeout: 50
 
 - name: Remove ibm-integration-asset-repository operator CSV
   k8s:
-    api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
-    host: "{{ asset_repo_k8s_host | default(omit) }}"
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
     state: absent
     api_version: operators.coreos.com/v1alpha1
     kind: ClusterServiceVersion
     name: "{{ csv }}"
-    namespace: "{{ asset_repo_project_name }}"
+    namespace: "{{ rpa_project_name }}"
     wait: true
     wait_sleep: 5
     wait_timeout: 50
