@@ -53,7 +53,7 @@ What is not included:
 - ICCs - not covered.
 - Caution! FNCM External share - login issues, do not configure, otherwise other capabilities will break as well - waiting for fixes.
 - Caution! RPA currently works only with one user cpadmin due to identity issue.
-- Caution! Process MIning currently doesn't work - IAF operator issues, BAI integration issues - waiting for fixes.
+- Caution! Process Mining currently works with caveats - IAF operator issues, BAI integration issues - waiting for fixes.
 - Workflow Server and Workstream Services - this is a dev deployment. BAW Authoring and (BAW + IAWS) are mutually exclusive in single project.
 
 ## What is in the package 📦

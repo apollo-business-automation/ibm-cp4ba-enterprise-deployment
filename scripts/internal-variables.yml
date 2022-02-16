@@ -179,3 +179,15 @@ asset_repo_action: "{{ global_action }}"
 asset_repo_universal_password: "{{ universal_password }}"
 asset_repo_storage_class_name: "{{ storage_class_name }}"
 asset_repo_project_name: cp4ba
+
+pm_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+pm_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+pm_action: "{{ global_action }}"
+pm_universal_password: "{{ universal_password }}"
+pm_storage_class_name: "{{ storage_class_name }}"
+pm_project_name: cp4ba
+pm_db2_hostname: "{{ db2_hostname }}"
+pm_mongodb_hostname: "{{ mongodb_hostname }}"
+pm_ca_crt_path: "{{ ca_crt_path }}"
+pm_wildcard_key_path: "{{ wildcard_key_path }}"
+pm_wildcard_crt_path: "{{ wildcard_crt_path }}"

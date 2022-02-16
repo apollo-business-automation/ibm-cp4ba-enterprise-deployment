@@ -105,3 +105,8 @@
         name: rpa
 
   when: rpa_enabled
+
+- name: Install PM
+  include_role:
+    name: pm
+  when: pm_enabled
