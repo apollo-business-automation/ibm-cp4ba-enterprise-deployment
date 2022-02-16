@@ -1,21 +1,12 @@
-- name: Get DB2 LDAP pod
-  kubernetes.core.k8s_info:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    api_version: v1
-    kind: Pod
-    namespace: db2
-    label_selectors:
-      - role=ldap
-  register: ldap_pod
-
-# Based on https://www.ibm.com/docs/en/db2/11.5?topic=ldap-managing-users
-- name: Set DB2 LDAP pod name
-  set_fact:
-    db2_ldap_pod_name: "{{ ldap_pod.resources[0].metadata.name }}"
-
 - name: Add DB2 users
-  include_tasks: add-db2-user.yml
+  include_role:
+    name: common
+    tasks_from: add-db2-user
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_db2_user: "{{ item }}"
+    common_universal_password: "{{ cp4ba_universal_password }}"
   with_items:
       # Needs to be ICNDB as container counts on such name internally for schema name (also for TaskManager)
     - icndb
