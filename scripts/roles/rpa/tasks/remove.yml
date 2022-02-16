@@ -108,7 +108,7 @@
     wait_sleep: 5
     wait_timeout: 50
 
-- name: Remove ibm-integration-asset-repository operator CSV
+- name: Remove rpa-subscription operator CSV
   k8s:
     api_key: "{{ rpa_k8s_api_key | default(omit) }}"
     host: "{{ rpa_k8s_host | default(omit) }}"
