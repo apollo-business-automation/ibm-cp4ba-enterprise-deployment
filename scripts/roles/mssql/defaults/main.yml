@@ -1,0 +1,8 @@
+mssql_action: install
+mssql_base_dir: /tmp
+mssql_dir_name: mssql
+mssql_k8s_api_key: ""
+mssql_k8s_host: ""
+mssql_image_tag: 2019-CU14-rhel-8.4
+mssql_storage_class_name: ""
+mssql_universal_password: ""

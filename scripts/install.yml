@@ -88,3 +88,15 @@
 - name: Install CP4BA
   include_role:
     name: cp4ba
+
+- block:
+
+    - name: Install MSSQL
+      include_role:
+        name: mssql
+
+    - name: Install RPA
+      include_role:
+        name: rpa
+
+  when: rpa_enabled

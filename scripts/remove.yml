@@ -1,7 +1,18 @@
+- block:
 
-# - name: Remove CP4BA
-#   include_role:
-#     name: cp4ba
+    - name: Remove RPA
+      include_role:
+        name: rpa
+
+    - name: Remove MSSQL
+      include_role:
+        name: mssql
+
+  when: rpa_enabled
+
+- name: Remove CP4BA
+  include_role:
+    name: cp4ba
 
 - name: Remove CPFS
   include_role:
