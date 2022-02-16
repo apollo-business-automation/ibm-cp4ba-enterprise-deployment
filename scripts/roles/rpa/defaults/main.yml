@@ -1,0 +1,14 @@
+rpa_action: install
+rpa_base_dir: /tmp
+rpa_dir_name: rpa
+rpa_k8s_api_key: ""
+rpa_k8s_host: ""
+rpa_operator_channel: v1.2
+rpa_starting_csv: ibm-automation-rpa.v1.2.1
+rpa_version: 1.2.1
+rpa_project_name: cp4ba
+rpa_storage_class_name: ""
+rpa_universal_password: ""
+rpa_mssql_hostname: ""
+rpa_mail_hostname: ""
+rpa_output_namespace: "automagic"

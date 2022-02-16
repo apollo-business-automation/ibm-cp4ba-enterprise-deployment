@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rpa-postdeploy
+  namespace: "{{ rpa_output_namespace }}"
+data:
+  postdeploy.md: |- 
+    {{ lookup('file', rpa_output_directory+'/postdeploy.md') | indent(4) }}
+  client-install-wait.cmd: |- 
+    {{ lookup('file', rpa_output_directory+'/client-install-wait.cmd') | indent(4) }}

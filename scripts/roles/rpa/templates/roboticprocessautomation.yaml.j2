@@ -1,0 +1,48 @@
+apiVersion: rpa.automation.ibm.com/v1beta1
+kind: RoboticProcessAutomation
+metadata:
+  name: rpa
+  namespace: "{{ rpa_project_name }}"
+spec:
+  license:
+    accept: true
+  version: "{{ rpa_version }}"
+  tls:
+    issuerRef:
+      name: iaf-issuer
+      kind: Issuer
+    caSecret:
+      secretName: global-ca
+      key: ca.crt 
+  systemQueueProvider:
+    storage:
+      class: "{{ rpa_storage_class_name }}"      
+  api:
+    externalConnection:
+      secretName: rpa-db
+    firstTenant:
+      name: ibm
+      owner:
+        email: cpadmin@cp.local
+        name: cpadmin
+    replicas: 1
+    smtp:
+      port: 587
+      server: "{{ rpa_mail_hostname }}"
+      userSecret:
+        secretName: rpa-smtp
+    storage:
+      hot:
+        size: 7Gi
+        class: "{{ rpa_storage_class_name }}"
+      archive:
+        size: 11Gi
+        class: "{{ rpa_storage_class_name }}"
+  ui:
+    replicas: 1
+  ocr:
+    replicas: 1
+  antivirus:
+    replicas: 1
+  audit:
+    forwardingEnabled: false
