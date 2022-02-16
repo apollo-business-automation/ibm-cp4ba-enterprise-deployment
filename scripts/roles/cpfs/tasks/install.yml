@@ -97,7 +97,6 @@
     state: present
     force: false
     merge_type: merge
-    namespace: common-service
     src: "{{ cpfs_output_directory }}/subscription.yaml"
     wait: true
     wait_sleep: 15
