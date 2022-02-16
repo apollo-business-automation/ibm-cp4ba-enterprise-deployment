@@ -1,8 +1,8 @@
 - name: Delete AssetRepository instance
   k8s:
     state: absent
-    api_key: "{{ asset_repok8s_api_key | default(omit) }}"
-    host: "{{ asset_repok8s_host | default(omit) }}"
+    api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
+    host: "{{ asset_repo_k8s_host | default(omit) }}"
     api_version: integration.ibm.com/v1beta1
     kind: AssetRepository
     name: assets
@@ -55,3 +55,5 @@
     wait_sleep: 5
     wait_timeout: 50
   when: csv | length > 0
+
+# TODO CouchDB leftovers - but shoul dbe deleted by removing assets as the only dependency - report

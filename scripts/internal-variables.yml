@@ -172,3 +172,10 @@ mssql_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
 mssql_action: "{{ global_action }}"
 mssql_universal_password: "{{ universal_password }}"
 mssql_storage_class_name: "{{ storage_class_name }}"
+
+asset_repo_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+asset_repo_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+asset_repo_action: "{{ global_action }}"
+asset_repo_universal_password: "{{ universal_password }}"
+asset_repo_storage_class_name: "{{ storage_class_name }}"
+asset_repo_project_name: cp4ba

@@ -10,6 +10,11 @@
 
   when: rpa_enabled
 
+- name: Remove Asset Repo
+  include_role:
+    name: asset_repo
+  when: asset_repo_enabled
+
 - name: Remove CP4BA
   include_role:
     name: cp4ba

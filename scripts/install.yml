@@ -89,6 +89,11 @@
   include_role:
     name: cp4ba
 
+- name: Install Asset Repo
+  include_role:
+    name: asset_repo
+  when: asset_repo_enabled
+
 - block:
 
     - name: Install MSSQL
