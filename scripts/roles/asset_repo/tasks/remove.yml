@@ -55,5 +55,3 @@
     wait_sleep: 5
     wait_timeout: 50
   when: csv | length > 0
-
-# TODO CouchDB leftovers - but shoul dbe deleted by removing assets as the only dependency - report
