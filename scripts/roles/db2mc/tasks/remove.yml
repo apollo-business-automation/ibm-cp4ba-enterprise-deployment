@@ -1,0 +1,11 @@
+- name: Remove Project db2mc
+  k8s:
+    state: absent
+    api_key: "{{ db2mc_k8s_api_key | default(omit) }}"
+    host: "{{ db2mc_k8s_host | default(omit) }}"
+    api_version: project.openshift.io/v1
+    kind: Project
+    name: db2mc
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 120
