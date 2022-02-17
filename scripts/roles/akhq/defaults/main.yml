@@ -1,0 +1,11 @@
+akhq_action: install
+akhq_base_dir: /tmp
+akhq_dir_name: akhq
+akhq_universal_password: ""
+akhq_storage_class_name: ""
+akhq_chart_version: 0.2.7
+akhq_cp4ba_project_name: "cp4ba"
+akhq_ca_key_path: ""
+akhq_ca_crt_path: ""
+akhq_wildcard_key_path: ""
+akhq_wildcard_crt_path: ""

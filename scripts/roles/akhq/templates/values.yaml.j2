@@ -1,0 +1,35 @@
+configuration:
+  akhq:
+    server:
+      access-log:
+        enabled: true
+        name: org.akhq.log.access
+secrets:
+  akhq:
+    connections:
+      iaf-kafka:
+        properties:
+          bootstrap.servers: "iaf-system-kafka-bootstrap-{{ akhq_cp4ba_project_name }}.{{ apps_endpoint_domain }}:443"
+          security.protocol: SASL_SSL
+          sasl.mechanism: SCRAM-SHA-512
+          sasl.jaas.config: org.apache.kafka.common.security.scram.ScramLoginModule required username="cpadmin" password='{{ akhq_universal_password }}';
+          ssl.truststore.location: /app/truststore.p12
+          ssl.truststore.password: '{{ akhq_universal_password }}'
+          ssl.truststore.type: pkcs12
+        # IAF apicurio avro not supported  
+        #schema-registry:
+        #  type: "confluent"
+        #  url: "https://iaf-system-apicurio.cp4ba.svc.cluster.local"
+        #  basic-auth-username: cpadmin
+        #  basic-auth-password: '{{ akhq_universal_password }}'
+        #  properties:
+        #    schema.registry.ssl.truststore.location: /app/truststore.p12
+        #    schema.registry.ssl.truststore.password: '{{ akhq_universal_password }}'
+kafkaSecrets:
+  truststorep12: "{{ _p12 }}"
+extraVolumeMounts:
+  - name: secrets
+    mountPath: /app/truststore.p12
+    subPath: truststorep12
+readinessProbe:
+  prefix: "" # set same as `micronaut.server.context-path`
