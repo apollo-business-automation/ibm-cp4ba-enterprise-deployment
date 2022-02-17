@@ -81,32 +81,33 @@
     common_apps_endpoint_domain: "{{ apps_endpoint_domain }}"
     common_output_directory: "{{ openldap_output_directory }}"
 
-- name: Wait for the phpldapadmin Deployment to be Available
-  k8s_info:
-    api_key: "{{ openldap_k8s_api_key | default(omit) }}"
-    host: "{{ openldap_k8s_host | default(omit) }}"
-    api_version: apps/v1
-    kind: Deployment
-    name: openldap-phpldapadmin
-    namespace: openldap
-  register: openldap_phpldapadmin
-  retries: 60
-  delay: 15
-  until: ('True' in openldap_phpldapadmin | json_query(condition_query) | unique )
+- name: Wait for openldap-phpldapadmin Deployment to be Available
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
   vars:
-    condition_query: "resources[0].status.conditions[?type == 'Available'].status"
+    common_k8s_api_key: "{{ openldap_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ openldap_k8s_host | default(omit) }}"
+    common_api_version: apps/v1
+    common_resource_kind: Deployment
+    common_resource_name: openldap-phpldapadmin
+    common_resource_namespace: openldap
+    common_condition_name: Available
+    common_retries: 60
+    common_delay: 15
 
-- name: Wait for the phpldapadmin pod to be Ready
-  k8s_info:
-    api_key: "{{ openldap_k8s_api_key | default(omit) }}"
-    host: "{{ openldap_k8s_host | default(omit) }}"
-    api_version: v1
-    kind: Pod
-    name: openldap-openldap-stack-ha-0
-    namespace: openldap
-  register: openldap_openldap_stack_ha_0
-  retries: 60
-  delay: 15
-  until: ('True' in openldap_openldap_stack_ha_0 | json_query(condition_query) | unique )
+- name: Wait for openldap-openldap-stack-ha StatefulSet ready replicas
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition-generic
   vars:
-    condition_query: "resources[0].status.conditions[?type == 'Ready'].status"
+    common_k8s_api_key: "{{ openldap_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ openldap_k8s_host | default(omit) }}"
+    common_api_version: apps/v1
+    common_resource_kind: StatefulSet
+    common_resource_name: openldap-openldap-stack-ha
+    common_resource_namespace: openldap
+    common_condition_query: resources[*].status.readyReplicas
+    common_condition_value: 1
+    common_retries: 30
+    common_delay: 120
