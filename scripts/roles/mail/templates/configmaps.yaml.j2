@@ -2,6 +2,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: mailserver.config
+  namespace: mail
   labels:
     app: mailserver
 data:
@@ -21,6 +22,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: mailserver.env.config
+  namespace: mail
   labels:
     app: mailserver
 data:
