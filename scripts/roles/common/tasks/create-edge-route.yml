@@ -8,6 +8,7 @@
 #     common_k8s_api_key: "{{ prefix_k8s_api_key | default(omit) }}"
 #     common_k8s_host: "{{ prefix_k8s_host | default(omit) }}"
 #     common_namespace_name: namespace_name
+#     common_route_name: _route_name
 #     common_service_name: service_name
 #     common_wildcard_crt_path: wildcard_crt_path
 #     common_wildcard_key_path: wildcard_key_path
@@ -35,7 +36,7 @@
     src: '{{ common_wildcard_key_path }}'
   register: common_edge_route_slurped_wildcard_key_data
 
-- name: Load TLS key data
+- name: Load TLS crt data
   slurp:
     src: '{{ common_wildcard_crt_path }}'
   register: common_edge_route_slurped_wildcard_crt_data
@@ -63,3 +64,17 @@
     wait: true
     wait_sleep: 15
     wait_timeout: 15
+
+- name: Wait for resource condition generic
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition-generic
+  vars:
+    common_api_version: route.openshift.io/v1
+    common_resource_kind: Route
+    common_resource_name: "{{ common_route_name }}"
+    common_resource_namespace: "{{ common_namespace_name }}"
+    common_condition_query: resources[*].status.ingress[0].conditions[0].status
+    common_condition_value: 'True'
+    common_retries: 10
+    common_delay: 10
