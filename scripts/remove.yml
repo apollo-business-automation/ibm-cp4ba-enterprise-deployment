@@ -36,6 +36,11 @@
   include_role:
     name: kibana
 
+- name: Remove AKHQ
+  include_role:
+    name: akhq
+  when: akhq_enabled
+
 - name: Remove Mail
   include_role:
     name: mail

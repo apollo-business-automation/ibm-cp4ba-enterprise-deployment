@@ -73,6 +73,11 @@
   include_role:
     name: mail
 
+- name: Install AKHQ
+  include_role:
+    name: akhq
+  when: akhq_enabled
+
 - name: Install Kibana
   include_role:
     name: kibana
