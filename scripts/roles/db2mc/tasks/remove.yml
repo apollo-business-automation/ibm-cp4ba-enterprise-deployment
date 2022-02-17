@@ -9,3 +9,21 @@
     wait: true
     wait_sleep: 15
     wait_timeout: 120
+
+- name: Delete DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ db2mc_k8s_api_key | default(omit) }}"
+    host: "{{ db2mc_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: |
+      su - db2inst1 -c "
+      db2 connect to DB2MC;
+      db2 force application all;
+      sleep 10
+      db2 connect reset;
+      db2 deactivate db DB2MC;
+      db2 drop db DB2MC;
+      "
+  register: command_status
+  failed_when: command_status.rc != 0 and command_status.stdout is not search('.*\"DB2MC\" could not be found.*')
