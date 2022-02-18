@@ -60,7 +60,7 @@
 - name: Install DB2MC
   include_role:
     name: db2mc
-  when: db2_mc_enabled
+  when: db2mc_enabled
 
 - name: Install openldap
   include_role:
