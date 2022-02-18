@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: usage
-  namespace: automagic
+  namespace: apollo-one-shot
 data:
   usage.md: |- 
     {{ lookup('file', usage_path) | indent(4) }}

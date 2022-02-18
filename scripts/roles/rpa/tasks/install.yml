@@ -139,7 +139,7 @@
     common_retries: 30
     common_delay: 120
 
-- name: Wait for {{ item }} Deployment to be Available
+- name: Wait for Deployments to be Available
   include_role:
     name: common
     tasks_from: wait-resource-condition

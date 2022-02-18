@@ -142,7 +142,7 @@ Note: You may fase JAXB exceptions when connecting to ODM. Using JDK8 resolve th
 
 Based on https://www.ibm.com/docs/en/odm/8.11.0?topic=parties-configuring-rule-designer
 
-Copy and edit oidc-providers.json (available in *automagic* Project in odm-oidc-providers Config Map) to you eclipse directory  
+Copy and edit oidc-providers.json (available in *apollo-one-shot* Project in odm-oidc-providers Config Map) to you eclipse directory  
 Parameters can be seen in pod
 ```bash
 POD=`oc get pod -o name | grep decisionserverconsole`
@@ -151,7 +151,7 @@ oc exec $POD -- cat /liberty/wlp/usr/servers/defaultServer/authOidc/openIdParame
 ```
 
 Based on https://www.ibm.com/docs/en/odm/8.11.0?topic=designer-passing-parameters-rule
-Copy truststore.jks (available in *automagic* Project in odm-truststore Config Map) to you eclipse directory  
+Copy truststore.jks (available in *apollo-one-shot* Project in odm-truststore Config Map) to you eclipse directory  
 Add the following to eclipse.ini  
 ```text
 -Dcom.ibm.rules.authentication.oidcconfig=oidc-providers.json
@@ -213,7 +213,7 @@ To find out how to create and add External libraries to ADS, follow https://gith
 
 To be able to follow the above guide from my environment, I needed to perform the following.
 
-Add settings for Nexus in my local maven settings .m2\settings.xml (Available in Project *automagic*, in ConfigMap *nexus-maven-settings* in *settings.xml* file)  
+Add settings for Nexus in my local maven settings .m2\settings.xml (Available in Project *apollo-one-shot*, in ConfigMap *nexus-maven-settings* in *settings.xml* file)  
 
 
 Installed JDK 16 Oracle, added to path.
@@ -222,7 +222,7 @@ Add Global CA to jdk/jre cacerts.
 Run mvn command with -Djavax.net.debug=ssl to determine the location of used cacerts file.  
 In my case: C:\Program Files\Java\jdk-16.0.1\lib\security\cacerts  
 Open KeyStore Explorer as Administrator, open this cacerts, no password.  
-Import Global CA crt (available in *automagic* Project in global-ca Secret if not provided), save without password.  
+Import Global CA crt (available in *apollo-one-shot* Project in global-ca Secret if not provided), save without password.  
 
 Installed VSCode and added Java Extension Pack
 

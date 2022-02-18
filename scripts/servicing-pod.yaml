@@ -1,17 +1,17 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  generateName: automagic-servicing-
-  namespace: automagic
+  generateName: apollo-one-shot-servicing-
+  namespace: apollo-one-shot
   labels:
-    app: automagic-servicing
+    app: apollo-one-shot-servicing
 spec:
   containers:
-    - name: automagic
+    - name: apollo-one-shot
       image: ubi8/ubi
       command: ["/bin/bash"]
       args:
-        ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x servicing.sh; ./servicing.sh; while true; do echo 'Automagic servicing pod - Ready - Enter it via Terminal and \"bash -l\" - Delete it after you are done.'; sleep 300; done"]      
+        ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x servicing.sh; ./servicing.sh; while true; do echo 'Apollo one-shot servicing pod - Ready - Enter it via Terminal and \"bash -l\" - Delete it after you are done.'; sleep 300; done"]      
       imagePullPolicy: IfNotPresent
       env:
         - name: GIT_ARCHIVE
@@ -24,4 +24,4 @@ spec:
   volumes:
     - name: config
       configMap:
-        name: automagic
+        name: apollo-one-shot

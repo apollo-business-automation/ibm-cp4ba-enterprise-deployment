@@ -11,7 +11,7 @@
     wait_sleep: 15
     wait_timeout: 120
 
-- name: Delete {{ item }} Secret
+- name: Delete Secrets
   k8s:
     state: absent
     api_key: "{{ pm_k8s_api_key | default(omit) }}"

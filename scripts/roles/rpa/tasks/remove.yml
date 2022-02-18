@@ -11,7 +11,7 @@
     wait_sleep: 15
     wait_timeout: 120
 
-- name: Delete {{ item }} Deployment
+- name: Delete Deployments
   k8s:
     state: absent
     api_key: "{{ rpa_k8s_api_key | default(omit) }}"
@@ -27,7 +27,7 @@
     - rpa-ui-rpa
     - rpa-apiserver-rpa
 
-- name: Delete {{ item }} Secret
+- name: Delete Secrets
   k8s:
     state: absent
     api_key: "{{ rpa_k8s_api_key | default(omit) }}"

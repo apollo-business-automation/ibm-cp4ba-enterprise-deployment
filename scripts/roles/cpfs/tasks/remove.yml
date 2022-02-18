@@ -261,4 +261,4 @@
     wait: true
     wait_sleep: 15
     wait_timeout: 15
-  when: configmap | json_query('resources[0].data.automagic') | bool
+  when: configmap | json_query('resources[0].data.\"apollo-one-shot\"') | bool

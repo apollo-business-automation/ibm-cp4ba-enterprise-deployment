@@ -40,18 +40,12 @@ echo ">>>>Update PATH to include new tooling"
 REAL_PATH=`realpath tooling`
 PATH=`python3 -m site --user-base`/bin:$REAL_PATH:$PATH
 
-# echo
-# echo ">>>>Configure automagic resiliency with PodDisruptionBudget"
-# oc project automagic
-# oc apply -f automagic/poddisruptionbudget.yaml
-
 if [[ $ACTION == "install" ]]; then
   echo
   echo ">>>>Starting install action"
   if [[ $CONTAINER_RUN_MODE == "true" ]]; then
     ansible-playbook main.yml -e global_action=install
     status=$?
-    # oc delete -f automagic/poddisruptionbudget.yaml > /dev/null
     exit $status
   else
     nohup ansible-playbook main.yml -e global_action=install &> nohup_install.log &
@@ -66,7 +60,6 @@ if [[ $ACTION == "remove" ]]; then
   if [[ $CONTAINER_RUN_MODE == "true" ]]; then
     ansible-playbook main.yml -e global_action=remove	
     status=$?
-    # oc delete -f automagic/poddisruptionbudget.yaml > /dev/null
     exit $status
   else
     nohup ansible-playbook main.yml -e global_action=remove &> nohup_remove.log &

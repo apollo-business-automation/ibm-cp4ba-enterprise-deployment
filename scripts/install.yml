@@ -5,7 +5,7 @@
   vars:
     common_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
     common_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
-    common_namespace_name: automagic
+    common_namespace_name: apollo-one-shot
     common_output_directory: "{{ generic_directory }}"
 
 - name: Get OCP Apps domain

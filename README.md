@@ -1,4 +1,4 @@
-# Installation of Cloud Pak for Business Automation on containers - One-shot enterprise deployment 🔫
+# Installation of Cloud Pak for Business Automation on containers - Apollo one-shot enterprise deployment 🔫
 
 Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components with all kinds of prerequisites and extras on OpenShift.
 
@@ -119,13 +119,8 @@ Contains prerequisites for the whole platform.
 
 Multiple command line tools are installed inside a container to make the installation possible.
 
-- JDK9 - Used for keytool command to generate certificates for ODM and for Maven (https://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html https://openjdk.java.net/).
-- jq - Needed for JSON files manipulation from command line (https://stedolan.github.io/jq/manual/).
-- yq - Needed for YAML files manipulation from command line; version 3 is used (https://mikefarah.gitbook.io/yq/).
-- oc - Used to communicate with OpenShift from command line (https://docs.openshift.com/container-platform/4.8/cli_reference/openshift_cli/getting-started-cli.html#cli-using-cli_cli-developer-commands).
 - Global CA - Generated self-signed Certification Authority via OpenSSL to make trusting the platform easier. It is also possible to provide your own CA and how to do so is described later in this doc.
 - helm - Used for helm charts installation (https://helm.sh/docs/).
-- maven - Used for pushing ADS library jars to Nexus (https://maven.apache.org/). This enables custom ADS JARs development.
 
 ## Environments used for installation 💻
 
@@ -207,15 +202,15 @@ You can apply them via OpenShift console (with the handy *plus* icon at the top 
 
 ### 1. Create new Project
 
-At first, create new *automagic* Project by applying the following yaml (also see the picture below the YAML).
+At first, create new *apollo-one-shot* Project by applying the following yaml (also see the picture below the YAML).
 
-This Project is used to house other resources needed for the One-shot deployment.
+This Project is used to house other resources needed for the Apollo one-shot deployment.
 
 ```yaml
 kind: Project
 apiVersion: project.openshift.io/v1
 metadata:
-  name: automagic
+  name: apollo-one-shot
 ```
 
 ![assets/project.png](assets/project.png)
@@ -224,7 +219,7 @@ metadata:
 
 This requires the logged in OpenShift user to be cluster admin.
 
-Now you need to assign cluster admin permissions to *automagic* default ServiceAccount under which the installation is performed by applying the following yaml (also see the picture below the YAML).
+Now you need to assign cluster admin permissions to *apollo-one-shot* default ServiceAccount under which the installation is performed by applying the following yaml (also see the picture below the YAML).
 
 The ServiceAccount needs to have cluster admin to be able to create all resources needed to deploy the platform.
 
@@ -232,11 +227,11 @@ The ServiceAccount needs to have cluster admin to be able to create all resource
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: cluster-admin-automagic
+  name: cluster-admin-apollo-one-shot
 subjects:
   - kind: User
     apiGroup: rbac.authorization.k8s.io
-    name: "system:serviceaccount:automagic:default"
+    name: "system:serviceaccount:apollo-one-shot:default"
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -268,8 +263,8 @@ Apply the updated contents to your cluster (as seen in the picture below point 4
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: automagic
-  namespace: automagic
+  name: apollo-one-shot
+  namespace: apollo-one-shot
 data:
   variables.yml: |
     # Always set these parameters to your values #
@@ -306,9 +301,8 @@ data:
 
     # Always review these parameters for changes
 
-    ## Do NOT enable now!
     ## Set to false if you don't want to install (or remove) Process Mining
-    pm_enabled: false
+    pm_enabled: true
 
     ## Set to false if you don't want to install (or remove) Asset Repo
     asset_repo_enabled: true
@@ -360,20 +354,20 @@ This Job runs a Pod which performs the installation.
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: automagic-install-
-  namespace: automagic
+  generateName: apollo-one-shot-install-
+  namespace: apollo-one-shot
 spec:
   template:
     metadata:
       labels:
-        app: automagic  
+        app: apollo-one-shot  
     spec:
       containers:
-        - name: automagic
+        - name: apollo-one-shot
           image: ubi8/ubi
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x automagic.sh; ./automagic.sh"]
+            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
@@ -389,7 +383,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: automagic
+            name: apollo-one-shot
   backoffLimit: 0
 ```
 
@@ -397,7 +391,7 @@ spec:
 
 Now you need to wait for a couple of hours 6-10 for the installation to complete depending on speed of your OpenShift and StorageClass bounding.
 
-You can watch progress in log of Pod which was created by the Job and its name starts with *automagic-install-*. See below images to find the logs.
+You can watch progress in log of Pod which was created by the Job and its name starts with *apollo-one-shot-install-*. See below images to find the logs.
 
 During execution, printed Timestamps are in UTC.
 
@@ -450,7 +444,7 @@ Review and perform post deploy manual steps for RPA as specified in ConfigMap *r
 
 ## Usage & Operations 😊
 
-Endpoints, access info and other useful information is available in Project *automagic* in ConfigMap named *usage* in *usage.md* file after installation. It is best to copy the contents and open it in nice MarkDown editor like VSCode.
+Endpoints, access info and other useful information is available in Project *apollo-one-shot* in ConfigMap named *usage* in *usage.md* file after installation. It is best to copy the contents and open it in nice MarkDown editor like VSCode.
 
 Specifically, if you haven't provided your own Global CA, review the section *Global CA* in this md file.
 
@@ -474,20 +468,20 @@ This Job runs a Pod which performs the removal.
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: automagic-remove-
-  namespace: automagic
+  generateName: apollo-one-shot-remove-
+  namespace: apollo-one-shot
 spec:
   template:
     metadata:
       labels:
-        app: automagic  
+        app: apollo-one-shot  
     spec:
       containers:
-        - name: automagic
+        - name: apollo-one-shot
           image: ubi8/ubi
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x automagic.sh; ./automagic.sh"]
+            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
@@ -503,7 +497,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: automagic
+            name: apollo-one-shot
   backoffLimit: 0
 ```
 
@@ -511,7 +505,7 @@ spec:
 
 Now you need to wait for some time (30 minutes to 1 hour) for the removal to complete depending on the speed of your OpenShift.
 
-You can watch progress in log of Pod which was created by the Job and its name starts with *automagic-remove-*. See below images to find the logs.
+You can watch progress in log of Pod which was created by the Job and its name starts with *apollo-one-shot-remove-*. See below images to find the logs.
 
 During execution, printed Timestamps are in UTC.
 
@@ -541,9 +535,9 @@ Also the pod log ends with message ending with the word "Failed".
 
 Further execution is stopped - and you need to troubleshoot why the removal failed, fix your environment and retry removal from step [1. Run the Job](#1-run-the-job).
 
-### 2. Remove automagic Project
+### 2. Remove apollo-one-shot Project
 
-If you don't plan to repeat install or removal steps, you can remove whole *automagic* Project following steps in the following picture.
+If you don't plan to repeat install or removal steps, you can remove whole *apollo-one-shot* Project following steps in the following picture.
 
 ![assets/project-delete.png](assets/project-delete.png)
 
