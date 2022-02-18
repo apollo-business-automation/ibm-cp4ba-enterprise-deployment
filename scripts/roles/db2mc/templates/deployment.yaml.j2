@@ -38,8 +38,11 @@ spec:
             - name: POD_NAME
               value: db2mc
           readinessProbe:
-            tcpSocket:
-              port: 8443
+            exec:
+              command:
+                - sh
+                - -c
+                - ps -e | grep drs-agent
             initialDelaySeconds: 45
             timeoutSeconds: 1
             periodSeconds: 10
