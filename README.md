@@ -328,12 +328,8 @@ data:
     ## Set to false if you don't want to install (or remove) Roundcube
     roundcube_enabled: true
 
-    ## Do NOT enable now. Set to true if you want to use FNCM External Share with Google ID. 
-    ## You then need to provide also the following parameters (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET). 
-    ## Video on how to get these values is in assets/fncm-es-google-oidc-pre.mp4
-    external_share_google: false
-    google_client_id: TODO_GOOGLE_CLIENT_ID
-    google_client_secret: TODO_GOOGLE_CLIENT_SECRET
+    ## Set to false if you don't want to install (or remove) Mongo Express
+    mongo_express_enabled: true
 
   global-ca.crt: |
     -----BEGIN CERTIFICATE-----
