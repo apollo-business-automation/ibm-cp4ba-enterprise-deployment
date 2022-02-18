@@ -101,6 +101,11 @@
   include_role:
     name: mongodb
 
+- name: Install Mongo Express
+  include_role:
+    name: mongo_express
+  when: mongo_express_enabled
+
 - name: Install CPFS
   include_role:
     name: cpfs

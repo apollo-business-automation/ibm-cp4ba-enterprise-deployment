@@ -43,6 +43,16 @@ default_delay_4: 300
 
 generic_directory: /tmp
 
+# TODO move to variables when ext share works
+    # ## Do NOT enable now. Set to true if you want to use FNCM External Share with Google ID. 
+    ## You then need to provide also the following parameters (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET). 
+    # ## Video on how to get these values is in assets/fncm-es-google-oidc-pre.mp4
+    # external_share_google: false
+    # google_client_id: TODO_GOOGLE_CLIENT_ID
+    # google_client_secret: TODO_GOOGLE_CLIENT_SECRET
+external_share_google: false
+
+
 ca_key_path: /tmp/global-ca/global-ca.key
 ca_crt_path: /tmp/global-ca/global-ca.crt
 wildcard_key_path: /tmp/global-ca/wildcard.key
@@ -164,6 +174,15 @@ mongodb_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
 mongodb_action: "{{ global_action }}"
 mongodb_universal_password: "{{ universal_password }}"
 mongodb_storage_class_name: "{{ storage_class_name }}"
+
+mongo_express_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+mongo_express_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+mongo_express_action: "{{ global_action }}"
+mongo_express_ca_crt_path: "{{ ca_crt_path }}"
+mongo_express_wildcard_key_path: "{{ wildcard_key_path }}"
+mongo_express_wildcard_crt_path: "{{ wildcard_crt_path }}"
+mongo_express_universal_password: "{{ universal_password }}"
+mongo_express_mongodb_hostname: "{{ mongodb_hostname }}"
 
 cpfs_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 cpfs_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"

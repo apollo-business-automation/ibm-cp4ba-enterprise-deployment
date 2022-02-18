@@ -28,6 +28,11 @@
   include_role:
     name: cpfs
 
+- name: Remove Mongo Express
+  include_role:
+    name: mongo_express
+  when: mongo_express_enabled
+
 - name: Remove MongoDB
   include_role:
     name: mongodb
