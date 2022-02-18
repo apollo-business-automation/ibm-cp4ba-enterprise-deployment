@@ -57,6 +57,11 @@
   include_role:
     name: openldap
 
+- name: Remove DB2MC
+  include_role:
+    name: db2mc
+  when: db2_mc_enabled
+
 - name: Remove DB2
   include_role:
     name: db2
