@@ -41,6 +41,11 @@
     name: akhq
   when: akhq_enabled
 
+- name: Remove Cerebro
+  include_role:
+    name: cerebro
+  when: cerebro_enabled
+
 - name: Remove Roundcube
   include_role:
     name: roundcube

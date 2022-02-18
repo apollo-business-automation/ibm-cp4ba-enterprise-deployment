@@ -83,6 +83,11 @@
     name: roundcube
   when: roundcube_enabled
 
+- name: Install Cerebro
+  include_role:
+    name: cerebro
+  when: cerebro_enabled
+
 - name: Install AKHQ
   include_role:
     name: akhq

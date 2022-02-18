@@ -1,0 +1,11 @@
+- name: Remove Project cerebro
+  k8s:
+    state: absent
+    api_key: "{{ cerebro_k8s_api_key | default(omit) }}"
+    host: "{{ cerebro_k8s_host | default(omit) }}"
+    api_version: project.openshift.io/v1
+    kind: Project
+    name: cerebro
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 120

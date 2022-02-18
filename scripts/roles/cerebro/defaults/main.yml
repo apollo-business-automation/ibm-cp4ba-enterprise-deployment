@@ -1,0 +1,11 @@
+cerebro_action: install
+cerebro_base_dir: /tmp
+cerebro_dir_name: cerebro
+cerebro_k8s_api_key: ""
+cerebro_k8s_host: ""
+cerebro_image_tag: 0.9.4
+cerebro_ca_crt_path: ""
+cerebro_wildcard_key_path: ""
+cerebro_wildcard_crt_path: ""
+cerebro_universal_password: ""
+cerebro_cp4ba_project_name: ""
