@@ -84,7 +84,7 @@
       db2 DROP TABLESPACE {{ item }};
       "
   register: command_status
-  failed_when: command_status.rc == 4 and command_status.stdout is not search('.*\"'+item+'\" is an undefined name.*')
+  failed_when: command_status.rc != 0 and command_status.stdout is not search('.*\"'+item+'\" is an undefined name.*')
   with_items:
     - PM_TS
     - PM_TEMP_TS
@@ -102,7 +102,7 @@
       db2 \"CALL SYSPROC.ADMIN_DROP_SCHEMA('PM', NULL, 'ERRORSCHEMA', 'ERRORTABLE')\"
       "
   register: command_status
-  failed_when: command_status.rc == 4 and command_status.stdout is not search('.*-601:CREATE TABLE.*')
+  failed_when: command_status.rc != 0 and command_status.stdout is not search('.*-601:CREATE TABLE.*')
 
 - name: Remove DB2 user
   include_role:
