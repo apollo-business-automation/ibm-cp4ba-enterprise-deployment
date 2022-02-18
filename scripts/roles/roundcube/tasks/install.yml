@@ -1,0 +1,203 @@
+- name: Create Roundcube directory for generated files
+  file:
+    path: "{{ roundcube_output_directory }}"
+    state: directory
+    mode: u+rwx
+
+- name: Create Project
+  include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ roundcube_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ roundcube_k8s_host | default(omit) }}"
+    common_namespace_name: roundcube
+    common_output_directory: "{{ roundcube_output_directory }}"
+
+- name: Prepare yaml file for privileged ClusterRoleBinding
+  template:
+    src: privileged-scc-clusterrolebinding.yaml.j2
+    dest: "{{ roundcube_output_directory }}/privileged-scc-clusterrolebinding.yaml"
+    mode: u+rwx
+
+- name: Add privileged ClusterRoleBinding
+  k8s:
+    api_key: "{{ roundcube_k8s_api_key | default(omit) }}"
+    host: "{{ roundcube_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ roundcube_output_directory }}/privileged-scc-clusterrolebinding.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Prepare yaml file for anyuid ClusterRoleBinding
+  template:
+    src: anyuid-scc-clusterrolebinding.yaml.j2
+    dest: "{{ roundcube_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
+    mode: u+rwx
+
+- name: Prepare yaml file for PVCs
+  template:
+    src: pvcs.yaml.j2
+    dest: "{{ roundcube_output_directory }}/pvcs.yaml"
+    mode: u+rwx
+
+- name: Add PVCs
+  k8s:
+    api_key: "{{ roundcube_k8s_api_key | default(omit) }}"
+    host: "{{ roundcube_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ roundcube_output_directory }}/pvcs.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Add anyuid ClusterRoleBinding
+  k8s:
+    api_key: "{{ roundcube_k8s_api_key | default(omit) }}"
+    host: "{{ roundcube_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ roundcube_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Prepare yaml file for Config Maps
+  template:
+    src: configmaps.yaml.j2
+    dest: "{{ roundcube_output_directory }}/configmaps.yaml"
+    mode: u+rwx
+
+- name: Add Config Maps
+  k8s:
+    api_key: "{{ roundcube_k8s_api_key | default(omit) }}"
+    host: "{{ roundcube_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ roundcube_output_directory }}/configmaps.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Prepare yaml file for Secrets
+  template:
+    src: secrets.yaml.j2
+    dest: "{{ roundcube_output_directory }}/secrets.yaml"
+    mode: u+rwx
+
+- name: Add Secrets
+  k8s:
+    api_key: "{{ roundcube_k8s_api_key | default(omit) }}"
+    host: "{{ roundcube_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ roundcube_output_directory }}/secrets.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Prepare yaml file for Services
+  template:
+    src: services.yaml.j2
+    dest: "{{ roundcube_output_directory }}/services.yaml"
+    mode: u+rwx
+
+- name: Add Services
+  k8s:
+    api_key: "{{ roundcube_k8s_api_key | default(omit) }}"
+    host: "{{ roundcube_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ roundcube_output_directory }}/services.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Prepare yaml file for DB Deployment
+  template:
+    src: db-deployment.yaml.j2
+    dest: "{{ roundcube_output_directory }}/db-deployment.yaml"
+    mode: u+rwx
+
+- name: Add DB Deployment
+  k8s:
+    api_key: "{{ roundcube_k8s_api_key | default(omit) }}"
+    host: "{{ roundcube_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ roundcube_output_directory }}/db-deployment.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 600
+
+- name: Prepare yaml file for Deployment
+  template:
+    src: deployment.yaml.j2
+    dest: "{{ roundcube_output_directory }}/deployment.yaml"
+    mode: u+rwx
+
+- name: Add Deployment
+  k8s:
+    api_key: "{{ roundcube_k8s_api_key | default(omit) }}"
+    host: "{{ roundcube_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ roundcube_output_directory }}/deployment.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 600
+
+- name: Prepare yaml file for Deployment
+  template:
+    src: nginx-deployment.yaml.j2
+    dest: "{{ roundcube_output_directory }}/nginx-deployment.yaml"
+    mode: u+rwx
+
+- name: Add NGINX Deployment
+  k8s:
+    api_key: "{{ roundcube_k8s_api_key | default(omit) }}"
+    host: "{{ roundcube_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ roundcube_output_directory }}/nginx-deployment.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 600
+
+- name: Get OCP Apps Endpoint
+  include_role:
+    name: common
+    tasks_from: apps-endpoint
+  vars:
+    common_k8s_api_key: "{{ roundcube_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ roundcube_k8s_host | default(omit) }}"
+    common_output_to_var: "apps_endpoint_domain"
+  when: apps_endpoint_domain is not defined
+
+- name: Crete Edge Route
+  include_role:
+    name: common
+    tasks_from: create-edge-route
+  vars:
+    common_k8s_api_key: "{{ roundcube_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ roundcube_k8s_host | default(omit) }}"
+    common_namespace_name: roundcube
+    common_route_name: roundcube
+    common_service_name: roundcubenginx
+    common_wildcard_crt_path: "{{ roundcube_wildcard_crt_path }}"
+    common_wildcard_key_path: "{{ roundcube_wildcard_key_path }}"
+    common_ca_crt_path: "{{ roundcube_ca_crt_path }}"
+    common_apps_endpoint_domain: "{{ apps_endpoint_domain }}"
+    common_output_directory: "{{ roundcube_output_directory }}"

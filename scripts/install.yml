@@ -78,6 +78,11 @@
   include_role:
     name: mail
 
+- name: Install Roundcube
+  include_role:
+    name: roundcube
+  when: roundcube_enabled
+
 - name: Install AKHQ
   include_role:
     name: akhq

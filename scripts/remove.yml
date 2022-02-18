@@ -41,6 +41,11 @@
     name: akhq
   when: akhq_enabled
 
+- name: Remove Roundcube
+  include_role:
+    name: roundcube
+  when: roundcube_enabled
+
 - name: Remove Mail
   include_role:
     name: mail

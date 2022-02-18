@@ -1,0 +1,14 @@
+roundcube_action: install
+roundcube_base_dir: /tmp
+roundcube_dir_name: roundcube
+roundcube_k8s_api_key: ""
+roundcube_k8s_host: ""
+roundcube_db_image_tag: 9.6.24-alpine
+roundcube_image_tag: 1.5.2-fpm-alpine
+roundcube_nginx_image_tag: 1.21.6-alpine
+roundcube_storage_class_name: ""
+roundcube_ca_crt_path: ""
+roundcube_wildcard_key_path: ""
+roundcube_wildcard_crt_path: ""
+roundcube_universal_password: ""
+roundcube_mail_hostname: ""
