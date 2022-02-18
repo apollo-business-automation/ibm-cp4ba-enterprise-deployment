@@ -228,6 +228,8 @@
     validate_certs: false
     status_code: 201
   register: auth_token_response
+  retries: 10
+  delay: 10
 
 - name: Add DB connection to DB2MC
   include_role:
