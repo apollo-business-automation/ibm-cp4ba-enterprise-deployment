@@ -25,6 +25,8 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   pip3 install --user wheel
   exit_test $? "Install pip package wheel failed"
 
+  PATH=`python3 -m site --user-base`/bin:$PATH
+
   echo
   echo ">>>>$(print_timestamp) Install pip package ansible"
   pip3 install ansible==2.9.27 --user

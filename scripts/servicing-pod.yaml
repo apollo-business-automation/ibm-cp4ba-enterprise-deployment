@@ -11,7 +11,7 @@ spec:
       image: ubi8/ubi
       command: ["/bin/bash"]
       args:
-        ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x servicing.sh; ./servicing.sh; while true; do echo 'Apollo one-shot servicing pod - Ready - Enter it via Terminal and \"bash -l\" - Delete it after you are done.'; sleep 300; done"]      
+        ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -maxdepth 1 -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x servicing.sh; ./servicing.sh; while true; do echo 'Apollo one-shot servicing pod - Ready - Enter it via Terminal and \"bash -l\" - Delete it after you are done.'; sleep 300; done"]      
       imagePullPolicy: IfNotPresent
       env:
         - name: GIT_ARCHIVE

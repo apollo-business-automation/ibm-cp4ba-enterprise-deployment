@@ -367,7 +367,7 @@ spec:
           image: ubi8/ubi
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
+            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -maxdepth 1 -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
@@ -481,7 +481,7 @@ spec:
           image: ubi8/ubi
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
+            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -maxdepth 1 -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
