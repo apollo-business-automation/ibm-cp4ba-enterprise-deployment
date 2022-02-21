@@ -57,41 +57,67 @@
     wait_sleep: 5
     wait_timeout: 50
 
-- name: Get all OperandRequest
+- name: Get OperandRequest CRD
   k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
-    api_version: operator.ibm.com/v1alpha1
-    kind: OperandRequest
-    namespace: ibm-common-services
-  register: operand_requests
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: OperandRequest
+  register: operandrequest_crd
   retries: 10
   delay: 1
 
-- name: Delete All OperandRequest
-  k8s:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    state: absent
-    api_version: operator.ibm.com/v1alpha1
-    kind: OperandRequest
-    name: "{{ item.metadata.name }}"
-    namespace: ibm-common-services
-  with_items: "{{ operand_requests.resources }}"
+- block:
 
-- name: Wait All OperandRequest disappear
+    - name: Get all OperandRequest
+      k8s_info:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        api_version: operator.ibm.com/v1alpha1
+        kind: OperandRequest
+        namespace: ibm-common-services
+      register: operand_requests
+      retries: 10
+      delay: 1
+
+    - name: Delete All OperandRequest
+      k8s:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        state: absent
+        api_version: operator.ibm.com/v1alpha1
+        kind: OperandRequest
+        name: "{{ item.metadata.name }}"
+        namespace: ibm-common-services
+      with_items: "{{ operand_requests.resources }}"
+  
+    - name: Wait All OperandRequest disappear
+      k8s_info:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        api_version: operator.ibm.com/v1alpha1
+        kind: OperandRequest
+        name: "{{ item.metadata.name }}"
+        namespace: ibm-common-services
+      with_items: "{{ operand_requests.resources }}"
+      register: operand_request
+      retries: 40
+      delay: 30
+      until: operand_request.resources | length == 0
+
+  when: operandrequest_crd.resources | length != 0
+
+- name: Get OperandConfig CRD
   k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
-    api_version: operator.ibm.com/v1alpha1
-    kind: OperandRequest
-    name: "{{ item.metadata.name }}"
-    namespace: ibm-common-services
-  with_items: "{{ operand_requests.resources }}"
-  register: operand_request
-  retries: 40
-  delay: 30
-  until: operand_request.resources | length == 0
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: OperandConfig
+  register: operandconfig_crd
+  retries: 10
+  delay: 1
 
 - name: Remove OperandConfig common-service
   k8s:
@@ -104,6 +130,18 @@
     namespace: ibm-common-services
   retries: 15
   delay: 2
+  when: operandconfig_crd.resources | length != 0
+
+- name: Get OperandRegistry CRD
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: OperandRegistry
+  register: operandregistry_crd
+  retries: 10
+  delay: 1
 
 - name: Remove OperandRegistry common-service
   k8s:
@@ -116,31 +154,47 @@
     namespace: ibm-common-services
   retries: 15
   delay: 2
+  when: operandregistry_crd.resources | length != 0
 
-- name: Get all NamespaceScope
+- name: Get NamespaceScope CRD
   k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
-    api_version: operator.ibm.com/v1
-    kind: NamespaceScope
-    namespace: ibm-common-services
-  register: namespace_scopes
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: NamespaceScope
+  register: namespacescope_crd
   retries: 10
   delay: 1
 
-- name: Delete All NamespaceScope
-  k8s:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    state: absent
-    api_version: operator.ibm.com/v1
-    kind: NamespaceScope
-    name: "{{ item.metadata.name }}"
-    namespace: ibm-common-services
-    wait: true
-    wait_sleep: 5
-    wait_timeout: 180
-  with_items: "{{ namespace_scopes.resources }}"
+- block:
+
+    - name: Get all NamespaceScope
+      k8s_info:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        api_version: operator.ibm.com/v1
+        kind: NamespaceScope
+        namespace: ibm-common-services
+      register: namespace_scopes
+      retries: 10
+      delay: 1
+
+    - name: Delete All NamespaceScope
+      k8s:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        state: absent
+        api_version: operator.ibm.com/v1
+        kind: NamespaceScope
+        name: "{{ item.metadata.name }}"
+        namespace: ibm-common-services
+        wait: true
+        wait_sleep: 5
+        wait_timeout: 180
+      with_items: "{{ namespace_scopes.resources }}"
+
+  when: namespacescope_crd.resources | length != 0
 
 - name: Get Operand Deployment Lifecycle Manager operator Subscription
   k8s_info:
@@ -200,6 +254,17 @@
     wait_sleep: 5
     wait_timeout: 50
 
+- name: Get MutatingWebhookConfiguration CRD
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: MutatingWebhookConfiguration
+  register: mutatingwebhookconfiguration_crd
+  retries: 10
+  delay: 1
+
 - name: Remove ibm-common-service-webhook-configuration MutatingWebhookConfiguration
   k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
@@ -211,6 +276,7 @@
     wait: true
     wait_sleep: 5
     wait_timeout: 50
+  when: mutatingwebhookconfiguration_crd.resources | length != 0
 
 - name: Remove services Project
   k8s:

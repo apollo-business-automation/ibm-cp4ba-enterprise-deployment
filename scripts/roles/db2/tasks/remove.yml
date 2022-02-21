@@ -1,11 +1,13 @@
-- name: Get DB2uClusters
+- name: Get DB2uCluster CRD
   k8s_info:
     api_key: "{{ db2_k8s_api_key | default(omit) }}"
     host: "{{ db2_k8s_host | default(omit) }}"
-    api_version: db2u.databases.ibm.com/v1
-    kind: DB2uCluster
-    namespace: db2
-  register: clusters
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: DB2uCluster
+  register: db2ucluster_crd
+  retries: 10
+  delay: 1
 
 - name: Delete DB2uCluster instance
   k8s:
@@ -19,7 +21,7 @@
     wait: true
     wait_sleep: 15
     wait_timeout: 120
-  when: clusters.resources | length > 0
+  when: db2ucluster_crd.resources | length != 0
 
 - name: Remove Project db2
   k8s:

@@ -6,7 +6,6 @@
     api_version: project.openshift.io/v1
     kind: Project
     name: gitea
-    namespace: gitea
     wait: true
     wait_sleep: 15
     wait_timeout: 120
