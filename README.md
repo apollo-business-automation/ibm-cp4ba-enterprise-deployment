@@ -401,29 +401,31 @@ Then open logs tab.
 
 ![assets/install-job-pod-log.png](assets/install-job-pod-log.png)
 
-#### Successful completion
+#### Successful install
 
 Successful completion is determined by seeing that the Job is *Complete* (in the below picture point 1) and the pod is also *Completed* (in the below picture point 3).
 
 ![assets/success-install-job-pod.png](assets/success-install-job-pod.png)
 
-Also the pod log ends with "CP4BA Enterprise install completed"  (in the below picture point 1).  
+Also the pod log ends with "CP4BA Enterprise install completed" (in the below picture point 1).  
 
 ![assets/success-install-job-log.png](assets/success-install-job-log.png)
 
 Now continue with the [Post installation steps](#post-installation-steps-%EF%B8%8F) and then review [Usage & Operations](#usage--operations-).
 
-#### Failed completion
+#### Failed install
 
 If something goes wrong, the Job is *Failed* (in the below picture point 1) and the pod has status *Error* (in the below picture point 3).
 
 ![assets/failed-install-job-pod.png](assets/failed-install-job-pod.png)
 
-Also the pod log ends with message ending with the word "Failed" (in the below picture point 1).
+Also near the end of pod log there will be a message containing the word "Failed" (in the below picture point 1).
 
 ![assets/failed-install-job-log.png](assets/failed-install-job-log.png)
 
-Further execution is stopped - and you need to troubleshoot why the installation failed, fix your environment, clean the cluster by following [Removal steps](#removal-steps-%EF%B8%8F) and after successful removal retry installation from step [4. Run the Job](#4-run-the-job).
+Further execution is stopped - and you need to troubleshoot why the installation failed, fix your environment and retry installation from step [4. Run the Job](#4-run-the-job).
+
+If rerunning install doesn't help, you cal also try to clean the cluster by following [Removal steps](#removal-steps-%EF%B8%8F) and after successful removal retry installation again.
 
 ## Post installation steps ➡️
 
@@ -505,8 +507,6 @@ Now you need to wait for some time (30 minutes to 1 hour) for the removal to com
 
 You can watch progress in log of Pod which was created by the Job and its name starts with *apollo-one-shot-remove-*. See below images to find the logs.
 
-During execution, printed Timestamps are in UTC.
-
 Find the pod of remove Job.
 
 ![assets/remove-job-pod.png](assets/remove-job-pod.png)
@@ -527,9 +527,13 @@ Also the pod log ends with "CP4BA Enterprise remove completed" (in the below pic
 
 #### Failed removal
 
-If something goes wrong, the Job is *Failed* and the pod has status *Error* (similarly as in failed installation at [Failed completion](#failed-completion).
+If something goes wrong, the Job is *Failed* (in the below picture point 1) and the pod has status *Error* (in the below picture point 3).
 
-Also the pod log ends with message ending with the word "Failed".
+![assets/failed-remove-job-pod.png](assets/failed-remove-job-pod.png)
+
+Also near the end of pod log there will be a message containing the word "Failed" (in the below picture point 1).
+
+![assets/failed-remove-job-log.png](assets/failed-remove-job-log.png)
 
 Further execution is stopped - and you need to troubleshoot why the removal failed, fix your environment and retry removal from step [1. Run the Job](#1-run-the-job).
 
