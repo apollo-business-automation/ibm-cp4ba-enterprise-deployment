@@ -107,7 +107,7 @@
     method: POST
     headers:
       Content-Type: application/json
-      Authorization: "Bearer {{ token_response.json | from_json | json_query('token') }}"
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
     body_format: json
     body:
       user_identifiers: []

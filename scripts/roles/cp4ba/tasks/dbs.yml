@@ -612,3 +612,4 @@
     - CP4BA
     - TENANT1
     - TENANT2
+  when: db2mc_enabled

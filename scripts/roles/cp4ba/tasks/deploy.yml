@@ -527,7 +527,7 @@
     common_resource_name: iaf-insights-engine
     common_resource_namespace: "{{ cp4ba_project_name }}"
     common_condition_name: Ready
-    common_retries: 30
+    common_retries: 60
     common_delay: 120
 
 - name: Wait for Deployments to be Available
@@ -542,7 +542,7 @@
     common_resource_name: "{{ item }}"
     common_resource_namespace: "{{ cp4ba_project_name }}"
     common_condition_name: Available
-    common_retries: 30
+    common_retries: 60
     common_delay: 120
   with_items:
     - "{{ cp4ba_cr_meta_name }}-mls-itp"
@@ -566,7 +566,7 @@
     common_resource_namespace: "{{ cp4ba_project_name }}"
     common_condition_query: resources[*].status.readyReplicas
     common_condition_value: 2
-    common_retries: 30
+    common_retries: 60
     common_delay: 120
 
 - name: Wait for {{ cp4ba_cr_meta_name }}-workflow-authoring-baw-jms StatefulSet ready replicas
@@ -582,7 +582,7 @@
     common_resource_namespace: "{{ cp4ba_project_name }}"
     common_condition_query: resources[*].status.readyReplicas
     common_condition_value: 1
-    common_retries: 30
+    common_retries: 60
     common_delay: 120
 
 - name: Wait for {{ cp4ba_cr_meta_name }}-workflow-authoring-baw-server StatefulSet ready replicas
@@ -598,7 +598,7 @@
     common_resource_namespace: "{{ cp4ba_project_name }}"
     common_condition_query: resources[*].status.readyReplicas
     common_condition_value: 2
-    common_retries: 30
+    common_retries: 60
     common_delay: 120
 
 - name: Wait for Deployments to be Available
@@ -613,7 +613,7 @@
     common_resource_name: "{{ item }}"
     common_resource_namespace: "{{ cp4ba_project_name }}"
     common_condition_name: Available
-    common_retries: 30
+    common_retries: 60
     common_delay: 120
   with_items:
     - "{{ cp4ba_cr_meta_name }}-ads-run-service"
@@ -638,7 +638,7 @@
     common_resource_name: cp4ba
     common_resource_namespace: "{{ cp4ba_project_name }}"
     common_condition_name: Ready
-    common_retries: 30
+    common_retries: 60
     common_delay: 120
 
 - name: Wait for all remaining pods to become Ready
