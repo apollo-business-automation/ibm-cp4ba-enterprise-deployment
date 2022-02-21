@@ -226,6 +226,7 @@
         "sslConnection": "false"
       }
     validate_certs: false
+    timeout: 120
     status_code: 201
 
 - name: Add DB connection to DB2MC
