@@ -10,6 +10,19 @@
     wait_sleep: 15
     wait_timeout: 120
 
+- name: Get DB2 Pod
+  k8s_info:
+    api_key: "{{ db2mc_k8s_api_key | default(omit) }}"
+    host: "{{ db2mc_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: db2
+    label_selectors:
+      - component=db2oltp
+  register: pods
+  retries: 40
+  delay: 15
+
 - name: Delete DB
   kubernetes.core.k8s_exec:
     api_key: "{{ db2mc_k8s_api_key | default(omit) }}"
@@ -27,3 +40,4 @@
       "
   register: command_status
   failed_when: command_status.rc != 0 and command_status.stdout is not search('.*\"DB2MC\" could not be found.*')
+  when: pods.resources | length != 0
