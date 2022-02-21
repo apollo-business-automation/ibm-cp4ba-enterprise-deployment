@@ -137,3 +137,4 @@
   with_items:
     - db.dropUser("root")
     - db.dropDatabase()
+  when: mongodb_pod.resources.length != 0

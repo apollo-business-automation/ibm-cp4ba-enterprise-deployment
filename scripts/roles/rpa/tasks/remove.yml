@@ -76,6 +76,7 @@
       ALTER DATABASE [audit] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
       drop database [audit]"
   register: command_status
+  when: pods.resources.length != 0
 
 - name: Get rpa-subscription operator Subscription
   k8s_info:
