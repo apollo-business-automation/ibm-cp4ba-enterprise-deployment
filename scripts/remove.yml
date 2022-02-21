@@ -83,8 +83,8 @@
 
 - name: Remove Global CA
   include_role:
-    name: global-ca
+    name: global_ca
 
 - name: Remove Catalog Source
   include_role:
-    name: catalog-source
+    name: catalog_source
