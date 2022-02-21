@@ -236,44 +236,13 @@
 
   when: (409 in group_responses | json_query('results[*].status'))
 
-# Based on https://www.ibm.com/docs/en/cpfs?topic=apis-oidc-registration#get2 (Get access token by using username and password)
-- name: Get IAM access token
-  uri:
-    url: "https://cp-console.{{ apps_endpoint_domain }}/idprovider/v1/auth/identitytoken"
-    method: POST
-    headers:
-      Content-Type: application/x-www-form-urlencoded;charset=UTF-8
-    body_format: form-urlencoded
-    body:
-      grant_type: password
-      username: cpadmin
-      password: "{{ cp4ba_universal_password }}"
-      scope: openid
-    validate_certs: false
-    status_code:
-      - 200
-  register: token_response
-
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-data/4.0?topic=resources-generating-authorization-token
-- name: Exchange IAM access token for Zen token
-  uri:
-    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/v1/preauth/validateAuth"
-    method: GET
-    headers:
-      iam-token: "{{ token_response | json_query('json.access_token') }}"
-      username: cpadmin
-    validate_certs: false
-    status_code:
-      - 200
-  register: token_response
-
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=secrets-creating-custom-bpc-workforce-secret
 - name: Get BPM Systems Federated Response
   uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/pfs/rest/bpm/federated/v1/systems"
     method: GET
     headers:
-      Authorization: "Bearer {{ token_response | json_query('json.accessToken') }}"
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
     validate_certs: false
     status_code:
       - 200
@@ -400,7 +369,7 @@
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/download/index.json"
     method: GET
     headers:
-      Authorization: "Bearer {{ token_response | json_query('json.accessToken') }}"
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
     validate_certs: false
     status_code: 200
   register: ads_maven_plugins_response
@@ -414,7 +383,7 @@
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/roles"
     method: GET
     headers:
-      Authorization: "Bearer {{ token_response.json | json_query('accessToken') }}"
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
     validate_certs: false
     status_code: 200
   register: roles_response
@@ -434,16 +403,19 @@
         url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/role"
         method: POST
         headers:
-          Authorization: "Bearer {{ token_response.json | json_query('accessToken') }}"
+          Authorization: "Bearer {{ token_response.json | json_query('token') }}"
         body_format: json
-        body:
-          role_name: "ADS Admin"
-          description: ""
-          permissions:
-            - administer_ads_platform
-            - execute_ads_decision
-            - manage_ads_decision
-            - monitor_ads_runtime
+        body: |
+          {
+            "role_name": "ADS Admin",
+            "description": "",
+            "permissions": [
+              "administer_ads_platform",
+              "execute_ads_decision",
+              "manage_ads_decision",
+              "monitor_ads_runtime"
+            ]
+          }
         validate_certs: false
         status_code: 201
       register: admin_role_response
@@ -459,7 +431,7 @@
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
     method: GET
     headers:
-      Authorization: "Bearer {{ token_response.json | json_query('accessToken') }}"
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
     validate_certs: false
     status_code: 200
   register: groups_response
@@ -475,7 +447,7 @@
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ cpadmins_group_id }}"
     method: PATCH
     headers:
-      Authorization: "Bearer {{ token_response.json | json_query('accessToken') }}"
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
     body_format: json
     body:
       add_role_identifiers:
@@ -487,13 +459,31 @@
   register: group_response
   failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')
 
+- name: Add ADS Admin role to default admin user
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user/admin?add_roles=true"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    body_format: json
+    body: |
+      {
+        "username": "cpadmin",
+        "user_roles": [
+          "{{ ads_admin_role_id }}"
+        ]
+      }
+    validate_certs: false
+    status_code:
+      - 200
+
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=credentials-configuring-maven-repository-manager
 - name: Add Maven credential
   uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/rest-api/api/admin/credential"
     method: POST
     headers:
-      Authorization: "Bearer {{ token_response.json | json_query('accessToken') }}"
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
     body_format: json
     body: |
       {
