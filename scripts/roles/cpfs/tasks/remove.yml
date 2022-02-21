@@ -78,9 +78,20 @@
     name: "{{ item.metadata.name }}"
     namespace: ibm-common-services
   with_items: "{{ operand_requests.resources }}"
+
+- name: Wait All OperandRequest disappear
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: operator.ibm.com/v1alpha1
+    kind: OperandRequest
+    name: "{{ item.metadata.name }}"
+    namespace: ibm-common-services
+  with_items: "{{ operand_requests.resources }}"
   register: operand_request
   retries: 40
   delay: 30
+  until: operand_request.resources | length == 0
 
 - name: Remove OperandConfig common-service
   k8s:
@@ -241,11 +252,10 @@
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: absent
-    force: false
-    merge_type: merge
+    kind: ConfigMap
     name: cluster-monitoring-config
     namespace: openshift-monitoring
     wait: true
     wait_sleep: 15
-    wait_timeout: 15
+    wait_timeout: 60
   when: configmap | json_query('resources[0].data.\"apollo-one-shot\"') | bool
