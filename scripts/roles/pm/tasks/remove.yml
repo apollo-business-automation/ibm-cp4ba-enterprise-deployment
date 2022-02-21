@@ -85,6 +85,19 @@
   retries: 40
   delay: 15
 
+- name: Connect to DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    host: "{{ pm_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: "{{ pods.resources[0].metadata.name }}"
+    command: |
+      su - db2inst1 -c "
+      db2 connect to CP4BA;
+      "
+  register: db_connect_status
+  ignore_errors: true
+
 - block:
 
     - name: Delete Tablespaces
@@ -130,7 +143,7 @@
         common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
         common_db2_user: pm
 
-  when: pods.resources | length != 0
+  when: (pods.resources | length != 0) and (db_connect_status.rc == 0)
 
 - name: Get Mongo DB pod
   kubernetes.core.k8s_info:
