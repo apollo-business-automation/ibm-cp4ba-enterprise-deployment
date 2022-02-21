@@ -389,11 +389,9 @@ spec:
 
 ![assets/install-job.png](assets/install-job.png)
 
-Now you need to wait for a couple of hours 6-10 for the installation to complete depending on speed of your OpenShift and StorageClass bounding.
+Now you need to wait for a couple of hours 6-10 for the installation to complete depending on speed of your OpenShift and StorageClass binding.
 
 You can watch progress in log of Pod which was created by the Job and its name starts with *apollo-one-shot-install-*. See below images to find the logs.
-
-During execution, printed Timestamps are in UTC.
 
 Find the pod of install Job.
 
