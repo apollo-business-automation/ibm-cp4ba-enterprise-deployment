@@ -57,19 +57,6 @@
     wait_sleep: 5
     wait_timeout: 50
 
-- name: Remove OperandRequest common-service
-  k8s:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    state: absent
-    api_version: operator.ibm.com/v1alpha1
-    kind: OperandRequest
-    name: common-service
-    namespace: ibm-common-services
-    wait: true
-    wait_sleep: 5
-    wait_timeout: 180
-
 - name: Get all OperandRequest
   k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
@@ -81,10 +68,11 @@
   retries: 10
   delay: 1
 
-- name: Wait All OperandRequest disappear
-  k8s_info:
+- name: Delete All OperandRequest
+  k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: absent
     api_version: operator.ibm.com/v1alpha1
     kind: OperandRequest
     name: "{{ item.metadata.name }}"
@@ -93,7 +81,6 @@
   register: operand_request
   retries: 40
   delay: 30
-  until: operand_request.resources | length == 0
 
 - name: Remove OperandConfig common-service
   k8s:
