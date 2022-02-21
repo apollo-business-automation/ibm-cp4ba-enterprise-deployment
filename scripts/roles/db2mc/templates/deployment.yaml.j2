@@ -37,12 +37,17 @@ spec:
               value: accept
             - name: POD_NAME
               value: db2mc
-          readinessProbe:
+          startupProbe:
             exec:
               command:
                 - sh
                 - -c
-                - ps -e | grep drs-agent
+                - cat /opt/ibm-datasrvrmgr/logs/messages.log | grep "The dsweb server is ready to run a smarter planet"
+            failureThreshold: 30
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 8443
             initialDelaySeconds: 45
             timeoutSeconds: 1
             periodSeconds: 10
@@ -51,7 +56,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 8443
-            initialDelaySeconds: 200
+            initialDelaySeconds: 45
             timeoutSeconds: 1
             periodSeconds: 10
             successThreshold: 1
