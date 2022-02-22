@@ -45,7 +45,20 @@ exit_test $? "Install pip package jmespath failed"
 
 echo
 echo ">>>>$(print_timestamp) Install required ansible modules"
-ansible-galaxy collection install -r ../requirements.yml 
+for i in {30..1}; do \
+  if ansible-galaxy collection install -r ../requirements.yml ; then \
+    break; \
+  elif [ $i -gt 1 ]; then \
+    sleep 1; \
+  else \
+    echo ">>>>$(print_timestamp) Install required ansible modules fallback to git repos"
+    if ansible-galaxy collection install -r ../requirements_git.yml --force; then \
+      break; \
+    else \
+      exit 1; \
+    fi
+  fi; \
+done 
 exit_test $? "Install required ansible modules failed"
 
 echo

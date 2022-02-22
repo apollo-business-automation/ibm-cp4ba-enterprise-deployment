@@ -91,7 +91,7 @@
         name: "{{ item.metadata.name }}"
         namespace: ibm-common-services
       with_items: "{{ operand_requests.resources }}"
-  
+
     - name: Wait All OperandRequest disappear
       k8s_info:
         api_key: "{{ cpfs_k8s_api_key | default(omit) }}"

@@ -6,6 +6,7 @@ exclude_paths:
   - ./scripts/install.yml
   - ./scripts/remove.yml
   - ./scripts/requirements.yml
+  - ./scripts/requirements_git.yml
   - ./scripts/variables.yml
   - ./scripts/internal-variables.yml
   - ./scripts/storage-class
