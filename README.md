@@ -521,7 +521,7 @@ Successful completion of removal is determined by seeing that the Job is *Comple
 
 ![assets/success-remove-job-pod.png](assets/success-remove-job-pod.png)
 
-Also the pod log ends with "CP4BA Enterprise remove completed" (in the below picture point 1).  
+Also near the end of pod log there will be indication that zero tasks failed (in the below picture point 1).  
 
 ![assets/success-remove-job-log.png](assets/success-remove-job-log.png)
 
