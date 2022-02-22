@@ -14,29 +14,23 @@
     common_namespace_name: roundcube
     common_output_directory: "{{ roundcube_output_directory }}"
 
-- name: Prepare yaml file for privileged ClusterRoleBinding
+- name: Prepare yaml file for anyuid ClusterRoleBinding
   template:
-    src: privileged-scc-clusterrolebinding.yaml.j2
-    dest: "{{ roundcube_output_directory }}/privileged-scc-clusterrolebinding.yaml"
+    src: anyuid-scc-clusterrolebinding.yaml.j2
+    dest: "{{ roundcube_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
     mode: u+rwx
 
-- name: Add privileged ClusterRoleBinding
+- name: Add anyuid ClusterRoleBinding
   k8s:
     api_key: "{{ roundcube_k8s_api_key | default(omit) }}"
     host: "{{ roundcube_k8s_host | default(omit) }}"
     state: present
     force: false
     merge_type: merge
-    src: "{{ roundcube_output_directory }}/privileged-scc-clusterrolebinding.yaml"
+    src: "{{ roundcube_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
     wait: true
     wait_sleep: 15
     wait_timeout: 15
-
-- name: Prepare yaml file for anyuid ClusterRoleBinding
-  template:
-    src: anyuid-scc-clusterrolebinding.yaml.j2
-    dest: "{{ roundcube_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
-    mode: u+rwx
 
 - name: Prepare yaml file for PVCs
   template:
@@ -52,18 +46,6 @@
     force: false
     merge_type: merge
     src: "{{ roundcube_output_directory }}/pvcs.yaml"
-    wait: true
-    wait_sleep: 15
-    wait_timeout: 15
-
-- name: Add anyuid ClusterRoleBinding
-  k8s:
-    api_key: "{{ roundcube_k8s_api_key | default(omit) }}"
-    host: "{{ roundcube_k8s_host | default(omit) }}"
-    state: present
-    force: false
-    merge_type: merge
-    src: "{{ roundcube_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
     wait: true
     wait_sleep: 15
     wait_timeout: 15

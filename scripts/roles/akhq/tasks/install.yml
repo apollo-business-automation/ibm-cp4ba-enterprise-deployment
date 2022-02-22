@@ -16,24 +16,6 @@
     common_namespace_name: akhq
     common_output_directory: "{{ akhq_output_directory }}"
 
-- name: Prepare yaml file for anyuid ClusterRoleBinding
-  template:
-    src: anyuid-scc-clusterrolebinding.yaml.j2
-    dest: "{{ akhq_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
-    mode: u+rwx
-
-- name: Add anyuid ClusterRoleBinding
-  k8s:
-    api_key: "{{ akhq_k8s_api_key | default(omit) }}"
-    host: "{{ akhq_k8s_host | default(omit) }}"
-    state: present
-    force: false
-    merge_type: merge
-    src: "{{ akhq_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
-    wait: true
-    wait_sleep: 15
-    wait_timeout: 15
-
 - name: Add helm-akhq chart repo
   kubernetes.core.helm_repository:
     name: helm-akhq

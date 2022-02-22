@@ -32,24 +32,6 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Prepare yaml file for anyuid ClusterRoleBinding
-  template:
-    src: anyuid-scc-clusterrolebinding.yaml.j2
-    dest: "{{ mail_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
-    mode: u+rwx
-
-- name: Add anyuid ClusterRoleBinding
-  k8s:
-    api_key: "{{ mail_k8s_api_key | default(omit) }}"
-    host: "{{ mail_k8s_host | default(omit) }}"
-    state: present
-    force: false
-    merge_type: merge
-    src: "{{ mail_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
-    wait: true
-    wait_sleep: 15
-    wait_timeout: 15
-
 - name: Generate an OpenSSL private key
   openssl_privatekey:
     path: "{{ mail_output_directory }}/mailserver.key"

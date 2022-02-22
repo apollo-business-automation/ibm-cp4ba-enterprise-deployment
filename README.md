@@ -537,11 +537,16 @@ Also near the end of pod log there will be a message containing the word "Failed
 
 Further execution is stopped - and you need to troubleshoot why the removal failed, fix your environment and retry removal from step [1. Run the Job](#1-run-the-job).
 
-### 2. Remove apollo-one-shot Project
+### 2. Remove apollo-one-shot related resources
 
 If you don't plan to repeat install or removal steps, you can remove whole *apollo-one-shot* Project following steps in the following picture.
 
 ![assets/project-delete.png](assets/project-delete.png)
+
+Also remove ClusterRoleBinding following steps in the following picture.
+
+![assets/crb-delete.png](assets/crb-delete.png)
+
 
 Now continue with the [Post removal steps](#post-removal-steps-%EF%B8%8F).
 
