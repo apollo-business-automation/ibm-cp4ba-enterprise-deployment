@@ -18,7 +18,7 @@
       get_url:
         url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/download/{{ item.value.path }}"
         headers:
-          Authorization: "Bearer {{ token_response | json_query('json.accessToken') }}"
+          Authorization: "Bearer {{ token_response.json | json_query('token') }}"
         validate_certs: false
         dest: "{{ cp4ba_output_directory }}/{{ item.value.path }}"
 
