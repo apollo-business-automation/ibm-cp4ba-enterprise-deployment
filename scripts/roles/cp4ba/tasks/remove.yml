@@ -61,7 +61,7 @@
     common_label_selector: "{{ item }}"
     common_project_name: "{{ cp4ba_project_name }}"
   with_items:
-    - operators.coreos.com/ibm-cp4a-operator.cp4ba
+    - "operators.coreos.com/ibm-cp4a-operator.{{ cp4ba_project_name }}"
 
 - name: Get Automation Base CRD
   k8s_info:
@@ -75,7 +75,7 @@
   retries: 60
   delay: 30
 
-- name: Remove {{ item }} Operator
+- name: Remove Operators
   include_role:
     name: common
     tasks_from: remove-operator
@@ -85,13 +85,13 @@
     common_label_selector: "{{ item }}"
     common_project_name: "{{ cp4ba_project_name }}"
   with_items:
-    - operators.coreos.com/ibm-cp4a-wfps-operator.cp4ba
-    - operators.coreos.com/ibm-automation-insightsengine.cp4ba
-    - operators.coreos.com/ibm-automation-eventprocessing.cp4ba
-    - operators.coreos.com/ibm-automation-flink.cp4ba
-    - operators.coreos.com/ibm-automation-elastic.cp4ba
-    - operators.coreos.com/ibm-automation.cp4ba
-    - operators.coreos.com/ibm-automation-core.cp4ba
+    - "operators.coreos.com/ibm-cp4a-wfps-operator.{{ cp4ba_project_name }}"
+    - "operators.coreos.com/ibm-automation-insightsengine.{{ cp4ba_project_name }}"
+    - "operators.coreos.com/ibm-automation-eventprocessing.{{ cp4ba_project_name }}"
+    - "operators.coreos.com/ibm-automation-flink.{{ cp4ba_project_name }}"
+    - "operators.coreos.com/ibm-automation-elastic.{{ cp4ba_project_name }}"
+    - "operators.coreos.com/ibm-automation.{{ cp4ba_project_name }}"
+    - "operators.coreos.com/ibm-automation-core.{{ cp4ba_project_name }}"
 
 - name: Remove Project cp4ba
   k8s:
