@@ -19,7 +19,7 @@ extraVolumeMounts:
   readOnly: false
   mountPath: "/var/lib/gitea"  
 image:
-  tag: 1.15.11
+  tag: "{{ gitea_image_tag }}"
   rootless: true
 gitea:
   config:
