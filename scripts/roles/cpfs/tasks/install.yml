@@ -326,7 +326,7 @@
     name: common-service
     namespace: ibm-common-services
   register: operand_request
-  retries: 10
+  retries: 80
   delay: 15
   until: ('Running' in operand_request | json_query(condition_query) | unique)
   vars:
