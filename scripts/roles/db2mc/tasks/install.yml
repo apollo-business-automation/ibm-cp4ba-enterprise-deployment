@@ -227,7 +227,14 @@
       }
     validate_certs: false
     timeout: 120
-    status_code: 201
+    status_code:
+      - 201
+      - 504
+      - -1
+  register: repo_setup_response
+  retries: 5
+  delay: 30
+  until: ('status' in repo_setup_response) and (repo_setup_response.status == 201)
 
 - name: Add DB connection to DB2MC
   include_role:
