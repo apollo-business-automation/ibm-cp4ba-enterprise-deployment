@@ -1,0 +1,98 @@
+# Example of the functionality call
+#
+# - name: Remove Operator
+#   include_role:
+#     name: common
+#     tasks_from: remove-operator
+#   vars:
+#     common_k8s_api_key: "{{ prefix_k8s_api_key | default(omit) }}"
+#     common_k8s_host: "{{ prefix_k8s_host | default(omit) }}"
+#     common_label_selector: _operator_subscription_label_selector
+#     common_project_name: _operator_project_name
+
+- name: Get Operator Subscription
+  k8s_info:
+    api_key: "{{ common_k8s_api_key | default(omit) }}"
+    host: "{{ common_k8s_host | default(omit) }}"
+    api_version: operators.coreos.com/v1alpha1
+    kind: Subscription
+    label_selectors:
+      - "{{ common_label_selector }}"
+    namespace: "{{ common_project_name }}"
+  register: subscription
+  retries: 10
+  delay: 1
+
+- name: Get CSV
+  set_fact:
+    common_csvs: '{{ subscription | json_query("resources[*].status.currentCSV") }}'
+    common_subscription_names: '{{ subscription | json_query("resources[*].metadata.name") }}'
+
+- name: Remove Operator Subscription
+  k8s:
+    api_key: "{{ common_k8s_api_key | default(omit) }}"
+    host: "{{ common_k8s_host | default(omit) }}"
+    state: absent
+    api_version: operators.coreos.com/v1alpha1
+    kind: Subscription
+    name: "{{ item }}"
+    namespace: "{{ common_project_name }}"
+    wait: true
+    wait_sleep: 5
+    wait_timeout: 50
+  loop: "{{ common_subscription_names }}"
+
+- name: Remove Operator CSV
+  k8s:
+    api_key: "{{ common_k8s_api_key | default(omit) }}"
+    host: "{{ common_k8s_host | default(omit) }}"
+    state: absent
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    name: "{{ item }}"
+    namespace: "{{ common_project_name }}"
+    wait: true
+    wait_sleep: 5
+    wait_timeout: 50
+  loop: "{{ common_csvs }}"
+
+- name: Wait for {{ common_label_selector }} pods to terminate
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: "{{ common_project_name }}"
+    label_selectors:
+      - "{{ common_label_selector }}"
+  register: pods
+  retries: 60
+  delay: 30
+  until: pods.resources | length == 0
+
+- name: Get Role Bindings left by Operator for label {{ common_label_selector }}
+  k8s_info:
+    api_key: "{{ common_k8s_api_key | default(omit) }}"
+    host: "{{ common_k8s_host | default(omit) }}"
+    api_version: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    namespace: "{{ common_project_name }}"
+    label_selectors:
+      - "{{ common_label_selector }}"
+  register: common_leftover_role_bindings
+  retries: 10
+  delay: 1
+
+- name: Remove leftover Role Bindings {{ item }}
+  k8s:
+    api_key: "{{ common_k8s_api_key | default(omit) }}"
+    host: "{{ common_k8s_host | default(omit) }}"
+    state: absent
+    api_version: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    name: "{{ item.metadata.name }}"
+    namespace: "{{ common_project_name }}"
+    wait: true
+    wait_sleep: 5
+    wait_timeout: 50
+  loop: "{{ common_leftover_role_bindings.resources }}"
