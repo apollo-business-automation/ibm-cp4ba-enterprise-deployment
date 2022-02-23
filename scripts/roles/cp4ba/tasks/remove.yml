@@ -5,8 +5,7 @@
     api_version: apiextensions.k8s.io/v1
     kind: CustomResourceDefinition
     name: icp4aclusters.icp4a.ibm.com
-    namespace: "{{ cp4ba_project_name }}"
-  register: crd_for_removal
+  register: icp4acluster_crd
   retries: 60
   delay: 30
 
@@ -22,10 +21,10 @@
     wait: true
     wait_sleep: 15
     wait_timeout: 600
-  when: crd_for_removal.resources | length > 0
+  when: icp4acluster_crd.resources | length != 0
 
-# wait for the Cartridge Requirements instances to disappear as if we do not wait, they will have finalizers left
-- name: Get Cartridge Requirements
+# wait for the CartridgeRequirements instances to disappear as if we do not wait, they will have finalizers left
+- name: Wait for CartridgeRequirements instances to disappear
   k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
@@ -37,7 +36,44 @@
   delay: 30
   until: cartridge_requirements.resources | length == 0
 
-- name: Remove Automation Base
+# wait for the Cartridge instances to disappear as if we do not wait, they will have finalizers left
+- name: Wait for Cartridge intances to disappear
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: core.automation.ibm.com/v1beta1
+    kind: Cartridge
+    namespace: "{{ cp4ba_project_name }}"
+  register: cartridges
+  retries: 60
+  delay: 30
+  until: cartridges.resources | length == 0
+
+- name: Wait for InsightsEngine intances to disappear
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: insightsengine.automation.ibm.com/v1beta1
+    kind: InsightsEngine
+    namespace: "{{ cp4ba_project_name }}"
+  register: insightsengines
+  retries: 60
+  delay: 30
+  until: insightsengines.resources | length == 0
+
+- name: Get AutomationBase CRD
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: automationbases.base.automation.ibm.com
+    namespace: "{{ cp4ba_project_name }}"
+  register: automationbase_crd
+  retries: 60
+  delay: 30
+
+- name: Remove AutomationBase
   k8s:
     state: absent
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -49,7 +85,33 @@
     wait: true
     wait_sleep: 15
     wait_timeout: 600
-  when: crd_for_removal.resources | length > 0
+  when: automationbase_crd.resources | length != 0
+
+- name: Get AutomationUIConfig CRD
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: automationuiconfigs.core.automation.ibm.com
+    namespace: "{{ cp4ba_project_name }}"
+  register: automationuiconfig_crd
+  retries: 60
+  delay: 30
+
+- name: Remove AutomationUIConfig
+  k8s:
+    state: absent
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: core.automation.ibm.com/v1beta1
+    kind: AutomationUIConfig
+    name: iaf-system
+    namespace: "{{ cp4ba_project_name }}"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 600
+  when: automationuiconfig_crd.resources | length != 0
 
 - name: Remove CP4BA Operator
   include_role:
@@ -62,18 +124,6 @@
     common_project_name: "{{ cp4ba_project_name }}"
   with_items:
     - "operators.coreos.com/ibm-cp4a-operator.{{ cp4ba_project_name }}"
-
-- name: Get Automation Base CRD
-  k8s_info:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    api_version: apiextensions.k8s.io/v1
-    kind: CustomResourceDefinition
-    name: automationbases.base.automation.ibm.com
-    namespace: "{{ cp4ba_project_name }}"
-  register: crd_for_removal
-  retries: 60
-  delay: 30
 
 - name: Remove Operators
   include_role:
