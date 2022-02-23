@@ -115,7 +115,7 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Manage Manual Operator common-service
+- name: Manage Manual Operator DB2
   include_role:
     name: common
     tasks_from: manage-manual-operator
@@ -123,8 +123,7 @@
     common_k8s_api_key: "{{ db2_k8s_api_key | default(omit)  }}"
     common_k8s_host: "{{ db2_k8s_host | default(omit) }}"
     common_namespace_name: db2
-    common_subscription_name: db2u-operator
-    common_deployment_name: db2u-operator-manager
+    common_label_selector_stub: db2u-operator
 
 - name: Wait for DB2uCluster CRD to be Established
   include_role:

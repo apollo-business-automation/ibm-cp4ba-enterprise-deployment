@@ -92,8 +92,7 @@
     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_namespace_name: "{{ cp4ba_project_name }}"
-    common_subscription_name: ibm-cp4a-operator
-    common_deployment_name: ibm-cp4a-operator
+    common_label_selector_stub: ibm-cp4a-operator
 
 - name: Wait for ICP4ACluster CRD to be Established
   include_role:
@@ -450,9 +449,7 @@
     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_namespace_name: ibm-common-services
-    common_subscription_name: ibm-crossplane-operator-app
-    common_deployment_name: ibm-crossplane
-
+    common_label_selector_stub: ibm-crossplane-operator-app
 
 - name: Manage Manual Operator ibm-crossplane-provider-kubernetes-operator-app
   include_role:
@@ -462,97 +459,17 @@
     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_namespace_name: ibm-common-services
-    common_subscription_name: ibm-crossplane-provider-kubernetes-operator-app
-    common_deployment_name: ibm-crossplane-provider-kubernetes-controller
+    common_label_selector_stub: ibm-crossplane-provider-kubernetes-operator-app
 
-- name: Get Events Subscription
-  k8s_info:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    api_version: operators.coreos.com/v1alpha1
-    kind: Subscription
-    name: ibm-events-operator
-    namespace: ibm-common-services
-  register: subscription
-  retries: 40
-  delay: 30
-  until: ('InstallPlan' in subscription | json_query(condition_query) | unique)
+- name: Manage Manual Operator ibm-events-operator
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
   vars:
-    condition_query: 'resources[*].status.installplan.kind'
-
-- block:
-
-    - name: Get Install Plan resource name
-      set_fact:
-        install_plan_name: "{{ subscription | json_query('resources[0].status.installplan.name') }}"
-
-    - name: Approve Install Plan
-      k8s:
-        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-        host: "{{ cp4ba_k8s_host | default(omit) }}"
-        state: present
-        api_version: operators.coreos.com/v1alpha1
-        kind: InstallPlan
-        name: "{{ install_plan_name }}"
-        namespace: ibm-common-services
-        definition:
-          spec:
-            approved: true
-
-  when: subscription | json_query(condition_query) | length == 0
-  vars:
-    condition_query: 'resources[*].status.installedCSV'
-
-# TODO can wait for InstallPlan ready state, get installed CSV from Subscription,
-# get Deployment name from it from install.spec.deployments[0].name and wait for deployment Available
-
-# TODO IAF 1.3.3 + CPFS 3.15 Automationbase hotfix START
-
-# - name: Patch KafkaClaim
-#   k8s:
-#     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-#     host: "{{ cp4ba_k8s_host | default(omit) }}"
-#     state: present
-#     api_version: shim.bedrock.ibm.com/v1alpha1
-#     kind: KafkaClaim
-#     name: iaf-system
-#     namespace: "{{ cp4ba_project_name }}"
-#     definition:
-#       metadata:
-#         annotations:
-#           bedrock.ibm.com/shared-service-namespace: "{{ cp4ba_project_name }}"
-#   retries: 40
-#   delay: 30
-
-# - name: Get NamespaceScope
-#   k8s_info:
-#     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-#     host: "{{ cp4ba_k8s_host | default(omit) }}"
-#     api_version: operator.ibm.com/v1
-#     kind: NamespaceScope
-#     name: common-service
-#     namespace: ibm-common-services
-#   register: namespace_scope
-#   retries: 40
-#   delay: 30
-
-# - name: Patch NamespaceScope
-#   k8s:
-#     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-#     host: "{{ cp4ba_k8s_host | default(omit) }}"
-#     state: present
-#     api_version: operator.ibm.com/v1
-#     kind: NamespaceScope
-#     name: common-service
-#     namespace: ibm-common-services
-#     definition:
-#       spec:
-#         namespaceMembers: "{{ namespace_scope.resources[0].spec.namespaceMembers + [cp4ba_project_name] }}"
-#   retries: 40
-#   delay: 30
-#   when: cp4ba_project_name not in namespace_scope.resources[0].spec.namespaceMembers
-
-# TODO IAF 1.3.3 + CPFS 3.15 Automationbase hotfix END
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_label_selector_stub: ibm-events-operator
 
 - name: Wait for AutomationBase instance Ready state
   include_role:

@@ -50,7 +50,7 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Manage Manual Operator common-service
+- name: Manage Manual Operator Nexus
   include_role:
     name: common
     tasks_from: manage-manual-operator
@@ -58,8 +58,7 @@
     common_k8s_api_key: "{{ nexus_k8s_api_key | default(omit)  }}"
     common_k8s_host: "{{ nexus_k8s_host | default(omit) }}"
     common_namespace_name: nexus
-    common_subscription_name: nxrm-operator-certified
-    common_deployment_name: nxrm-operator-certified
+    common_label_selector_stub: nxrm-operator-certified
 
 - name: Wait for NexusRepo CRD to be Established
   include_role:

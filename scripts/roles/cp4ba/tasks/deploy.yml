@@ -311,8 +311,7 @@
     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_namespace_name: ibm-common-services
-    common_subscription_name: ibm-zen-operator
-    common_deployment_name: ibm-zen-operator
+    common_label_selector_stub: ibm-zen-operator
 
 - name: Wait for icp4ba Cartridge to be Ready
   include_role:
@@ -372,46 +371,17 @@
     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_namespace_name: ibm-common-services
-    common_subscription_name: ibm-bts-operator
-    common_deployment_name: ibm-bts-operator-controller-manager
+    common_label_selector_stub: ibm-bts-operator
 
-- name: Get PostgreSQL Subscription
-  k8s_info:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    api_version: operators.coreos.com/v1alpha1
-    kind: Subscription
-    name: cloud-native-postgresql
-    namespace: ibm-common-services
-  register: subscription
-  retries: 40
-  delay: 30
-  until: ('InstallPlan' in subscription | json_query(condition_query) | unique)
+- name: Manage Manual Operator cloud-native-postgresql
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
   vars:
-    condition_query: 'resources[*].status.installplan.kind'
-
-- block:
-
-    - name: Get Install Plan resource name
-      set_fact:
-        install_plan_name: "{{ subscription | json_query('resources[0].status.installplan.name') }}"
-
-    - name: Approve Install Plan
-      k8s:
-        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-        host: "{{ cp4ba_k8s_host | default(omit) }}"
-        state: present
-        api_version: operators.coreos.com/v1alpha1
-        kind: InstallPlan
-        name: "{{ install_plan_name }}"
-        namespace: ibm-common-services
-        definition:
-          spec:
-            approved: true
-
-  when: subscription | json_query(condition_query) | length == 0
-  vars:
-    condition_query: 'resources[*].status.installedCSV'
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_label_selector_stub: cloud-native-postgresql
 
 - name: Wait for BTS Ready state
   include_role:

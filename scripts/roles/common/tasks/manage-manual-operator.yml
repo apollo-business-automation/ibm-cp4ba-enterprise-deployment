@@ -7,18 +7,22 @@
 #   vars:
 #     common_k8s_api_key: "{{ prefix_k8s_api_key | default(omit)  }}"
 #     common_k8s_host: "{{ prefix_k8s_host | default(omit) }}"
-#     common_namespace_name: namespace_name
-#     common_subscription_name: subscription_name
-#     common_deployment_name: deployment_name
+#     common_namespace_name: _namespace_name
+#     common_label_selector_stub: _label_selector_stub
 
-- name: Wait for Operator Subscription {{ common_subscription_name }}
+- name: Set label_selectors
+  set_fact:
+    common_label_selector: "{{ ('operators.coreos.com/'+common_label_selector_stub+'.'+common_namespace_name)[:84] }}"
+
+- name: Wait for Operator Subscription to appear
   k8s_info:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
     host: "{{ common_k8s_host | default(omit) }}"
     api_version: operators.coreos.com/v1alpha1
     kind: Subscription
-    name: "{{ common_subscription_name }}"
     namespace: "{{ common_namespace_name }}"
+    label_selectors:
+      - "{{ common_label_selector }}"
   register: common_subscription
   retries: 40
   delay: 30
@@ -48,14 +52,15 @@
   vars:
     condition_query: 'resources[*].status.installedCSV'
 
-- name: Wait for Operator Deployment {{ common_deployment_name }} to be Available
+- name: Wait for Operator Deployment to be Available
   k8s_info:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
     host: "{{ common_k8s_host | default(omit) }}"
     api_version: v1
     kind: Deployment
-    name: "{{ common_deployment_name }}"
     namespace: "{{ common_namespace_name }}"
+    label_selectors:
+      - "{{ common_label_selector }}"
   register: common_deployment
   retries: 80
   delay: 15
