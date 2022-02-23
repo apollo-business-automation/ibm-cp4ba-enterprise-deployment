@@ -14,57 +14,37 @@
   set_fact:
     common_label_selector: "{{ ('operators.coreos.com/'+common_label_selector_stub+'.'+common_namespace_name)[:84] }}"
 
-- name: Get Operator Subscription
-  k8s_info:
+# Based on
+# https://docs.openshift.com/container-platform/4.8/operators/admin/olm-deleting-operators-from-cluster.html#olm-deleting-operator-from-a-cluster-using-cli_olm-deleting-operators-from-a-cluster
+- name: Remove Operator Subscription
+  kubernetes.core.k8s:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
     host: "{{ common_k8s_host | default(omit) }}"
+    state: absent
     api_version: operators.coreos.com/v1alpha1
     kind: Subscription
     label_selectors:
       - "{{ common_label_selector }}"
     namespace: "{{ common_namespace_name }}"
-  register: subscription
-  retries: 10
-  delay: 1
-
-- name: Get CSV
-  set_fact:
-    common_csvs: '{{ subscription | json_query("resources[*].status.currentCSV") }}'
-    common_subscription_names: '{{ subscription | json_query("resources[*].metadata.name") }}'
-
-# Based on
-# https://docs.openshift.com/container-platform/4.8/operators/admin/olm-deleting-operators-from-cluster.html#olm-deleting-operator-from-a-cluster-using-cli_olm-deleting-operators-from-a-cluster
-- name: Remove Operator Subscription
-  k8s:
-    api_key: "{{ common_k8s_api_key | default(omit) }}"
-    host: "{{ common_k8s_host | default(omit) }}"
-    state: absent
-    api_version: operators.coreos.com/v1alpha1
-    kind: Subscription
-    name: "{{ common_subscription_name }}"
-    namespace: "{{ common_namespace_name }}"
     wait: true
     wait_sleep: 5
     wait_timeout: 50
-  loop: "{{ common_subscription_names }}"
-  loop_control:
-    loop_var: common_subscription_name
+  vars:
+    condition_query: "resources[*].metadata.name"
 
-- name: Remove Operator CSV
-  k8s:
+- name: Remove Operator CSVs
+  kubernetes.core.k8s:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
     host: "{{ common_k8s_host | default(omit) }}"
     state: absent
     api_version: operators.coreos.com/v1alpha1
     kind: ClusterServiceVersion
-    name: "{{ common_csv }}"
+    label_selectors:
+      - "{{ common_label_selector }}"
     namespace: "{{ common_namespace_name }}"
     wait: true
     wait_sleep: 5
     wait_timeout: 50
-  loop: "{{ common_csvs }}"
-  loop_control:
-    loop_var: common_csv
 
 - name: Wait for {{ common_label_selector }} Deployment to terminate
   k8s_info:
@@ -93,7 +73,7 @@
   retries: 10
   delay: 1
 
-- name: Remove leftover Role Bindings {{ item }}
+- name: Remove leftover Role Bindings
   k8s:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
     host: "{{ common_k8s_host | default(omit) }}"
