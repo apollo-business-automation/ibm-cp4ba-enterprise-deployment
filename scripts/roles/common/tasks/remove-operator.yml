@@ -7,8 +7,12 @@
 #   vars:
 #     common_k8s_api_key: "{{ prefix_k8s_api_key | default(omit) }}"
 #     common_k8s_host: "{{ prefix_k8s_host | default(omit) }}"
-#     common_label_selector: _operator_subscription_label_selector
-#     common_project_name: _operator_project_name
+#     common_namespace_name:_namespace_name
+#     common_label_selector_stub: _label_selector_stub
+
+- name: Set label_selectors
+  set_fact:
+    common_label_selector: "{{ ('operators.coreos.com/'+common_label_selector_stub+'.'+common_namespace_name)[:84] }}"
 
 - name: Get Operator Subscription
   k8s_info:
@@ -18,7 +22,7 @@
     kind: Subscription
     label_selectors:
       - "{{ common_label_selector }}"
-    namespace: "{{ common_project_name }}"
+    namespace: "{{ common_namespace_name }}"
   register: subscription
   retries: 10
   delay: 1
@@ -37,12 +41,14 @@
     state: absent
     api_version: operators.coreos.com/v1alpha1
     kind: Subscription
-    name: "{{ item }}"
-    namespace: "{{ common_project_name }}"
+    name: "{{ common_subscription_name }}"
+    namespace: "{{ common_namespace_name }}"
     wait: true
     wait_sleep: 5
     wait_timeout: 50
   loop: "{{ common_subscription_names }}"
+  loop_control:
+    loop_var: common_subscription_name
 
 - name: Remove Operator CSV
   k8s:
@@ -51,26 +57,28 @@
     state: absent
     api_version: operators.coreos.com/v1alpha1
     kind: ClusterServiceVersion
-    name: "{{ item }}"
-    namespace: "{{ common_project_name }}"
+    name: "{{ common_csv }}"
+    namespace: "{{ common_namespace_name }}"
     wait: true
     wait_sleep: 5
     wait_timeout: 50
   loop: "{{ common_csvs }}"
+  loop_control:
+    loop_var: common_csv
 
-- name: Wait for {{ common_label_selector }} pods to terminate
+- name: Wait for {{ common_label_selector }} Deployment to terminate
   k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    api_version: v1
-    kind: Pod
-    namespace: "{{ common_project_name }}"
+    api_version: apps/v1
+    kind: Deployment
+    namespace: "{{ common_namespace_name }}"
     label_selectors:
       - "{{ common_label_selector }}"
-  register: pods
+  register: deployments
   retries: 60
   delay: 30
-  until: pods.resources | length == 0
+  until: deployments.resources | length == 0
 
 - name: Get Role Bindings left by Operator for label {{ common_label_selector }}
   k8s_info:
@@ -78,7 +86,7 @@
     host: "{{ common_k8s_host | default(omit) }}"
     api_version: rbac.authorization.k8s.io/v1
     kind: RoleBinding
-    namespace: "{{ common_project_name }}"
+    namespace: "{{ common_namespace_name }}"
     label_selectors:
       - "{{ common_label_selector }}"
   register: common_leftover_role_bindings
@@ -92,9 +100,11 @@
     state: absent
     api_version: rbac.authorization.k8s.io/v1
     kind: RoleBinding
-    name: "{{ item.metadata.name }}"
-    namespace: "{{ common_project_name }}"
+    name: "{{ common_leftover_role_binding.metadata.name }}"
+    namespace: "{{ common_namespace_name }}"
     wait: true
     wait_sleep: 5
     wait_timeout: 50
   loop: "{{ common_leftover_role_bindings.resources }}"
+  loop_control:
+    loop_var: common_leftover_role_binding

@@ -4,7 +4,7 @@
     host: "{{ asset_repo_k8s_host | default(omit) }}"
     api_version: apiextensions.k8s.io/v1
     kind: CustomResourceDefinition
-    name: AssetRepository
+    name: assetrepositories.integration.ibm.com
   register: assetrepository_crd
   retries: 10
   delay: 1
@@ -30,8 +30,8 @@
   vars:
     common_k8s_api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ asset_repo_k8s_host | default(omit) }}"
-    common_label_selector: "operators.coreos.com/ibm-integration-asset-repository.{{ asset_repo_project_name }}"
-    common_project_name: "{{ asset_repo_project_name }}"
+    common_namespace_name: "{{ asset_repo_project_name }}"
+    common_label_selector_stub: "ibm-integration-asset-repository"
 
 - name: Wait for CouchDBCluster instances removal
   k8s_info:
@@ -52,5 +52,5 @@
   vars:
     common_k8s_api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ asset_repo_k8s_host | default(omit) }}"
-    common_label_selector: "operators.coreos.com/couchdb-operator.{{ asset_repo_project_name }}"
-    common_project_name: "{{ asset_repo_project_name }}"
+    common_namespace_name: "{{ asset_repo_project_name }}"
+    common_label_selector_stub: "couchdb-operator"

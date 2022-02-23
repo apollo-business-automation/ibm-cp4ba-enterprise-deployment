@@ -46,11 +46,11 @@
   vars:
     common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
-    common_label_selector: "{{ item }}"
-    common_project_name: "{{ pm_project_name }}"
+    common_namespace_name: "{{ pm_project_name }}"
+    common_label_selector_stub: "{{ item }}"
   with_items:
-    - "operators.coreos.com/ibm-automation-processmining.{{ pm_project_name }}"
-    - "operators.coreos.com/db2u-operator.{{ pm_project_name }}"
+    - "ibm-automation-processmining"
+    - "db2u-operator"
 
 - name: Get DB2 Pod
   k8s_info:

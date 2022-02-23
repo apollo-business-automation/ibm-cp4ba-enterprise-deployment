@@ -1,49 +1,14 @@
 # Based on https://www.ibm.com/docs/en/cpfs?topic=online-uninstalling-foundational-services
 
-- name: Get IBM Cloud Pak foundational services operator Subscription
-  k8s_info:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    api_version: operators.coreos.com/v1alpha1
-    kind: Subscription
-    name: ibm-common-service-operator
-    namespace: ibm-common-services
-  register: subscription
-  retries: 10
-  delay: 1
-
-- name: Get CSV
-  set_fact:
-    csv: '{{ subscription | json_query("resources[0].status.currentCSV") }}'
-
-# Based on
-# https://docs.openshift.com/container-platform/4.8/operators/admin/olm-deleting-operators-from-cluster.html#olm-deleting-operator-from-a-cluster-using-cli_olm-deleting-operators-from-a-cluster
-- name: Remove IBM Cloud Pak foundational services operator Subscription
-  k8s:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    state: absent
-    api_version: operators.coreos.com/v1alpha1
-    kind: Subscription
-    name: ibm-common-service-operator
-    namespace: ibm-common-services
-    wait: true
-    wait_sleep: 5
-    wait_timeout: 50
-
-- name: Remove IBM Cloud Pak foundational services operator CSV
-  k8s:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    state: absent
-    api_version: operators.coreos.com/v1alpha1
-    kind: ClusterServiceVersion
-    name: "{{ csv }}"
-    namespace: ibm-common-services
-    wait: true
-    wait_sleep: 5
-    wait_timeout: 50
-  when: csv | length > 0
+- name: Remove IBM Cloud Pak foundational services Operator
+  include_role:
+    name: common
+    tasks_from: remove-operator
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_label_selector_stub: ibm-common-service-operator
 
 - name: Remove common-service Project
   k8s:
@@ -63,7 +28,7 @@
     host: "{{ cpfs_k8s_host | default(omit) }}"
     api_version: apiextensions.k8s.io/v1
     kind: CustomResourceDefinition
-    name: OperandRequest
+    name: operandrequests.operator.ibm.com
   register: operandrequest_crd
   retries: 10
   delay: 1
@@ -114,7 +79,7 @@
     host: "{{ cpfs_k8s_host | default(omit) }}"
     api_version: apiextensions.k8s.io/v1
     kind: CustomResourceDefinition
-    name: OperandConfig
+    name: operandconfigs.operator.ibm.com
   register: operandconfig_crd
   retries: 10
   delay: 1
@@ -138,7 +103,7 @@
     host: "{{ cpfs_k8s_host | default(omit) }}"
     api_version: apiextensions.k8s.io/v1
     kind: CustomResourceDefinition
-    name: OperandRegistry
+    name: operandregistries.operator.ibm.com
   register: operandregistry_crd
   retries: 10
   delay: 1
@@ -162,7 +127,7 @@
     host: "{{ cpfs_k8s_host | default(omit) }}"
     api_version: apiextensions.k8s.io/v1
     kind: CustomResourceDefinition
-    name: NamespaceScope
+    name: namespacescopes.operator.ibm.com
   register: namespacescope_crd
   retries: 10
   delay: 1
@@ -196,50 +161,15 @@
 
   when: namespacescope_crd.resources | length != 0
 
-- name: Get Operand Deployment Lifecycle Manager operator Subscription
-  k8s_info:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    api_version: operators.coreos.com/v1alpha1
-    kind: Subscription
-    name: operand-deployment-lifecycle-manager-app
-    namespace: ibm-common-services
-  register: subscription
-  retries: 10
-  delay: 1
-
-- name: Get CSV
-  set_fact:
-    csv: '{{ subscription | json_query("resources[0].status.currentCSV") }}'
-
-# Based on
-# https://docs.openshift.com/container-platform/4.8/operators/admin/olm-deleting-operators-from-cluster.html#olm-deleting-operator-from-a-cluster-using-cli_olm-deleting-operators-from-a-cluster
-- name: Remove Operand Deployment Lifecycle Manager operator Subscription
-  k8s:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    state: absent
-    api_version: operators.coreos.com/v1alpha1
-    kind: Subscription
-    name: operand-deployment-lifecycle-manager-app
-    namespace: ibm-common-services
-    wait: true
-    wait_sleep: 5
-    wait_timeout: 50
-
-- name: Remove Operand Deployment Lifecycle Manager operator CSV
-  k8s:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    state: absent
-    api_version: operators.coreos.com/v1alpha1
-    kind: ClusterServiceVersion
-    name: "{{ csv }}"
-    namespace: ibm-common-services
-    wait: true
-    wait_sleep: 5
-    wait_timeout: 50
-  when: csv | length > 0
+- name: Remove Operand Deployment Lifecycle Manager Operator
+  include_role:
+    name: common
+    tasks_from: remove-operator
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_label_selector_stub: ibm-odlm
 
 - name: Remove ibmcloud-cluster-ca-cert Secret
   k8s:
@@ -254,17 +184,6 @@
     wait_sleep: 5
     wait_timeout: 50
 
-- name: Get MutatingWebhookConfiguration CRD
-  k8s_info:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    api_version: apiextensions.k8s.io/v1
-    kind: CustomResourceDefinition
-    name: MutatingWebhookConfiguration
-  register: mutatingwebhookconfiguration_crd
-  retries: 10
-  delay: 1
-
 - name: Remove ibm-common-service-webhook-configuration MutatingWebhookConfiguration
   k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
@@ -276,7 +195,6 @@
     wait: true
     wait_sleep: 5
     wait_timeout: 50
-  when: mutatingwebhookconfiguration_crd.resources | length != 0
 
 - name: Remove services Project
   k8s:

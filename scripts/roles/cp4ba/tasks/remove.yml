@@ -120,10 +120,8 @@
   vars:
     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_label_selector: "{{ item }}"
-    common_project_name: "{{ cp4ba_project_name }}"
-  with_items:
-    - "operators.coreos.com/ibm-cp4a-operator.{{ cp4ba_project_name }}"
+    common_namespace_name: "{{ cp4ba_project_name }}"
+    common_label_selector_stub: ibm-cp4a-operator
 
 - name: Remove Operators
   include_role:
@@ -132,16 +130,16 @@
   vars:
     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_label_selector: "{{ item }}"
-    common_project_name: "{{ cp4ba_project_name }}"
+    common_namespace_name: "{{ cp4ba_project_name }}"
+    common_label_selector_stub: "{{ item }}"
   with_items:
-    - "operators.coreos.com/ibm-cp4a-wfps-operator.{{ cp4ba_project_name }}"
-    - "operators.coreos.com/ibm-automation-insightsengine.{{ cp4ba_project_name }}"
-    - "operators.coreos.com/ibm-automation-eventprocessing.{{ cp4ba_project_name }}"
-    - "operators.coreos.com/ibm-automation-flink.{{ cp4ba_project_name }}"
-    - "operators.coreos.com/ibm-automation-elastic.{{ cp4ba_project_name }}"
-    - "operators.coreos.com/ibm-automation.{{ cp4ba_project_name }}"
-    - "operators.coreos.com/ibm-automation-core.{{ cp4ba_project_name }}"
+    - "ibm-cp4a-wfps-operator"
+    - "ibm-automation-insightsengine"
+    - "ibm-automation-eventprocessing"
+    - "ibm-automation-flink"
+    - "ibm-automation-elastic"
+    - "ibm-automation"
+    - "ibm-automation-core"
 
 - name: Remove Project cp4ba
   k8s:

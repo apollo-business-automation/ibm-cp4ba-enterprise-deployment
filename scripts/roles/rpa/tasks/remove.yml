@@ -97,8 +97,8 @@
   vars:
     common_k8s_api_key: "{{ rpa_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ rpa_k8s_host | default(omit) }}"
-    common_label_selector: "operators.coreos.com/ibm-automation-rpa.{{ rpa_project_name }}"
-    common_project_name: "{{ rpa_project_name }}"
+    common_namespace_name: "{{ rpa_project_name }}"
+    common_label_selector_stub: "ibm-automation-rpa"
 
 # wait for the QueueManager instances to disappear as if we do not wait, they will have finalizers left
 - name: Wait for Queue Managers instances removal
@@ -120,8 +120,8 @@
   vars:
     common_k8s_api_key: "{{ rpa_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ rpa_k8s_host | default(omit) }}"
-    common_label_selector: "operators.coreos.com/ibm-mq.{{ rpa_project_name }}"
-    common_project_name: "{{ rpa_project_name }}"
+    common_namespace_name: "{{ rpa_project_name }}"
+    common_label_selector_stub: "ibm-mq"
 
 - name: Wait for RedisSentinel instances removal
   k8s_info:
@@ -142,5 +142,5 @@
   vars:
     common_k8s_api_key: "{{ rpa_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ rpa_k8s_host | default(omit) }}"
-    common_label_selector: "operators.coreos.com/ibm-cloud-databases-redis-operator.{{ rpa_project_name }}"
-    common_project_name: "{{ rpa_project_name }}"
+    common_namespace_name: "{{ rpa_project_name }}"
+    common_label_selector_stub: "ibm-cloud-databases-redis-operator"
