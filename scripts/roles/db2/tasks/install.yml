@@ -125,7 +125,7 @@
     common_namespace_name: db2
     common_label_selector_stub: db2u-operator
 
-- name: Wait for DB2uCluster CRD to be Established
+- name: Wait for Db2uCluster CRD to be Established
   include_role:
     name: common
     tasks_from: wait-crd
@@ -148,13 +148,13 @@
 
 # Based on LI at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument
 # DB2 Standard Edition is a supporting program with limitation of 16 CPU and 128 Memory
-- name: Prepare yaml file for DB2uCluster Instance
+- name: Prepare yaml file for Db2uCluster Instance
   template:
     src: db2ucluster.yaml.j2
     dest: "{{ db2_output_directory }}/db2ucluster.yaml"
     mode: u+rwx
 
-- name: Add the DB2uCluster Instance
+- name: Add the Db2uCluster Instance
   k8s:
     api_key: "{{ db2_k8s_api_key | default(omit) }}"
     host: "{{ db2_k8s_host | default(omit) }}"
@@ -166,7 +166,7 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Wait for the DB2uCluster Instance Ready State
+- name: Wait for the Db2uCluster Instance Ready State
   k8s_info:
     api_key: "{{ db2_k8s_api_key | default(omit) }}"
     host: "{{ db2_k8s_host | default(omit) }}"
