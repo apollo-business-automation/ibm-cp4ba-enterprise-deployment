@@ -47,10 +47,7 @@
     common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
     common_namespace_name: "{{ pm_project_name }}"
-    common_label_selector_stub: "{{ item }}"
-  with_items:
-    - "ibm-automation-processmining"
-    - "db2u-operator"
+    common_label_selector_stub: ibm-automation-processmining
 
 - name: Get DB2 Pod
   k8s_info:
