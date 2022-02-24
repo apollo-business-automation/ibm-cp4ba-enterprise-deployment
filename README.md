@@ -425,7 +425,7 @@ Also near the end of pod log there will be a message containing the word "Failed
 
 Further execution is stopped - and you need to troubleshoot why the installation failed, fix your environment and retry installation from step [4. Run the Job](#4-run-the-job).
 
-If rerunning install doesn't help, you cal also try to clean the cluster by following [Removal steps](#removal-steps-%EF%B8%8F) and after successful removal retry installation again.
+If rerunning install doesn't help, you can also try to clean the cluster by following [Removal steps](#removal-steps-%EF%B8%8F) and after successful removal retry installation again.
 
 ## Post installation steps ➡️
 

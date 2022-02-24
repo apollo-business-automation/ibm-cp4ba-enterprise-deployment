@@ -142,6 +142,42 @@
     common_namespace_name: ibm-common-services
     common_label_selector_stub: ibm-odlm
 
+- name: Wait for SecretShare CRD to be Established
+  include_role:
+    name: common
+    tasks_from: wait-crd
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_crd_name: secretshares.ibmcpcs.ibm.com
+
+- name: Wait for SecretShare instance common-services to appear
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: ibmcpcs.ibm.com/v1
+    kind: SecretShare
+    name: common-services
+    namespace: ibm-common-services
+  register: secret_share
+  retries: 10
+  delay: 15
+  until: secret_share.resources | length == 1
+
+- name: Patch SecretShare instance common-services to omit sharing into other namespaces
+  k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: present
+    api_version: ibmcpcs.ibm.com/v1
+    kind: SecretShare
+    name: common-services
+    namespace: ibm-common-services
+    definition:
+      spec:
+        configmapshares: []
+        secretshares: []
+
 - name: Wait for OperandConfig CRD to be Established
   include_role:
     name: common
