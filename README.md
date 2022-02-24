@@ -384,7 +384,7 @@ spec:
         - name: config
           configMap:
             name: apollo-one-shot
-  backoffLimit: 3
+  backoffLimit: 2
 ```
 
 ![assets/install-job.png](assets/install-job.png)
@@ -498,7 +498,7 @@ spec:
         - name: config
           configMap:
             name: apollo-one-shot
-  backoffLimit: 3
+  backoffLimit: 2
 ```
 
 ![assets/remove-job.png](assets/remove-job.png)
