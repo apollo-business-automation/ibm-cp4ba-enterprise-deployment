@@ -7,6 +7,12 @@
     path: "{{ cp4ba_output_directory }}"
     state: absent
 
+- name: Create CP4BA directory for generated files
+  file:
+    path: "{{ cp4ba_output_directory }}"
+    state: directory
+    mode: u+rwx    
+
 - name: Install CP4BA
   include_tasks: install.yml
   vars:

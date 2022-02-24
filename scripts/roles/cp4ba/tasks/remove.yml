@@ -152,3 +152,58 @@
     wait: true
     wait_sleep: 15
     wait_timeout: 600
+
+- name: Remove DB connections from DB2MC
+  include_role:
+    name: common
+    tasks_from: remove-db2mc-connection
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_db2_db_name: "{{ item }}"
+    common_universal_password: "{{ cp4ba_universal_password }}"
+    common_output_directory: "{{ cp4ba_output_directory }}"
+    common_db2_hostname: "{{ cp4ba_db2_hostname }}"
+  with_items:
+    - CP4BA
+    - TENANT1
+    - TENANT2
+  when: db2mc_enabled
+
+- name: Remove DB2 users
+  include_role:
+    name: common
+    tasks_from: remove-db2-user
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_db2_user: "{{ item }}"
+  with_items:
+    - icndb
+    - pb
+    - bas
+    - odm
+    - gcd
+    - os1
+    - aae
+    - aeos
+    - base
+    - devos1
+    - badocs
+    - batos
+    - bados
+    - bawaut
+    - ch
+
+- name: Remove DBs
+  include_role:
+    name: common
+    tasks_from: remove-db
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_db2_db_name: "{{ item }}"
+  with_items:
+    - TENANT1
+    - TENANT2
+    - CP4BA

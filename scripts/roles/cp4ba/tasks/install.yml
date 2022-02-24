@@ -7,12 +7,6 @@
     catalog_source_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     catalog_source_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
 
-- name: Create CP4BA directory for generated files
-  file:
-    path: "{{ cp4ba_output_directory }}"
-    state: directory
-    mode: u+rwx
-
 - name: Repository
   include_tasks: repository.yml
   when: _cp4ba_run_repository == true
