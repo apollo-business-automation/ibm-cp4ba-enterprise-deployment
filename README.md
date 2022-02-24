@@ -407,7 +407,7 @@ Successful completion is determined by seeing that the Job is *Complete* (in the
 
 ![assets/success-install-job-pod.png](assets/success-install-job-pod.png)
 
-Also the pod log ends with "CP4BA Enterprise install completed" (in the below picture point 1).  
+Also near the end of pod log there will be indication that zero tasks failed (in the below picture point 1).  
 
 ![assets/success-install-job-log.png](assets/success-install-job-log.png)
 
