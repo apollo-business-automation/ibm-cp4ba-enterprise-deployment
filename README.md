@@ -149,35 +149,35 @@ The following picture shows real idle utilization of Nodes with deployed platfor
 The following output shows CPU and Memory requests and limits on Nodes on above mentioned ROKS as an example.
 
 ```text
-node/10.162.243.89
+node/10.162.243.84
   Resource           Requests          Limits
-  cpu                9346m (58%)       24270m (152%)
-  memory             19965459Ki (68%)  41767200Ki (144%)
+  cpu                10486m (66%)      34610m (217%)
+  memory             22192659Ki (76%)  51245344Ki (176%)
 
-node/10.163.57.136
+node/10.162.243.97
   Resource           Requests          Limits
-  cpu                10234m (64%)      22850m (143%)
-  memory             18918931Ki (65%)  33315104Ki (114%)
+  cpu                13010m (81%)      37770m (237%)
+  memory             24835603Ki (85%)  48728352Ki (168%)
 
-node/10.163.57.150
+node/10.163.57.153
   Resource           Requests          Limits
-  cpu                9096m (57%)       18400m (115%)
-  memory             18354707Ki (63%)  33843488Ki (116%)
+  cpu                11240m (70%)      102585m (646%)
+  memory             22581779Ki (77%)  120447264Ki (415%)
 
-node/10.163.57.152
+node/10.163.57.158
   Resource           Requests          Limits
-  cpu                10078m (63%)      23040m (145%)
-  memory             20524563Ki (70%)  44028192Ki (151%)
+  cpu                11391m (71%)      41210m (259%)
+  memory             23807507Ki (82%)  54913312Ki (189%)
 
-node/10.163.57.155
+node/10.163.57.252
   Resource           Requests          Limits
-  cpu                4948m (31%)       4600m (28%)
-  memory             26953235Ki (93%)  25973024Ki (89%)
+  cpu                10498m (66%)      53400m (336%)
+  memory             22762003Ki (78%)  69994784Ki (241%)
 
-node/10.163.57.231
+node/10.163.57.254
   Resource           Requests          Limits
-  cpu                11600m (73%)      18500m (116%)
-  memory             22577683Ki (77%)  28880160Ki (99%)  
+  cpu                9741m (61%)       38750m (244%)
+  memory             22034011Ki (76%)  52342048Ki (180%)
 ```
 
 ## Pre-requisites ⬅️
