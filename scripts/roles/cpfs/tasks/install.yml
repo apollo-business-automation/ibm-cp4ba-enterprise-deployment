@@ -327,7 +327,36 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Manage Manual Operator ibm-commonui-operator
+# This is needed as the sequence of creating CPFS dependent Operators is not detereministic and
+# it can happen that there are multiple "groups" of Operators with different InstallPlans
+- name: Wait for all Subscriptions to appear
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: operators.coreos.com/v1alpha1
+    kind: Subscription
+    namespace: ibm-common-services
+    label_selectors:
+      - "{{ selector }}"
+  register: subscription
+  retries: 40
+  delay: 10
+  until: ('InstallPlan' in subscription | json_query(condition_query) | unique)
+  vars:
+    condition_query: 'resources[*].status.installplan.kind'
+    selector: "{{ ('operators.coreos.com/'+item+'.ibm-common-services')[:84] }}"
+  with_items:
+    - ibm-cert-manager-operator
+    - ibm-commonui-operator-app
+    - ibm-healthcheck-operator-app
+    - ibm-iam-operator
+    - ibm-licensing-operator-app
+    - ibm-management-ingress-operator-app
+    - ibm-mongodb-operator-app
+    - ibm-monitoring-grafana-operator-app
+    - ibm-platform-api-operator-app
+
+- name: Manage Manual Operators
   include_role:
     name: common
     tasks_from: manage-manual-operator
@@ -335,7 +364,17 @@
     common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
     common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
     common_namespace_name: ibm-common-services
-    common_label_selector_stub: ibm-commonui-operator-app
+    common_label_selector_stub: "{{ item }}"
+  with_items:
+    - ibm-cert-manager-operator
+    - ibm-commonui-operator-app
+    - ibm-healthcheck-operator-app
+    - ibm-iam-operator
+    - ibm-licensing-operator-app
+    - ibm-management-ingress-operator-app
+    - ibm-mongodb-operator-app
+    - ibm-monitoring-grafana-operator-app
+    - ibm-platform-api-operator-app
 
 - name: Manage Manual Operator ibm-ingress-nginx-operator
   include_role:
