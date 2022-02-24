@@ -348,7 +348,7 @@ data:
 
 Trigger the installation by applying the following YAML (also see the picture below the YAML).
 
-This Job runs a Pod which performs the installation.
+This Job runs a Pod which performs the installation. It attempts 3 times to perform the install.
 
 ```yaml
 apiVersion: batch/v1
@@ -462,7 +462,7 @@ You can use it even if the deployment failed and everything was not deployed but
 
 Trigger the removal by applying the following YAML (also see the picture below the YAML).
 
-This Job runs a Pod which performs the removal.
+This Job runs a Pod which performs the removal. It attempts 3 times to perform the removal.
 
 ```yaml
 apiVersion: batch/v1
