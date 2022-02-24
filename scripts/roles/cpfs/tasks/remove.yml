@@ -208,6 +208,19 @@
     wait_sleep: 5
     wait_timeout: 50
 
+- name: Remove ibm-common-services-status ConfigMap
+  k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: absent
+    api_version: v1
+    kind: ConfigMap
+    name: ibm-common-services-status
+    namespace: kube-public
+    wait: true
+    wait_sleep: 5
+    wait_timeout: 50
+
 - name: Remove ibm-common-services Project
   k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
