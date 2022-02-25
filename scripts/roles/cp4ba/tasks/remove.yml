@@ -113,6 +113,19 @@
     wait_timeout: 600
   when: automationuiconfig_crd.resources | length != 0
 
+# wait for the Client instances to disappear as if we do not wait, they will have finalizers left
+- name: Wait for Client intances to disappear
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: oidc.security.ibm.com/v1
+    kind: Client
+    namespace: "{{ cp4ba_project_name }}"
+  register: clients
+  retries: 60
+  delay: 30
+  until: clients.resources | length == 0
+
 - name: Remove CP4BA Operator
   include_role:
     name: common
