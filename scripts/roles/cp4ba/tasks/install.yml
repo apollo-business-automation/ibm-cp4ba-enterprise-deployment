@@ -25,7 +25,7 @@
       include_tasks: deploy.yml
       when: _cp4ba_run_deploy == true
 
-  rescue:
+  always:
     - name: Create Project
       include_role:
         name: common

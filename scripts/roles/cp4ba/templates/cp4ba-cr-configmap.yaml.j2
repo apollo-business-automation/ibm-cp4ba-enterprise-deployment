@@ -5,4 +5,4 @@ metadata:
   namespace: "{{ cp4ba_output_namespace }}"
 data:
   cp4ba-cr.yaml: |- 
-    {{ cp4ba_failed_tasks_content | to_nice_yaml(indent=2, width=1337) | indent(4) }}
+    {{ cp4ba_cr_content | to_nice_yaml(indent=2, width=1337) | indent(4) }}
