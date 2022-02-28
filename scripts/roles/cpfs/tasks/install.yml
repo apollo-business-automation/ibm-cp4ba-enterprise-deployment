@@ -178,14 +178,30 @@
         configmapshares: []
         secretshares: []
 
-- name: Wait for OperandConfig CRD to be Established
+- name: Wait for CRDs to be Established
   include_role:
     name: common
     tasks_from: wait-crd
   vars:
     common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
     common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
-    common_crd_name: operandconfigs.operator.ibm.com
+    common_crd_name: "{{ item }}"
+  with_items:
+    - operandconfigs.operator.ibm.com
+    - operandrequests.operator.ibm.com
+
+# This is needed as the sequence of creating CPFS dependent Operators is not detereministic and
+# it can happen that there are multiple "groups" of Operators with different InstallPlans
+# causing normal execution to fail and retry next time.
+- name: Get OperandRequest instance
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: operator.ibm.com/v1alpha1
+    kind: OperandRequest
+    name: common-service
+    namespace: ibm-common-services
+  register: operand_request
 
 - name: Wait for OperandConfig instance Initialized or Running state
   k8s_info:
@@ -202,6 +218,7 @@
   vars:
     condition_query: "resources[*].status.phase"
     phase: "{{ operand_config | json_query(condition_query) | unique }}"
+  when: (operand_request.resources | length == 0)
 
 - name: Get OperandConfig
   k8s_info:
@@ -217,6 +234,7 @@
 
 - name: Patch authentication object to customize admin username if not done already
   block:
+
     - name: Get index of ibm-iam-operator
       set_fact:
         service_index: "{{ index | int }}"
@@ -245,6 +263,7 @@
 
 - name: Set StorageClass for MongoDB if not done already
   block:
+
     - name: Get index of ibm-mongodb-operator
       set_fact:
         service_index: "{{ index | int }}"
@@ -272,6 +291,7 @@
 
 - name: Set StorageClass for Mustgather if not done already
   block:
+
     - name: Get index of ibm-healthcheck-operator
       set_fact:
         service_index: "{{ index | int }}"
@@ -327,41 +347,12 @@
     wait_sleep: 15
     wait_timeout: 15
 
-# This is needed as the sequence of creating CPFS dependent Operators is not detereministic and
-# it can happen that there are multiple "groups" of Operators with different InstallPlans
-- name: Wait for all Subscriptions to appear
-  k8s_info:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    api_version: operators.coreos.com/v1alpha1
-    kind: Subscription
-    namespace: ibm-common-services
-    label_selectors:
-      - "{{ selector }}"
-  register: subscription
-  retries: 40
-  delay: 10
-  until: ('InstallPlan' in subscription | json_query(condition_query) | unique)
-  vars:
-    condition_query: 'resources[*].status.installplan.kind'
-    selector: "{{ ('operators.coreos.com/'+item+'.ibm-common-services')[:84] }}"
-  with_items:
-    - ibm-cert-manager-operator
-    - ibm-commonui-operator-app
-    - ibm-healthcheck-operator-app
-    - ibm-iam-operator
-    - ibm-licensing-operator-app
-    - ibm-management-ingress-operator-app
-    - ibm-mongodb-operator-app
-    - ibm-monitoring-grafana-operator-app
-    - ibm-platform-api-operator-app
-
 - name: Manage Manual Operators
   include_role:
     name: common
     tasks_from: manage-manual-operator
   vars:
-    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
     common_namespace_name: ibm-common-services
     common_label_selector_stub: "{{ item }}"
