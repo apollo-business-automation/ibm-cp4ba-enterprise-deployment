@@ -231,7 +231,7 @@
     name: ibm-common-services
     wait: true
     wait_sleep: 5
-    wait_timeout: 50
+    wait_timeout: 90
 
 - name: Get Cluster Monitoring ConfigMap
   k8s_info:
