@@ -34,6 +34,16 @@
   set_fact:
     common_install_plan_name: "{{ common_subscription | json_query('resources[0].status.installplan.name') }}"
 
+- name: Get Install Plan {{ common_install_plan_name }}
+  k8s_info:
+    api_key: "{{ common_k8s_api_key | default(omit) }}"
+    host: "{{ common_k8s_host | default(omit) }}"
+    api_version: operators.coreos.com/v1alpha1
+    kind: InstallPlan
+    name: "{{ common_install_plan_name }}"
+    namespace: "{{ common_namespace_name }}"
+  register: install_plan
+
 - name: Approve Install Plan {{ common_install_plan_name }}
   k8s:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
@@ -46,6 +56,7 @@
     definition:
       spec:
         approved: true
+  when: install_plan.resources | length != 0
 
 - name: Wait for Operator Deployment with label {{ common_label_selector }} to be Available
   k8s_info:
