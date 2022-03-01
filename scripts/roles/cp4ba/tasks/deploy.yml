@@ -591,18 +591,19 @@
     common_retries: 60
     common_delay: 120
 
-- name: Wait for all remaining pods to become Ready
-  kubernetes.core.k8s_info:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    kind: Pod
-    namespace: "{{ cp4ba_project_name }}"
-    field_selectors:
-      - status.phase!=Succeeded
-      - status.phase!=Failed
-  register: pods
-  retries: 30
-  delay: 60
-  until: (['False'] not in pods | json_query(condition_query) | unique )
-  vars:
-    condition_query: "resources[*].status.conditions[?type == 'Ready'].status"
+# Do not wait now as there is no common label to all CP4BA pods and on the subsequent try there can be other non-cp4ba broken pods in the Project
+# - name: Wait for all remaining pods to become Ready
+#   kubernetes.core.k8s_info:
+#     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+#     host: "{{ cp4ba_k8s_host | default(omit) }}"
+#     kind: Pod
+#     namespace: "{{ cp4ba_project_name }}"
+#     field_selectors:
+#       - status.phase!=Succeeded
+#       - status.phase!=Failed
+#   register: pods
+#   retries: 30
+#   delay: 60
+#   until: (['False'] not in pods | json_query(condition_query) | unique )
+#   vars:
+#     condition_query: "resources[*].status.conditions[?type == 'Ready'].status"
