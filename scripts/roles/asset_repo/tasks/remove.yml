@@ -23,6 +23,33 @@
     wait_timeout: 120
   when: assetrepository_crd.resources | length != 0
 
+- name: Wait for Client to disappear
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: oidc.security.ibm.com/v1
+    kind: Client
+    name: assets-ibm-integration-asset-repository-oidc-client
+    namespace: "{{ cp4ba_project_name }}"
+  register: client
+  retries: 30
+  delay: 10
+  until: client.resources | length == 0
+  ignore_errors: true
+
+- name: Clear Client finalizers
+  include_role:
+    name: common
+    tasks_from: clear-resource-finalizers
+  vars:
+    common_k8s_api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ asset_repo_k8s_host | default(omit) }}"
+    common_api_version: oidc.security.ibm.com/v1
+    common_kind: Client
+    common_resource_name: assets-ibm-integration-asset-repository-oidc-client
+    common_namespace_name: "{{ asset_repo_project_name }}"
+  when: client.resources | length != 0
+
 - name: Remove Assets Operator
   include_role:
     name: common

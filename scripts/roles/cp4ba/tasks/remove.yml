@@ -125,6 +125,19 @@
   retries: 60
   delay: 30
   until: clients.resources | length == 0
+  ignore_errors: true
+
+- name: Clear Client instances finalizers
+  include_role:
+    name: common
+    tasks_from: clear-resource-finalizers
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: oidc.security.ibm.com/v1
+    common_kind: Client
+    common_namespace_name: "{{ cp4ba_project_name }}"
+  when: clients.resources | length != 0
 
 - name: Remove CP4BA Operator
   include_role:
