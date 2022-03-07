@@ -11,7 +11,7 @@
   file:
     path: "{{ cp4ba_output_directory }}"
     state: directory
-    mode: u+rwx    
+    mode: u+rwx
 
 - name: Install CP4BA
   include_tasks: install.yml
