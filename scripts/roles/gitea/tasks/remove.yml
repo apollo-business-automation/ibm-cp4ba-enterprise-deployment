@@ -1,0 +1,11 @@
+- name: Remove Project gitea
+  k8s:
+    state: absent
+    api_key: "{{ gitea_k8s_api_key | default(omit) }}"
+    host: "{{ gitea_k8s_host | default(omit) }}"
+    api_version: project.openshift.io/v1
+    kind: Project
+    name: gitea
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 120

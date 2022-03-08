@@ -1,0 +1,156 @@
+- name: Execute Catalog Source role as prerequisite
+  include_role:
+    name: catalog_source
+  vars:
+    catalog_source_k8s_api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
+    catalog_source_k8s_host: "{{ asset_repo_k8s_host | default(omit) }}"
+
+- name: Create Asset Repo directory for generated files
+  file:
+    path: "{{ asset_repo_output_directory }}"
+    state: directory
+    mode: u+rwx
+
+- name: Prepare yaml file for the Operator Subscription
+  template:
+    src: subscription.yaml.j2
+    dest: "{{ asset_repo_output_directory }}/subscription.yaml"
+    mode: u+rwx
+
+- name: Add the Operator Subscription
+  k8s:
+    api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
+    host: "{{ asset_repo_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ asset_repo_output_directory }}/subscription.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Manage Manual Operator ibm-integration-asset-repository in {{ asset_repo_project_name }}
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ asset_repo_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ asset_repo_k8s_host | default(omit) }}"
+    common_namespace_name: "{{ asset_repo_project_name }}"
+    common_label_selector_stub: ibm-integration-asset-repository
+
+- name: Wait for AssetRepository CRD to be Established
+  include_role:
+    name: common
+    tasks_from: wait-crd
+  vars:
+    common_k8s_api_key: "{{ asset_repo_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ asset_repo_k8s_host | default(omit) }}"
+    common_crd_name: assetrepositories.integration.ibm.com
+
+- name: Prepare yaml file for AssetRepository instance
+  template:
+    src: assetrepository.yaml.j2
+    dest: "{{ asset_repo_output_directory }}/assetrepository.yaml"
+    mode: u+rwx
+
+- name: Add AssetRepository instance
+  k8s:
+    api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
+    host: "{{ asset_repo_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ asset_repo_output_directory }}/assetrepository.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Wait for rpa AssetRepository to be Ready
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition-generic
+  vars:
+    common_k8s_api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ asset_repo_k8s_host | default(omit) }}"
+    common_api_version: integration.ibm.com/v1beta1
+    common_resource_kind: AssetRepository
+    common_resource_name: assets
+    common_resource_namespace: "{{ asset_repo_project_name }}"
+    common_condition_query: resources[*].status.phase
+    common_condition_value: Ready
+    common_retries: 30
+    common_delay: 120
+
+- name: Get OCP Apps domain
+  include_role:
+    name: common
+    tasks_from: apps-endpoint
+  vars:
+    common_k8s_api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ asset_repo_k8s_host | default(omit) }}"
+    common_output_to_var: "apps_endpoint_domain"
+
+# Based on https://www.ibm.com/docs/en/cpfs?topic=apis-oidc-registration#get2 (Get access token by using username and password)
+- name: Get IAM access token
+  uri:
+    url: "https://cp-console.{{ apps_endpoint_domain }}/idprovider/v1/auth/identitytoken"
+    method: POST
+    headers:
+      Content-Type: application/x-www-form-urlencoded;charset=UTF-8
+    body_format: form-urlencoded
+    body:
+      grant_type: password
+      username: cpadmin
+      password: "{{ asset_repo_universal_password }}"
+      scope: openid
+    validate_certs: false
+    status_code: 200
+  register: token_response
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-data/4.0?topic=resources-generating-authorization-token
+- name: Exchange IAM access token for Zen token
+  uri:
+    url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/v1/preauth/validateAuth"
+    method: GET
+    headers:
+      iam-token: "{{ token_response | json_query('json.access_token') }}"
+      username: cpadmin
+    validate_certs: false
+    status_code: 200
+  register: token_response
+
+- name: Get groups
+  uri:
+    url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('accessToken') }}"
+    validate_certs: false
+    status_code: 200
+  register: groups_response
+
+- name: Get cpadmins group id
+  set_fact:
+    cpadmins_group_id: "{{ groups_response.json | json_query(condition_query) | first }}"
+  vars:
+    condition_query: "results[?name == 'cpadmins'].group_id"
+
+- name: Add Asset Repo roles to cpadmins group
+  uri:
+    url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ cpadmins_group_id }}"
+    method: PATCH
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('accessToken') }}"
+    body_format: json
+    body:
+      add_role_identifiers:
+        - automation-assets-administrator-role
+        - automation-assets-editor-role
+        - automation-assets-viewer-role
+    validate_certs: false
+    status_code:
+      - 200
+      - 500
+  register: group_response
+  failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')

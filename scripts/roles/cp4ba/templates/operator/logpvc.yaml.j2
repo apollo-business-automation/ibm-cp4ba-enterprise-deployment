@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cp4a-shared-log-pvc
+  namespace: "{{ cp4ba_project_name }}"
+  labels:
+    app.kubernetes.io/instance: ibm-dba
+    app.kubernetes.io/managed-by: ibm-dba
+    app.kubernetes.io/name: ibm-dba
+    release: "{{ cp4ba_version }}"
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: "{{ cp4ba_storage_class_name }}"
+  resources:
+    requests:
+      storage: 100Gi

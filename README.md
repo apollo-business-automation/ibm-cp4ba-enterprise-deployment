@@ -1,8 +1,8 @@
-# Installation of Cloud Pak for Business Automation on containers - One-shot enterprise deployment 🔫
+# Installation of Cloud Pak for Business Automation on containers - Apollo one-shot enterprise deployment 🔫
 
 Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components with all kinds of prerequisites and extras on OpenShift.
 
-Last installation was performed on 2022-01-11 with CP4BA version 21.0.3 (also called 21.0.3 or 21.3.0)
+Last installation was performed on 2022-03-08 with CP4BA version 21.0.3-IF005 (also called 21.0.3.5 or 21.3.5)
 
 Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=overview-what-is-cloud-pak-business-automation.
 
@@ -46,14 +46,15 @@ Not for production use. Suitable for Demo and PoC environments - but with enterp
 
 Result of this Enterprise deployment is not fully supported:
 - For convenience, it contains OpenLDAP as a directory provider which is not supported - in real deployments this needs to be replaced with a supported directory provider
-- For convenience and lower resource consumption, it uses one containerized DB2 database and schemas for majority of required DBs - in real deployments a supported DB option described on "[Compatibility matrix](https://www.ibm.com/software/reports/compatibility/clarity-reports/report/html/softwareReqsForProduct?deliverableId=F883F7E084D911EB986DCF4EEFB38D3F&osPlatforms=Linux|Mac%20OS|Windows&duComponentIds=D010|D009|D011|S013|S012|S002|S003|C020|C025|C014|C029|C018|C022|C026|C017|C028|C023|C021|C027|C019|C024|C015|C016|C001&mandatoryCapIds=71|26&optionalCapIds=134|62|127|9|401|132|20|161) > Supported Software > Databases" would be used
+- For convenience and lower resource consumption, it uses one containerized DB2 database and schemas for majority of required DBs - in real deployments a supported DB option described on "[Compatibility matrix](https://www.ibm.com/software/reports/compatibility/clarity-reports/report/html/softwareReqsForProduct?deliverableId=71C22290D7DB11EBAA175CFD3E629A2A&osPlatforms=Linux%7CMac%20OS%7CWindows&duComponentIds=D010%7CD009%7CD011%7CS015%7CS014%7CS013%7CC027%7CC032%7CC017%7CC024%7CC023%7CC029%7CC018%7CC021%7CC022%7CC030%7CC028%7CC020%7CC025%7CC031%7CC016%7CC034%7CC019%7CC026&mandatoryCapIds=71%7C26&optionalCapIds=134%7C62%7C127%7C9%7C401%7C132%7C20%7C161) > Supported Software > Databases" would be used
 
 What is not included:
 - IER - missing IER object stores and configuration.
 - ICCs - not covered.
 - Caution! FNCM External share - Currently not supported with ZEN & IAM as per limitation on [FNCM limitations](https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=notes-known-limitations-issues#concept_gmf_x1h_1fb__ecm)
 - Caution! RPA currently works only with one user cpadmin due to identity issue.
-- Caution! Process Mining currently doesn't work - IAF operator issues, BAI integration issues - waiting for fixes.
+- Caution! Process Mining currently works with caveats - IAF operator issues, BAI integration issues - waiting for fixes.
+- Caution! ADP is currently not working - trying to solve it.
 - Workflow Server and Workstream Services - this is a dev deployment. BAW Authoring and (BAW + IAWS) are mutually exclusive in single project.
 
 ## What is in the package 📦
@@ -119,13 +120,8 @@ Contains prerequisites for the whole platform.
 
 Multiple command line tools are installed inside a container to make the installation possible.
 
-- JDK9 - Used for keytool command to generate certificates for ODM and for Maven (https://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html https://openjdk.java.net/).
-- jq - Needed for JSON files manipulation from command line (https://stedolan.github.io/jq/manual/).
-- yq - Needed for YAML files manipulation from command line; version 3 is used (https://mikefarah.gitbook.io/yq/).
-- oc - Used to communicate with OpenShift from command line (https://docs.openshift.com/container-platform/4.8/cli_reference/openshift_cli/getting-started-cli.html#cli-using-cli_cli-developer-commands).
 - Global CA - Generated self-signed Certification Authority via OpenSSL to make trusting the platform easier. It is also possible to provide your own CA and how to do so is described later in this doc.
 - helm - Used for helm charts installation (https://helm.sh/docs/).
-- maven - Used for pushing ADS library jars to Nexus (https://maven.apache.org/). This enables custom ADS JARs development.
 
 ## Environments used for installation 💻
 
@@ -154,35 +150,35 @@ The following picture shows real idle utilization of Nodes with deployed platfor
 The following output shows CPU and Memory requests and limits on Nodes on above mentioned ROKS as an example.
 
 ```text
-node/10.162.243.89
+node/10.162.243.84
   Resource           Requests          Limits
-  cpu                9346m (58%)       24270m (152%)
-  memory             19965459Ki (68%)  41767200Ki (144%)
+  cpu                10486m (66%)      34610m (217%)
+  memory             22192659Ki (76%)  51245344Ki (176%)
 
-node/10.163.57.136
+node/10.162.243.97
   Resource           Requests          Limits
-  cpu                10234m (64%)      22850m (143%)
-  memory             18918931Ki (65%)  33315104Ki (114%)
+  cpu                13010m (81%)      37770m (237%)
+  memory             24835603Ki (85%)  48728352Ki (168%)
 
-node/10.163.57.150
+node/10.163.57.153
   Resource           Requests          Limits
-  cpu                9096m (57%)       18400m (115%)
-  memory             18354707Ki (63%)  33843488Ki (116%)
+  cpu                11240m (70%)      102585m (646%)
+  memory             22581779Ki (77%)  120447264Ki (415%)
 
-node/10.163.57.152
+node/10.163.57.158
   Resource           Requests          Limits
-  cpu                10078m (63%)      23040m (145%)
-  memory             20524563Ki (70%)  44028192Ki (151%)
+  cpu                11391m (71%)      41210m (259%)
+  memory             23807507Ki (82%)  54913312Ki (189%)
 
-node/10.163.57.155
+node/10.163.57.252
   Resource           Requests          Limits
-  cpu                4948m (31%)       4600m (28%)
-  memory             26953235Ki (93%)  25973024Ki (89%)
+  cpu                10498m (66%)      53400m (336%)
+  memory             22762003Ki (78%)  69994784Ki (241%)
 
-node/10.163.57.231
+node/10.163.57.254
   Resource           Requests          Limits
-  cpu                11600m (73%)      18500m (116%)
-  memory             22577683Ki (77%)  28880160Ki (99%)  
+  cpu                9741m (61%)       38750m (244%)
+  memory             22034011Ki (76%)  52342048Ki (180%)
 ```
 
 ## Pre-requisites ⬅️
@@ -207,15 +203,15 @@ You can apply them via OpenShift console (with the handy *plus* icon at the top 
 
 ### 1. Create new Project
 
-At first, create new *automagic* Project by applying the following yaml (also see the picture below the YAML).
+At first, create new *apollo-one-shot* Project by applying the following yaml (also see the picture below the YAML).
 
-This Project is used to house other resources needed for the One-shot deployment.
+This Project is used to house other resources needed for the Apollo one-shot deployment.
 
 ```yaml
 kind: Project
 apiVersion: project.openshift.io/v1
 metadata:
-  name: automagic
+  name: apollo-one-shot
 ```
 
 ![assets/project.png](assets/project.png)
@@ -224,7 +220,7 @@ metadata:
 
 This requires the logged in OpenShift user to be cluster admin.
 
-Now you need to assign cluster admin permissions to *automagic* default ServiceAccount under which the installation is performed by applying the following yaml (also see the picture below the YAML).
+Now you need to assign cluster admin permissions to *apollo-one-shot* default ServiceAccount under which the installation is performed by applying the following yaml (also see the picture below the YAML).
 
 The ServiceAccount needs to have cluster admin to be able to create all resources needed to deploy the platform.
 
@@ -232,11 +228,11 @@ The ServiceAccount needs to have cluster admin to be able to create all resource
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: cluster-admin-automagic
+  name: cluster-admin-apollo-one-shot
 subjects:
   - kind: User
     apiGroup: rbac.authorization.k8s.io
-    name: "system:serviceaccount:automagic:default"
+    name: "system:serviceaccount:apollo-one-shot:default"
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -268,72 +264,67 @@ Apply the updated contents to your cluster (as seen in the picture below point 4
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: automagic
-  namespace: automagic
+  name: apollo-one-shot
+  namespace: apollo-one-shot
 data:
-  variables.sh: |
+  variables.yml: |
     # Always set these parameters to your values #
 
     ## Entitlement key from the IBM Container software library. 
     ## (https://myibm.ibm.com/products-services/containerlibrary)  
-    ICR_PASSWORD=TODO_ICR_PASSWORD
+    icr_password: TODO_ICR_PASSWORD
 
     ## Name of the OCP storage class used for all PVCs. 
     ## Must be RWX and Fast. Some pillars don't allow to specify storage class, 
     ## so this one will also be automatically set as Default 
-    ## For ROKS this class could be ibmc-file-gold-gid
+    ## For ROKS this class could be ibmc-file-gold-gid (But strongly discouraged due to slow PVC binding)
     ## For NFS based class this could be managed-nfs-storage
     ## For ODF (OCS) based class (e.g. on ARO or ROSA) this could be ocs-storagecluster-cephfs
-    STORAGE_CLASS_NAME=ibmc-file-gold-gid
+    storage_class_name: managed-nfs-storage
 
     ## Options are OCP and ROKS
     ## OCP option also applies to other managed OpenShifts
-    DEPLOYMENT_PLATFORM=ROKS
+    deployment_platform: ROKS
 
     ## By default false, which means that new self signed CA will be generated 
     ## and all certificates will be signed using it. 
     ## Set true if you want to provide your own global-ca.key and global-ca.crt.
     ## Contents of these two files are provided in this ConfigMap in keys which are at the bottom of this file.
     ## Files cannot be password protected.
-    GLOBAL_CA_PROVIDED=false
+    global_ca_provided: false
 
     ## In the Platform, multiple users and keystores and other encrypted entries need a password.
     ## To make working with the Platform easier all places which require a password share the same one from this variable.
     ## Make this password strong to ensure that no one from the outside world can login to your Platform.
     ## Password must be alphanumeric (upper and lower case; no special characters allowed).
-    UNIVERSAL_PASSWORD=Passw0rd
+    universal_password: Passw0rd
 
 
     # Always review these parameters for changes
 
-    ## Do NOT enable now!
     ## Set to false if you don't want to install (or remove) Process Mining
-    PM_ENABLED=false
+    pm_enabled: true
 
     ## Set to false if you don't want to install (or remove) Asset Repo
-    ASSET_REPO_ENABLED=true
+    asset_repo_enabled: true
 
     ## Set to false if you don't want to install (or remove) RPA
-    RPA_ENABLED=true
+    rpa_enabled: true
 
     ## Set to false if you don't want to install (or remove) AKHQ
-    AKHQ_ENABLED=true
+    akhq_enabled: true
 
     ## Set to false if you don't want to install (or remove) Cerebro
-    CEREBRO_ENABLED=true
+    cerebro_enabled: true
 
     ## Set to false if you don't want to install (or remove) DB2 Management Console
-    DB2MC_ENABLED=true
+    db2mc_enabled: true
 
     ## Set to false if you don't want to install (or remove) Roundcube
-    ROUNDCUBE_ENABLED=true
+    roundcube_enabled: true
 
-    ## Do NOT enable now. Set to true if you want to use FNCM External Share with Google ID. 
-    ## You then need to provide also the following parameters (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET). 
-    ## Video on how to get these values is in assets/fncm-es-google-oidc-pre.mp4
-    EXTERNAL_SHARE_GOOGLE=false
-    GOOGLE_CLIENT_ID=TODO_GOOGLE_CLIENT_ID
-    GOOGLE_CLIENT_SECRET=TODO_GOOGLE_CLIENT_SECRET
+    ## Set to false if you don't want to install (or remove) Mongo Express
+    mongo_express_enabled: true
 
   global-ca.crt: |
     -----BEGIN CERTIFICATE-----
@@ -358,26 +349,26 @@ data:
 
 Trigger the installation by applying the following YAML (also see the picture below the YAML).
 
-This Job runs a Pod which performs the installation.
+This Job runs a Pod which performs the installation. It attempts 3 times to perform the install.
 
 ```yaml
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: automagic-install-
-  namespace: automagic
+  generateName: apollo-one-shot-install-
+  namespace: apollo-one-shot
 spec:
   template:
     metadata:
       labels:
-        app: automagic  
+        app: apollo-one-shot  
     spec:
       containers:
-        - name: automagic
+        - name: apollo-one-shot
           image: ubi8/ubi
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x automagic.sh; ./automagic.sh"]
+            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -maxdepth 1 -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
@@ -393,17 +384,15 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: automagic
-  backoffLimit: 0
+            name: apollo-one-shot
+  backoffLimit: 2
 ```
 
 ![assets/install-job.png](assets/install-job.png)
 
-Now you need to wait for a couple of hours 6-10 for the installation to complete depending on speed of your OpenShift and StorageClass bounding.
+Now you need to wait for a couple of hours 6-10 for the installation to complete depending on speed of your OpenShift and StorageClass binding.
 
-You can watch progress in log of Pod which was created by the Job and its name starts with *automagic-install-*. See below images to find the logs.
-
-During execution, printed Timestamps are in UTC.
+You can watch progress in log of Pod which was created by the Job and its name starts with *apollo-one-shot-install-*. See below images to find the logs.
 
 Find the pod of install Job.
 
@@ -413,29 +402,31 @@ Then open logs tab.
 
 ![assets/install-job-pod-log.png](assets/install-job-pod-log.png)
 
-#### Successful completion
+#### Successful install
 
 Successful completion is determined by seeing that the Job is *Complete* (in the below picture point 1) and the pod is also *Completed* (in the below picture point 3).
 
 ![assets/success-install-job-pod.png](assets/success-install-job-pod.png)
 
-Also the pod log ends with "CP4BA Enterprise install completed"  (in the below picture point 1).  
+Also near the end of pod log there will be indication that zero tasks failed (in the below picture point 1).  
 
 ![assets/success-install-job-log.png](assets/success-install-job-log.png)
 
 Now continue with the [Post installation steps](#post-installation-steps-%EF%B8%8F) and then review [Usage & Operations](#usage--operations-).
 
-#### Failed completion
+#### Failed install
 
 If something goes wrong, the Job is *Failed* (in the below picture point 1) and the pod has status *Error* (in the below picture point 3).
 
 ![assets/failed-install-job-pod.png](assets/failed-install-job-pod.png)
 
-Also the pod log ends with message ending with the word "Failed" (in the below picture point 1).
+Also near the end of pod log there will be a message containing the word "Failed" (in the below picture point 1).
 
 ![assets/failed-install-job-log.png](assets/failed-install-job-log.png)
 
-Further execution is stopped - and you need to troubleshoot why the installation failed, fix your environment, clean the cluster by following [Removal steps](#removal-steps-%EF%B8%8F) and after successful removal retry installation from step [4. Run the Job](#4-run-the-job).
+Further execution is stopped - and you need to troubleshoot why the installation failed, fix your environment and retry installation from step [4. Run the Job](#4-run-the-job).
+
+If rerunning install doesn't help, you can also try to clean the cluster by following [Removal steps](#removal-steps-%EF%B8%8F) and after successful removal retry installation again.
 
 ## Post installation steps ➡️
 
@@ -454,7 +445,7 @@ Review and perform post deploy manual steps for RPA as specified in ConfigMap *r
 
 ## Usage & Operations 😊
 
-Endpoints, access info and other useful information is available in Project *automagic* in ConfigMap named *usage* in *usage.md* file after installation. It is best to copy the contents and open it in nice MarkDown editor like VSCode.
+Endpoints, access info and other useful information is available in Project *apollo-one-shot* in ConfigMap named *usage* in *usage.md* file after installation. It is best to copy the contents and open it in nice MarkDown editor like VSCode.
 
 Specifically, if you haven't provided your own Global CA, review the section *Global CA* in this md file.
 
@@ -472,26 +463,26 @@ You can use it even if the deployment failed and everything was not deployed but
 
 Trigger the removal by applying the following YAML (also see the picture below the YAML).
 
-This Job runs a Pod which performs the removal.
+This Job runs a Pod which performs the removal. It attempts 3 times to perform the removal.
 
 ```yaml
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: automagic-remove-
-  namespace: automagic
+  generateName: apollo-one-shot-remove-
+  namespace: apollo-one-shot
 spec:
   template:
     metadata:
       labels:
-        app: automagic  
+        app: apollo-one-shot  
     spec:
       containers:
-        - name: automagic
+        - name: apollo-one-shot
           image: ubi8/ubi
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x automagic.sh; ./automagic.sh"]
+            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -maxdepth 1 -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
@@ -507,17 +498,15 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: automagic
-  backoffLimit: 0
+            name: apollo-one-shot
+  backoffLimit: 2
 ```
 
 ![assets/remove-job.png](assets/remove-job.png)
 
 Now you need to wait for some time (30 minutes to 1 hour) for the removal to complete depending on the speed of your OpenShift.
 
-You can watch progress in log of Pod which was created by the Job and its name starts with *automagic-remove-*. See below images to find the logs.
-
-During execution, printed Timestamps are in UTC.
+You can watch progress in log of Pod which was created by the Job and its name starts with *apollo-one-shot-remove-*. See below images to find the logs.
 
 Find the pod of remove Job.
 
@@ -533,23 +522,32 @@ Successful completion of removal is determined by seeing that the Job is *Comple
 
 ![assets/success-remove-job-pod.png](assets/success-remove-job-pod.png)
 
-Also the pod log ends with "CP4BA Enterprise remove completed" (in the below picture point 1).  
+Also near the end of pod log there will be indication that zero tasks failed (in the below picture point 1).  
 
 ![assets/success-remove-job-log.png](assets/success-remove-job-log.png)
 
 #### Failed removal
 
-If something goes wrong, the Job is *Failed* and the pod has status *Error* (similarly as in failed installation at [Failed completion](#failed-completion).
+If something goes wrong, the Job is *Failed* (in the below picture point 1) and the pod has status *Error* (in the below picture point 3).
 
-Also the pod log ends with message ending with the word "Failed".
+![assets/failed-remove-job-pod.png](assets/failed-remove-job-pod.png)
+
+Also near the end of pod log there will be a message containing the word "Failed" (in the below picture point 1).
+
+![assets/failed-remove-job-log.png](assets/failed-remove-job-log.png)
 
 Further execution is stopped - and you need to troubleshoot why the removal failed, fix your environment and retry removal from step [1. Run the Job](#1-run-the-job).
 
-### 2. Remove automagic Project
+### 2. Remove apollo-one-shot related resources
 
-If you don't plan to repeat install or removal steps, you can remove whole *automagic* Project following steps in the following picture.
+If you don't plan to repeat install or removal steps, you can remove whole *apollo-one-shot* Project following steps in the following picture.
 
 ![assets/project-delete.png](assets/project-delete.png)
+
+Also remove ClusterRoleBinding following steps in the following picture.
+
+![assets/crb-delete.png](assets/crb-delete.png)
+
 
 Now continue with the [Post removal steps](#post-removal-steps-%EF%B8%8F).
 
@@ -559,12 +557,17 @@ On ROKS, you may want to revert the actions of node labeling for DB2 "no root sq
 
 During deployment various CustomResourceDefinitions were created, you may want to remove them.
 
-## Contact
+## Contacts
 
-Jan Dušek  
+Jan Dusek  
 jdusek@cz.ibm.com  
 Business Automation Technical Specialist  
 IBM Czech Republic
+
+Ondrej Svec  
+ondrej.svec2@ibm.com  
+Automation Engineer  
+IBM Client Engineering CEE  
 
 ## Notice
 

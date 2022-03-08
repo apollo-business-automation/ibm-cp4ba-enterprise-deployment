@@ -1,0 +1,13 @@
+{
+  "LDAP_ID": "LDAP",
+  "LDAP_URL": "ldap://{{ cpfs_ldap_hostname }}:389",
+  "LDAP_BASEDN": "dc=cp",
+  "LDAP_BINDDN": "cn=admin,dc=cp",
+  "LDAP_BINDPASSWORD": "{{ cpfs_universal_password | b64encode }}",
+  "LDAP_TYPE": "Custom",
+  "LDAP_USERFILTER": "(&(uid=%v)(objectclass=inetOrgPerson))",
+  "LDAP_GROUPFILTER": "(&(cn=%v)(objectclass=groupOfNames))",
+  "LDAP_USERIDMAP": "*:cn",
+  "LDAP_GROUPIDMAP": "*:cn",
+  "LDAP_GROUPMEMBERIDMAP": "groupOfNames:member"
+}

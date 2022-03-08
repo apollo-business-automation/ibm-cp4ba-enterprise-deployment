@@ -1,0 +1,235 @@
+- name: Get ICP4ACluster CRD
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: icp4aclusters.icp4a.ibm.com
+  register: icp4acluster_crd
+  retries: 60
+  delay: 30
+
+- name: Remove cp4ba cluster
+  k8s:
+    state: absent
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: icp4a.ibm.com/v1
+    kind: ICP4ACluster
+    name: cp4ba
+    namespace: "{{ cp4ba_project_name }}"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 600
+  when: icp4acluster_crd.resources | length != 0
+
+# wait for the CartridgeRequirements instances to disappear as if we do not wait, they will have finalizers left
+- name: Wait for CartridgeRequirements instances to disappear
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: base.automation.ibm.com/v1beta1
+    kind: CartridgeRequirements
+    namespace: "{{ cp4ba_project_name }}"
+  register: cartridge_requirements
+  retries: 60
+  delay: 30
+  until: cartridge_requirements.resources | length == 0
+
+# wait for the Cartridge instances to disappear as if we do not wait, they will have finalizers left
+- name: Wait for Cartridge intances to disappear
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: core.automation.ibm.com/v1beta1
+    kind: Cartridge
+    namespace: "{{ cp4ba_project_name }}"
+  register: cartridges
+  retries: 60
+  delay: 30
+  until: cartridges.resources | length == 0
+
+- name: Wait for InsightsEngine intances to disappear
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: insightsengine.automation.ibm.com/v1beta1
+    kind: InsightsEngine
+    namespace: "{{ cp4ba_project_name }}"
+  register: insightsengines
+  retries: 60
+  delay: 30
+  until: insightsengines.resources | length == 0
+
+- name: Get AutomationBase CRD
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: automationbases.base.automation.ibm.com
+    namespace: "{{ cp4ba_project_name }}"
+  register: automationbase_crd
+  retries: 60
+  delay: 30
+
+- name: Remove AutomationBase
+  k8s:
+    state: absent
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: base.automation.ibm.com/v1beta1
+    kind: AutomationBase
+    name: foundation-iaf
+    namespace: "{{ cp4ba_project_name }}"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 600
+  when: automationbase_crd.resources | length != 0
+
+- name: Get AutomationUIConfig CRD
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: automationuiconfigs.core.automation.ibm.com
+    namespace: "{{ cp4ba_project_name }}"
+  register: automationuiconfig_crd
+  retries: 60
+  delay: 30
+
+- name: Remove AutomationUIConfig
+  k8s:
+    state: absent
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: core.automation.ibm.com/v1beta1
+    kind: AutomationUIConfig
+    name: iaf-system
+    namespace: "{{ cp4ba_project_name }}"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 600
+  when: automationuiconfig_crd.resources | length != 0
+
+# wait for the Client instances to disappear as if we do not wait, they will have finalizers left
+- name: Wait for Client intances to disappear
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: oidc.security.ibm.com/v1
+    kind: Client
+    namespace: "{{ cp4ba_project_name }}"
+  register: clients
+  retries: 60
+  delay: 30
+  until: clients.resources | length == 0
+  ignore_errors: true
+
+- name: Clear Client instances finalizers
+  include_role:
+    name: common
+    tasks_from: clear-resource-finalizers
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: oidc.security.ibm.com/v1
+    common_kind: Client
+    common_namespace_name: "{{ cp4ba_project_name }}"
+  when: clients.resources | length != 0
+
+- name: Remove CP4BA Operator
+  include_role:
+    name: common
+    tasks_from: remove-operator
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: "{{ cp4ba_project_name }}"
+    common_label_selector_stub: ibm-cp4a-operator
+
+- name: Remove Operators
+  include_role:
+    name: common
+    tasks_from: remove-operator
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: "{{ cp4ba_project_name }}"
+    common_label_selector_stub: "{{ item }}"
+  with_items:
+    - "ibm-cp4a-wfps-operator"
+    - "ibm-automation-insightsengine"
+    - "ibm-automation-eventprocessing"
+    - "ibm-automation-flink"
+    - "ibm-automation-elastic"
+    - "ibm-automation"
+    - "ibm-automation-core"
+
+- name: Remove Project cp4ba
+  k8s:
+    state: absent
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: project.openshift.io/v1
+    kind: Project
+    name: "{{ cp4ba_project_name }}"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 600
+
+- name: Remove DB connections from DB2MC
+  include_role:
+    name: common
+    tasks_from: remove-db2mc-connection
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_db2_db_name: "{{ item }}"
+    common_universal_password: "{{ cp4ba_universal_password }}"
+    common_output_directory: "{{ cp4ba_output_directory }}"
+    common_db2_hostname: "{{ cp4ba_db2_hostname }}"
+  with_items:
+    - CP4BA
+    - TENANT1
+    - TENANT2
+  when: db2mc_enabled
+
+- name: Remove DB2 users
+  include_role:
+    name: common
+    tasks_from: remove-db2-user
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_db2_user: "{{ item }}"
+  with_items:
+    - icndb
+    - pb
+    - bas
+    - odm
+    - gcd
+    - os1
+    - aae
+    - aeos
+    - base
+    - devos1
+    - badocs
+    - batos
+    - bados
+    - bawaut
+    - ch
+
+- name: Remove DBs
+  include_role:
+    name: common
+    tasks_from: remove-db
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_db2_db_name: "{{ item }}"
+  with_items:
+    - TENANT1
+    - TENANT2
+    - CP4BA

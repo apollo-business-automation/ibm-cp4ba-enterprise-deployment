@@ -1,0 +1,90 @@
+- name: Remove PM
+  include_role:
+    name: pm
+  when: pm_enabled
+  
+- block:
+
+    - name: Remove RPA
+      include_role:
+        name: rpa
+
+    - name: Remove MSSQL
+      include_role:
+        name: mssql
+
+  when: rpa_enabled
+
+- name: Remove Asset Repo
+  include_role:
+    name: asset_repo
+  when: asset_repo_enabled
+
+- name: Remove CP4BA
+  include_role:
+    name: cp4ba
+
+- name: Remove CPFS
+  include_role:
+    name: cpfs
+
+- name: Remove Mongo Express
+  include_role:
+    name: mongo_express
+  when: mongo_express_enabled
+
+- name: Remove MongoDB
+  include_role:
+    name: mongodb
+
+- name: Remove Kibana
+  include_role:
+    name: kibana
+
+- name: Remove AKHQ
+  include_role:
+    name: akhq
+  when: akhq_enabled
+
+- name: Remove Cerebro
+  include_role:
+    name: cerebro
+  when: cerebro_enabled
+
+- name: Remove Roundcube
+  include_role:
+    name: roundcube
+  when: roundcube_enabled
+
+- name: Remove Mail
+  include_role:
+    name: mail
+
+- name: Remove nexus
+  include_role:
+    name: nexus
+
+- name: Remove gitea
+  include_role:
+    name: gitea
+
+- name: Remove openldap
+  include_role:
+    name: openldap
+
+- name: Remove DB2MC
+  include_role:
+    name: db2mc
+  when: db2mc_enabled
+
+- name: Remove DB2
+  include_role:
+    name: db2
+
+- name: Remove Global CA
+  include_role:
+    name: global_ca
+
+- name: Remove Catalog Source
+  include_role:
+    name: catalog_source

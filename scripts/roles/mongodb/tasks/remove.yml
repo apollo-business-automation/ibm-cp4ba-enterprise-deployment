@@ -1,0 +1,24 @@
+- name: Remove Project mongodb
+  k8s:
+    state: absent
+    api_key: "{{ mongodb_k8s_api_key | default(omit) }}"
+    host: "{{ mongodb_k8s_host | default(omit) }}"
+    api_version: project.openshift.io/v1
+    kind: Project
+    name: mongodb
+    namespace: mongodb
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 120
+
+- name: Remove CRB mongodb-anyuid
+  k8s:
+    state: absent
+    api_key: "{{ cerebro_k8s_api_key | default(omit) }}"
+    host: "{{ cerebro_k8s_host | default(omit) }}"
+    api_version: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    name: mongodb-anyuid
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 120

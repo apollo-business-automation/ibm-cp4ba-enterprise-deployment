@@ -1,0 +1,113 @@
+- name: Create OpenLdap directory for generated files
+  file:
+    path: "{{ openldap_output_directory }}"
+    state: directory
+    mode: u+rwx
+
+- name: Create Project
+  include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ openldap_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ openldap_k8s_host | default(omit) }}"
+    common_namespace_name: openldap
+    common_output_directory: "{{ openldap_output_directory }}"
+
+- name: Prepare yaml file for anyuid ClusterRoleBinding
+  template:
+    src: anyuid-scc-clusterrolebinding.yaml.j2
+    dest: "{{ openldap_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
+    mode: u+rwx
+
+- name: Add anyuid ClusterRoleBinding
+  k8s:
+    api_key: "{{ openldap_k8s_api_key | default(omit) }}"
+    host: "{{ openldap_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ openldap_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Add helm-openldap chart repo
+  kubernetes.core.helm_repository:
+    name: helm-openldap
+    repo_url: "https://jp-gouin.github.io/helm-openldap/"
+
+# Custom schema LDIF based on https://stackoverflow.com/questions/45511696/creating-a-new-objectclass-and-attribute-in-openldap
+- name: Prepare yaml file for values of helm chart
+  template:
+    src: values.yaml.j2
+    dest: "{{ openldap_output_directory }}/values.yaml"
+    mode: u+rwx
+
+- name: Deploy openldap chart using values files on target
+  kubernetes.core.helm:
+    api_key: "{{ openldap_k8s_api_key | default(omit) }}"
+    host: "{{ openldap_k8s_host | default(omit) }}"
+    name: openldap
+    chart_ref: helm-openldap/openldap-stack-ha
+    chart_version: "{{ openldap_chart_version }}"
+    release_namespace: openldap
+    values_files:
+      - "{{ openldap_output_directory }}/values.yaml"
+
+- name: Get OCP Apps Endpoint
+  include_role:
+    name: common
+    tasks_from: apps-endpoint
+  vars:
+    common_k8s_api_key: "{{ openldap_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ openldap_k8s_host | default(omit) }}"
+    common_output_to_var: "apps_endpoint_domain"
+  when: apps_endpoint_domain is not defined
+
+- name: Crete Edge Route
+  include_role:
+    name: common
+    tasks_from: create-edge-route
+  vars:
+    common_k8s_api_key: "{{ openldap_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ openldap_k8s_host | default(omit) }}"
+    common_namespace_name: openldap
+    common_route_name: openldap-phpldapadmin
+    common_service_name: openldap-phpldapadmin
+    common_wildcard_crt_path: "{{ openldap_wildcard_crt_path }}"
+    common_wildcard_key_path: "{{ openldap_wildcard_key_path }}"
+    common_ca_crt_path: "{{ openldap_ca_crt_path }}"
+    common_apps_endpoint_domain: "{{ apps_endpoint_domain }}"
+    common_output_directory: "{{ openldap_output_directory }}"
+
+- name: Wait for openldap-phpldapadmin Deployment to be Available
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ openldap_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ openldap_k8s_host | default(omit) }}"
+    common_api_version: apps/v1
+    common_resource_kind: Deployment
+    common_resource_name: openldap-phpldapadmin
+    common_resource_namespace: openldap
+    common_condition_name: Available
+    common_retries: 60
+    common_delay: 15
+
+- name: Wait for openldap-openldap-stack-ha StatefulSet ready replicas
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition-generic
+  vars:
+    common_k8s_api_key: "{{ openldap_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ openldap_k8s_host | default(omit) }}"
+    common_api_version: apps/v1
+    common_resource_kind: StatefulSet
+    common_resource_name: openldap-openldap-stack-ha
+    common_resource_namespace: openldap
+    common_condition_query: resources[*].status.readyReplicas
+    common_condition_value: 1
+    common_retries: 30
+    common_delay: 120
