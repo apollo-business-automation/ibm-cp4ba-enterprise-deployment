@@ -1,0 +1,27 @@
+exclude_paths:
+  - ./assets/
+  - ./scripts/archive
+  - ./scripts/apollo-one-shot
+  - .ansible-lint
+  - ./scripts/install.yml
+  - ./scripts/remove.yml
+  - ./scripts/requirements.yml
+  - ./scripts/requirements_git.yml
+  - ./scripts/variables.yml
+  - ./scripts/internal-variables.yml
+  - ./scripts/storage-class
+  - ./scripts/tooling
+  - ./scripts/servicing-pod.yaml
+  - .pre-commit-config.yaml
+
+use_default_rules: true
+
+enable_list:
+  - yaml
+
+rulesdir:
+  - ./scripts/ansible-lint-rules/
+    
+skip_list:
+  - var-naming
+  - command-instead-of-module

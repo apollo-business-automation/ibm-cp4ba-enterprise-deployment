@@ -1,0 +1,89 @@
+# Based on https://cloud.redhat.com/blog/getting-started-with-microsoft-sql-server-on-openshift
+
+- name: Create MSSQL directory for generated files
+  file:
+    path: "{{ mssql_output_directory }}"
+    state: directory
+    mode: u+rwx
+
+- name: Create Project
+  include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ mssql_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ mssql_k8s_host | default(omit) }}"
+    common_namespace_name: mssql
+    common_output_directory: "{{ mssql_output_directory }}"
+
+- name: Prepare yaml file for Secret
+  template:
+    src: secret.yaml.j2
+    dest: "{{ mssql_output_directory }}/secret.yaml"
+    mode: u+rwx
+
+- name: Add Secret
+  k8s:
+    api_key: "{{ mssql_k8s_api_key | default(omit) }}"
+    host: "{{ mssql_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ mssql_output_directory }}/secret.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Prepare yaml file for PVC
+  template:
+    src: pvc.yaml.j2
+    dest: "{{ mssql_output_directory }}/pvc.yaml"
+    mode: u+rwx
+
+- name: Add PVC
+  k8s:
+    api_key: "{{ mssql_k8s_api_key | default(omit) }}"
+    host: "{{ mssql_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ mssql_output_directory }}/pvc.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Prepare yaml file for Deployment
+  template:
+    src: deployment.yaml.j2
+    dest: "{{ mssql_output_directory }}/deployment.yaml"
+    mode: u+rwx
+
+- name: Add Deployment
+  k8s:
+    api_key: "{{ mssql_k8s_api_key | default(omit) }}"
+    host: "{{ mssql_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ mssql_output_directory }}/deployment.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 1200
+
+- name: Prepare yaml file for Service
+  template:
+    src: service.yaml.j2
+    dest: "{{ mssql_output_directory }}/service.yaml"
+    mode: u+rwx
+
+- name: Add Service
+  k8s:
+    api_key: "{{ mssql_k8s_api_key | default(omit) }}"
+    host: "{{ mssql_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ mssql_output_directory }}/service.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15

@@ -1,0 +1,609 @@
+- name: Get OCP Apps domain
+  include_role:
+    name: common
+    tasks_from: apps-endpoint
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_output_to_var: "apps_endpoint_domain"
+
+- name: Load base CR to variable
+  set_fact:
+    cr: "{{ lookup('template', 'cr.yaml.j2') | from_yaml }}"
+
+- name: Init variable for patterns
+  set_fact:
+    patterns: []
+
+- name: Init variable for components
+  set_fact:
+    components: []
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-checking-cluster-configuration point 3
+- name: Add RR pattern
+  set_fact:
+    patterns: "{{ patterns + ['foundation'] }}"
+
+- name: Add RR to CR
+  set_fact:
+    cr: "{{ cr | combine(lookup('template', 'rr/cr.yaml.j2') | from_yaml, recursive=true) }}"
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-business-automation-navigator
+- name: Add BAN pattern
+  set_fact:
+    patterns: "{{ patterns + ['foundation'] }}"
+
+- name: Add BAN to CR
+  set_fact:
+    cr: "{{ cr | combine(lookup('template', 'ban/cr.yaml.j2') | from_yaml, recursive=true) }}"
+
+- name: Add BAN Google IDP configuration to CR
+  set_fact:
+    cr: "{{ cr | combine(ban_insert, recursive=true) }}"
+  vars:
+    ban_insert:
+      spec:
+        navigator_configuration:
+          icn_production_setting:
+            jvm_customize_options: DELIM=;-Dcom.filenet.authentication.ExShareGID.AuthTokenOrder=oidc,oauth,ltpa
+  when: cp4ba_external_share_google | bool
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-business-automation-studio
+- name: Add BAS pattern
+  set_fact:
+    patterns: "{{ patterns + ['foundation'] }}"
+
+- name: Add BAS component
+  set_fact:
+    components: "{{ components + ['bas'] }}"
+
+- name: Add BAS to CR
+  set_fact:
+    cr: "{{ cr | combine(lookup('template', 'bas/cr.yaml.j2') | from_yaml, recursive=true) }}"
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-business-automation-insights
+- name: Add BAI pattern
+  set_fact:
+    patterns: "{{ patterns + ['foundation'] }}"
+
+- name: Add BAI component
+  set_fact:
+    components: "{{ components + ['bai'] }}"
+
+- name: Add BAI to CR
+  set_fact:
+    cr: "{{ cr | combine(lookup('template', 'bai/cr.yaml.j2') | from_yaml, recursive=true) }}"
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-operational-decision-manager
+- name: Add ODM pattern
+  set_fact:
+    patterns: "{{ patterns + ['decisions'] }}"
+
+- name: Add ODM components
+  set_fact:
+    components: "{{ components + [item] }}"
+  with_items:
+    - decisionCenter
+    - decisionRunner
+    - decisionServerRuntime
+
+- name: Add ODM to CR
+  set_fact:
+    cr: "{{ cr | combine(lookup('template', 'odm/cr.yaml.j2') | from_yaml, recursive=true) }}"
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-automation-decision-services
+- name: Add ADS pattern
+  set_fact:
+    patterns: "{{ patterns + ['decisions_ads'] }}"
+
+- name: Add ADS components
+  set_fact:
+    components: "{{ components + [item] }}"
+  with_items:
+    - ads_designer
+    - ads_runtime
+
+- name: Add ADS to CR
+  set_fact:
+    cr: "{{ cr | combine(lookup('template', 'ads/cr.yaml.j2') | from_yaml, recursive=true) }}"
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-filenet-content-manager
+- name: Add FNCM pattern
+  set_fact:
+    patterns: "{{ patterns + ['content'] }}"
+
+- name: Add FNCM components
+  set_fact:
+    components: "{{ components + [item] }}"
+  with_items:
+    - cmis
+    - css
+    - es
+    - tm
+
+- name: Add FNCM to CR
+  set_fact:
+    cr: "{{ cr | combine(lookup('template', 'fncm/cr-'+item+'.yaml.j2') | from_yaml, recursive=true) }}"
+  with_items:
+    - cpe
+    - graphql
+    - cmis
+    - css
+    - es
+    - tm
+
+- block:
+
+    - name: Add Google TLS to CR
+      set_fact:
+        cr: "{{ cr | combine(google_tls_insert, recursive=true) }}"
+      vars:
+        google_tls_insert:
+          spec:
+            shared_configuration:
+              trusted_certificate_list: "{{ cr.spec.shared_configuration.trusted_certificate_list + ['google-tls'] }}"
+
+
+    - name: Add IDP configuration to CR
+      set_fact:
+        cr: "{{ cr | combine(lookup('template', 'fncm/cr-es-gid.yaml.j2') | from_yaml, recursive=true) }}"
+
+  when: cp4ba_external_share_google | bool
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-business-automation-application
+- name: Add AAE pattern
+  set_fact:
+    patterns: "{{ patterns + ['application'] }}"
+
+- name: Add AAE components
+  set_fact:
+    components: "{{ components + [item] }}"
+  with_items:
+    - app_designer
+    - ae_data_persistence
+
+- name: Set AAE data persistence to true in CR
+  set_fact:
+    aae_data_persistence: true
+
+- name: Add AAE to CR
+  set_fact:
+    cr: "{{ cr | combine(lookup('template', 'aae/cr.yaml.j2') | from_yaml, recursive=true) }}"
+
+- name: Backup CR
+  set_fact:
+    cr_bck: "{{ cr }}"
+
+- name: Add AAE persistence to CR
+  set_fact:
+    cr: "{{ cr | combine(lookup('template', 'aae/cr-persistence.yaml.j2') | from_yaml, recursive=true) }}"
+
+- name: Combine lists back to CR
+  set_fact:
+    cr: "{{ cr | combine(list_overwrites, recursive=true) }}"
+  vars:
+    list_overwrites:
+      spec:
+        datasource_configuration:
+          dc_os_datasources: "{{ cr_bck.spec.datasource_configuration.dc_os_datasources + cr.spec.datasource_configuration.dc_os_datasources }}"
+        initialize_configuration:
+          ic_obj_store_creation:
+            object_stores: "{{ cr_bck.spec.initialize_configuration.ic_obj_store_creation.object_stores +
+              cr.spec.initialize_configuration.ic_obj_store_creation.object_stores }}"
+          ic_icn_init_info:
+            icn_repos: "{{ cr_bck.spec.initialize_configuration.ic_icn_init_info.icn_repos + cr.spec.initialize_configuration.ic_icn_init_info.icn_repos }}"
+            icn_desktop: "{{ cr_bck.spec.initialize_configuration.ic_icn_init_info.icn_desktop +
+              cr.spec.initialize_configuration.ic_icn_init_info.icn_desktop }}"
+        verify_configuration:
+          vc_icn_verification: "{{ cr_bck.spec.verify_configuration.vc_icn_verification + cr.spec.verify_configuration.vc_icn_verification }}"
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-document-processing
+- name: Add ADP pattern
+  set_fact:
+    patterns: "{{ patterns + ['document_processing'] }}"
+
+- name: Add ADP component
+  set_fact:
+    components: "{{ components + ['document_processing_designer'] }}"
+
+- name: Backup CR
+  set_fact:
+    cr_bck: "{{ cr }}"
+
+- name: Add ADP to CR
+  set_fact:
+    cr: "{{ cr | combine(lookup('template', 'adp/cr.yaml.j2') | from_yaml, recursive=true) }}"
+
+- name: Combine lists back to CR
+  set_fact:
+    cr: "{{ cr | combine(list_overwrites, recursive=true) }}"
+  vars:
+    list_overwrites:
+      spec:
+        datasource_configuration:
+          dc_os_datasources: "{{ cr_bck.spec.datasource_configuration.dc_os_datasources + cr.spec.datasource_configuration.dc_os_datasources }}"
+        initialize_configuration:
+          ic_obj_store_creation:
+            object_stores: "{{ cr_bck.spec.initialize_configuration.ic_obj_store_creation.object_stores +
+              cr.spec.initialize_configuration.ic_obj_store_creation.object_stores }}"
+          ic_icn_init_info:
+            icn_repos: "{{ cr_bck.spec.initialize_configuration.ic_icn_init_info.icn_repos + cr.spec.initialize_configuration.ic_icn_init_info.icn_repos }}"
+            icn_desktop: "{{ cr_bck.spec.initialize_configuration.ic_icn_init_info.icn_desktop +
+              cr.spec.initialize_configuration.ic_icn_init_info.icn_desktop }}"
+        verify_configuration:
+          vc_icn_verification: "{{ cr_bck.spec.verify_configuration.vc_icn_verification + cr.spec.verify_configuration.vc_icn_verification }}"
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-business-automation-workflow-authoring
+- name: Add BAWAUT pattern
+  set_fact:
+    patterns: "{{ patterns + ['workflow'] }}"
+
+- name: Add BAWAUT component
+  set_fact:
+    components: "{{ components + ['baw_authoring'] }}"
+
+- name: Backup CR
+  set_fact:
+    cr_bck: "{{ cr }}"
+
+- name: Add BAWAUT to CR
+  set_fact:
+    cr: "{{ cr | combine(lookup('template', 'bawaut/cr.yaml.j2') | from_yaml, recursive=true) }}"
+
+- name: Combine lists back to CR
+  set_fact:
+    cr: "{{ cr | combine(list_overwrites, recursive=true) }}"
+  vars:
+    list_overwrites:
+      spec:
+        datasource_configuration:
+          dc_os_datasources: "{{ cr_bck.spec.datasource_configuration.dc_os_datasources + cr.spec.datasource_configuration.dc_os_datasources }}"
+        initialize_configuration:
+          ic_obj_store_creation:
+            object_stores: "{{ cr_bck.spec.initialize_configuration.ic_obj_store_creation.object_stores +
+              cr.spec.initialize_configuration.ic_obj_store_creation.object_stores }}"
+          ic_icn_init_info:
+            icn_repos: "{{ cr_bck.spec.initialize_configuration.ic_icn_init_info.icn_repos + cr.spec.initialize_configuration.ic_icn_init_info.icn_repos }}"
+            icn_desktop: "{{ cr_bck.spec.initialize_configuration.ic_icn_init_info.icn_desktop +
+              cr.spec.initialize_configuration.ic_icn_init_info.icn_desktop }}"
+        verify_configuration:
+          vc_icn_verification: "{{ cr_bck.spec.verify_configuration.vc_icn_verification + cr.spec.verify_configuration.vc_icn_verification }}"
+
+- name: Add patterns to CR
+  set_fact:
+    cr: "{{ cr | combine(patterns_insert, recursive=true) }}"
+  vars:
+    patterns_insert:
+      spec:
+        shared_configuration:
+          sc_deployment_patterns: "{{ patterns | unique | join(',') }}"
+
+- name: Add components to CR
+  set_fact:
+    cr: "{{ cr | combine(components_insert, recursive=true) }}"
+  vars:
+    components_insert:
+      spec:
+        shared_configuration:
+          sc_optional_components: "{{ components | unique | join(',') }}"
+
+- name: Write CR to file
+  copy:
+    content: '{{ cr | to_nice_yaml(indent=2, width=1337) }}'
+    dest: "{{ cp4ba_output_directory }}/cr.yaml"
+    mode: u+rwx
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=deployment-deploying-custom-resource-you-created-script
+- name: Add CP4BA CR
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/cr.yaml"
+
+- name: Manage Manual Operator ibm-zen-operator
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_label_selector_stub: ibm-zen-operator
+
+- name: Wait for icp4ba Cartridge to be Ready
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: core.automation.ibm.com/v1beta1
+    common_resource_kind: Cartridge
+    common_resource_name: icp4ba
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_name: Ready
+    common_retries: 36
+    common_delay: 300
+
+- name: Wait for Prereqs Ready states
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition-generic
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: icp4a.ibm.com/v1
+    common_resource_kind: ICP4ACluster
+    common_resource_name: "{{ cp4ba_cr_meta_name }}"
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_query: "{{ item }}"
+    common_condition_value: Ready
+    common_retries: 30
+    common_delay: 120
+  with_items:
+    - resources[*].status.components.prereq.iafStatus
+    - resources[*].status.components.prereq.iamIntegrationStatus
+    - resources[*].status.components.prereq.rootCAStatus
+
+- name: Wait for RR to Ready state
+  kubernetes.core.k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
+    label_selectors:
+      - app.kubernetes.io/component=etcd-server
+  register: pod
+  retries: 30
+  delay: 120
+  until: (['True'] in pod | json_query(condition_query) | unique )
+  vars:
+    condition_query: "resources[*].status.conditions[?type == 'Ready'].status"
+
+- name: Manage Manual Operator ibm-bts-operator
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_label_selector_stub: ibm-bts-operator
+
+- name: Manage Manual Operator cloud-native-postgresql
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_label_selector_stub: cloud-native-postgresql
+
+- name: Wait for BTS Ready state
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition-generic
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: operator.ibm.com/v1alpha1
+    common_resource_kind: BusinessTeamsService
+    common_resource_name: cp4ba-bts
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_query: resources[*].status.serviceStatus
+    common_condition_value: ready
+    common_retries: 30
+    common_delay: 120
+
+- name: Wait for Deployments to be Available
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: v1
+    common_resource_kind: Deployment
+    common_resource_name: "{{ item }}"
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_name: Available
+    common_retries: 30
+    common_delay: 120
+  with_items:
+    - "{{ cp4ba_cr_meta_name }}-cpe-deploy"
+    - "{{ cp4ba_cr_meta_name }}-css-deploy-1"
+    - "{{ cp4ba_cr_meta_name }}-cmis-deploy"
+    - "{{ cp4ba_cr_meta_name }}-graphql-deploy"
+    - "{{ cp4ba_cr_meta_name }}-es-deploy"
+    - "{{ cp4ba_cr_meta_name }}-tm-deploy"
+    - "{{ cp4ba_cr_meta_name }}-mongo-deploy"
+    - "{{ cp4ba_cr_meta_name }}-gitgateway-deploy"
+    - "{{ cp4ba_cr_meta_name }}-viewone-deploy"
+    - "{{ cp4ba_cr_meta_name }}-cpds-deploy"
+    - "{{ cp4ba_cr_meta_name }}-cds-deploy"
+    - "{{ cp4ba_cr_meta_name }}-navigator-deploy"
+    - "{{ cp4ba_cr_meta_name }}-pbk-ae-deployment"
+
+- name: Wait for StatefulSets ready replicas
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition-generic
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: apps/v1
+    common_resource_kind: StatefulSet
+    common_resource_name: "{{ item }}"
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_query: resources[*].status.readyReplicas
+    common_condition_value: 2
+    common_retries: 30
+    common_delay: 120
+  with_items:
+    - "{{ cp4ba_cr_meta_name }}-bastudio-deployment"
+    - "{{ cp4ba_cr_meta_name }}-redis-ha-server"
+    - "{{ cp4ba_cr_meta_name }}-rabbitmq-ha"
+
+- name: Wait for ADP NL extractor Deployment Available state
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: v1
+    common_resource_kind: Deployment
+    common_resource_name: "{{ cp4ba_cr_meta_name }}-natural-language-extractor"
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_name: Available
+    common_retries: 36
+    common_delay: 300
+
+# TODO do we still need to wait for pod of NL due to false Avaialble status of Deployment due to long Image pulling time?
+
+- name: Wait for BAI InsightsEngine Ready state
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: insightsengine.automation.ibm.com/v1beta1
+    common_resource_kind: InsightsEngine
+    common_resource_name: iaf-insights-engine
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_name: Ready
+    common_retries: 60
+    common_delay: 120
+
+- name: Wait for Deployments to be Available
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: v1
+    common_resource_kind: Deployment
+    common_resource_name: "{{ item }}"
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_name: Available
+    common_retries: 60
+    common_delay: 120
+  with_items:
+    - "{{ cp4ba_cr_meta_name }}-mls-itp"
+    - "{{ cp4ba_cr_meta_name }}-mls-wfi"
+    - "{{ cp4ba_cr_meta_name }}-odm-decisioncenter"
+    - "{{ cp4ba_cr_meta_name }}-odm-decisionserverruntime"
+    - "{{ cp4ba_cr_meta_name }}-odm-decisionserverconsole"
+    - "{{ cp4ba_cr_meta_name }}-odm-decisionrunner"
+    - "{{ cp4ba_cr_meta_name }}-instance1-aae-ae-deployment"
+
+- name: Wait for {{ cp4ba_cr_meta_name }}-pfs StatefulSet ready replicas
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition-generic
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: apps/v1
+    common_resource_kind: StatefulSet
+    common_resource_name: "{{ cp4ba_cr_meta_name }}-pfs"
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_query: resources[*].status.readyReplicas
+    common_condition_value: 2
+    common_retries: 60
+    common_delay: 120
+
+- name: Wait for {{ cp4ba_cr_meta_name }}-workflow-authoring-baw-jms StatefulSet ready replicas
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition-generic
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: apps/v1
+    common_resource_kind: StatefulSet
+    common_resource_name: "{{ cp4ba_cr_meta_name }}-workflow-authoring-baw-jms"
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_query: resources[*].status.readyReplicas
+    common_condition_value: 1
+    common_retries: 60
+    common_delay: 120
+
+- name: Wait for {{ cp4ba_cr_meta_name }}-workflow-authoring-baw-server StatefulSet ready replicas
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition-generic
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: apps/v1
+    common_resource_kind: StatefulSet
+    common_resource_name: "{{ cp4ba_cr_meta_name }}-workflow-authoring-baw-server"
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_query: resources[*].status.readyReplicas
+    common_condition_value: 2
+    common_retries: 60
+    common_delay: 120
+
+- name: Wait for Deployments to be Available
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: v1
+    common_resource_kind: Deployment
+    common_resource_name: "{{ item }}"
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_name: Available
+    common_retries: 60
+    common_delay: 120
+  with_items:
+    - "{{ cp4ba_cr_meta_name }}-ads-run-service"
+    - "{{ cp4ba_cr_meta_name }}-ads-parsing-service"
+    - "{{ cp4ba_cr_meta_name }}-ads-git-service"
+    - "{{ cp4ba_cr_meta_name }}-ads-download-service"
+    - "{{ cp4ba_cr_meta_name }}-ads-rest-api"
+    - "{{ cp4ba_cr_meta_name }}-ads-front"
+    - "{{ cp4ba_cr_meta_name }}-ads-embedded-build-service"
+    - "{{ cp4ba_cr_meta_name }}-ads-credentials-service"
+    - "{{ cp4ba_cr_meta_name }}-ads-runtime-service"
+
+- name: Wait for CP4BA to be Ready
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: icp4a.ibm.com/v1
+    common_resource_kind: ICP4ACluster
+    common_resource_name: cp4ba
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_name: Ready
+    common_retries: 60
+    common_delay: 120
+
+# Do not wait now as there is no common label to all CP4BA pods and on the subsequent try there can be other non-cp4ba broken pods in the Project
+# - name: Wait for all remaining pods to become Ready
+#   kubernetes.core.k8s_info:
+#     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+#     host: "{{ cp4ba_k8s_host | default(omit) }}"
+#     kind: Pod
+#     namespace: "{{ cp4ba_project_name }}"
+#     field_selectors:
+#       - status.phase!=Succeeded
+#       - status.phase!=Failed
+#   register: pods
+#   retries: 30
+#   delay: 60
+#   until: (['False'] not in pods | json_query(condition_query) | unique )
+#   vars:
+#     condition_query: "resources[*].status.conditions[?type == 'Ready'].status"

@@ -1,0 +1,5 @@
+catalog_source_action: install
+catalog_source_base_dir: /tmp
+catalog_source_dir_name: catalog-source
+catalog_source_k8s_api_key: ""
+catalog_source_k8s_host: ""

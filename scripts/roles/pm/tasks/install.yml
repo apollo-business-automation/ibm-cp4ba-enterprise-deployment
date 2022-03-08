@@ -1,0 +1,215 @@
+- name: Execute Catalog Source role as prerequisite
+  include_role:
+    name: catalog_source
+  vars:
+    catalog_source_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    catalog_source_k8s_host: "{{ pm_k8s_host | default(omit) }}"
+
+- name: Create PM directory for generated files
+  file:
+    path: "{{ pm_output_directory }}"
+    state: directory
+    mode: u+rwx
+
+- name: Add DB2 user
+  include_role:
+    name: common
+    tasks_from: add-db2-user
+  vars:
+    common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
+    common_db2_user: pm
+    common_universal_password: "{{ pm_universal_password }}"
+
+# This counts on CP4BA database created during CP4BA deployment making this part not standalone
+- name: Create & configure PM Schema
+  kubernetes.core.k8s_exec:
+    api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    host: "{{ pm_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: |
+      su - db2inst1 -c "
+      db2 CONNECT TO CP4BA;
+      db2 CREATE REGULAR TABLESPACE PM_TS PAGESIZE 32 K BUFFERPOOL PM_BP_32K;
+      db2 CREATE USER TEMPORARY TABLESPACE PM_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL PM_BP_32K;
+      db2 CREATE SYSTEM TEMPORARY TABLESPACE PM_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL PM_BP_32K;
+
+      db2 GRANT DBADM ON DATABASE TO user pm;
+      db2 GRANT USE OF TABLESPACE PM_TS TO user pm;
+      db2 GRANT USE OF TABLESPACE PM_TEMP_TS TO user pm;
+      db2 CONNECT RESET;
+      "
+  register: command_status
+
+- name: Get Mongo DB pod
+  kubernetes.core.k8s_info:
+    api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    host: "{{ pm_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: mongodb
+    label_selectors:
+      - app.kubernetes.io/component=mongodb
+  register: mongodb_pod
+
+- name: Create PM Mongo DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    host: "{{ pm_k8s_host | default(omit) }}"
+    namespace: mongodb
+    pod: "{{ mongodb_pod.resources[0].metadata.name }}"
+    command: |
+      mongo --username root --password {{ pm_universal_password }} --authenticationDatabase admin
+      --eval 'db.createUser({user: "root", pwd: "{{ pm_universal_password }}", roles: [ { role: "readWrite", db: "processmining" } ]})'
+      mongodb://localhost:27017/processmining
+  register: command_status
+  failed_when: command_status.rc != 0 and command_status.stdout is not search('.*User \"root@processmining\" already exists.*')
+
+- name: Prepare yaml file for the Operator Subscription
+  template:
+    src: subscription.yaml.j2
+    dest: "{{ pm_output_directory }}/subscription.yaml"
+    mode: u+rwx
+
+- name: Add the Operator Subscription
+  k8s:
+    api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    host: "{{ pm_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ pm_output_directory }}/subscription.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Manage Manual Operator processmining-subscription in {{ pm_project_name }}
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ pm_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
+    common_namespace_name: "{{ pm_project_name }}"
+    common_label_selector_stub: ibm-automation-processmining
+
+- name: Wait for ProcessMining CRD to be Established
+  include_role:
+    name: common
+    tasks_from: wait-crd
+  vars:
+    common_k8s_api_key: "{{ pm_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
+    common_crd_name: processminings.processmining.ibm.com
+
+- name: Check that the {{ pm_wildcard_key_path }} exists
+  stat:
+    path: "{{ pm_wildcard_key_path }}"
+  register: pm_wildcard_key_file
+
+- name: Check that the {{ pm_ca_crt_path }} exists
+  stat:
+    path: "{{ pm_ca_crt_path }}"
+  register: pm_ca_crt_file
+
+- name: Ensure we have CA certificates and wildcards
+  include_role:
+    name: global_ca
+  when: not pm_wildcard_key_file.stat.exists or not pm_ca_crt_file.stat.exists
+
+- name: Load TLS key data
+  slurp:
+    src: '{{ pm_wildcard_key_path }}'
+  register: slurped_key_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _tls_key: "{{ slurped_key_data.content }}"
+
+- name: Load TLS crt data
+  slurp:
+    src: '{{ pm_wildcard_crt_path }}'
+  register: slurped_crt_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _tls_crt: "{{ slurped_crt_data.content }}"
+
+- name: Load CA TLS crt data
+  slurp:
+    src: '{{ pm_ca_crt_path }}'
+  register: slurped_ca_crt_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _ca_tls_crt: "{{ slurped_ca_crt_data.content }}"
+
+- name: Prepare yaml file for Secrets
+  template:
+    src: secrets.yaml.j2
+    dest: "{{ pm_output_directory }}/secrets.yaml"
+    mode: u+rwx
+
+- name: Add Secrets
+  k8s:
+    api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    host: "{{ pm_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ pm_output_directory }}/secrets.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Prepare yaml file for ProcessMining instance
+  template:
+    src: processmining.yaml.j2
+    dest: "{{ pm_output_directory }}/processmining.yaml"
+    mode: u+rwx
+
+- name: Add ProcessMining instance
+  k8s:
+    api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    host: "{{ pm_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ pm_output_directory }}/processmining.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+# Based on validate successful deployment by following https://www.ibm.com/docs/en/cloud-paks/1.0?topic=platform-how-validate-successful-installation
+# TODO uncomment when PM fixed, now it never becomes ready
+# - name: Wait for ProcessMining to be Ready
+#   include_role:
+#     name: common
+#     tasks_from: wait-resource-condition
+#   vars:
+#     common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
+#     common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
+#     common_api_version: processmining.ibm.com/v1beta1
+#     common_resource_kind: ProcessMining
+#     common_resource_name: processmining
+#     common_resource_namespace: "{{ pm_project_name }}"
+#     common_condition_name: Ready
+#     common_retries: 30
+#     common_delay: 120
+
+# TODO remove when PM fixed, now it never becomes ready in CR
+- name: Wait for processmining-taskprocessor Deployment to be Available
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
+    common_api_version: apps/v1
+    common_resource_kind: Deployment
+    common_resource_name: processmining-taskprocessor
+    common_resource_namespace: "{{ pm_project_name }}"
+    common_condition_name: Available
+    common_retries: 30
+    common_delay: 120

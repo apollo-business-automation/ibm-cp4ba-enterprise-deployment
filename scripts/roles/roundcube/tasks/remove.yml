@@ -1,0 +1,23 @@
+- name: Remove Project roundcube
+  k8s:
+    state: absent
+    api_key: "{{ roundcube_k8s_api_key | default(omit) }}"
+    host: "{{ roundcube_k8s_host | default(omit) }}"
+    api_version: project.openshift.io/v1
+    kind: Project
+    name: roundcube
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 120
+
+- name: Remove CRB roundcube-anyuid
+  k8s:
+    state: absent
+    api_key: "{{ cerebro_k8s_api_key | default(omit) }}"
+    host: "{{ cerebro_k8s_host | default(omit) }}"
+    api_version: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    name: roundcube-anyuid
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 120

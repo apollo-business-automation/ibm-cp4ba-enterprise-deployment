@@ -1,0 +1,20 @@
+image:
+  tag: "{{ mongodb_image_tag }}"
+architecture: standalone
+auth:
+  enabled: true
+  rootPassword: "{{ mongodb_universal_password }}"
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1024Mi
+  requests:
+    cpu: 500m
+    memory: 256Mi
+persistence:
+  size: 8Gi
+  storageClass: "{{ mongodb_storage_class_name }}"
+arbiter:
+  enabled: false
+serviceAccount:
+  create: false

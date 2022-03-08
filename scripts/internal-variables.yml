@@ -1,0 +1,251 @@
+# Attempts & delays #
+
+## Default attempts used when calling waiting scripts. 
+## Means wait for 20 minutes with combination of DEFAULT_DELAY. 
+## Increase if you OCP is slow and you need to wait for things longer.
+default_attempts: 80
+## Default delay used when calling waiting scripts. 
+## Means wait for 20 minutes with combination of DEFAULT_ATTEMPTS. 
+## Increase if you OCP is slow and you need to wait for things longer.
+default_delay: 15
+## Used e.g. for DB2. Default attempts used when calling waiting scripts. 
+## Means wait for 20 minutes with combination of DEFAULT_DELAY_1. 
+## Increase if you OCP is slow and you need to wait for things longer.
+default_attempts_1: 40
+## Used e.g. for DB2. Default delay used when calling waiting scripts. 
+## Means wait for 20 minutes with combination of DEFAULT_ATTEMPTS_1. 
+## Increase if you OCP is slow and you need to wait for things longer.
+default_delay_1: 30
+## Used e.g. for CPFS. Default attempts used when calling waiting scripts. 
+## Means wait for 30 minutes with combination of DEFAULT_DELAY_2. 
+## Increase if you OCP is slow and you need to wait for things longer.
+default_attempts_2: 30
+## Used e.g. for CPFS. Default delay used when calling waiting scripts. 
+## Means wait for 30 minutes with combination of DEFAULT_ATTEMPTS_2. 
+## Increase if you OCP is slow and you need to wait for things longer.
+default_delay_2: 60
+## Used e.g. for CP4BA pillars. Default attempts used when calling waiting scripts. 
+## Means wait for 60 minutes with combination of DEFAULT_DELAY_3. 
+## Increase if you OCP is slow and you need to wait for things longer.
+default_attempts_3: 30
+## Used e.g. for CP4BA pillars. Default delay used when calling waiting scripts. 
+## Means wait for 60 minutes with combination of DEFAULT_ATTEMPTS_3. 
+## Increase if you OCP is slow and you need to wait for things longer.
+default_delay_3: 120
+## Used e.g. for CP4BA pillars. Default attempts used when calling waiting scripts. 
+## Means wait for 180 minutes with combination of DEFAULT_DELAY_4. 
+## Increase if you OCP is slow and you need to wait for things longer.
+default_attempts_4: 36
+## Used e.g. for CP4BA pillars. Default delay used when calling waiting scripts. 
+## Means wait for 180 minutes with combination of DEFAULT_ATTEMPTS_4. 
+## Increase if you OCP is slow and you need to wait for things longer.
+default_delay_4: 300
+
+generic_directory: /tmp
+
+# TODO move to variables when ext share works
+    # ## Do NOT enable now. Set to true if you want to use FNCM External Share with Google ID. 
+    ## You then need to provide also the following parameters (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET). 
+    # ## Video on how to get these values is in assets/fncm-es-google-oidc-pre.mp4
+    # external_share_google: false
+    # google_client_id: TODO_GOOGLE_CLIENT_ID
+    # google_client_secret: TODO_GOOGLE_CLIENT_SECRET
+external_share_google: false
+
+
+ca_key_path: /tmp/global-ca/global-ca.key
+ca_crt_path: /tmp/global-ca/global-ca.crt
+wildcard_key_path: /tmp/global-ca/wildcard.key
+wildcard_crt_path: /tmp/global-ca/wildcard.crt
+ldap_hostname: openldap-openldap-stack-ha.openldap.svc.cluster.local
+db2_hostname: c-db2ucluster-db2u.db2.svc.cluster.local
+mongodb_hostname: mongodb.mongodb.svc.cluster.local
+mail_hostname: mailserver.mail.svc.cluster.local
+mssql_hostname: mssql.mssql.svc.cluster.local
+kibana_url: http://kibana.kibana.svc.cluster.local:5601
+
+apps_endpoint_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+apps_endpoint_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+
+catalog_source_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+catalog_source_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+catalog_source_action: "{{ global_action }}"
+
+global_ca_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+global_ca_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+
+db2_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+db2_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+db2_action: "{{ global_action }}"
+db2_universal_password: "{{ universal_password }}"
+db2_storage_class_name: "{{ storage_class_name }}"
+db2_icr_password: "{{ icr_password }}"
+db2_deployment_platform: "{{ deployment_platform }}"
+
+db2mc_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+db2mc_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+db2mc_action: "{{ global_action }}"
+db2mc_universal_password: "{{ universal_password }}"
+db2mc_storage_class_name: "{{ storage_class_name }}"
+db2mc_ca_crt_path: "{{ ca_crt_path }}"
+db2mc_wildcard_key_path: "{{ wildcard_key_path }}"
+db2mc_wildcard_crt_path: "{{ wildcard_crt_path }}"
+db2mc_db2_hostname: "{{ db2_hostname }}"
+
+openldap_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+openldap_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+openldap_action: "{{ global_action }}"
+openldap_universal_password: "{{ universal_password }}"
+openldap_storage_class_name: "{{ storage_class_name }}"
+openldap_ca_crt_path: "{{ ca_crt_path }}"
+openldap_wildcard_key_path: "{{ wildcard_key_path }}"
+openldap_wildcard_crt_path: "{{ wildcard_crt_path }}"
+
+gitea_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+gitea_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+gitea_action: "{{ global_action }}"
+gitea_universal_password: "{{ universal_password }}"
+gitea_storage_class_name: "{{ storage_class_name }}"
+gitea_ca_crt_path: "{{ ca_crt_path }}"
+gitea_wildcard_key_path: "{{ wildcard_key_path }}"
+gitea_wildcard_crt_path: "{{ wildcard_crt_path }}"
+gitea_ldap_hostname: "{{ ldap_hostname }}"
+
+nexus_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+nexus_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+nexus_action: "{{ global_action }}"
+nexus_universal_password: "{{ universal_password }}"
+nexus_storage_class_name: "{{ storage_class_name }}"
+nexus_ca_crt_path: "{{ ca_crt_path }}"
+nexus_wildcard_key_path: "{{ wildcard_key_path }}"
+nexus_wildcard_crt_path: "{{ wildcard_crt_path }}"
+nexus_ldap_hostname: "{{ ldap_hostname }}"
+
+mail_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+mail_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+mail_action: "{{ global_action }}"
+mail_storage_class_name: "{{ storage_class_name }}"
+mail_ca_key_path: "{{ ca_key_path }}"
+mail_ca_crt_path: "{{ ca_crt_path }}"
+mail_universal_password: "{{ universal_password }}"
+
+roundcube_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+roundcube_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+roundcube_action: "{{ global_action }}"
+roundcube_storage_class_name: "{{ storage_class_name }}"
+roundcube_ca_crt_path: "{{ ca_crt_path }}"
+roundcube_wildcard_key_path: "{{ wildcard_key_path }}"
+roundcube_wildcard_crt_path: "{{ wildcard_crt_path }}"
+roundcube_universal_password: "{{ universal_password }}"
+roundcube_mail_hostname: "{{ mail_hostname }}"
+
+cerebro_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+cerebro_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+cerebro_action: "{{ global_action }}"
+cerebro_ca_crt_path: "{{ ca_crt_path }}"
+cerebro_wildcard_key_path: "{{ wildcard_key_path }}"
+cerebro_wildcard_crt_path: "{{ wildcard_crt_path }}"
+cerebro_universal_password: "{{ universal_password }}"
+cerebro_mail_hostname: "{{ mail_hostname }}"
+cerebro_cp4ba_project_name: "{{ cp4ba_project_name }}"
+
+akhq_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+akhq_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+akhq_action: "{{ global_action }}"
+akhq_universal_password: "{{ universal_password }}"
+akhq_storage_class_name: "{{ storage_class_name }}"
+akhq_ca_key_path: "{{ ca_key_path }}"
+akhq_ca_crt_path: "{{ ca_crt_path }}"
+akhq_wildcard_key_path: "{{ wildcard_key_path }}"
+akhq_wildcard_crt_path: "{{ wildcard_crt_path }}"
+
+kibana_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+kibana_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+kibana_action: "{{ global_action }}"
+kibana_universal_password: "{{ universal_password }}"
+kibana_storage_class_name: "{{ storage_class_name }}"
+kibana_cp4ba_project_name: "{{ cp4ba_project_name }}"
+kibana_ca_crt_path: "{{ ca_crt_path }}"
+kibana_wildcard_key_path: "{{ wildcard_key_path }}"
+kibana_wildcard_crt_path: "{{ wildcard_crt_path }}"
+
+mongodb_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+mongodb_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+mongodb_action: "{{ global_action }}"
+mongodb_universal_password: "{{ universal_password }}"
+mongodb_storage_class_name: "{{ storage_class_name }}"
+
+mongo_express_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+mongo_express_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+mongo_express_action: "{{ global_action }}"
+mongo_express_ca_crt_path: "{{ ca_crt_path }}"
+mongo_express_wildcard_key_path: "{{ wildcard_key_path }}"
+mongo_express_wildcard_crt_path: "{{ wildcard_crt_path }}"
+mongo_express_universal_password: "{{ universal_password }}"
+mongo_express_mongodb_hostname: "{{ mongodb_hostname }}"
+
+cpfs_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+cpfs_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+cpfs_action: "{{ global_action }}"
+cpfs_universal_password: "{{ universal_password }}"
+cpfs_storage_class_name: "{{ storage_class_name }}"
+cpfs_ca_crt_path: "{{ ca_crt_path }}"
+cpfs_wildcard_key_path: "{{ wildcard_key_path }}"
+cpfs_wildcard_crt_path: "{{ wildcard_crt_path }}"
+cpfs_icr_password: "{{ icr_password }}"
+cpfs_ldap_hostname: "{{ ldap_hostname }}"
+
+cp4ba_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+cp4ba_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+cp4ba_action: "{{ global_action }}"
+cp4ba_universal_password: "{{ universal_password }}"
+cp4ba_storage_class_name: "{{ storage_class_name }}"
+cp4ba_icr_password: "{{ icr_password }}"
+cp4ba_ldap_hostname: "{{ ldap_hostname }}"
+cp4ba_db2_hostname: "{{ db2_hostname }}"
+cp4ba_mongodb_hostname: "{{ mongodb_hostname }}"
+cp4ba_mail_hostname: "{{ mail_hostname }}"
+cp4ba_kibana_url: "{{ kibana_url }}"
+cp4ba_project_name: cp4ba
+cp4ba_ca_key_path: "{{ ca_key_path }}"
+cp4ba_ca_crt_path: "{{ ca_crt_path }}"
+cp4ba_wildcard_key_path: "{{ wildcard_key_path }}"
+cp4ba_wildcard_crt_path: "{{ wildcard_crt_path }}"
+cp4ba_external_share_google: "{{ external_share_google }}"
+cp4ba_google_client_id: "{{ google_client_id }}"
+cp4ba_google_client_secret: "{{ google_client_secret }}"
+cp4ba_deployment_platform: "{{ deployment_platform }}"
+
+asset_repo_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+asset_repo_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+asset_repo_action: "{{ global_action }}"
+asset_repo_universal_password: "{{ universal_password }}"
+asset_repo_storage_class_name: "{{ storage_class_name }}"
+asset_repo_project_name: cp4ba
+
+mssql_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+mssql_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+mssql_action: "{{ global_action }}"
+mssql_universal_password: "{{ universal_password }}"
+mssql_storage_class_name: "{{ storage_class_name }}"
+
+rpa_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+rpa_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+rpa_action: "{{ global_action }}"
+rpa_universal_password: "{{ universal_password }}"
+rpa_storage_class_name: "{{ storage_class_name }}"
+rpa_mail_hostname: "{{ mail_hostname }}"
+rpa_mssql_hostname: "{{ mssql_hostname }}"
+rpa_project_name: cp4ba
+
+pm_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+pm_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+pm_action: "{{ global_action }}"
+pm_universal_password: "{{ universal_password }}"
+pm_storage_class_name: "{{ storage_class_name }}"
+pm_project_name: cp4ba
+pm_db2_hostname: "{{ db2_hostname }}"
+pm_mongodb_hostname: "{{ mongodb_hostname }}"
+pm_ca_crt_path: "{{ ca_crt_path }}"
+pm_wildcard_key_path: "{{ wildcard_key_path }}"
+pm_wildcard_crt_path: "{{ wildcard_crt_path }}"

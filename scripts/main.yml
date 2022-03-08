@@ -1,0 +1,16 @@
+---
+- name: CP4BA Enterprise
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - variables.yml
+    - internal-variables.yml
+  tasks:
+    - name: Install CP4BA Enterprise
+      include_tasks: install.yml
+      when: "global_action == 'install'"
+
+    - name: Remove CP4BA Enterprise
+      include_tasks: remove.yml
+      when: "global_action == 'remove'"

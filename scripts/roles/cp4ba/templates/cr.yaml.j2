@@ -1,0 +1,57 @@
+apiVersion: icp4a.ibm.com/v1
+kind: ICP4ACluster
+metadata:
+  name: "{{ cp4ba_cr_meta_name }}"
+  namespace: "{{ cp4ba_project_name }}"
+  labels:
+    app.kubernetes.io/instance: ibm-dba
+    app.kubernetes.io/managed-by: ibm-dba
+    app.kubernetes.io/name: ibm-dba
+    release: "{{ cp4ba_version }}"
+spec:
+  appVersion: "{{ cp4ba_version }}"
+  ibm_license: accept
+  shared_configuration:
+    no_log: false
+    sc_deployment_fncm_license: non-production
+    sc_deployment_baw_license: non-production
+    sc_deployment_license: non-production
+    image_pull_secrets:
+      - admin.registrykey
+    show_sensitive_log: true
+    root_ca_secret: cp4ba-root-ca
+    sc_deployment_patterns: ""
+    sc_optional_components: ""
+    sc_deployment_type: production
+    sc_deployment_profile_size: small
+    sc_deployment_platform: "{{ cp4ba_deployment_platform }}"
+    sc_ingress_enable: false
+    sc_deployment_hostname_suffix: "{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}"
+    sc_image_repository: cp.icr.io
+    trusted_certificate_list: []
+    sc_install_automation_base: false # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=insights-customizing-kafka-elasticsearch-server-configuration
+    # TODO causing errors with other secrets like, BAI, ADP - CDS, enable when fixed   external_tls_certificate_secret: cp4ba-wildcard
+    storage_configuration:
+      sc_slow_file_storage_classname: "{{ cp4ba_storage_class_name }}"
+      sc_medium_file_storage_classname: "{{ cp4ba_storage_class_name }}"
+      sc_fast_file_storage_classname: "{{ cp4ba_storage_class_name }}"
+      sc_block_storage_classname: "{{ cp4ba_storage_class_name }}"
+  ldap_configuration:
+    lc_selected_ldap_type: IBM Security Directory Server
+    lc_ldap_server: "{{ cp4ba_ldap_hostname }}"
+    lc_ldap_port: "389"
+    lc_bind_secret: ldap-bind-secret
+    lc_ldap_base_dn: dc=cp
+    lc_ldap_ssl_enabled: false
+    lc_ldap_user_name_attribute: "*:cn"
+    lc_ldap_user_display_name_attr: cn
+    lc_ldap_group_base_dn: ou=Groups,dc=cp
+    lc_ldap_group_name_attribute: "*:cn"
+    lc_ldap_group_display_name_attr: cn
+    lc_ldap_group_membership_search_filter: "(|(&(objectclass=groupofnames)(member={0}))(&(objectclass=groupofuniquenames)(uniquemember={0})))"
+    lc_ldap_group_member_id_map: "groupofnames:member"
+    tds:
+      lc_user_filter: "(&(cn=%v)(objectclass=inetOrgPerson))"
+      lc_group_filter: "(&(cn=%v)(|(objectclass=groupofnames)(objectclass=groupofuniquenames)(objectclass=groupofurls)))"
+  datasource_configuration:
+    dc_ssl_enabled: false

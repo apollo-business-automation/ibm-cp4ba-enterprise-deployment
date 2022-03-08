@@ -1,0 +1,49 @@
+- name: Get Db2uCluster CRD
+  k8s_info:
+    api_key: "{{ db2_k8s_api_key | default(omit) }}"
+    host: "{{ db2_k8s_host | default(omit) }}"
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: db2uclusters.db2u.databases.ibm.com
+  register: db2ucluster_crd
+  retries: 10
+  delay: 1
+
+- name: Delete Db2uCluster instance
+  k8s:
+    state: absent
+    api_key: "{{ db2_k8s_api_key | default(omit) }}"
+    host: "{{ db2_k8s_host | default(omit) }}"
+    api_version: db2u.databases.ibm.com/v1
+    kind: Db2uCluster
+    name: db2ucluster
+    namespace: db2
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 120
+  when: db2ucluster_crd.resources | length != 0
+
+- name: Remove Project db2
+  k8s:
+    state: absent
+    api_key: "{{ db2_k8s_api_key | default(omit) }}"
+    host: "{{ db2_k8s_host | default(omit) }}"
+    api_version: project.openshift.io/v1
+    kind: Project
+    name: db2
+    namespace: db2
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 240
+
+- name: Remove ClusterRoleBinding for Norootsquash
+  k8s:
+    state: absent
+    api_key: "{{ db2_k8s_api_key | default(omit) }}"
+    host: "{{ db2_k8s_host | default(omit) }}"
+    api_version: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    name: db2-privileged
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 600

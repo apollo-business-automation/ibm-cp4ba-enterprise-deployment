@@ -1,0 +1,209 @@
+# Based on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=foundation-robotic-process-automation
+
+- name: Execute Catalog Source role as prerequisite
+  include_role:
+    name: catalog_source
+  vars:
+    catalog_source_k8s_api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    catalog_source_k8s_host: "{{ rpa_k8s_host | default(omit) }}"
+
+- name: Create RPA directory for generated files
+  file:
+    path: "{{ rpa_output_directory }}"
+    state: directory
+    mode: u+rwx
+
+- name: Get OCP Apps domain
+  include_role:
+    name: common
+    tasks_from: apps-endpoint
+  vars:
+    common_k8s_api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ rpa_k8s_host | default(omit) }}"
+    common_output_to_var: "apps_endpoint_domain"
+
+- name: Prepare yaml file for the Operator Subscription
+  template:
+    src: subscription.yaml.j2
+    dest: "{{ rpa_output_directory }}/subscription.yaml"
+    mode: u+rwx
+
+- name: Add the Operator Subscription
+  k8s:
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ rpa_output_directory }}/subscription.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Manage Manual Operator rpa-subscription in {{ rpa_project_name }}
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ rpa_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ rpa_k8s_host | default(omit) }}"
+    common_namespace_name: "{{ rpa_project_name }}"
+    common_label_selector_stub: ibm-automation-rpa
+
+- name: Wait for RoboticProcessAutomation CRD to be Established
+  include_role:
+    name: common
+    tasks_from: wait-crd
+  vars:
+    common_k8s_api_key: "{{ rpa_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ rpa_k8s_host | default(omit) }}"
+    common_crd_name: roboticprocessautomations.rpa.automation.ibm.com
+
+- name: Get MSSQL Pod
+  k8s_info:
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: mssql
+    label_selectors:
+      - app=mssql
+  register: pods
+  retries: 40
+  delay: 15
+
+- name: Prepare MSSQL DBs
+  kubernetes.core.k8s_exec:
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
+    namespace: mssql
+    pod: "{{ pods.resources[0].metadata.name }}"
+    command: >
+      /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "{{ rpa_universal_password }}" -Q
+      "create database [automation];
+      create database [knowledge];
+      create database [wordnet];
+      create database [address];
+      create database [audit]"
+  register: command_status
+
+- name: Prepare yaml file for Secrets
+  template:
+    src: secrets.yaml.j2
+    dest: "{{ rpa_output_directory }}/secrets.yaml"
+    mode: u+rwx
+
+- name: Add Secrets
+  k8s:
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ rpa_output_directory }}/secrets.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Prepare yaml file for RoboticProcessAutomation instance
+  template:
+    src: roboticprocessautomation.yaml.j2
+    dest: "{{ rpa_output_directory }}/roboticprocessautomation.yaml"
+    mode: u+rwx
+
+- name: Add RoboticProcessAutomation instance
+  k8s:
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ rpa_output_directory }}/roboticprocessautomation.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Wait for rpa RoboticProcessAutomation to be Ready
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ rpa_k8s_host | default(omit) }}"
+    common_api_version: rpa.automation.ibm.com/v1beta1
+    common_resource_kind: RoboticProcessAutomation
+    common_resource_name: rpa
+    common_resource_namespace: "{{ rpa_project_name }}"
+    common_condition_name: Ready
+    common_retries: 30
+    common_delay: 120
+
+- name: Wait for Deployments to be Available
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ rpa_k8s_host | default(omit) }}"
+    common_api_version: apps/v1
+    common_resource_kind: Deployment
+    common_resource_name: "{{ item }}"
+    common_resource_namespace: "{{ rpa_project_name }}"
+    common_condition_name: Available
+    common_retries: 40
+    common_delay: 30
+  with_items:
+    - rpa-ui-rpa
+    - rpa-apiserver-rpa
+
+- name: Create Project
+  include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ rpa_k8s_host | default(omit) }}"
+    common_namespace_name: "{{ rpa_output_namespace }}"
+    common_output_directory: "{{ rpa_output_directory }}"
+    common_project_output_name: "rpa-output-project.yaml"
+
+- name: Prepare post-deploy.md
+  template:
+    src: postdeploy.md.j2
+    dest: "{{ rpa_output_directory }}/postdeploy.md"
+    mode: u+rwx
+
+- name: Prepare client-install-wait.cmd
+  template:
+    src: client-install-wait.cmd.j2
+    dest: "{{ rpa_output_directory }}/client-install-wait.cmd"
+    mode: u+rwx
+
+- name: Prepare post-deploy.md Config Map
+  template:
+    src: postdeploy-configmap.yaml.j2
+    dest: "{{ rpa_output_directory }}/postdeploy-configmap.yaml"
+    mode: u+rwx
+
+- name: Add post-deploy.md Config Map
+  k8s:
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ rpa_output_directory }}/postdeploy-configmap.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Hotfix cpadmin user
+  kubernetes.core.k8s_exec:
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
+    namespace: mssql
+    pod: "{{ pods.resources[0].metadata.name }}"
+    command: >
+      /opt/mssql-tools/bin/sqlcmd -S localhost -U SA
+      -P "{{ rpa_universal_password }}" -Q "update [automation].[dbo].[User] set Email='cpadmin' where Email is null"
+  register: command_status

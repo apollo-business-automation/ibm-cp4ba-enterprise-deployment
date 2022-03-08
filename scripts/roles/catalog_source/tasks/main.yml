@@ -1,0 +1,16 @@
+- name: Set output directory variable
+  set_fact:
+    catalog_source_output_directory: "{{ catalog_source_base_dir }}/{{ catalog_source_dir_name }}"
+
+- name: Remove Catalog Source directory for generated files
+  file:
+    path: "{{ catalog_source_output_directory }}"
+    state: absent
+
+- name: Install Catalog Source
+  include_tasks: install.yml
+  when: "catalog_source_action == 'install'"
+
+- name: Remove Catalog Source
+  include_tasks: remove.yml
+  when: "catalog_source_action == 'remove'"

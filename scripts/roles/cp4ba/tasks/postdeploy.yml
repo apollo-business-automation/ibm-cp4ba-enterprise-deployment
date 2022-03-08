@@ -1,0 +1,673 @@
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-navigator
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-navigator point 2.
+# License files generated following https://www.ibm.com/docs/en/daeja-viewone/5.0.x?topic=modules-enabling-viewer-add-in-content-navigator
+# IBM Daeja ViewONE Virtual Permanent Redaction Server Module & IBM Daeja ViewONE Virtual Module for Microsoft Office are part of CP4BA
+#   as per LI at http://www-03.ibm.com/software/sla/sladb.nsf/lilookup/31BA4BF94C59AD55852586FE0060B39C?OpenDocument
+
+- name: Get Navigator Pod
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
+    label_selectors:
+      - app={{ cp4ba_cr_meta_name }}-navigator-deploy
+  register: pods
+  retries: 40
+  delay: 15
+
+- name: Copy Daeja License files to output dir
+  ansible.builtin.copy:
+    src: "files/ban/{{ item }}"
+    dest: "{{ cp4ba_output_directory }}/{{ item }}"
+    mode: 0664
+  with_items:
+    - lic-server-virtual.v1
+    - lic-server.v1
+
+- name: Copy Daeja License
+  kubernetes.core.k8s_cp:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: "{{ cp4ba_project_name }}"
+    pod: "{{ pods.resources[0].metadata.name }}"
+    remote_path: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/
+    local_path: "{{ cp4ba_output_directory }}/{{ item }}"
+  with_items:
+    - lic-server-virtual.v1
+    - lic-server.v1
+
+- name: Get OCP Apps domain
+  include_role:
+    name: common
+    tasks_from: apps-endpoint
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_output_to_var: "apps_endpoint_domain"
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-studio
+# Get access token for ZEN administrative initial user
+- name: Get Zen Initial Admin User Secret
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Secret
+    namespace: "{{ cp4ba_project_name }}"
+    name: admin-user-details
+  register: secret
+  retries: 40
+  delay: 15
+
+# Based on introspection of Zen NGINX configs in Deployment ibm-nginx in /user-home/_global_/nginx-conf.d/icp4d-open-api-configmap.conf
+# Based on CP4BA Operator code ansible\roles\AS-ID\tasks\iam-verify-and-add.yml@69+
+- name: Get Zen Initial Admin User Acccess Token
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icp4d-api/v1/authorize"
+    method: POST
+    body_format: json
+    body:
+      username: admin
+      password: "{{ secret.resources[0].data.initial_admin_password | b64decode }}"
+    validate_certs: false
+    status_code: 200
+  register: token_response
+
+# Groups endpoint found based on the network dev tools in the browser
+- name: Add All Roles to cpadmins group
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
+    method: POST
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    body_format: json
+    body:
+      name: cpadmins
+      role_identifiers: "{{ user_roles }}"
+    validate_certs: false
+    status_code:
+      - 409
+      - 201
+  register: group_response
+  vars:
+    user_roles:
+      - zen_administrator_role
+      - iaf-automation-admin
+      - iaf-automation-analyst
+      - iaf-automation-developer
+      - iaf-automation-operator
+      - zen_user_role
+
+- name: Register ldap group with the zen group
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ group_response.json.group_id }}/members"
+    method: POST
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    body_format: json
+    body:
+      user_identifiers: []
+      ldap_groups: ["cn={{ group_response.json.name }},ou=Groups,dc=cp"]
+    validate_certs: false
+    status_code:
+      - 200
+  when: group_response.status == 201
+
+- block:
+
+    - name: Get the zen groups
+      uri:
+        url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
+        method: GET
+        headers:
+          Accept: application/json
+          Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+        validate_certs: false
+        status_code: 200
+      register: get_groups_response
+
+    - name: Register ldap group with the zen group cpadmins
+      uri:
+        url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ group_id }}/members"
+        method: POST
+        headers:
+          Content-Type: application/json
+          Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+        body_format: json
+        body:
+          user_identifiers: []
+          ldap_groups: ["cn={{ group_name }},ou=Groups,dc=cp"]
+        validate_certs: false
+      register: register_group_response
+      vars:
+        group_id_query: json.results[?name == 'cpadmins']
+        group_id: "{{ get_groups_response | json_query(group_id_query) | first | json_query('group_id') }}"
+        group_name: "{{ get_groups_response | json_query(group_id_query) | first | json_query('name') }}"
+      failed_when: >
+        (register_group_response.status != 200) and
+        ('duplicate key value' not in register_group_response.content)
+
+  when: group_response.status == 409
+
+# Groups endpoint found based on the network dev tools in the browser
+- name: Add All Roles to cpusers groups
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
+    method: POST
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    body_format: json
+    body:
+      name: "{{ item }}"
+      role_identifiers: "{{ user_roles }}"
+    validate_certs: false
+    status_code:
+      - 201
+      - 409
+  vars:
+    user_roles:
+      - iaf-automation-analyst
+      - iaf-automation-developer
+      - iaf-automation-operator
+      - zen_user_role
+  with_items:
+    - cpusers
+    - cpusers1
+  register: group_responses
+
+- name: Register ldap groups with the zen groups
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ item.json.group_id }}/members"
+    method: POST
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    body_format: json
+    body:
+      user_identifiers: []
+      ldap_groups: ["cn={{ item.json.name }},ou=Groups,dc=cp"]
+    validate_certs: false
+    status_code:
+      - 200
+  when: item.status == 201
+  loop: "{{ group_responses.results }}"
+
+- block:
+
+    - name: Get the zen groups
+      uri:
+        url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
+        method: GET
+        headers:
+          Accept: application/json
+          Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+        validate_certs: false
+        status_code: 200
+      register: get_groups_response
+
+    - name: Register ldap group with the zen group cpusers
+      uri:
+        url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ group_id }}/members"
+        method: POST
+        headers:
+          Content-Type: application/json
+          Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+        body_format: json
+        body:
+          user_identifiers: []
+          ldap_groups: ["cn={{ group_name }},ou=Groups,dc=cp"]
+        validate_certs: false
+      register: register_group_response
+      loop:
+        - cpusers
+        - cpusers1
+      vars:
+        group_id_query: json.results[?name == '{{ item }}']
+        group_id: "{{ get_groups_response | json_query(group_id_query) | first | json_query('group_id') }}"
+        group_name: "{{ get_groups_response | json_query(group_id_query) | first | json_query('name') }}"
+      failed_when: >
+        (register_group_response.status != 200) and
+        ('duplicate key value' not in register_group_response.content)
+
+  when: (409 in group_responses | json_query('results[*].status'))
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=secrets-creating-custom-bpc-workforce-secret
+- name: Get BPM Systems Federated Response
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/pfs/rest/bpm/federated/v1/systems"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    validate_certs: false
+    status_code:
+      - 200
+  register: bpm_systems_response
+
+- name: Prepare yaml file for the Workforce Insights Secret
+  template:
+    src: bai/workforce-insights-config-secret.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/workforce-insights-config-secret.yaml"
+    mode: u+rwx
+  vars:
+    system_type_query: json.federationResult[?systemType=='SYSTEM_TYPE_WLE']
+    system_id: "{{ bpm_systems_response | json_query(system_type_query) | first | json_query('systemID') }}"
+    username: cpadmin
+    password: "{{ cp4ba_universal_password }}"
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut"
+
+- name: Add the Workforce Insights Secret
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    src: "{{ cp4ba_output_directory }}/workforce-insights-config-secret.yaml"
+    state: present
+    merge_type: merge
+    force: false
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Get BPC Pods
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
+    label_selectors:
+      - component = iaf-insights-engine-cockpit
+  register: pods
+  retries: 40
+  delay: 15
+
+- name: Delete BPC pods
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    state: absent
+    namespace: "{{ cp4ba_project_name }}"
+    name: "{{ item.metadata.name }}"
+  loop: "{{ pods.resources }}"
+
+- name: Wait for BPC Deployment Available State
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: v1
+    common_resource_kind: Deployment
+    common_resource_name: iaf-insights-engine-cockpit
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_name: Available
+    common_retries: 80
+    common_delay: 15
+
+- name: Create Project
+  include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: "{{ cp4ba_output_namespace }}"
+    common_output_directory: "{{ cp4ba_output_directory }}"
+    common_project_output_name: "cp4ba-output-project.yaml"
+
+- name: Prepare yaml file for ODM OIDC Providers Config Map
+  template:
+    src: odm/odm-oidc-providers-cm.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/odm-oidc-providers-cm.yaml"
+    mode: u+rwx
+
+- name: Add the ODM OIDC Providers Config Map
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    src: "{{ cp4ba_output_directory }}/odm-oidc-providers-cm.yaml"
+    state: present
+    merge_type: merge
+    force: false
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=gst-task-2-connecting-git-repository-sharing-decision-service
+- name: Create ADS organization in Gitea
+  uri:
+    url: "https://gitea.{{ apps_endpoint_domain }}/api/v1/orgs"
+    method: POST
+    headers:
+      Content-Type: application/json
+    body_format: json
+    body:
+      description: ""
+      full_name: ""
+      location: ""
+      repo_admin_change_team_access: true
+      username: ads
+      visibility: private
+      website: ""
+    user: cpadmin
+    password: "{{ cp4ba_universal_password }}"
+    force_basic_auth: true
+    validate_certs: false
+    status_code:
+      - 201
+      - 422
+
+- name: Get maven plugins definition from ADS
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/download/index.json"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    validate_certs: false
+    status_code: 200
+  register: ads_maven_plugins_response
+
+- name: Process ADS maven plugins
+  include_tasks: ads-maven-plugins.yml
+  with_dict: "{{ ads_maven_plugins_response.json | json_query('resources') }}"
+
+- name: Get roles
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/roles"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    validate_certs: false
+    status_code: 200
+  register: roles_response
+
+- name: Retrieve existing ADS admin role ID
+  set_fact:
+    ads_admin_role_id: "{{ roles_response.json | json_query(condition_query) | first | default('', true) }}"
+  vars:
+    condition_query:
+      "rows[?doc.role_name == 'ADS Admin'].id"
+
+- block:
+
+    # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=services-managing-user-permissions
+    - name: Create ADS admin role
+      uri:
+        url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/role"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+        body_format: json
+        body: |
+          {
+            "role_name": "ADS Admin",
+            "description": "",
+            "permissions": [
+              "administer_ads_platform",
+              "execute_ads_decision",
+              "manage_ads_decision",
+              "monitor_ads_runtime"
+            ]
+          }
+        validate_certs: false
+        status_code: 201
+      register: admin_role_response
+
+    - name: Set ADS admin role ID
+      set_fact:
+        ads_admin_role_id: "{{ admin_role_response.json | json_query('id') }}"
+
+  when: ads_admin_role_id | length == 0
+
+- name: Get groups
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    validate_certs: false
+    status_code: 200
+  register: groups_response
+
+- name: Get cpadmins group id
+  set_fact:
+    cpadmins_group_id: "{{ groups_response.json | json_query(condition_query) | first }}"
+  vars:
+    condition_query: "results[?name == 'cpadmins'].group_id"
+
+- name: Add ADS Admin role to cpadmins group
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ cpadmins_group_id }}"
+    method: PATCH
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    body_format: json
+    body:
+      add_role_identifiers:
+        - "{{ ads_admin_role_id }}"
+    validate_certs: false
+    status_code:
+      - 200
+      - 500
+  register: group_response
+  failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')
+
+- name: Add ADS Admin role to default admin user
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user/admin?add_roles=true"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    body_format: json
+    body: |
+      {
+        "username": "cpadmin",
+        "user_roles": [
+          "{{ ads_admin_role_id }}"
+        ]
+      }
+    validate_certs: false
+    status_code:
+      - 200
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=credentials-configuring-maven-repository-manager
+- name: Add Maven credential
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/rest-api/api/admin/credential"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    body_format: json
+    body: |
+      {
+        "credentialsType": "USERNAME",
+        "credentialsUsage": "MAVEN",
+        "discriminator": "https://nexus.{{ apps_endpoint_domain }}/repository/maven-releases/",
+        "credentials": "cpadmin:{{ cp4ba_universal_password }}"
+      }
+    validate_certs: false
+    status_code: 200
+  register: ads_credential_response
+
+- name: Create ADP organization in Gitea
+  uri:
+    url: "https://gitea.{{ apps_endpoint_domain }}/api/v1/orgs"
+    method: POST
+    headers:
+      Content-Type: application/json
+    body_format: json
+    body:
+      description: ""
+      full_name: ""
+      location: ""
+      repo_admin_change_team_access: true
+      username: adp
+      visibility: private
+      website: ""
+    user: cpadmin
+    password: "{{ cp4ba_universal_password }}"
+    force_basic_auth: true
+    validate_certs: false
+    status_code:
+      - 201
+      - 422
+
+- name: Get Natural Language Extractor Pod
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
+    label_selectors:
+      - app={{ cp4ba_cr_meta_name }}-natural-language-extractor
+  register: pods
+  retries: 40
+  delay: 15
+
+- name: Determine size of Init Tenants scripts
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: "{{ cp4ba_project_name }}"
+    pod: "{{ pods.resources[0].metadata.name }}"
+    command: 'stat --printf="%s" /data-org/db_sample_data/imports.tar.xz'
+  register: command_status
+
+- name: Set size of Init Tenants scripts
+  set_fact:
+    init_scripts_size: "{{ command_status.stdout }}"
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-loading-default-sample-data
+- name: Download Init Tenants scripts
+  kubernetes.core.k8s_cp:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: "{{ cp4ba_project_name }}"
+    pod: "{{ pods.resources[0].metadata.name }}"
+    remote_path: /data-org/db_sample_data/imports.tar.xz
+    local_path: "{{ cp4ba_output_directory }}/imports.tar.xz"
+    state: from_pod
+
+- name: Copy Init Tenants scripts to DB2
+  kubernetes.core.k8s_cp:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    container: db2u
+    remote_path: /tmp/imports.tar.xz
+    local_path: "{{ cp4ba_output_directory }}/imports.tar.xz"
+    no_preserve: true
+    state: to_pod
+
+# This is needed as k8s_cp completes but the copying itsefl in openshift is still progressing
+- name: Wait for copy to complete in DB2 pod
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    container: db2u
+    command: 'stat --printf="%s" /tmp/imports.tar.xz'
+  register: command_status
+  retries: 60
+  delay: 5
+  until: command_status.stdout == init_scripts_size
+
+- name: Move Init Tenants files to be accessible by db2inst1 user
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: |
+      sudo mv -f /tmp/imports.tar.xz /mnt/blumeta0/home/db2inst1/sqllib/_adp_tmp/DB2/imports.tar.xz
+  register: command_status
+
+- name: Set Init Tenants files ownership
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: |
+      sudo chown -R db2inst1:db2iadm1 /mnt/blumeta0/home/db2inst1/sqllib/_adp_tmp/DB2/imports.tar.xz
+  register: command_status
+
+- name: Extract Init Tenants scripts
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: |
+      su - db2inst1 -c "
+      cd sqllib/_adp_tmp/DB2
+      tar -xvf imports.tar.xz
+      "
+  register: command_status
+
+- name: Run Init Tenants scripts
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: |
+      su - db2inst1 -c '
+      cd sqllib/_adp_tmp/DB2
+
+      # Init TENANT1 DB
+      echo "TENANT1
+      default
+      y" | ./LoadDefaultData.sh
+
+      # Init TENANT2 DB
+      echo "TENANT2
+      default
+      y" | ./LoadDefaultData.sh
+      '
+  register: command_status
+
+- name: Create Project
+  include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: "{{ cp4ba_output_namespace }}"
+    common_output_directory: "{{ cp4ba_output_directory }}"
+    common_project_output_name: "cp4ba-output-project.yaml"
+
+- name: Prepare post-deploy.md
+  template:
+    src: postdeploy.md.j2
+    dest: "{{ cp4ba_output_directory }}/postdeploy.md"
+    mode: u+rwx
+
+- name: Prepare post-deploy.md Config Map
+  template:
+    src: postdeploy-configmap.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/postdeploy-configmap.yaml"
+    mode: u+rwx
+
+- name: Add post-deploy.md Config Map
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/postdeploy-configmap.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15

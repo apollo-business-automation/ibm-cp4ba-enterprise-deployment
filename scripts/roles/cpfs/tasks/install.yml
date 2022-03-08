@@ -1,0 +1,804 @@
+- name: Execute Catalog Source role as prerequisite
+  include_role:
+    name: catalog_source
+  vars:
+    catalog_source_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    catalog_source_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+
+- name: Create CPFS directory for generated files
+  file:
+    path: "{{ cpfs_output_directory }}"
+    state: directory
+    mode: u+rwx
+
+- name: Get Cluster Monitoring ConfigMap
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    kind: ConfigMap
+    name: cluster-monitoring-config
+    namespace: openshift-monitoring
+  register: configmap
+  retries: 10
+  delay: 1
+
+- name: Manage Config Map
+  block:
+    - name: Prepare yaml file for Cluster Monitoring ConfigMap
+      template:
+        src: cluster-monitoring-config.yaml.j2
+        dest: "{{ cpfs_output_directory }}/cluster-monitoring-config.yaml"
+        mode: u+rwx
+
+    - name: Add Cluster Monitoring ConfigMap
+      k8s:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        state: present
+        force: false
+        merge_type: merge
+        namespace: openshift-monitoring
+        src: "{{ cpfs_output_directory }}/cluster-monitoring-config.yaml"
+        wait: true
+        wait_sleep: 15
+        wait_timeout: 15
+  when: configmap | length > 0
+
+# TODO add better configmap handling in case it exists and doesn't contain user worload enabled?
+
+- name: Create Project common-service
+  include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: common-service
+    common_output_directory: "{{ cpfs_output_directory }}"
+
+- name: Create Project ibm-common-services
+  include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_output_directory: "{{ cpfs_output_directory }}"
+
+- name: Prepare yaml file for the Operator Group
+  template:
+    src: operatorgroup.yaml.j2
+    dest: "{{ cpfs_output_directory }}/operatorgroup.yaml"
+    mode: u+rwx
+
+- name: Add the Operator Group
+  k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cpfs_output_directory }}/operatorgroup.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Prepare yaml file for the Operator Subscription
+  template:
+    src: subscription.yaml.j2
+    dest: "{{ cpfs_output_directory }}/subscription.yaml"
+    mode: u+rwx
+
+- name: Add the Operator Subscription
+  k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cpfs_output_directory }}/subscription.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Manage Manual Operator ibm-common-service-operator in common-service
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: common-service
+    common_label_selector_stub: ibm-common-service-operator
+
+- name: Manage Manual Operator ibm-common-service-operator in ibm-common-service
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_label_selector_stub: ibm-common-service-operator
+
+- name: Manage Manual Operator ibm-namespace-scope-operator
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_label_selector_stub: ibm-namespace-scope-operator
+
+- name: Manage Manual Operator operand-deployment-lifecycle-manager-app
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_label_selector_stub: ibm-odlm
+
+- name: Wait for SecretShare CRD to be Established
+  include_role:
+    name: common
+    tasks_from: wait-crd
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_crd_name: secretshares.ibmcpcs.ibm.com
+
+- name: Wait for SecretShare instance common-services to appear
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: ibmcpcs.ibm.com/v1
+    kind: SecretShare
+    name: common-services
+    namespace: ibm-common-services
+  register: secret_share
+  retries: 10
+  delay: 15
+  until: secret_share.resources | length == 1
+
+- name: Patch SecretShare instance common-services to omit sharing into other namespaces
+  k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: present
+    api_version: ibmcpcs.ibm.com/v1
+    kind: SecretShare
+    name: common-services
+    namespace: ibm-common-services
+    definition:
+      spec:
+        configmapshares: []
+        secretshares: []
+
+- name: Wait for CRDs to be Established
+  include_role:
+    name: common
+    tasks_from: wait-crd
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_crd_name: "{{ item }}"
+  with_items:
+    - operandconfigs.operator.ibm.com
+    - operandrequests.operator.ibm.com
+
+# This is needed as the sequence of creating CPFS dependent Operators is not detereministic and
+# it can happen that there are multiple "groups" of Operators with different InstallPlans
+# causing normal execution to fail and retry next time.
+- name: Get OperandRequest instance
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: operator.ibm.com/v1alpha1
+    kind: OperandRequest
+    name: common-service
+    namespace: ibm-common-services
+  register: operand_request
+
+- name: Wait for OperandConfig instance Initialized or Running state
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: operator.ibm.com/v1alpha1
+    kind: OperandConfig
+    name: common-service
+    namespace: ibm-common-services
+  register: operand_config
+  retries: 10
+  delay: 15
+  until: ('Initialized' in phase or 'Running' in phase)
+  vars:
+    condition_query: "resources[*].status.phase"
+    phase: "{{ operand_config | json_query(condition_query) | unique }}"
+  when: (operand_request.resources | length == 0)
+
+- name: Get OperandConfig
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: operator.ibm.com/v1alpha1
+    kind: OperandConfig
+    name: common-service
+    namespace: ibm-common-services
+  register: operand_config
+  retries: 10
+  delay: 1
+
+- name: Patch authentication object to customize admin username if not done already
+  block:
+
+    - name: Get index of ibm-iam-operator
+      set_fact:
+        service_index: "{{ index | int }}"
+      loop: "{{ operand_config | json_query('resources[0].spec.services') | flatten(levels=1) }}"
+      when: item.name == "ibm-iam-operator"
+      loop_control:
+        index_var: index
+
+    # Based on https://www.ibm.com/docs/en/cpfs?topic=services-configuring-foundational-by-using-custom-resource#default-admin for admin username
+    - name: Patch authentication object to customize admin username
+      kubernetes.core.k8s_json_patch:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        api_version: operator.ibm.com/v1alpha1
+        kind: OperandConfig
+        name: common-service
+        namespace: ibm-common-services
+        patch:
+          - op: add
+            path: "/spec/services/{{ service_index }}/spec/authentication/config/defaultAdminUser"
+            value: "cpfsadmin"
+
+  when: (operand_config | json_query(condition_query) | unique | length == 0 )
+  vars:
+    condition_query: "resources[0].spec.services[?name == 'ibm-iam-operator'].spec.authentication.config.defaultAdminUser"
+
+- name: Set StorageClass for MongoDB if not done already
+  block:
+
+    - name: Get index of ibm-mongodb-operator
+      set_fact:
+        service_index: "{{ index | int }}"
+      loop: "{{ operand_config | json_query('resources[0].spec.services') | flatten(levels=1) }}"
+      when: item.name == "ibm-mongodb-operator"
+      loop_control:
+        index_var: index
+
+    - name: Set StorageClass for MongoDB
+      kubernetes.core.k8s_json_patch:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        api_version: operator.ibm.com/v1alpha1
+        kind: OperandConfig
+        name: common-service
+        namespace: ibm-common-services
+        patch:
+          - op: add
+            path: "/spec/services/{{ service_index }}/spec/mongoDB/storageClass"
+            value: "{{ cpfs_storage_class_name }}"
+
+  when: (operand_config | json_query(condition_query) | unique | length == 0 )
+  vars:
+    condition_query: "resources[0].spec.services[?name == 'ibm-mongodb-operator'].spec.mongoDB.storageClass"
+
+- name: Set StorageClass for Mustgather if not done already
+  block:
+
+    - name: Get index of ibm-healthcheck-operator
+      set_fact:
+        service_index: "{{ index | int }}"
+      loop: "{{ operand_config | json_query('resources[0].spec.services') | flatten(levels=1) }}"
+      when: item.name == "ibm-healthcheck-operator"
+      loop_control:
+        index_var: index
+
+    - name: Set StorageClass for Mustgather
+      kubernetes.core.k8s_json_patch:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        api_version: operator.ibm.com/v1alpha1
+        kind: OperandConfig
+        name: common-service
+        namespace: ibm-common-services
+        patch:
+          - op: add
+            path: "/spec/services/{{ service_index }}/spec/mustgatherService/persistentVolumeClaim"
+            value: '{ "storageClassName": "{{ cpfs_storage_class_name }}"}'
+
+  when: (operand_config | json_query(condition_query) | unique | length == 0 )
+  vars:
+    condition_query: "resources[0].spec.services[?name == 'ibm-healthcheck-operator'].spec.mustgatherService.persistentVolumeClaim.storageClassName"
+
+- name: Create ICR Secret
+  include_role:
+    name: common
+    tasks_from: create-icr-secret
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_output_directory: "{{ cpfs_output_directory }}"
+    common_icr_secret_name: ibm-entitlement-key
+    common_icr_password: "{{ cpfs_icr_password }}"
+    common_namespace_name: db2
+
+- name: Prepare yaml file for the OperandRequest instance
+  template:
+    src: operandrequest.yaml.j2
+    dest: "{{ cpfs_output_directory }}/operandrequest.yaml"
+    mode: u+rwx
+
+- name: Apply OperandRequest instance
+  k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cpfs_output_directory }}/operandrequest.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Manage Manual Operators
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_label_selector_stub: "{{ item }}"
+  with_items:
+    - ibm-cert-manager-operator
+    - ibm-commonui-operator-app
+    - ibm-healthcheck-operator-app
+    - ibm-iam-operator
+    - ibm-licensing-operator-app
+    - ibm-management-ingress-operator-app
+    - ibm-mongodb-operator-app
+    - ibm-monitoring-grafana-operator-app
+    - ibm-platform-api-operator-app
+
+- name: Manage Manual Operator ibm-ingress-nginx-operator
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_label_selector_stub: ibm-ingress-nginx-operator-app
+
+- name: Wait for OperandRequest instance Running phase
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: operator.ibm.com/v1alpha1
+    kind: OperandRequest
+    name: common-service
+    namespace: ibm-common-services
+  register: operand_request
+  retries: 80
+  delay: 15
+  until: ('Running' in operand_request | json_query(condition_query) | unique)
+  vars:
+    condition_query: "resources[*].status.phase"
+
+- name: Wait for IAM Ready status as an indicator that CPFS is installed
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    kind: ConfigMap
+    name: ibm-common-services-status
+    namespace: kube-public
+  register: config_map
+  retries: 30
+  delay: 60
+  until: ('Ready' in config_map | json_query(condition_query) | unique)
+  vars:
+    condition_query: "resources[*].data.iamstatus"
+
+- name: Check that the {{ cpfs_wildcard_key_path }} exists
+  stat:
+    path: "{{ cpfs_wildcard_key_path }}"
+  register: cpfs_wildcard_key_file
+
+- name: Check that the {{ cpfs_ca_crt_path }} exists
+  stat:
+    path: "{{ cpfs_ca_crt_path }}"
+  register: cpfs_ca_crt_file
+
+- name: Ensure we have CA certificates and wildcards
+  include_role:
+    name: global_ca
+  when: not cpfs_wildcard_key_file.stat.exists or not cpfs_ca_crt_file.stat.exists
+
+- name: Load TLS key data
+  slurp:
+    src: '{{ cpfs_wildcard_key_path }}'
+  register: slurped_key_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _tls_key: "{{ slurped_key_data.content }}"
+
+- name: Load TLS crt data
+  slurp:
+    src: '{{ cpfs_wildcard_crt_path }}'
+  register: slurped_crt_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _tls_crt: "{{ slurped_crt_data.content }}"
+
+- name: Load CA TLS crt data
+  slurp:
+    src: '{{ cpfs_ca_crt_path }}'
+  register: slurped_ca_crt_data
+
+- name: Decode data and store as fact
+  set_fact:
+    _ca_tls_crt: "{{ slurped_ca_crt_data.content }}"
+
+- name: Prepare yaml file for Secret
+  template:
+    src: license-service-secret.yaml.j2
+    dest: "{{ cpfs_output_directory }}/license-service-secret.yaml"
+    mode: u+rwx
+
+- name: Add Secret
+  k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cpfs_output_directory }}/license-service-secret.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+# Based on https://www.ibm.com/docs/en/cpfs?topic=operator-using-custom-certificates
+- name: Apply custom certificate for License Service
+  k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: present
+    api_version: operator.ibm.com/v1alpha1
+    kind: IBMLicensing
+    name: instance
+    namespace: ibm-common-services
+    definition:
+      spec:
+        httpsCertsSource: "custom"
+
+- name: Prepare yaml file for the License Service Reporter
+  template:
+    src: ibmlicenseservicereporter.yaml.j2
+    dest: "{{ cpfs_output_directory }}/ibmlicenseservicereporter.yaml"
+    mode: u+rwx
+
+# Based on Based on https://www.ibm.com/docs/en/cpfs?topic=reporter-deploying-license-service
+- name: Apply License Service Reporter instance
+  k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cpfs_output_directory }}/ibmlicenseservicereporter.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Configure License Service Reporter if not done already
+  block:
+    - name: Get index of ibm-licensing-operator
+      set_fact:
+        service_index: "{{ index | int }}"
+      loop: "{{ operand_config | json_query('resources[0].spec.services') | flatten(levels=1) }}"
+      when: item.name == "ibm-licensing-operator"
+      loop_control:
+        index_var: index
+
+    - name: Enable License Service Reporter
+      kubernetes.core.k8s_json_patch:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        api_version: operator.ibm.com/v1alpha1
+        kind: OperandConfig
+        name: common-service
+        namespace: ibm-common-services
+        patch:
+          - op: replace
+            path: "/spec/services/{{ service_index }}/spec/IBMLicenseServiceReporter"
+            value: {}
+
+  when: (operand_config | json_query(condition_query) | unique | length == 0 )
+  vars:
+    condition_query: "resources[0].spec.services[?name == 'ibm-licensing-operator'].spec.IBMLicenseServiceReporter"
+
+- name: Wait for license reporter Deployment to be Available
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_api_version: v1
+    common_resource_kind: Deployment
+    common_resource_name: ibm-license-service-reporter-instance
+    common_resource_namespace: ibm-common-services
+    common_condition_name: Available
+    common_retries: 80
+    common_delay: 15
+
+# Switch Ingress certificate mode & delete artifacts"
+# Based on https://www.ibm.com/docs/en/cpfs?topic=operator-replacing-foundational-services-endpoint-certificates
+
+- name: Wait for management ingress operator Deployment to be Available
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_api_version: v1
+    common_resource_kind: Deployment
+    common_resource_name: ibm-management-ingress-operator
+    common_resource_namespace: ibm-common-services
+    common_condition_name: Available
+    common_retries: 80
+    common_delay: 15
+
+- name: Get yaml of ManagementIngress
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: operator.ibm.com/v1alpha1
+    kind: ManagementIngress
+    name: default
+    namespace: ibm-common-services
+  register: ingress
+  retries: 40
+  delay: 30
+
+- block:
+
+    - name: Patch certificate settings
+      k8s:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        state: present
+        api_version: operator.ibm.com/v1alpha1
+        kind: ManagementIngress
+        name: default
+        namespace: ibm-common-services
+        definition:
+          spec:
+            ignoreRouteCert: true
+
+    - name: Wait for log occurence of Not watching certs
+      kubernetes.core.k8s_log:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        api_version: apps/v1
+        kind: Deployment
+        name: ibm-management-ingress-operator
+        namespace: ibm-common-services
+      register: log
+      retries: 30
+      delay: 60
+      until: "log.log is search('.*Not watching certificate: route-cert, IgnoreRouteCert is true.*')"
+
+    - name: Delete certificate
+      k8s:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        state: absent
+        api_version: certmanager.k8s.io/v1alpha1
+        kind: Certificate
+        name: route-cert
+        namespace: ibm-common-services
+        wait: true
+        wait_sleep: 5
+        wait_timeout: 50
+
+    - name: Delete route secret
+      k8s:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        state: absent
+        api_version: v1
+        kind: Secret
+        name: route-tls-secret
+        namespace: ibm-common-services
+        wait: true
+        wait_sleep: 5
+        wait_timeout: 50
+
+    - name: Prepare yaml file for Secret
+      template:
+        src: route-tls-secret.yaml.j2
+        dest: "{{ cpfs_output_directory }}/route-tls-secret.yaml"
+        mode: u+rwx
+
+    - name: Add Secret
+      k8s:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        state: present
+        force: false
+        merge_type: merge
+        src: "{{ cpfs_output_directory }}/route-tls-secret.yaml"
+        wait: true
+        wait_sleep: 15
+        wait_timeout: 15
+
+    - name: Delete ca secret
+      k8s:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        state: absent
+        api_version: v1
+        kind: Secret
+        name: ibmcloud-cluster-ca-cert
+        namespace: ibm-common-services
+        wait: true
+        wait_sleep: 5
+        wait_timeout: 50
+
+    - name: Delete auth-idp pod
+      kubernetes.core.k8s:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        state: absent
+        api_version: v1
+        kind: Pod
+        namespace: ibm-common-services
+        label_selectors:
+          - app=auth-idp
+
+    - name: Wait for IAM to be Available
+      include_role:
+        name: common
+        tasks_from: wait-resource-condition
+      vars:
+        common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+        common_api_version: v1
+        common_resource_kind: Deployment
+        common_resource_name: auth-idp
+        common_resource_namespace: ibm-common-services
+        common_condition_name: Available
+        common_retries: 80
+        common_delay: 15
+
+  when: ingress | json_query(condition_query) | bool != true
+  vars:
+    condition_query: 'resources[0].spec.ignoreRouteCert'
+
+- name: Get cpfsadmin user password in secret
+  k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Secret
+    name: platform-auth-idp-credentials
+    namespace: ibm-common-services
+  register: cpfs_admin_secret
+  retries: 40
+  delay: 30
+
+- block:
+
+    # Based on https://www.ibm.com/docs/en/cpfs?topic=configurations-changing-cluster-administrator-access-credentials#pwd
+    # cloudctl command replaced with actual Secret and Pod restarts because per
+    # https://www.ibm.com/docs/en/cloud-paks/cp-integration/2020.3?topic=SSGT7J_20.3/cloudctl/3.x.x/cli_pm_commands.html#update-secret
+    # it does "Update a secret and restart deployments that use the secret."
+    - name: Change cpfsadmin user password in secret
+      k8s:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        state: present
+        api_version: v1
+        kind: Secret
+        name: platform-auth-idp-credentials
+        namespace: ibm-common-services
+        definition:
+          data:
+            admin_password: "{{ cpfs_universal_password | b64encode }}"
+
+    - name: Delete pods which use cpfsadmin secret
+      kubernetes.core.k8s:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        state: absent
+        api_version: v1
+        kind: Pod
+        namespace: ibm-common-services
+        label_selectors:
+          - "{{ item }}"
+      with_items:
+        - app=auth-pap
+        - app=auth-idp
+        - app=auth-pdp
+        - app=oidcclient-watcher
+        - app=secret-watcher
+
+    - name: Wait for Deployments which use cpfsadmin secret to be Available
+      include_role:
+        name: common
+        tasks_from: wait-resource-condition
+      vars:
+        common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+        common_api_version: v1
+        common_resource_kind: Deployment
+        common_resource_name: "{{ item }}"
+        common_resource_namespace: ibm-common-services
+        common_condition_name: Available
+        common_retries: 80
+        common_delay: 15
+      with_items:
+        - auth-pap
+        - auth-idp
+        - auth-pdp
+        - secret-watcher
+        - oidcclient-watcher
+
+  when: cpfs_admin_secret | json_query(condition_query) | b64decode !=  cpfs_universal_password
+  vars:
+    condition_query: 'resources[0].data.admin_password'
+
+- name: Get OCP Apps domain
+  include_role:
+    name: common
+    tasks_from: apps-endpoint
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_output_to_var: "apps_endpoint_domain"
+
+- name: Get access token for administrative user
+  uri:
+    url: "https://cp-console.{{ apps_endpoint_domain }}/idprovider/v1/auth/identitytoken"
+    method: POST
+    body_format: form-urlencoded
+    body:
+      grant_type: password
+      username: cpfsadmin
+      password: "{{ cpfs_universal_password }}"
+      scope: openid
+    status_code: 200
+    validate_certs: false
+  register: auth_token_response
+
+- name: Set access token for administrative user
+  set_fact:
+    access_token: "{{ auth_token_response.json | json_query('access_token') }}"
+
+- name: Prepare JSON file for LDAP connection
+  template:
+    src: ldap-connection.json.j2
+    dest: "{{ cpfs_output_directory }}/ldap-connection.json"
+    mode: u+rwx
+
+- name: Add LDAP connection
+  uri:
+    url: "https://cp-console.{{ apps_endpoint_domain }}/idmgmt/identity/api/v1/directory/ldap/onboardDirectory"
+    method: POST
+    headers:
+      Authorization: Bearer {{ access_token }}
+    body_format: json
+    src: "{{ cpfs_output_directory }}/ldap-connection.json"
+    status_code: [200, 422]
+    validate_certs: false
