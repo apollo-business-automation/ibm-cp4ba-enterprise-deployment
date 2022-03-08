@@ -611,8 +611,6 @@
     merge_type: merge
     src: "{{ cp4ba_output_directory }}/odm-db-secret.yaml"
 
-# TODO is custom ODM JKS TLS needed? If yes, readd here. At least it is not documented that this option exists
-
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=access-mapping-odm-roles-iam-groups-users
 # Adds cpadmin user to all roles and cpadmins to all groups.
 - name: Prepare yaml file for ODM web security Secret

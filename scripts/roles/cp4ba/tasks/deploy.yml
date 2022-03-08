@@ -463,8 +463,6 @@
     common_retries: 36
     common_delay: 300
 
-# TODO do we still need to wait for pod of NL due to false Avaialble status of Deployment due to long Image pulling time?
-
 - name: Wait for BAI InsightsEngine Ready state
   include_role:
     name: common
