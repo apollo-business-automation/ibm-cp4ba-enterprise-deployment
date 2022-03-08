@@ -556,12 +556,17 @@ On ROKS, you may want to revert the actions of node labeling for DB2 "no root sq
 
 During deployment various CustomResourceDefinitions were created, you may want to remove them.
 
-## Contact
+## Contacts
 
-Jan Dušek  
+Jan Dusek  
 jdusek@cz.ibm.com  
 Business Automation Technical Specialist  
 IBM Czech Republic
+
+Ondrej Svec  
+ondrej.svec2@ibm.com  
+Automation Engineer  
+IBM Client Engineering CEE  
 
 ## Notice
 
