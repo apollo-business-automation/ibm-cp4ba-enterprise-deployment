@@ -6,72 +6,101 @@
 
 - name: Generate & save Global CA if not provided
   block:
-    - name: Generate an OpenSSL private key
-      openssl_privatekey:
-        path: "{{ global_ca_output_directory }}/global-ca.key"
-
-    - name: Generate an OpenSSL Certificate Signing Request with Subject information
-      openssl_csr:
-        path: "{{ global_ca_output_directory }}/global-ca.csr"
-        privatekey_path: "{{ global_ca_output_directory }}/global-ca.key"
-        subject: "CN='Global CA'"
-        basic_constraints:
-          - CA:TRUE
-        basic_constraints_critical: true
-
-    - name: Generate a Self Signed OpenSSL certificate
-      openssl_certificate:
-        path: "{{ global_ca_output_directory }}/global-ca.crt"
-        privatekey_path: "{{ global_ca_output_directory }}/global-ca.key"
-        csr_path: "{{ global_ca_output_directory }}/global-ca.csr"
-        provider: selfsigned
-        selfsigned_not_after: "+36500d"
-
-    - name: Load TLS key data
-      slurp:
-        src: '{{ global_ca_output_directory }}/global-ca.key'
-      register: slurped_key_data
-
-    - name: Decode data and store as fact
-      set_fact:
-        _global_ca_key: "{{ slurped_key_data.content }}"
-
-    - name: Load TLS crt data
-      slurp:
-        src: '{{ global_ca_output_directory }}/global-ca.crt'
-      register: slurped_crt_data
-
-    - name: Decode data and store as fact
-      set_fact:
-        _global_ca_crt: "{{ slurped_crt_data.content }}"
-
-    - name: Create Project
-      include_role:
-        name: common
-        tasks_from: create-project
-      vars:
-        common_k8s_api_key: "{{ global_ca_k8s_api_key | default(omit) }}"
-        common_k8s_host: "{{ global_ca_k8s_host | default(omit) }}"
-        common_namespace_name: "{{ global_ca_output_namespace }}"
-        common_output_directory: "{{ global_ca_output_directory }}"
-
-    - name: Prepare yaml file for Secret
-      template:
-        src: secret.yaml.j2
-        dest: "{{ global_ca_output_directory }}/secret.yaml"
-        mode: u+rwx
-
-    - name: Add Secret
-      k8s:
+  
+    - name: Get exiting secret
+      k8s_info:
         api_key: "{{ global_ca_k8s_api_key | default(omit) }}"
         host: "{{ global_ca_k8s_host | default(omit) }}"
-        state: present
-        force: true
-        merge_type: merge
-        src: "{{ global_ca_output_directory }}/secret.yaml"
-        wait: true
-        wait_sleep: 15
-        wait_timeout: 15
+        api_version: v1
+        kind: Secret
+        name: global-ca
+        namespace: "{{ global_ca_output_namespace }}"
+      register: global_ca_secret
+
+    - block:
+
+        - name: Save Global CA key
+          copy:
+            dest: "{{ global_ca_output_directory }}/global-ca.key"
+            content: "{{ global_ca_secret.resources[0].data['global-ca.key'] | b64decode }}"
+
+        - name: Save Global CA crt
+          copy:
+            dest: "{{ global_ca_output_directory }}/global-ca.crt"
+            content: "{{ global_ca_secret.resources[0].data['global-ca.crt'] | b64decode }}"
+
+      when: global_ca_secret.resources | length != 0
+
+    - block:
+
+        - name: Generate an OpenSSL private key
+          openssl_privatekey:
+            path: "{{ global_ca_output_directory }}/global-ca.key"
+
+        - name: Generate an OpenSSL Certificate Signing Request with Subject information
+          openssl_csr:
+            path: "{{ global_ca_output_directory }}/global-ca.csr"
+            privatekey_path: "{{ global_ca_output_directory }}/global-ca.key"
+            subject: "CN='Global CA'"
+            basic_constraints:
+              - CA:TRUE
+            basic_constraints_critical: true
+
+        - name: Generate a Self Signed OpenSSL certificate
+          openssl_certificate:
+            path: "{{ global_ca_output_directory }}/global-ca.crt"
+            privatekey_path: "{{ global_ca_output_directory }}/global-ca.key"
+            csr_path: "{{ global_ca_output_directory }}/global-ca.csr"
+            provider: selfsigned
+            selfsigned_not_after: "+36500d"
+
+        - name: Load TLS key data
+          slurp:
+            src: '{{ global_ca_output_directory }}/global-ca.key'
+          register: slurped_key_data
+
+        - name: Decode data and store as fact
+          set_fact:
+            _global_ca_key: "{{ slurped_key_data.content }}"
+
+        - name: Load TLS crt data
+          slurp:
+            src: '{{ global_ca_output_directory }}/global-ca.crt'
+          register: slurped_crt_data
+
+        - name: Decode data and store as fact
+          set_fact:
+            _global_ca_crt: "{{ slurped_crt_data.content }}"
+
+        - name: Create Project
+          include_role:
+            name: common
+            tasks_from: create-project
+          vars:
+            common_k8s_api_key: "{{ global_ca_k8s_api_key | default(omit) }}"
+            common_k8s_host: "{{ global_ca_k8s_host | default(omit) }}"
+            common_namespace_name: "{{ global_ca_output_namespace }}"
+            common_output_directory: "{{ global_ca_output_directory }}"
+
+        - name: Prepare yaml file for Secret
+          template:
+            src: secret.yaml.j2
+            dest: "{{ global_ca_output_directory }}/secret.yaml"
+            mode: u+rwx
+
+        - name: Add Secret
+          k8s:
+            api_key: "{{ global_ca_k8s_api_key | default(omit) }}"
+            host: "{{ global_ca_k8s_host | default(omit) }}"
+            state: present
+            force: true
+            merge_type: merge
+            src: "{{ global_ca_output_directory }}/secret.yaml"
+            wait: true
+            wait_sleep: 15
+            wait_timeout: 15
+
+      when: global_ca_secret.resources | length == 0
 
   when: "global_ca_provided == false"
 

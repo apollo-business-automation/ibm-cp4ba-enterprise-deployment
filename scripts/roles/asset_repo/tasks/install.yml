@@ -66,7 +66,7 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Wait for rpa AssetRepository to be Ready
+- name: Wait for AssetRepository to be Ready
   include_role:
     name: common
     tasks_from: wait-resource-condition-generic
@@ -135,6 +135,28 @@
     cpadmins_group_id: "{{ groups_response.json | json_query(condition_query) | first }}"
   vars:
     condition_query: "results[?name == 'cpadmins'].group_id"
+
+- name: Wait for Assetrepo roles
+  uri:
+    url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/roles"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('accessToken') }}"
+    validate_certs: false
+    status_code: 200
+  register: roles_response
+  retries: 40
+  delay: 5
+  until: (roles_response.json | json_query(condition_query_admin) | length != 0) and
+    (roles_response.json | json_query(condition_query_edit) | length != 0) and
+    (roles_response.json | json_query(condition_query_view) | length != 0)
+  vars:
+    condition_query_admin:
+      "rows[?id == 'automation-assets-administrator-role']"
+    condition_query_edit:
+      "rows[?id == 'automation-assets-editor-role']"
+    condition_query_view:
+      "rows[?id == 'automation-assets-viewer-role']"
 
 - name: Add Asset Repo roles to cpadmins group
   uri:
