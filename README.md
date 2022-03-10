@@ -247,18 +247,11 @@ The installation process needs configuration information properly adjusted to yo
 
 Copy the contents of the following yaml to OpenShift console *Import YAML* dialog (as seen in the picture below - point 1 and 2).
 
-Update variables in *variables.sh* entry as wanted (as seen in the picture below - point 2, row starting with *variables.sh*). Keys are divided into sections and every key is documented for you to understand what to fill in it.
+Update variables in *variables.yml* entry as wanted (as seen in the picture below - point 2, row starting with *variables.sh*). Keys are divided into sections and every key is documented for you to understand what to fill in it.
 
 You can also choose not to deploy the whole platform by setting various feature variables to *false*.  
 
-Optionally add your custom global CA files if you set *GLOBAL_CA_PROVIDED* variable to *true* (as seen in the picture below - point 3, rows starting with *global-ca.crt* and *global-ca.key*). Make sure the contents of CA files are properly indented to the same level like example contents.
-
-Apply the updated contents to your cluster (as seen in the picture below point 4).
-
-<details open>
-  <summary>Click this text to hide / show the configuration YAML file</summary>
-
-<p>
+Apply the updated contents to your cluster (as seen in the picture below point 3).
 
 ```yaml
 apiVersion: v1
@@ -285,13 +278,6 @@ data:
     ## Options are OCP and ROKS
     ## OCP option also applies to other managed OpenShifts
     deployment_platform: ROKS
-
-    ## By default false, which means that new self signed CA will be generated 
-    ## and all certificates will be signed using it. 
-    ## Set true if you want to provide your own global-ca.key and global-ca.crt.
-    ## Contents of these two files are provided in this ConfigMap in keys which are at the bottom of this file.
-    ## Files cannot be password protected.
-    global_ca_provided: false
 
     ## In the Platform, multiple users and keystores and other encrypted entries need a password.
     ## To make working with the Platform easier all places which require a password share the same one from this variable.
@@ -326,24 +312,46 @@ data:
     ## Set to false if you don't want to install (or remove) Mongo Express
     mongo_express_enabled: true
 
-  global-ca.crt: |
-    -----BEGIN CERTIFICATE-----
-    TODO_YOUR_BASE64_CONTENT
-    -----END CERTIFICATE-----
-
-  global-ca.key: |
-    -----BEGIN RSA PRIVATE KEY-----
-    TODO_YOUR_BASE64_CONTENT
-    -----END RSA PRIVATE KEY-----
-
 ```
-
-</p>
-</details>
 
 ![assets/config-map-variables.png](assets/config-map-variables.png)
 
-![assets/config-map-tls.png](assets/config-map-tls.png)
+![assets/config-map-add.png](assets/config-map-add.png)
+
+
+Optionally you can add your custom Global CA Secret which is then used to generate all certificates for the whole platform. If you don't provide it, a new Global CA will be automatically generated for you.
+
+Copy the contents of the following yaml to OpenShift console *Import YAML* dialog (as seen in the picture below - point 1 and 2).
+
+Add certificate of your Global CA to *tls.crt* and key to *tls.key*.
+
+Make sure the contents of CA files are properly indented to the same level like example contents. (as seen in the picture below point 3)
+
+Apply the updated contents to your cluster (as seen in the picture below point 4).    
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: global-ca
+  namespace: apollo-one-shot  
+type: kubernetes.io/tls
+stringData:
+  tls.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIFCzCCAvOgAwIBAgIUXwA5bTQNXox7K5johiEi9MjqOK8wDQYJKoZIhvcNAQEL
+    ...
+    P3ACf/xtBm9/8Q3qaFRERnVj8RiXLK641aBaLsDD1rCtvD4UloSfZ95ZOyipDTg=
+    -----END CERTIFICATE-----
+  tls.key: |
+    -----BEGIN RSA PRIVATE KEY-----
+    MIIJKwIBAAKCAgEA18utJwF6y7sDEkItvwQ5LlspVF/p1fYAN2XTpHuYzocU7FRY
+    ...
+    Xv/NTjv7sM8aAmYOpR5JZ+nAwa7Y1hkrAybdbh3a4qES1LbrNVEMCLjwnHpkfOs=
+    -----END RSA PRIVATE KEY-----
+```
+
+![assets/secret.png](assets/secret.png)
 
 ### 4. Run the Job
 
@@ -368,13 +376,15 @@ spec:
           image: ubi8/ubi
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -maxdepth 1 -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
+            ["-c","cd /usr; yum install git -y && git clone --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
               value: install
-            - name: GIT_ARCHIVE
-              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/tarball/main
+            - name: GIT_REPOSITORY
+              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment.git
+            - name: GIT_BRANCH
+              value: main
             - name: CONTAINER_RUN_MODE
               value: "true"
           volumeMounts:
@@ -482,13 +492,15 @@ spec:
           image: ubi8/ubi
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -maxdepth 1 -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
+            ["-c","cd /usr; yum install git -y && git clone --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
               value: remove
-            - name: GIT_ARCHIVE
-              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/tarball/main
+            - name: GIT_REPOSITORY
+              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment.git
+            - name: GIT_BRANCH
+              value: main
             - name: CONTAINER_RUN_MODE
               value: "true"
           volumeMounts:

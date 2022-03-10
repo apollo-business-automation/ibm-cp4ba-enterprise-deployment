@@ -6,20 +6,6 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   cp /config/variables.yml variables.yml
 fi
 
-if cat variables.yml | grep -q "global_ca_provided: true"; then
-  GLOBAL_CA_PROVIDED=true
-fi
-
-if [[ $CONTAINER_RUN_MODE == "true" ]]; then
-  if [[ $GLOBAL_CA_PROVIDED == "true" ]]; then
-    echo
-    echo ">>>>Copy Global CA files"  
-    mkdir -p /tmp/global-ca
-    cp /config/global-ca.crt /tmp/global-ca/global-ca.crt
-    cp /config/global-ca.key /tmp/global-ca/global-ca.key
-  fi
-fi
-
 find . -type f \( -iname \*.sh \) | xargs chmod u+x
 
 echo
@@ -37,6 +23,17 @@ HOME=`pwd`
 cd tooling
 ./install.sh
 exit_test $? "Install Tooling Failed"
+cd ..
+
+echo
+echo ">>>>$(print_timestamp) Install oc"
+cd tooling
+curl -k https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz --output oc.tar
+exit_test $? "Download oc Failed"
+tar -xvf oc.tar oc
+chmod u+x oc
+./oc version
+exit_test $? "oc setup Failed"
 cd ..
 
 echo
