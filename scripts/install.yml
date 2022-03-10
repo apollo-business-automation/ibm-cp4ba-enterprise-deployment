@@ -17,6 +17,14 @@
     common_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
     common_output_to_var: "apps_endpoint_domain"
 
+- name: Get git repo revision
+  git: 
+    repo: .
+    dest: .
+    update: no
+    clone: no
+  register: git_repo_information
+
 - name: Prepare Usage md
   template:
     src: usage.md.j2
