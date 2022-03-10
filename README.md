@@ -368,13 +368,15 @@ spec:
           image: ubi8/ubi
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -maxdepth 1 -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
+            ["-c","cd /usr; yum install git -y && git clone --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
               value: install
-            - name: GIT_ARCHIVE
-              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/tarball/main
+            - name: GIT_REPOSITORY
+              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment.git
+            - name: GIT_BRANCH
+              value: main
             - name: CONTAINER_RUN_MODE
               value: "true"
           volumeMounts:
@@ -482,13 +484,15 @@ spec:
           image: ubi8/ubi
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; curl -kL -o cp4ba.tgz ${GIT_ARCHIVE}; tar xvf cp4ba.tgz; DIR=`find . -maxdepth 1 -name \"apollo*\"`; cd ${DIR}/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
+            ["-c","cd /usr; yum install git -y && git clone --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
               value: remove
-            - name: GIT_ARCHIVE
-              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/tarball/main
+            - name: GIT_REPOSITORY
+              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment.git
+            - name: GIT_BRANCH
+              value: main
             - name: CONTAINER_RUN_MODE
               value: "true"
           volumeMounts:
