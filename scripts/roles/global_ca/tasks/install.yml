@@ -6,7 +6,7 @@
 
 - name: Generate & save Global CA if not provided
   block:
-  
+
     - name: Get exiting secret
       k8s_info:
         api_key: "{{ global_ca_k8s_api_key | default(omit) }}"
