@@ -26,6 +26,17 @@ exit_test $? "Install Tooling Failed"
 cd ..
 
 echo
+echo ">>>>$(print_timestamp) Install oc"
+cd tooling
+curl -k https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz --output oc.tar
+exit_test $? "Download oc Failed"
+tar -xvf oc.tar oc
+chmod u+x oc
+./oc version
+exit_test $? "oc setup Failed"
+cd ..
+
+echo
 echo ">>>>Update PATH to include new tooling"
 REAL_PATH=`realpath tooling`
 echo "PATH=`python3 -m site --user-base`/bin:$REAL_PATH:$PATH" >> $ORIGINAL_HOME/.bash_profile
