@@ -267,9 +267,8 @@ data:
     ## (https://myibm.ibm.com/products-services/containerlibrary)  
     icr_password: TODO_ICR_PASSWORD
 
-    ## Name of the OCP storage class used for all PVCs. 
-    ## Must be RWX and Fast. Some pillars don't allow to specify storage class, 
-    ## so this one will also be automatically set as Default 
+    ## Name of the StorageClass used for all PVCs which must be already present in your OpenShift. 
+    ## Must be RWX and Fast.
     ## For ROKS this class could be ibmc-file-gold-gid (But strongly discouraged due to slow PVC binding)
     ## For NFS based class this could be managed-nfs-storage
     ## For ODF (OCS) based class (e.g. on ARO or ROSA) this could be ocs-storagecluster-cephfs
