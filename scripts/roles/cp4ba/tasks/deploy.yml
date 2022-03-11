@@ -449,6 +449,23 @@
     - "{{ cp4ba_cr_meta_name }}-redis-ha-server"
     - "{{ cp4ba_cr_meta_name }}-rabbitmq-ha"
 
+- name: Wait for Deployments to be Available
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: v1
+    common_resource_kind: Deployment
+    common_resource_name: "{{ item }}"
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_name: Available
+    common_retries: 30
+    common_delay: 120
+  with_items:
+    - "{{ cp4ba_cr_meta_name }}-ier-deploy"
+
 - name: Wait for ADP NL extractor Deployment Available state
   include_role:
     name: common
