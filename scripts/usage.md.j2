@@ -264,6 +264,7 @@ For external share you need to use ingress prefixed set of endpoints.
 - External Share ingress for external desktop: https://ingress-es-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/navigator/?desktop=ExternalShareOS1  
 - Task Manager API endpoint: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/tm/api/v1  
 - Task Manager Ping page: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/tm/api/v1/tasks/ping  
+- IER application plugin: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ier/EnterpriseRecordsPlugin/IERApplicationPlugin.jar
 
 ####  Credentials
 
@@ -484,7 +485,7 @@ LDAP contains the following users in ou=Users,dc=cp. All have password {{ univer
 
 LDAP contains the following groups in ou=Groups,dc=cp:  
 - cpadmins - members: uid=cpadmin,ou=Users,dc=cp; uid=cpadmin1,ou=Users,dc=cp; uid=cpadmin2,ou=Users,dc=cp  
-- cpusers - members: uid=cpadmin,ou=Users,dc=cp; uid=cpadmin1,ou=Users,dc=cp; uid=cpadmin2,ou=Users,dc=cp; - uid=cpuser,ou=Users,dc=cp; uid=cpuser1,ou=Users,dc=cp; uid=cpuser2,ou=Users,dc=cp  
+- cpusers - members: uid=cpadmin,ou=Users,dc=cp; uid=cpadmin1,ou=Users,dc=cp; uid=cpadmin2,ou=Users,dc=cp; uid=cpuser,ou=Users,dc=cp; uid=cpuser1,ou=Users,dc=cp; uid=cpuser2,ou=Users,dc=cp  
 - cpusers1 - members: uid=cpuser,ou=Users,dc=cp; uid=cpuser1,ou=Users,dc=cp; uid=cpuser2,ou=Users,dc=cp  
 - TaskAdmins - for FNCM TM - members: uid=cpadmin,ou=Users,dc=cp;  
 - TaskAuditors - for FNCM TM - members: uid=cpadmin,ou=Users,dc=cp;

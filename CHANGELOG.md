@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [2022-03-15]
+
+### Added
+
+- Add deployment of IER with docs about post deployment steps.
+
+### Changed
+
+- Updated CPFS to 3.16.1
+
 ## [2022-03-08]
 
 ### Changed

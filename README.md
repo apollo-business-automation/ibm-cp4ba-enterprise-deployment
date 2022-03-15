@@ -1,8 +1,25 @@
-# Installation of Cloud Pak for Business Automation on containers - Apollo one-shot enterprise deployment 🔫
+# Installation of Cloud Pak for Business Automation on containers - Apollo one-shot enterprise deployment 🔫 <!-- omit in toc -->
 
 Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components with all kinds of prerequisites and extras on OpenShift.
 
 Last installation was performed on 2022-03-08 with CP4BA version 21.0.3-IF005 (also called 21.0.3.5 or 21.3.5)
+
+- [Documentation base](#documentation-base)
+- [Disclaimer ✋](#disclaimer-)
+- [Benefits 🚀](#benefits-)
+- [General information 📢](#general-information-)
+- [What is in the package 📦](#what-is-in-the-package-)
+- [Environments used for installation 💻](#environments-used-for-installation-)
+- [Pre-requisites ⬅️](#pre-requisites-️)
+- [Installation steps ⚡](#installation-steps-)
+- [Post installation steps ➡️](#post-installation-steps-️)
+- [Usage & operations 😊](#usage--operations-)
+- [Removal steps 🗑️](#removal-steps-️)
+- [Post removal steps ➡️](#post-removal-steps-️)
+- [Contacts](#contacts)
+- [Notice](#notice)
+
+## Documentation base
 
 Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=overview-what-is-cloud-pak-business-automation.
 
@@ -42,14 +59,13 @@ Not for production use. Suitable for Demo and PoC environments - but with enterp
 - Pre integrated and automatically connected extras are deployed in the platform for easier access/management/troubleshooting
 - You have a working starting Enterprise deployment which you can use as a reference for further custom deployments
 
-## General Information 📢
+## General information 📢
 
 Result of this Enterprise deployment is not fully supported:
 - For convenience, it contains OpenLDAP as a directory provider which is not supported - in real deployments this needs to be replaced with a supported directory provider
 - For convenience and lower resource consumption, it uses one containerized DB2 database and schemas for majority of required DBs - in real deployments a supported DB option described on "[Compatibility matrix](https://www.ibm.com/software/reports/compatibility/clarity-reports/report/html/softwareReqsForProduct?deliverableId=71C22290D7DB11EBAA175CFD3E629A2A&osPlatforms=Linux%7CMac%20OS%7CWindows&duComponentIds=D010%7CD009%7CD011%7CS015%7CS014%7CS013%7CC027%7CC032%7CC017%7CC024%7CC023%7CC029%7CC018%7CC021%7CC022%7CC030%7CC028%7CC020%7CC025%7CC031%7CC016%7CC034%7CC019%7CC026&mandatoryCapIds=71%7C26&optionalCapIds=134%7C62%7C127%7C9%7C401%7C132%7C20%7C161) > Supported Software > Databases" would be used
 
 What is not included:
-- IER - missing IER object stores and configuration.
 - ICCs - not covered.
 - Caution! FNCM External share - Currently not supported with ZEN & IAM as per limitation on [FNCM limitations](https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=notes-known-limitations-issues#concept_gmf_x1h_1fb__ecm)
 - Caution! RPA currently works only with one user cpadmin due to identity issue.
@@ -452,7 +468,7 @@ Review and perform post deploy manual steps for RPA as specified in ConfigMap *r
 
 ![assets/rpa-postdeploy-md.png](assets/rpa-postdeploy-md.png)
 
-## Usage & Operations 😊
+## Usage & operations 😊
 
 Endpoints, access info and other useful information is available in Project *apollo-one-shot* in ConfigMap named *usage* in *usage.md* file after installation. It is best to copy the contents and open it in nice MarkDown editor like VSCode.
 
