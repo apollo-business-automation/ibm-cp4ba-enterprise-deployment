@@ -708,6 +708,23 @@
     merge_type: merge
     src: "{{ cp4ba_output_directory }}/fncm-secret.yaml"
 
+# Based on
+# https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=fcm-creating-secrets-protect-sensitive-filenet-content-manager-configuration-data
+- name: Prepare yaml file for IER Secret
+  template:
+    src: ier/ier-secret.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/ier-secret.yaml"
+    mode: u+rwx
+
+- name: Add IER Secret
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/ier-secret.yaml"
+
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=engine-creating-secrets-protect-sensitive-configuration-data
 - name: Prepare yaml file for AAE Secret
   template:
