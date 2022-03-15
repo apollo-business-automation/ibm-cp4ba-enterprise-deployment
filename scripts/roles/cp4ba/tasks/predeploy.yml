@@ -461,37 +461,15 @@
     common_namespace_name: ibm-common-services
     common_label_selector_stub: ibm-crossplane-provider-kubernetes-operator-app
 
-# TODO hotfix for CPFS 3.15.x, remove in 3.16 and leave only one manual approval of ibm-events-operator - remove block and rescue
-- block:
-    - name: Manage Manual Operator ibm-events-operator
-      include_role:
-        name: common
-        tasks_from: manage-manual-operator
-      vars:
-        common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-        common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-        common_namespace_name: ibm-common-services
-        common_label_selector_stub: ibm-events-operator
-  rescue:
-    - name: Restart CPFS operator pod
-      kubernetes.core.k8s:
-        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-        host: "{{ cp4ba_k8s_host | default(omit) }}"
-        state: absent
-        api_version: v1
-        kind: Pod
-        namespace: ibm-common-services
-        label_selectors:
-          - app.kubernetes.io/instance=ibm-common-service-operator
-    - name: Manage Manual Operator ibm-events-operator
-      include_role:
-        name: common
-        tasks_from: manage-manual-operator
-      vars:
-        common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-        common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-        common_namespace_name: ibm-common-services
-        common_label_selector_stub: ibm-events-operator
+- name: Manage Manual Operator ibm-events-operator
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_label_selector_stub: ibm-events-operator
 
 - name: Wait for AutomationBase instance Ready state
   include_role:
