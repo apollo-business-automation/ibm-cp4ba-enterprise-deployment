@@ -4,22 +4,22 @@ Goal of this repository is to almost automagically install CP4BA Enterprise patt
 
 Last installation was performed on 2022-03-08 with CP4BA version 21.0.3-IF005 (also called 21.0.3.5 or 21.3.5)
 
-- [Documentation Base](#documentation-base)
+- [Documentation base](#documentation-base)
 - [Disclaimer ✋](#disclaimer-)
 - [Benefits 🚀](#benefits-)
-- [General Information 📢](#general-information-)
+- [General information 📢](#general-information-)
 - [What is in the package 📦](#what-is-in-the-package-)
 - [Environments used for installation 💻](#environments-used-for-installation-)
 - [Pre-requisites ⬅️](#pre-requisites-️)
 - [Installation steps ⚡](#installation-steps-)
 - [Post installation steps ➡️](#post-installation-steps-️)
-- [Usage & Operations 😊](#usage--operations-)
+- [Usage & operations 😊](#usage--operations-)
 - [Removal steps 🗑️](#removal-steps-️)
 - [Post removal steps ➡️](#post-removal-steps-️)
 - [Contacts](#contacts)
 - [Notice](#notice)
 
-## Documentation Base
+## Documentation base
 
 Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=overview-what-is-cloud-pak-business-automation.
 
@@ -59,7 +59,7 @@ Not for production use. Suitable for Demo and PoC environments - but with enterp
 - Pre integrated and automatically connected extras are deployed in the platform for easier access/management/troubleshooting
 - You have a working starting Enterprise deployment which you can use as a reference for further custom deployments
 
-## General Information 📢
+## General information 📢
 
 Result of this Enterprise deployment is not fully supported:
 - For convenience, it contains OpenLDAP as a directory provider which is not supported - in real deployments this needs to be replaced with a supported directory provider
@@ -468,7 +468,7 @@ Review and perform post deploy manual steps for RPA as specified in ConfigMap *r
 
 ![assets/rpa-postdeploy-md.png](assets/rpa-postdeploy-md.png)
 
-## Usage & Operations 😊
+## Usage & operations 😊
 
 Endpoints, access info and other useful information is available in Project *apollo-one-shot* in ConfigMap named *usage* in *usage.md* file after installation. It is best to copy the contents and open it in nice MarkDown editor like VSCode.
 
