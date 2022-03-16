@@ -85,7 +85,7 @@ tar -xvf openjdk-9_linux-x64_bin.tar.gz
 ln -fs jdk-9/bin/java java
 ln -fs jdk-9/bin/javac javac
 ln -fs jdk-9/bin/keytool keytool
-java -version
+jdk-9/bin/java -version
 exit_test $? "OpenJDK setup Failed"
 
 echo
