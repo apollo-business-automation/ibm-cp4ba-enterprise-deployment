@@ -1,0 +1,9 @@
+- name: Deployment Platform should be defined
+  fail:
+    msg: "The deployment_platform variable has to be defined."
+  when: deployment_platform is not defined
+
+- name: Deployment Platform should be OCP or ROKS
+  fail:
+    msg: "The deployment_platform should be OCP or ROKS, not {{ deployment_platform }}"
+  when: deployment_platform != "OCP" and deployment_platform != "ROKS"
