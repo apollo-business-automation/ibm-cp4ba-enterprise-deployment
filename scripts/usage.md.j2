@@ -162,6 +162,10 @@ oc exec -it -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} 
 
 ### Resource Registry (RR) (foundation pattern)
 
+#### Endpoints
+
+- Version info: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/resreg/version
+
 #### Reading content of ETCD from RR container terminal
 
 ```bash
