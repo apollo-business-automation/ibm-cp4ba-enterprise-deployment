@@ -137,27 +137,20 @@ Wait for the installation completion.
 Restart eclipse  
 Window > Perspective > Open Perspective > Other > Rule  
 
-Note: You may fase JAXB exceptions when connecting to ODM. Using JDK8 resolve this error.
+Note: You may face JAXB exceptions when connecting to ODM. Using JDK8 resolve this error.
 
 ### Rule designer IAM OpenID Connect
 
 Based on https://www.ibm.com/docs/en/odm/8.11.0?topic=parties-configuring-rule-designer
-
-Copy and edit oidc-providers.json (available in *apollo-one-shot* Project in odm-oidc-providers Config Map) to you eclipse directory  
-Parameters can be seen in pod
-```bash
-POD=`oc get pod -o name | grep decisionserverconsole`
-oc exec $POD -- cat /liberty/wlp/usr/servers/defaultServer/authOidc/openIdParameters.properties
-
-```
+Download OIDC providers from https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/OdmOidcProvidersRD.json and copy the file to your eclipse directory.  
+Download truststore.jks from https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/truststore.jks and copy the file to your eclipse directory.  
 
 Based on https://www.ibm.com/docs/en/odm/8.11.0?topic=designer-passing-parameters-rule
-Copy truststore.jks (available in *apollo-one-shot* Project in odm-truststore Config Map) to you eclipse directory  
 Add the following to eclipse.ini  
 ```text
--Dcom.ibm.rules.authentication.oidcconfig=oidc-providers.json
+-Dcom.ibm.rules.authentication.oidcconfig=OdmOidcProvidersRD.json
 -Djavax.net.ssl.trustStore=truststore.jks
--Djavax.net.ssl.trustStorePassword={{ cp4ba_universal_password }}
+-Djavax.net.ssl.trustStorePassword=changeit
 ```
 
 When configuring RES connection in Deployment use  

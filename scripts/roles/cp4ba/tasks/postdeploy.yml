@@ -311,35 +311,6 @@
     common_retries: 80
     common_delay: 15
 
-- name: Create Project
-  include_role:
-    name: common
-    tasks_from: create-project
-  vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_namespace_name: "{{ cp4ba_output_namespace }}"
-    common_output_directory: "{{ cp4ba_output_directory }}"
-    common_project_output_name: "cp4ba-output-project.yaml"
-
-- name: Prepare yaml file for ODM OIDC Providers Config Map
-  template:
-    src: odm/odm-oidc-providers-cm.yaml.j2
-    dest: "{{ cp4ba_output_directory }}/odm-oidc-providers-cm.yaml"
-    mode: u+rwx
-
-- name: Add the ODM OIDC Providers Config Map
-  k8s:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    src: "{{ cp4ba_output_directory }}/odm-oidc-providers-cm.yaml"
-    state: present
-    merge_type: merge
-    force: false
-    wait: true
-    wait_sleep: 15
-    wait_timeout: 15
-
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=gst-task-2-connecting-git-repository-sharing-decision-service
 - name: Create ADS organization in Gitea
   uri:
