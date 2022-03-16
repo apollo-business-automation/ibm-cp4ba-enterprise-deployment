@@ -1,0 +1,8 @@
+- name: ICR Password
+  include_tasks: icr-password.yml
+
+- name: Deployment Platform
+  include_tasks: deployment-platform.yml
+
+- name: Universal Password
+  include_tasks: universal-password.yml
