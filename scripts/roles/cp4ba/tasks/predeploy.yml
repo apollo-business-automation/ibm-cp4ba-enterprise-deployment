@@ -625,6 +625,7 @@
     private_key_path: "{{ cp4ba_wildcard_key_path }}"
     password: "{{ cp4ba_universal_password }}"
     dest: "{{ cp4ba_output_directory }}/keystore.jks"
+    keystore_type: jks
 
 - name: Load keystore jks data
   slurp:
