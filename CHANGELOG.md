@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [2022-03-16]
+
+### Changed
+
+- ODM now uses custom JKS with custom password.
+- AKHQ now uses jsk as truststore without private key.
+
 ## [2022-03-15]
 
 ### Added

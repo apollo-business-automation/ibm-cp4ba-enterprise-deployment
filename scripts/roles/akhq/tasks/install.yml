@@ -21,38 +21,33 @@
     name: helm-akhq
     repo_url: "https://akhq.io/"
 
-- name: Check that the {{ akhq_ca_key_path }} exists
-  stat:
-    path: "{{ akhq_ca_key_path }}"
-  register: akhq_ca_key_file
-
 - name: Check that the {{ akhq_ca_crt_path }} exists
   stat:
     path: "{{ akhq_ca_crt_path }}"
   register: akhq_ca_crt_file
 
-- name: Ensure we have CA keypair
+- name: Ensure we have CA crt
   include_role:
     name: global_ca
-  when: not akhq_ca_key_file.stat.exists or not akhq_ca_crt_file.stat.exists
+  when: not akhq_ca_crt_file.stat.exists
 
-# TODO JKS without private key of CA would be more appropriate
-- name: Generate PKCS#12 file
-  community.crypto.openssl_pkcs12:
-    action: export
-    path: "{{ akhq_output_directory }}/truststore.p12"
-    friendly_name: global-ca
-    certificate_path: "{{ akhq_ca_crt_path }}"
-    privatekey_path: "{{ akhq_ca_key_path }}"
-    passphrase: "{{ akhq_universal_password }}"
+- name: Import trusted CA from SSL certificate
+  community.general.java_cert:
+    cert_path: "{{ akhq_ca_crt_path }}"
+    keystore_path: "{{ akhq_output_directory }}/truststore.jks"
+    keystore_pass: "{{ akhq_universal_password }}"
+    keystore_create: true
     state: present
-    return_content: true
-    mode: u+rwx
-  register: p12
+    cert_alias: global-ca
 
-- name: Get data and store as fact
+- name: Load jks data
+  slurp:
+    src: "{{ akhq_output_directory }}/truststore.jks"
+  register: slurped_jks_data
+
+- name: Decode data and store as fact
   set_fact:
-    _p12: "{{ p12.pkcs12 }}"
+    _jks: "{{ slurped_jks_data.content }}"
 
 - name: Get OCP Apps Endpoint
   include_role:
