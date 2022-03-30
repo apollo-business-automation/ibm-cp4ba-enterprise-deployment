@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - AKHQ now uses jsk as truststore without private key.
 - Updated CPFS to 3.16.3
 - Updated CP4BA to 21.0.3.6
+- Removed entryuuid from OpenLDAP entries as they are not needed anymore
 
 ## [2022-03-15]
 
