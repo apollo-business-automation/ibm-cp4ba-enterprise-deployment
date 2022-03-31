@@ -196,14 +196,3 @@
     wait: true
     wait_sleep: 15
     wait_timeout: 15
-
-- name: Hotfix cpadmin user
-  kubernetes.core.k8s_exec:
-    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
-    host: "{{ rpa_k8s_host | default(omit) }}"
-    namespace: mssql
-    pod: "{{ pods.resources[0].metadata.name }}"
-    command: >
-      /opt/mssql-tools/bin/sqlcmd -S localhost -U SA
-      -P "{{ rpa_universal_password }}" -Q "update [automation].[dbo].[User] set Email='cpadmin' where Email is null"
-  register: command_status
