@@ -182,34 +182,17 @@
     wait_timeout: 15
 
 # Based on validate successful deployment by following https://www.ibm.com/docs/en/cloud-paks/1.0?topic=platform-how-validate-successful-installation
-# TODO uncomment when PM fixed, now it never becomes ready
-# - name: Wait for ProcessMining to be Ready
-#   include_role:
-#     name: common
-#     tasks_from: wait-resource-condition
-#   vars:
-#     common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
-#     common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
-#     common_api_version: processmining.ibm.com/v1beta1
-#     common_resource_kind: ProcessMining
-#     common_resource_name: processmining
-#     common_resource_namespace: "{{ pm_project_name }}"
-#     common_condition_name: Ready
-#     common_retries: 30
-#     common_delay: 120
-
-# TODO remove when PM fixed, now it never becomes ready in CR
-- name: Wait for processmining-taskprocessor Deployment to be Available
+- name: Wait for ProcessMining to be Ready
   include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:
     common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
-    common_api_version: apps/v1
-    common_resource_kind: Deployment
-    common_resource_name: processmining-taskprocessor
+    common_api_version: processmining.ibm.com/v1beta1
+    common_resource_kind: ProcessMining
+    common_resource_name: processmining
     common_resource_namespace: "{{ pm_project_name }}"
-    common_condition_name: Available
+    common_condition_name: Ready
     common_retries: 30
     common_delay: 120
