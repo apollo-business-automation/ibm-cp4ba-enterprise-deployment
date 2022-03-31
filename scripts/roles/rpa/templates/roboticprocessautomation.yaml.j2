@@ -44,7 +44,9 @@ spec:
           containers:
             - name: rpa-server
               readinessProbe:
-                initialDelaySeconds: 300        
+                initialDelaySeconds: 300
+              livenessProbe:
+                initialDelaySeconds: 300
   ui:
     replicas: 1
   ocr:
