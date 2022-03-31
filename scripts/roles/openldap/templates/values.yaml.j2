@@ -18,6 +18,7 @@ customLdifFiles:
     # Users
     dn: uid=cpadmin,ou=Users,dc=cp
     objectClass: inetOrgPerson
+    objectClass: top
     cn: cpadmin
     sn: cpadmin
     uid: cpadmin
@@ -27,6 +28,7 @@ customLdifFiles:
 
     dn: uid=cpadmin1,ou=Users,dc=cp
     objectClass: inetOrgPerson
+    objectClass: top
     cn: cpadmin1
     sn: cpadmin1
     uid: cpadmin1
@@ -36,6 +38,7 @@ customLdifFiles:
 
     dn: uid=cpadmin2,ou=Users,dc=cp
     objectClass: inetOrgPerson
+    objectClass: top
     cn: cpadmin2
     sn: cpadmin2
     uid: cpadmin2
@@ -45,6 +48,7 @@ customLdifFiles:
 
     dn: uid=cpuser,ou=Users,dc=cp
     objectClass: inetOrgPerson
+    objectClass: top
     cn: cpuser
     sn: cpuser
     uid: cpuser
@@ -53,6 +57,7 @@ customLdifFiles:
 
     dn: uid=cpuser1,ou=Users,dc=cp
     objectClass: inetOrgPerson
+    objectClass: top
     cn: cpuser1
     sn: cpuser1
     uid: cpuser1
@@ -61,6 +66,7 @@ customLdifFiles:
 
     dn: uid=cpuser2,ou=Users,dc=cp
     objectClass: inetOrgPerson
+    objectClass: top
     cn: cpuser2
     sn: cpuser2
     uid: cpuser2
@@ -70,6 +76,7 @@ customLdifFiles:
     # Groups
     dn: cn=cpadmins,ou=Groups,dc=cp
     objectClass: groupOfNames
+    objectClass: top
     cn: cpadmins
     member: uid=cpadmin,ou=Users,dc=cp
     member: uid=cpadmin1,ou=Users,dc=cp
@@ -77,6 +84,7 @@ customLdifFiles:
 
     dn: cn=cpusers,ou=Groups,dc=cp
     objectClass: groupOfNames
+    objectClass: top
     cn: cpusers
     member: uid=cpadmin,ou=Users,dc=cp
     member: uid=cpadmin1,ou=Users,dc=cp
@@ -87,6 +95,7 @@ customLdifFiles:
 
     dn: cn=cpusers1,ou=Groups,dc=cp
     objectClass: groupOfNames
+    objectClass: top
     cn: cpusers1
     member: uid=cpuser,ou=Users,dc=cp
     member: uid=cpuser1,ou=Users,dc=cp
@@ -95,17 +104,20 @@ customLdifFiles:
     # FNCM Task Manager groups
     dn: cn=TaskAdmins,ou=Groups,dc=cp
     objectClass: groupOfNames
+    objectClass: top
     cn: TaskAdmins
     member: uid=cpadmin,ou=Users,dc=cp
 
     dn: cn=TaskUsers,ou=Groups,dc=cp
     objectClass: groupOfNames
+    objectClass: top
     cn: TaskUsers
     member: uid=cpadmin,ou=Users,dc=cp
     member: uid=cpuser,ou=Users,dc=cp
 
     dn: cn=TaskAuditors,ou=Groups,dc=cp
     objectClass: groupOfNames
+    objectClass: top
     cn: TaskAuditors
     member: uid=cpadmin,ou=Users,dc=cp    
 replication:
