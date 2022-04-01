@@ -181,6 +181,19 @@
   vars:
     state_query: 'resources[*].status.state'
 
+- name: Check if BLUDB is present 
+  kubernetes.core.k8s_exec:
+    api_key: "{{ db2_k8s_api_key | default(omit) }}"
+    host: "{{ db2_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: |
+      su - db2inst1 -c "
+      db2 connect to BLUDB
+      "
+  register: bludb_connect_command_status
+  ignore_errors: true
+
 - name: Delete BLUDB to tidy up the DB2 memory space
   kubernetes.core.k8s_exec:
     api_key: "{{ db2_k8s_api_key | default(omit) }}"
@@ -198,3 +211,4 @@
   register: command_status
   ignore_errors: true
   failed_when: command_status.rc != 0 and command_status.stdout is not search('.*The database alias name or database name \"BLUDB\" could not be found.*')
+  when: bludb_connect_command_status.rc == 0
