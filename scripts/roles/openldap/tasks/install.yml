@@ -37,7 +37,6 @@
     name: helm-openldap
     repo_url: "https://jp-gouin.github.io/helm-openldap/"
 
-# Custom schema LDIF based on https://stackoverflow.com/questions/45511696/creating-a-new-objectclass-and-attribute-in-openldap
 - name: Prepare yaml file for values of helm chart
   template:
     src: values.yaml.j2
