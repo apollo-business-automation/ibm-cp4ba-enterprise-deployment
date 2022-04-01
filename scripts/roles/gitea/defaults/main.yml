@@ -4,5 +4,5 @@ gitea_dir_name: gitea
 gitea_universal_password: ""
 gitea_storage_class_name: ""
 gitea_ldap_hostname: ""
-gitea_chart_version: 5.0.1
-gitea_image_tag: 1.15.11
+gitea_chart_version: 5.0.4
+gitea_image_tag: 1.16.5
