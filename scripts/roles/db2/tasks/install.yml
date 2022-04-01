@@ -189,7 +189,8 @@
     pod: c-db2ucluster-db2u-0
     command: |
       su - db2inst1 -c "
-      db2 connect to BLUDB
+      db2 connect to BLUDB;
+      echo 'done';
       "
   register: bludb_connect_command_status
   ignore_errors: true
@@ -203,10 +204,11 @@
     command: |
       su - db2inst1 -c "
       sleep 30 #for db2start to finish
-      db2 deactivate db BLUDB
-      db2 force application ALL
+      db2 deactivate db BLUDB;
+      db2 force application ALL;
       sleep 60 #for force aplication to finish
-      db2 drop db BLUDB
+      db2 drop db BLUDB;
+      echo 'done';
       "
   register: command_status
   ignore_errors: true

@@ -39,6 +39,7 @@
       db2 GRANT USE OF TABLESPACE PM_TS TO user pm;
       db2 GRANT USE OF TABLESPACE PM_TEMP_TS TO user pm;
       db2 CONNECT RESET;
+      echo 'done';
       "
   register: command_status
 

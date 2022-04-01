@@ -188,6 +188,7 @@
       db2 CREATE DATABASE DB2MC AUTOMATIC STORAGE YES PAGESIZE 32 K;
       db2 activate db DB2MC;
       db2 CONNECT TO DB2MC;
+      echo 'done';
       "
   register: command_status
   failed_when: command_status.rc != 0 and command_status.stdout is not search('.*The database alias \"DB2MC\" already exists.*')
