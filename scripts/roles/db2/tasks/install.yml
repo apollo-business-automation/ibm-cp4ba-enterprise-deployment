@@ -190,7 +190,6 @@
     command: |
       su - db2inst1 -c "
       db2 connect to BLUDB;
-      echo 'done';
       "
   register: bludb_connect_command_status
   ignore_errors: true
