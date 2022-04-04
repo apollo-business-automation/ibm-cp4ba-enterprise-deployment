@@ -187,7 +187,7 @@
     host: "{{ db2_k8s_host | default(omit) }}"
     namespace: db2
     pod: c-db2ucluster-db2u-0
-    command: |
+    command: >
       su - db2inst1 -s /usr/bin/bash -c "
       db2 connect to BLUDB;
       "
@@ -200,12 +200,14 @@
     host: "{{ db2_k8s_host | default(omit) }}"
     namespace: db2
     pod: c-db2ucluster-db2u-0
-    command: |
+    command: >
       su - db2inst1 -s /usr/bin/bash -c "
-      sleep 30 #for db2start to finish
+      echo 'wait for db2start to finish';
+      sleep 30;
       db2 deactivate db BLUDB;
       db2 force application ALL;
-      sleep 60 #for force aplication to finish
+      echo 'wait for force aplication to finish';
+      sleep 60;
       db2 drop db BLUDB;
       "
   register: command_status

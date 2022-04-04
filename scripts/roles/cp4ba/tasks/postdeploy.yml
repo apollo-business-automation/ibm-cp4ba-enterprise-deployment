@@ -579,10 +579,10 @@
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     namespace: db2
     pod: c-db2ucluster-db2u-0
-    command: |
+    command: >
       su - db2inst1 -s /usr/bin/bash -c "
-      cd sqllib/_adp_tmp/DB2
-      tar -xvf imports.tar.xz
+      cd sqllib/_adp_tmp/DB2;
+      tar -xvf imports.tar.xz;
       "
   register: command_status
 
@@ -592,19 +592,17 @@
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     namespace: db2
     pod: c-db2ucluster-db2u-0
-    command: |
+    command: >
       su - db2inst1 -s /usr/bin/bash -c '
-      cd sqllib/_adp_tmp/DB2
+      cd sqllib/_adp_tmp/DB2;
 
-      # Init TENANT1 DB
-      echo "TENANT1
-      default
-      y" | ./LoadDefaultData.sh
+      echo "TENANT1\n
+      default\n
+      y" | ./LoadDefaultData.sh;
 
-      # Init TENANT2 DB
-      echo "TENANT2
-      default
-      y" | ./LoadDefaultData.sh
+      echo "TENANT2\n
+      default\n
+      y" | ./LoadDefaultData.sh;
       '
   register: command_status
 

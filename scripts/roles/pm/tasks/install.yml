@@ -28,7 +28,7 @@
     host: "{{ pm_k8s_host | default(omit) }}"
     namespace: db2
     pod: c-db2ucluster-db2u-0
-    command: |
+    command: >
       su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE REGULAR TABLESPACE PM_TS PAGESIZE 32 K BUFFERPOOL PM_BP_32K;
