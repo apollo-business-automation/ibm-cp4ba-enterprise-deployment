@@ -580,10 +580,9 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       cd sqllib/_adp_tmp/DB2
       tar -xvf imports.tar.xz
-      echo 'done';
       "
   register: command_status
 
@@ -594,7 +593,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c '
+      su - db2inst1 -s /usr/bin/bash -c '
       cd sqllib/_adp_tmp/DB2
 
       # Init TENANT1 DB
@@ -606,7 +605,6 @@
       echo "TENANT2
       default
       y" | ./LoadDefaultData.sh
-      echo "done";
       '
   register: command_status
 

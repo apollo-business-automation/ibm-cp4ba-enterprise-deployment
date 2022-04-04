@@ -74,9 +74,8 @@
         namespace: db2
         pod: "{{ pods.resources[0].metadata.name }}"
         command: |
-          su - db2inst1 -c "
+          su - db2inst1 -s /usr/bin/bash -c "
           db2 connect to CP4BA;
-          echo 'done';
           "
       register: db_connect_status
       ignore_errors: true
@@ -90,10 +89,9 @@
             namespace: db2
             pod: "{{ pods.resources[0].metadata.name }}"
             command: |
-              su - db2inst1 -c "
+              su - db2inst1 -s /usr/bin/bash -c "
               db2 connect to CP4BA;
               db2 DROP TABLESPACE {{ item }};
-              echo 'done';
               "
           register: command_status
           failed_when: command_status.rc != 0 and command_status.stdout is not search('.*\"'+item+'\" is an undefined name.*')
@@ -109,10 +107,9 @@
             namespace: db2
             pod: "{{ pods.resources[0].metadata.name }}"
             command: |
-              su - db2inst1 -c "
+              su - db2inst1 -s /usr/bin/bash -c "
               db2 connect to CP4BA;
               db2 \"CALL SYSPROC.ADMIN_DROP_SCHEMA('PM', NULL, 'ERRORSCHEMA', 'ERRORTABLE')\"
-              echo 'done';
               "
           retries: 10
           delay: 2

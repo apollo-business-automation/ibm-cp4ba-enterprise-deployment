@@ -32,7 +32,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 create database CP4BA automatic storage yes using codeset UTF-8 territory US pagesize 32768;
       db2 UPDATE DB CFG FOR CP4BA USING LOGFILSIZ 16384 DEFERRED; #largest value - set globally when DB created
       db2 UPDATE DB CFG FOR CP4BA USING LOGPRIMARY 64 IMMEDIATE; #largest value - set globally when DB created
@@ -41,7 +41,6 @@
       db2 CONNECT TO CP4BA;
       db2 CREATE BUFFERPOOL CP4BA_BP_32K IMMEDIATE SIZE AUTOMATIC PAGESIZE 32K;
       db2 DROP TABLESPACE USERSPACE1;
-      echo 'done';
       "
   register: command_status
   failed_when: command_status.rc != 0 and command_status.stdout is not search('.*The database alias \"CP4BA\" already exists.*')
@@ -55,7 +54,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE REGULAR TABLESPACE ICNDB_TS PAGESIZE 32 K BUFFERPOOL CP4BA_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE ICNDB_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
@@ -65,7 +64,6 @@
       db2 GRANT USE OF TABLESPACE ICNDB_TS TO user icndb;
       db2 GRANT USE OF TABLESPACE ICNDB_TEMP_TS TO user icndb;
       db2 CONNECT RESET;
-      echo 'done';
       "
   register: command_status
 
@@ -77,7 +75,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE REGULAR TABLESPACE PB_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE PB_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
@@ -87,7 +85,6 @@
       db2 GRANT USE OF TABLESPACE PB_TS TO user pb;
       db2 GRANT USE OF TABLESPACE PB_TEMP_TS TO user pb;
       db2 CONNECT RESET;
-      echo 'done';
       "
   register: command_status
 
@@ -99,7 +96,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE REGULAR TABLESPACE BAS_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE BAS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
@@ -112,7 +109,6 @@
       # db2 UPDATE DB CFG FOR CP4BA USING LOGFILSIZ 16384 DEFERRED; #largest value - set globally when DB created
       # db2 UPDATE DB CFG FOR CP4BA USING LOGSECOND 64 IMMEDIATE; #largest value - set globally when DB created
       db2 CONNECT RESET;
-      echo 'done';
       "
   register: command_status
 
@@ -124,7 +120,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE REGULAR TABLESPACE ODM_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE ODM_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
@@ -134,7 +130,6 @@
       db2 GRANT USE OF TABLESPACE ODM_TS TO user odm;
       db2 GRANT USE OF TABLESPACE ODM_TEMP_TS TO user odm;
       db2 CONNECT RESET;
-      echo 'done';
       "
   register: command_status
 
@@ -146,9 +141,8 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2set DB2_WORKLOAD=FILENET_CM;
-      echo 'done';
       "
   register: command_status
 
@@ -161,7 +155,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE LARGE TABLESPACE GCD_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE GCD_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
@@ -173,7 +167,6 @@
 
       # db2 UPDATE DB CFG FOR CP4BA USING APPLHEAPSZ 2560; #largest value - do not wnat ot limit it, AUTOMATIC is default
       db2 CONNECT RESET;
-      echo 'done';
       "
   register: command_status
 
@@ -186,7 +179,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE LARGE TABLESPACE OS1_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE OS1_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
@@ -198,7 +191,6 @@
 
       # db2 UPDATE DB CFG FOR CP4BA USING APPLHEAPSZ 2560; #largest value - do not wnat ot limit it, AUTOMATIC is default
       db2 CONNECT RESET;
-      echo 'done';
       "
   register: command_status
 
@@ -210,7 +202,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE REGULAR TABLESPACE AAE_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE AAE_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
@@ -220,7 +212,6 @@
       db2 GRANT USE OF TABLESPACE AAE_TS TO user aae;
       db2 GRANT USE OF TABLESPACE AAE_TEMP_TS TO user aae;
       db2 CONNECT RESET;
-      echo 'done';
       "
   register: command_status
 
@@ -233,7 +224,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE LARGE TABLESPACE AEOS_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE AEOS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
@@ -245,7 +236,6 @@
 
       # db2 UPDATE DB CFG FOR CP4BA USING APPLHEAPSZ 2560; #largest value - do not wnat ot limit it, AUTOMATIC is default
       db2 CONNECT RESET;
-      echo 'done';
       "
   register: command_status
 
@@ -257,7 +247,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE REGULAR TABLESPACE BASE_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE BASE_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
@@ -267,7 +257,6 @@
       db2 GRANT USE OF TABLESPACE BASE_TS TO user base;
       db2 GRANT USE OF TABLESPACE BASE_TEMP_TS TO user base;
       db2 CONNECT RESET;
-      echo 'done';
       "
   register: command_status
 
@@ -279,7 +268,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 create database TENANT1 automatic storage YES USING CODESET UTF-8 TERRITORY DEFAULT COLLATE USING SYSTEM PAGESIZE 32768;
       db2 UPDATE DATABASE CONFIGURATION FOR TENANT1 USING LOGFILSIZ 7500;
       db2 UPDATE DATABASE CONFIGURATION FOR TENANT1 USING LOGPRIMARY 15;
@@ -298,7 +287,6 @@
       db2 GRANT USE OF TABLESPACE USERTEMP1 TO user db2inst1;
       db2 CONNECT RESET;
       db2 activate db TENANT1;
-      echo 'done';
       "
   register: command_status
   failed_when: command_status.rc != 0 and command_status.stdout is not search('.*The database alias \"TENANT1\" already exists.*')
@@ -311,7 +299,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 create database TENANT2 automatic storage YES USING CODESET UTF-8 TERRITORY DEFAULT COLLATE USING SYSTEM PAGESIZE 32768;
       db2 UPDATE DATABASE CONFIGURATION FOR TENANT2 USING LOGFILSIZ 7500;
       db2 UPDATE DATABASE CONFIGURATION FOR TENANT2 USING LOGPRIMARY 15;
@@ -330,7 +318,6 @@
       db2 GRANT USE OF TABLESPACE USERTEMP1 TO user db2inst1;
       db2 CONNECT RESET;
       db2 activate db TENANT2;
-      echo 'done';
       "
   register: command_status
   failed_when: command_status.rc != 0 and command_status.stdout is not search('.*The database alias \"TENANT2\" already exists.*')
@@ -344,7 +331,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE LARGE TABLESPACE DEVOS1_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE DEVOS1_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
@@ -356,7 +343,6 @@
 
       # db2 UPDATE DB CFG FOR CP4BA USING APPLHEAPSZ 2560; #largest value - do not wnat ot limit it, AUTOMATIC is default
       db2 CONNECT RESET;
-      echo 'done';
       "
   register: command_status
 
@@ -392,9 +378,8 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       mkdir -p sqllib/_adp_tmp
-      echo 'done';
       "
   register: command_status
 
@@ -427,10 +412,9 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 connect to cp4ba;
       db2 'select * from base.tenantinfo;';
-      echo 'done';
       "
   register: command_status
   ignore_errors: true
@@ -443,7 +427,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c '
+      su - db2inst1 -s /usr/bin/bash -c '
       # Init BASE DB
       cd sqllib/_adp_tmp/DB2
       chmod +x InitBaseDB.sh
@@ -479,7 +463,6 @@
       CP4BA
       base
       y" | ./InitTenantDB.sh
-      echo "done";
       '
   register: command_status
   when: command_status.rc == 4 and command_status.stdout is search('.*\"BASE.TENANTINFO\" is an undefined name*')
@@ -492,9 +475,8 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2set DB2_WORKLOAD=FILENET_CM;
-      echo 'done';
       "
   register: command_status
 
@@ -507,7 +489,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE LARGE TABLESPACE BADOCS_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE BADOCS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
@@ -519,7 +501,6 @@
 
       # db2 UPDATE DB CFG FOR CP4BA USING APPLHEAPSZ 2560; #largest value - do not wnat ot limit it, AUTOMATIC is default
       db2 CONNECT RESET;
-      echo 'done';
       "
   register: command_status
 
@@ -532,7 +513,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE LARGE TABLESPACE BATOS_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE BATOS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
@@ -544,7 +525,6 @@
 
       # db2 UPDATE DB CFG FOR CP4BA USING APPLHEAPSZ 2560; #largest value - do not wnat ot limit it, AUTOMATIC is default
       db2 CONNECT RESET;
-      echo 'done';
       "
   register: command_status
 
@@ -557,7 +537,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE LARGE TABLESPACE BADOS_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE BADOS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
@@ -569,7 +549,6 @@
 
       # db2 UPDATE DB CFG FOR CP4BA USING APPLHEAPSZ 2560; #largest value - do not wnat ot limit it, AUTOMATIC is default
       db2 CONNECT RESET;
-      echo 'done';
       "
   register: command_status
 
@@ -581,7 +560,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE REGULAR TABLESPACE BAWAUT_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE BAWAUT_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
@@ -594,7 +573,6 @@
       # db2 UPDATE DB CFG FOR CP4BA USING LOGFILSIZ 16384 DEFERRED; #largest value - set globally when DB created
       # db2 UPDATE DB CFG FOR CP4BA USING LOGSECOND 64 IMMEDIATE; #largest value - set globally when DB created
       db2 CONNECT RESET;
-      echo 'done';
       "
   register: command_status
 
@@ -608,7 +586,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE LARGE TABLESPACE CH_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE CH_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
@@ -619,7 +597,6 @@
       db2 GRANT USE OF TABLESPACE CH_TEMP_TS TO user ch;
 
       db2 CONNECT RESET;
-      echo 'done';
       "
   register: command_status
 

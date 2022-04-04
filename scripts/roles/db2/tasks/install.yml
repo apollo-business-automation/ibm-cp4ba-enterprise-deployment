@@ -188,7 +188,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 connect to BLUDB;
       "
   register: bludb_connect_command_status
@@ -201,13 +201,12 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       sleep 30 #for db2start to finish
       db2 deactivate db BLUDB;
       db2 force application ALL;
       sleep 60 #for force aplication to finish
       db2 drop db BLUDB;
-      echo 'done';
       "
   register: command_status
   ignore_errors: true

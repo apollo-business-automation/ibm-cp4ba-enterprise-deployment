@@ -29,7 +29,7 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE REGULAR TABLESPACE PM_TS PAGESIZE 32 K BUFFERPOOL PM_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE PM_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL PM_BP_32K;
@@ -39,7 +39,6 @@
       db2 GRANT USE OF TABLESPACE PM_TS TO user pm;
       db2 GRANT USE OF TABLESPACE PM_TEMP_TS TO user pm;
       db2 CONNECT RESET;
-      echo 'done';
       "
   register: command_status
 

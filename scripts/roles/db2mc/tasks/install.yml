@@ -184,11 +184,10 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: |
-      su - db2inst1 -c "
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CREATE DATABASE DB2MC AUTOMATIC STORAGE YES PAGESIZE 32 K;
       db2 activate db DB2MC;
       db2 CONNECT TO DB2MC;
-      echo 'done';
       "
   register: command_status
   failed_when: command_status.rc != 0 and command_status.stdout is not search('.*The database alias \"DB2MC\" already exists.*')
