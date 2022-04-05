@@ -503,19 +503,6 @@
   retries: 40
   delay: 15
 
-- name: Determine size of Init Tenants scripts
-  kubernetes.core.k8s_exec:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: "{{ cp4ba_project_name }}"
-    pod: "{{ pods.resources[0].metadata.name }}"
-    command: 'stat --printf="%s" /data-org/db_sample_data/imports.tar.xz'
-  register: command_status
-
-- name: Set size of Init Tenants scripts
-  set_fact:
-    init_scripts_size: "{{ command_status.stdout }}"
-
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-loading-default-sample-data
 - name: Download Init Tenants scripts
   kubernetes.core.k8s_cp:
