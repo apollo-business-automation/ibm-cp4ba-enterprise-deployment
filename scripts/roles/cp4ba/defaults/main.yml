@@ -7,11 +7,11 @@ cp4ba_k8s_host: ""
 ## Version of the Subscription channel as defined on
 ## https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=cluster-setting-up-in-openshift-console
 cp4ba_operator_channel: v21.3
-cp4ba_starting_csv: ibm-cp4a-operator.v21.3.6
+cp4ba_starting_csv: ibm-cp4a-operator.v21.3.7
 ## Should not be changed in particular guide version.
 ## Version of Cloud Pak CASE archive as found on
 ## https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cp-automation e.g. 3.0.1
-cp4ba_case_version: 3.2.6
+cp4ba_case_version: 3.2.7
 ## Should not be changed in particular guide version.
 ## Version of cert-kubernetes folder from Cloud Pak CASE archive e.g. 21.0.1
 cp4ba_case_cert_k8s_version: 21.0.3

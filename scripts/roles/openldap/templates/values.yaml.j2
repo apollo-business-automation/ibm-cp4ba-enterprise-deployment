@@ -100,26 +100,6 @@ customLdifFiles:
     member: uid=cpuser,ou=Users,dc=cp
     member: uid=cpuser1,ou=Users,dc=cp
     member: uid=cpuser2,ou=Users,dc=cp
-
-    # FNCM Task Manager groups
-    dn: cn=TaskAdmins,ou=Groups,dc=cp
-    objectClass: groupOfNames
-    objectClass: top
-    cn: TaskAdmins
-    member: uid=cpadmin,ou=Users,dc=cp
-
-    dn: cn=TaskUsers,ou=Groups,dc=cp
-    objectClass: groupOfNames
-    objectClass: top
-    cn: TaskUsers
-    member: uid=cpadmin,ou=Users,dc=cp
-    member: uid=cpuser,ou=Users,dc=cp
-
-    dn: cn=TaskAuditors,ou=Groups,dc=cp
-    objectClass: groupOfNames
-    objectClass: top
-    cn: TaskAuditors
-    member: uid=cpadmin,ou=Users,dc=cp    
 replication:
   enabled: false
 persistence:

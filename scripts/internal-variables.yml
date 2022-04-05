@@ -62,6 +62,7 @@ db2_hostname: c-db2ucluster-db2u.db2.svc.cluster.local
 mongodb_hostname: mongodb.mongodb.svc.cluster.local
 mail_hostname: mailserver.mail.svc.cluster.local
 mssql_hostname: mssql.mssql.svc.cluster.local
+nexus_hostname: nexusrepo-sonatype-nexus-service.nexus.svc.cluster.local
 kibana_url: http://kibana.kibana.svc.cluster.local:5601
 
 apps_endpoint_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"

@@ -94,7 +94,7 @@
       register: grep_output
       changed_when: true
       ignore_errors: true
-      failed_when: command_status.rc != 0 and (command_status.stderr | length > 0)
+      failed_when: grep_output.rc != 0 and (grep_output.stderr | length > 0)
 
     - name: Set failed tasks content
       set_fact:
