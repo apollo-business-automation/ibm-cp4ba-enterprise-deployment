@@ -586,7 +586,7 @@
       "
   register: command_status
 
-- name: Run Init Tenants scripts
+- name: Run Init Tenants scripts for Tenant1
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
@@ -595,11 +595,21 @@
     command: >
       su - db2inst1 -s /usr/bin/bash -c '
       cd sqllib/_adp_tmp/DB2;
-
       echo "TENANT1\n
       default\n
       y" | ./LoadDefaultData.sh;
+      '
+  register: command_status
 
+- name: Run Init Tenants scripts for Tenant2
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c '
+      cd sqllib/_adp_tmp/DB2;
       echo "TENANT2\n
       default\n
       y" | ./LoadDefaultData.sh;
