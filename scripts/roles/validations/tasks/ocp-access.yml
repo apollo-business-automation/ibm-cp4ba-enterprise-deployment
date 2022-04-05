@@ -28,7 +28,7 @@
     msg: "Incorrect url provided as the OCP API Endpoint"
   when:
     validate_ocp_namespaces is not defined or
-    (validate_ocp_namespaces.msg and "Error" in validate_ocp_namespaces.msg ) or
+    ("msg" in validate_ocp_namespaces and "Error" in validate_ocp_namespaces.msg ) or
     ("exception" in validate_ocp_namespaces and "NewConnectionError" in validate_ocp_namespaces.exception)
 
 - name: OCP Cluster Token has to be valid
