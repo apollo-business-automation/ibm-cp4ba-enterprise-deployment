@@ -405,52 +405,88 @@
       db2 connect to cp4ba;
       db2 'select * from base.tenantinfo;';
       "
-  register: command_status
+  register: base_table_command_status
   ignore_errors: true
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-preparing-db2-databases-document
-- name: ADP init DBs
-  kubernetes.core.k8s_exec:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: db2
-    pod: c-db2ucluster-db2u-0
-    command: >
-      su - db2inst1 -s /usr/bin/bash -c '
-      cd sqllib/_adp_tmp/DB2;
-      chmod +x InitBaseDB.sh;
-      echo -e "CP4BA\n
-      base\n
-      y" | ./InitBaseDB.sh;
+- block:
 
-      chmod +x InitTenantDB.sh;
+    - name: ADP make init scripts executable
+      kubernetes.core.k8s_exec:
+        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+        host: "{{ cp4ba_k8s_host | default(omit) }}"
+        namespace: db2
+        pod: c-db2ucluster-db2u-0
+        command: >
+          su - db2inst1 -s /usr/bin/bash -c "
+          cd sqllib/_adp_tmp/DB2;
+          chmod +x InitBaseDB.sh;
+          chmod +x InitTenantDB.sh;
+          "
+      register: command_status
 
-      echo -e "TENANT1\n
-      TENANT1\n
-      TENANT1\n
-      No\n
-      db2inst1\n
-      {{ cp4ba_universal_password }}\n
-      {{ cp4ba_universal_password }}\n
-      default\n
-      CP4BA\n
-      base\n
-      y" | ./InitTenantDB.sh;
+    - name: ADP init Base DB
+      kubernetes.core.k8s_exec:
+        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+        host: "{{ cp4ba_k8s_host | default(omit) }}"
+        namespace: db2
+        pod: c-db2ucluster-db2u-0
+        command: >
+          su - db2inst1 -s /usr/bin/bash -c '
+          cd sqllib/_adp_tmp/DB2;
+          echo -e "CP4BA\n
+          base\n
+          y" | ./InitBaseDB.sh;
+          '
+      register: command_status
 
-      echo -e "TENANT2\n
-      TENANT2\n
-      TENANT2\n
-      No\n
-      db2inst1\n
-      {{ cp4ba_universal_password }}\n
-      {{ cp4ba_universal_password }}\n
-      default\n
-      CP4BA\n
-      base\n
-      y" | ./InitTenantDB.sh;
-      '
-  register: command_status
-  when: command_status.rc == 4 and command_status.stdout is search('.*\"BASE.TENANTINFO\" is an undefined name*')
+    - name: ADP init Tenant1 DB
+      kubernetes.core.k8s_exec:
+        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+        host: "{{ cp4ba_k8s_host | default(omit) }}"
+        namespace: db2
+        pod: c-db2ucluster-db2u-0
+        command: >
+          su - db2inst1 -s /usr/bin/bash -c '
+          cd sqllib/_adp_tmp/DB2;
+          echo -e "TENANT1\n
+          TENANT1\n
+          TENANT1\n
+          No\n
+          db2inst1\n
+          {{ cp4ba_universal_password }}\n
+          {{ cp4ba_universal_password }}\n
+          default\n
+          CP4BA\n
+          base\n
+          y" | ./InitTenantDB.sh;
+          '
+      register: command_status
+
+    - name: ADP init Tenant2 DB
+      kubernetes.core.k8s_exec:
+        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+        host: "{{ cp4ba_k8s_host | default(omit) }}"
+        namespace: db2
+        pod: c-db2ucluster-db2u-0
+        command: >
+          su - db2inst1 -s /usr/bin/bash -c '
+          cd sqllib/_adp_tmp/DB2;
+          echo -e "TENANT2\n
+          TENANT2\n
+          TENANT2\n
+          No\n
+          db2inst1\n
+          {{ cp4ba_universal_password }}\n
+          {{ cp4ba_universal_password }}\n
+          default\n
+          CP4BA\n
+          base\n
+          y" | ./InitTenantDB.sh;
+          '
+      register: command_status
+
+  when: base_table_command_status.rc == 4 and command_status.stdout is search('.*\"BASE.TENANTINFO\" is an undefined name*')
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=authoring-creating-required-databases
 - name: Set BAW DB2_WORKLOAD
