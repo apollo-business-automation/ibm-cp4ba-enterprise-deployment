@@ -5,11 +5,12 @@
     timeout: 10
   register: validate_ocp_api_endpoint
   failed_when: false
+  when: ocp_api_endpoint is defined
 
 - name: OCP API Endpoint url should be reachable
   fail:
     msg: "Incorrect url provided as the OCP API Endpoint"
-  when: validate_ocp_api_endpoint.status and not (200 <= validate_ocp_api_endpoint.status < 300)
+  when: ocp_api_endpoint is defined and validate_ocp_api_endpoint.status and not (200 <= validate_ocp_api_endpoint.status < 300)
 
 - name: Validate if the given OCP credentials work, get namespaces
   kubernetes.core.k8s_info:
@@ -25,9 +26,14 @@
 - name: OCP API Endpoint url should be reachable
   fail:
     msg: "Incorrect url provided as the OCP API Endpoint"
-  when: ("exception" in validate_ocp_namespaces) and ("NewConnectionError" in validate_ocp_namespaces.exception)
+  when:
+    validate_ocp_namespaces is not defined or
+    (validate_ocp_namespaces.msg and "Error" in validate_ocp_namespaces.msg ) or
+    ("exception" in validate_ocp_namespaces and "NewConnectionError" in validate_ocp_namespaces.exception)
 
 - name: OCP Cluster Token has to be valid
   fail:
     msg: "Incorrect token provided as the OCP Cluster Token"
-  when: ("exception" in validate_ocp_namespaces) and ("Unauthorized" in validate_ocp_namespaces.exception)
+  when:
+    validate_ocp_namespaces is not defined or
+    ("exception" in validate_ocp_namespaces) and ("Unauthorized" in validate_ocp_namespaces.exception)
