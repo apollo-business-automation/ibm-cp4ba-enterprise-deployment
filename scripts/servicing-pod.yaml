@@ -8,7 +8,7 @@ metadata:
 spec:
   containers:
     - name: apollo-one-shot
-      image: ubi8/ubi
+      image: ubi8/ubi:8.5
       command: ["/bin/bash"]
       args:
         ["-c","cd /usr; yum install git -y && git clone --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x servicing.sh; ./servicing.sh; while true; do echo 'Apollo one-shot servicing pod - Ready - Enter it via Terminal and \"bash -l\" - Delete it after you are done.'; sleep 300; done"]      

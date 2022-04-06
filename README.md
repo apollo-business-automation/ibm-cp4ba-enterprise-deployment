@@ -387,7 +387,7 @@ spec:
     spec:
       containers:
         - name: apollo-one-shot
-          image: ubi8/ubi
+          image: ubi8/ubi:8.5
           command: ["/bin/bash"]
           args:
             ["-c","cd /usr; yum install git -y && git clone --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
@@ -503,7 +503,7 @@ spec:
     spec:
       containers:
         - name: apollo-one-shot
-          image: ubi8/ubi
+          image: ubi8/ubi:8.5
           command: ["/bin/bash"]
           args:
             ["-c","cd /usr; yum install git -y && git clone --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
