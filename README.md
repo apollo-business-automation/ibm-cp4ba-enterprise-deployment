@@ -2,7 +2,7 @@
 
 Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components with all kinds of prerequisites and extras on OpenShift.
 
-Last installation was performed on 2022-03-30 with CP4BA version 21.0.3-IF006 (also called 21.0.3.6 or 21.3.6)
+Last installation was performed on 2022-04-07 with CP4BA version 21.0.3-IF007 (also called 21.0.3.7 or 21.3.7)
 
 - [Documentation base](#documentation-base)
 - [Disclaimer ✋](#disclaimer-)
@@ -143,7 +143,7 @@ Multiple command line tools are installed inside a container to make the install
 With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift 4.8, however it was executed on the following once.
 
 - ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
-OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ibmc-file-gold-gid Storage Class  
+OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
 Successfully installed
 
 - ARO - Azure Red Hat OpenShift allowing to run managed Red Hat OpenShift on Azure  
