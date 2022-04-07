@@ -515,20 +515,16 @@
     state: from_pod
 
 # This is needed as ansible k8s_cp is not reliable for larger files
-- name: Upload imports.tar.xz to Nexus
-  command: |
-    curl -kX 'POST' \
-    'https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=raw-hosted' \
-    -H 'accept: application/json' \
-    -H 'Content-Type: multipart/form-data' \
-    -F 'raw.directory=cp4ba' \
-    -F 'raw.asset1=@{{ cp4ba_output_directory }}/imports.tar.xz' \
-    -F 'raw.asset1.filename=imports.tar.xz' \
-    --user "cpadmin:{{ cp4ba_universal_password }}" \
-    -s -o /dev/null -w "%{http_code}"
-  register: import_curl_result
-  failed_when: import_curl_result.stdout != "204"
-  changed_when: true
+- name: Nexus upload imports.tar.xz
+  include_role:
+    name: common
+    tasks_from: nexus-upload
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_file_folder_path: "{{ cp4ba_output_directory }}"
+    common_file_name: imports.tar.xz
+    common_universal_password: "{{ cp4ba_universal_password }}"
 
 - name: Download Init Tenants scripts to DB2
   kubernetes.core.k8s_exec:
