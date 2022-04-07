@@ -394,20 +394,6 @@
       sudo chown -R db2inst1:db2iadm1 /mnt/blumeta0/home/db2inst1/sqllib/_adp_tmp/DB2
   register: command_status
 
-- name: Test if table already exist
-  kubernetes.core.k8s_exec:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: db2
-    pod: c-db2ucluster-db2u-0
-    command: >
-      su - db2inst1 -s /usr/bin/bash -c "
-      db2 connect to cp4ba;
-      db2 'select * from base.tenantinfo;';
-      "
-  register: base_table_command_status
-  ignore_errors: true
-
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-preparing-db2-databases-document
 - name: ADP make init scripts executable
   kubernetes.core.k8s_exec:
