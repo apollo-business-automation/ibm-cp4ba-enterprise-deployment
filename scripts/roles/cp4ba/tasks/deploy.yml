@@ -532,7 +532,7 @@
     common_resource_name: "{{ cp4ba_cr_meta_name }}-pfs"
     common_resource_namespace: "{{ cp4ba_project_name }}"
     common_condition_query: resources[*].status.readyReplicas
-    common_condition_value: 2
+    common_condition_value: 1
     common_retries: 60
     common_delay: 120
 
@@ -564,7 +564,7 @@
     common_resource_name: "{{ cp4ba_cr_meta_name }}-workflow-authoring-baw-server"
     common_resource_namespace: "{{ cp4ba_project_name }}"
     common_condition_query: resources[*].status.readyReplicas
-    common_condition_value: 2
+    common_condition_value: 1
     common_retries: 60
     common_delay: 120
 
