@@ -68,8 +68,7 @@ Result of this Enterprise deployment is not fully supported:
 What is not included:
 - ICCs - not covered.
 - Caution! FNCM External share - Currently not supported with ZEN & IAM as per limitation on [FNCM limitations](https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=notes-known-limitations-issues#concept_gmf_x1h_1fb__ecm)
-- Caution! Process Mining currently works with caveats - IAF operator issues, BAI integration issues - waiting for fixes.
-- Caution! ADP is currently not working - trying to solve it.
+- Caution! Process Mining currently works with caveats - IAF operator issues - waiting for fixes.
 - Workflow Server and Workstream Services - this is a dev deployment. BAW Authoring and (BAW + IAWS) are mutually exclusive in single project.
 
 ## What is in the package 📦

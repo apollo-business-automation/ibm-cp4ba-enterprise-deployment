@@ -6,12 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [2022-04-07]
+
+### Added
+
+- Validations of inputs for installation.
+
 ### Changed
 
 - AKHQ now uses jks as truststore without private key.
-- Updated CPFS to 3.16.3
-- Updated CP4BA to 21.0.3.6
+- Updated CPFS to 3.16.3.
+- Updated CP4BA to 21.0.3.7 with pinned catalogs. Also resolves ADP not able to consume new documents.
 - Removed entryuuid from OpenLDAP entries as they are not needed anymore.
+- Updated DB2 to 11.5.7.
+- Switched Task Manager to cpadmins and cpusers groups.
+- Updated RPA to 21.0.2.3.
+- Updated IPM to 1.12.0.4.
+- Updated Asset Repo to 2021.4.1-3.
 
 ## [2022-03-15]
 
