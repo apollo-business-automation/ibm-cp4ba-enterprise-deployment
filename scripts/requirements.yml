@@ -2,3 +2,4 @@
 collections:
   - kubernetes.core
   - community.crypto
+  - community.general

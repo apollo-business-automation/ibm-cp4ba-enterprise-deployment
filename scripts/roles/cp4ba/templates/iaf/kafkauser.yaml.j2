@@ -13,36 +13,23 @@ spec:
       - host: '*'
         operation: All
         resource:
-          name: icp4ba
-          patternType: prefix
+          name: '*'
+          patternType: literal
           type: topic
       - host: '*'
         operation: All
         resource:
-          name: icp4ba
-          patternType: prefix
-          type: group
-      - host: '*'
-        operation: Read
-        resource:
-          name: __schema_icp4ba
-          patternType: prefix
-          type: topic
-      - host: '*'
-        operation: Alter
-        resource:
-          name: __schema_icp4ba
-          patternType: prefix
-          type: topic
-      - host: '*'
-        operation: Describe
-        resource:
           type: cluster
       - host: '*'
-        operation: Read
+        operation: All
         resource:
-          name: __schema_
-          patternType: prefix
-          type: topic
+          name: '*'
+          patternType: literal
+          type: group
+      - host: '*'
+        operation: All
+        resource:
+          name: '*'
+          patternType: literal
+          type: transactionalId
     type: simple
-

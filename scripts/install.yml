@@ -143,3 +143,9 @@
   include_role:
     name: pm
   when: pm_enabled
+
+- name: Assign Asset Repo Roles
+  include_role:
+    name: asset_repo
+    tasks_from: assign-roles
+  when: asset_repo_enabled

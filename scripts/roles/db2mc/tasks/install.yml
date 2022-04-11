@@ -183,8 +183,8 @@
     host: "{{ db2mc_k8s_host | default(omit) }}"
     namespace: db2
     pod: c-db2ucluster-db2u-0
-    command: |
-      su - db2inst1 -c "
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CREATE DATABASE DB2MC AUTOMATIC STORAGE YES PAGESIZE 32 K;
       db2 activate db DB2MC;
       db2 CONNECT TO DB2MC;

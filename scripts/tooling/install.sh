@@ -78,4 +78,15 @@ exit_test $? "helm setup Failed"
 sleep 5
 
 echo
+echo ">>>>$(print_timestamp) Install OpenJDK to provide keytool"
+curl -O https://download.java.net/java/GA/jdk9/9/binaries/openjdk-9_linux-x64_bin.tar.gz
+exit_test $? "Download OpenJDK Failed"
+tar -xvf openjdk-9_linux-x64_bin.tar.gz
+ln -fs jdk-9/bin/java java
+ln -fs jdk-9/bin/javac javac
+ln -fs jdk-9/bin/keytool keytool
+jdk-9/bin/java -version
+exit_test $? "OpenJDK setup Failed"
+
+echo
 echo ">>>>$(print_timestamp) Tooling install completed"

@@ -2,7 +2,7 @@
 
 Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components with all kinds of prerequisites and extras on OpenShift.
 
-Last installation was performed on 2022-03-08 with CP4BA version 21.0.3-IF005 (also called 21.0.3.5 or 21.3.5)
+Last installation was performed on 2022-04-11 with CP4BA version 21.0.3-IF007 (also called 21.0.3.7 or 21.3.7)
 
 - [Documentation base](#documentation-base)
 - [Disclaimer ✋](#disclaimer-)
@@ -68,9 +68,7 @@ Result of this Enterprise deployment is not fully supported:
 What is not included:
 - ICCs - not covered.
 - Caution! FNCM External share - Currently not supported with ZEN & IAM as per limitation on [FNCM limitations](https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=notes-known-limitations-issues#concept_gmf_x1h_1fb__ecm)
-- Caution! RPA currently works only with one user cpadmin due to identity issue.
-- Caution! Process Mining currently works with caveats - IAF operator issues, BAI integration issues - waiting for fixes.
-- Caution! ADP is currently not working - trying to solve it.
+- Caution! Process Mining currently works with caveats - IAF operator issues - waiting for fixes.
 - Workflow Server and Workstream Services - this is a dev deployment. BAW Authoring and (BAW + IAWS) are mutually exclusive in single project.
 
 ## What is in the package 📦
@@ -144,7 +142,7 @@ Multiple command line tools are installed inside a container to make the install
 With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift 4.8, however it was executed on the following once.
 
 - ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
-OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ibmc-file-gold-gid Storage Class  
+OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
 Successfully installed
 
 - ARO - Azure Red Hat OpenShift allowing to run managed Red Hat OpenShift on Azure  
@@ -388,7 +386,7 @@ spec:
     spec:
       containers:
         - name: apollo-one-shot
-          image: ubi8/ubi
+          image: ubi8/ubi:8.5
           command: ["/bin/bash"]
           args:
             ["-c","cd /usr; yum install git -y && git clone --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
@@ -504,7 +502,7 @@ spec:
     spec:
       containers:
         - name: apollo-one-shot
-          image: ubi8/ubi
+          image: ubi8/ubi:8.5
           command: ["/bin/bash"]
           args:
             ["-c","cd /usr; yum install git -y && git clone --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]

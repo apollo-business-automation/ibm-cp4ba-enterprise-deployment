@@ -8,5 +8,6 @@ spec:
       dc_common_database_instance_secret: odm-db-secret
   odm_configuration:
     customization:
-      # securitySecretRef: odm-tls-secret
       authSecretRef: odm-web-security-secret
+    livenessProbe:
+      initialDelaySeconds: 500

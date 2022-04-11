@@ -52,13 +52,14 @@ spec:
       datasource_name_tos: BATOS
       target_environment_name: target_env
       event_emitter:
-        date_sql: 20210801T000000Z
+        date_sql: 20220401T000000Z
         logical_unique_id: bawaut
         solution_list: "*"
-      case_history_emitter:
-        enable: true
-        case_history_store_schema_name: CH
-        dc_common_cpe_datasource_name: CH
+      # TODO enable when fixed
+      #case_history_emitter:
+      #  enable: true
+      #  case_history_store_schema_name: CH
+      #  dc_common_cpe_datasource_name: CH
     environment_config:
       show_task_prioritization_service_toggle: true
     federation_config:
@@ -86,7 +87,7 @@ spec:
     workforce_insights:
       replicas: 1
   pfs_configuration:
-    replicas: 2  # to fulfill PDB requirement
+    replicas: 2 # TODO to fulfill PDB requirement
   initialize_configuration:
     ic_obj_store_creation:
       object_stores:

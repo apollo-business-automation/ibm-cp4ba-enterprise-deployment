@@ -7,6 +7,11 @@
     - variables.yml
     - internal-variables.yml
   tasks:
+    - name: Input Validations
+      include_role:
+        name: validations
+        tasks_from: input-validations
+
     - name: Install CP4BA Enterprise
       include_tasks: install.yml
       when: "global_action == 'install'"

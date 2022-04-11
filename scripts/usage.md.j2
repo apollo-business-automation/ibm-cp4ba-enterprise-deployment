@@ -162,6 +162,10 @@ oc exec -it -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} 
 
 ### Resource Registry (RR) (foundation pattern)
 
+#### Endpoints
+
+- Version info: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/resreg/version
+
 #### Reading content of ETCD from RR container terminal
 
 ```bash
@@ -174,6 +178,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 #### Endpoints
 
 - Admin desktop: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=admin  
+- Health API: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/health
 
 ####  Credentials
 
@@ -218,6 +223,11 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 
 - Decision Center UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter  
 - Decision Center OAS: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter-api  
+- Decision Center remote API jars: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/decision-center-client-api.zip (details on https://www.ibm.com/docs/en/odm/8.11.0?topic=8110-accessing-decision-center-remotely-from-java-client)
+- Decision Center build command API jars: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/buildcommand.zip (details on https://www.ibm.com/docs/en/odm/8.11.0?topic=8110-automating-project-builds-build-command)
+- Decision Center custom data providers API jars: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/decision-center-client-api.zip (details on https://www.ibm.com/docs/en/odm/8.11.0?topic=8110-setting-up-custom-data-providers)
+- Decision Center truststore: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/truststore.jks
+- Decision Center OIDC providers: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/OdmOidcProvidersRD.json
 - Decision Runner UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/DecisionRunner  
 - Decision Server Console: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/res  
 - Decision Server Runtime: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/DecisionService  
@@ -374,7 +384,7 @@ Alternative custom user: cpadmin / {{ universal_password }}
 
 #### Endpoints
 
-- Process Mining UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/processmining  
+- Process Mining UI & API base: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/processmining  
 - Task Mining UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/taskmining  
 
 ####  Credentials

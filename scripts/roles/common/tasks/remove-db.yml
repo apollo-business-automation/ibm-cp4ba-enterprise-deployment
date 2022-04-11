@@ -28,11 +28,11 @@
     host: "{{ common_k8s_host | default(omit) }}"
     namespace: db2
     pod: c-db2ucluster-db2u-0
-    command: |
-      su - db2inst1 -c "
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 connect to {{ common_db2_db_name }};
       db2 force application all;
-      sleep 30
+      sleep 30;
       db2 connect reset;
       db2 deactivate db {{ common_db2_db_name }};
       db2 drop db {{ common_db2_db_name }};

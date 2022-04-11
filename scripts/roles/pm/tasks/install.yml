@@ -28,8 +28,8 @@
     host: "{{ pm_k8s_host | default(omit) }}"
     namespace: db2
     pod: c-db2ucluster-db2u-0
-    command: |
-      su - db2inst1 -c "
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
       db2 CONNECT TO CP4BA;
       db2 CREATE REGULAR TABLESPACE PM_TS PAGESIZE 32 K BUFFERPOOL PM_BP_32K;
       db2 CREATE USER TEMPORARY TABLESPACE PM_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL PM_BP_32K;
@@ -180,6 +180,16 @@
     wait: true
     wait_sleep: 15
     wait_timeout: 15
+
+- name: Manage Manual Operator ibm-apicatalog
+  include_role:
+    name: common
+    tasks_from: manage-manual-operator
+  vars:
+    common_k8s_api_key: "{{ pm_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
+    common_namespace_name: ibm-common-services
+    common_label_selector_stub: ibm-apicatalog
 
 # Based on validate successful deployment by following https://www.ibm.com/docs/en/cloud-paks/1.0?topic=platform-how-validate-successful-installation
 # TODO uncomment when PM fixed, now it never becomes ready

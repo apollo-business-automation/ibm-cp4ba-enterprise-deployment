@@ -11,3 +11,127 @@ spec:
   updateStrategy:
     registryPoll:
       interval: 45m
+---      
+################################################################################
+#
+# Licensed Materials - Property of IBM
+#
+# (C) Copyright IBM Corp. 2019. All Rights Reserved.
+#
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+#
+###############################################################################
+# CP4BA 21.0.3 IF007 catalog
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-cp4a-operator-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: ibm-cp4a-operator
+  publisher: IBM
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-cp-automation-catalog@sha256:2deeaa0c2fa161a5c895b8394c9761e8ff0ad00ad26af28dacba859551e0c84e
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
+# IBM Automation Foundation Base 1.3.5
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-cp-automation-foundation-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: IBM Automation Foundation Operators
+  publisher: IBM
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-cp-automation-foundation-catalog@sha256:65abac89b909cc2b045944263de0ccd41bee7521f7958b0ef82ff725ca710cdc
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
+# IBM Automation Foundation Core 1.3.5
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-automation-foundation-core-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: IBM Automation Foundation Core Operators
+  publisher: IBM
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-automation-foundation-core-catalog@sha256:15e3e6e834edd33d9b6ce8f8a98839c5b92a4d110087cb843108c96c578e9b1f
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
+# IBM Cloud Foundational Services 3.16.3
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  annotations:
+    bedrock_catalogsource_priority: '1'
+  name: opencloud-operators
+  namespace: openshift-marketplace
+spec:
+  displayName: IBMCS Operators
+  publisher: IBM
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-common-service-catalog@sha256:b2f1eb67e1f42c80cf9c22e4faadbcb3b0fbc3c54d181cc68e5812e6e432e72f
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
+# IBM DB2 Operator Catalog 4.0.9
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  annotations:
+    bedrock_catalogsource_priority: '1'
+  name: ibm-db2uoperator-catalog
+  namespace: openshift-marketplace
+spec:
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-db2uoperator-catalog@sha256:99f725098b801474ff77e880ca235023452116e4b005e49de613496a1917f719
+  displayName: IBM Db2U Catalog
+  publisher: IBM
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
+# IBM Business Teams Service version 3.16.1
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  annotations:
+    bedrock_catalogsource_priority: '1'
+  name: bts-operator
+  namespace: openshift-marketplace
+spec:
+  displayName: BTS Operator
+  publisher: IBM
+  sourceType: grpc
+  image: quay.io/opencloudio/ibm-bts-operator-catalog@sha256:4e2390d2acc704033d2f09885d5df05ce4a60e936c49f0ef6e9ccd481e8440c4
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
+# Cloud Native PostgresSQL 4.0.7
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  annotations:
+    bedrock_catalogsource_priority: '1'
+  name: cloud-native-postgresql-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: Cloud Native Postgresql Catalog
+  publisher: IBM
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-cpd-cloud-native-postgresql-operator-catalog@sha256:9ebba325a897fa1604e65a47cb12cf172ed59db3a872cc37b1a01e04d29e5ece
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+

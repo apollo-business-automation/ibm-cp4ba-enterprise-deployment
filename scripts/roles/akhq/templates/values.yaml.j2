@@ -13,9 +13,8 @@ secrets:
           security.protocol: SASL_SSL
           sasl.mechanism: SCRAM-SHA-512
           sasl.jaas.config: org.apache.kafka.common.security.scram.ScramLoginModule required username="cpadmin" password='{{ akhq_universal_password }}';
-          ssl.truststore.location: /app/truststore.p12
+          ssl.truststore.location: /app/truststore.jks
           ssl.truststore.password: '{{ akhq_universal_password }}'
-          ssl.truststore.type: pkcs12
         # IAF apicurio avro not supported  
         #schema-registry:
         #  type: "confluent"
@@ -23,13 +22,13 @@ secrets:
         #  basic-auth-username: cpadmin
         #  basic-auth-password: '{{ akhq_universal_password }}'
         #  properties:
-        #    schema.registry.ssl.truststore.location: /app/truststore.p12
+        #    schema.registry.ssl.truststore.location: /app/truststore.jks
         #    schema.registry.ssl.truststore.password: '{{ akhq_universal_password }}'
 kafkaSecrets:
-  truststorep12: "{{ _p12 }}"
+  truststorejks: "{{ _jks }}"
 extraVolumeMounts:
   - name: secrets
-    mountPath: /app/truststore.p12
-    subPath: truststorep12
+    mountPath: /app/truststore.jks
+    subPath: truststorejks
 readinessProbe:
   prefix: "" # set same as `micronaut.server.context-path`

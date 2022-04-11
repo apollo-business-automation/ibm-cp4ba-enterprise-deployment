@@ -2,3 +2,11 @@ spec:
   ecm_configuration:
     tm:
       replica_count: 1
+      tm_production_setting:
+        security_roles_to_group_mapping:
+          task_admins:
+            groups: [cpadmins]
+          task_users:
+            groups: [cpusers]
+          task_auditors:
+            groups: [cpadmins]      
