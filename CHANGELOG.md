@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+### Removed
+
+- Obsolete post-deploy steps for Viewer as it now automatically include MS document types.
+
 ## [2022-04-11]
 
 ### Added

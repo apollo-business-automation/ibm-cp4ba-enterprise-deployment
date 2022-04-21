@@ -4,7 +4,6 @@ Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=d
 
 The following list specifies when you need to perform particular post-deployment steps
   - [Business Automation Navigator (BAN) (foundation pattern)](#business-automation-navigator-ban-foundation-pattern)
-    - [Enable Daeja for Office](#enable-daeja-for-office) - When you want to open MS Office documents in Navigator Daeja Viewer
     - [Add Daeja license](#add-daeja-license) - When you want to open MS Office documents in Navigator Daeja Viewer and use Permanent Redaction of content.
   - [Business Automation Studio (BAS) (foundation pattern)](#business-automation-studio-bas-foundation-pattern)
     - [Deploy toolkits and configurators](#deploy-toolkits-and-configurators) - When you want to call ODM from Business Application using Automation Services.
@@ -20,7 +19,6 @@ The following list specifies when you need to perform particular post-deployment
     - [Develop custom libraries](#develop-custom-libraries) - When you want to create your custom ADS libraries.
   - [FileNet Content Manager (FNCM) (content pattern)](#filenet-content-manager-fncm-content-pattern)
     - [Update Google OIDC redirect URIs](#update-google-oidc-redirect-uris) - (don't use now) When you configured Google ID for External Share.
-    - [BAN desktop for OS1](#ban-desktop-for-os1) - To update Viewer Map for OS1 Desktop when custom Viewer Map has been created in [Enable Daeja for Office](#enable-daeja-for-office) link for MS Office documents.
     - [External Share](#external-share) - (don't use now) When you want to use External Share.
     - [External Share capability in BAN](#external-share-capability-in-ban) - (don't use now) When you want to use External Share.
     - [Task manager settings](#task-manager-settings) - When you want to use Task Manager.
@@ -46,23 +44,6 @@ For logging in to CP4BA pillars use *Authentication type: Enterprise LDAP* and u
 ## Business Automation Navigator (BAN) (foundation pattern)
 
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-navigator
-
-### Enable Daeja for Office
-
-Go to navigator https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=admin  
-Switch to Viewer Maps tab  
-Click on Default viewer map  
-Click Copy  
-
-Name: Virtual Viewer  
-Click on row FileNet Content Manager | Daeja ViewONE Virtual
-Click Edit  
-Check *All file types* checkbox  
-Dismiss the warning  
-Click OK  
-Click Save and Close  
-
-This viewer can be later used for CPE desktop.  
 
 ### Add Daeja license
 
@@ -232,20 +213,6 @@ on https://developers.google.com/identity/protocols/oauth2/openid-connect#setred
 Watch video and follow with your own google account and Client ID you used in the pre-deploy section  
 [Video fncm-es-google-oidc-post.mp4 download](https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/blob/main/assets/fncm-es-google-oidc-post.mp4?raw=true) 
 #TODO errata for redirect uris when this starts to work
-
-### BAN desktop OS1 Viewer map
-
-Go to Navigator  
-https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=admin  
-
-Go to *Desktops*  
-Click *OS1*  
-Click *Edit*  
-
-In Desktop Configuration section  
-Viewer map: Virtual Viewer  
-
-Click *Save and Close*  
 
 ### External Share
 
