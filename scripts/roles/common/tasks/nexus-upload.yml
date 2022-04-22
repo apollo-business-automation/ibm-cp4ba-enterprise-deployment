@@ -47,12 +47,8 @@
         wait: false
 
     - name: Wait for Nexus Repo Deployment to be Available
-      include_role:
-        name: common
-        tasks_from: wait-resource-condition
+      ansible.builtin.include_tasks: wait-resource-condition
       vars:
-        common_k8s_api_key: "{{ common_k8s_api_key | default(omit) }}"
-        common_k8s_host: "{{ common_k8s_host | default(omit) }}"
         common_api_version: v1
         common_resource_kind: Deployment
         common_resource_name: nexusrepo-sonatype-nexus
