@@ -30,5 +30,48 @@
     --user "cpadmin:{{ common_universal_password }}" \
     -s -o /dev/null -w "%{http_code}"
   register: import_curl_result
-  failed_when: import_curl_result.stdout != "204"
   changed_when: true
+
+- block:
+
+    - name: Restart Nexus pod if upload failed
+      kubernetes.core.k8s:
+        api_key: "{{ common_k8s_api_key | default(omit) }}"
+        host: "{{ common_k8s_host | default(omit) }}"
+        state: absent
+        api_version: v1
+        kind: Pod
+        label_selectors:
+          - app=sonatype-nexus
+        namespace: nexus
+        wait: false
+
+    - name: Wait for Nexus Repo Deployment to be Available
+      include_role:
+        name: common
+        tasks_from: wait-resource-condition
+      vars:
+        common_api_version: v1
+        common_resource_kind: Deployment
+        common_resource_name: nexusrepo-sonatype-nexus
+        common_resource_namespace: nexus
+        common_condition_name: Available
+        common_retries: 80
+        common_delay: 15
+
+    - name: Upload to Nexus
+      command: |
+        curl -kX 'POST' \
+        'https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=raw-hosted' \
+        -H 'accept: application/json' \
+        -H 'Content-Type: multipart/form-data' \
+        -F 'raw.directory=cp4ba' \
+        -F 'raw.asset1=@{{ common_file_folder_path }}/{{ common_file_name }}' \
+        -F 'raw.asset1.filename={{ common_file_name }}' \
+        --user "cpadmin:{{ common_universal_password }}" \
+        -s -o /dev/null -w "%{http_code}"
+      register: import_curl_result
+      failed_when: import_curl_result.stdout != "204"
+      changed_when: true
+
+  when: import_curl_result.stdout != "204"

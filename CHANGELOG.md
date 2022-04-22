@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+### Fixed
+
+- Added checking for nexus repository to prevent breaking it and reviving from its errors.
+
+### Removed
+
+- Obsolete post-deploy steps for Viewer as it now automatically include MS document types.
+
 ## [2022-04-11]
 
 ### Added

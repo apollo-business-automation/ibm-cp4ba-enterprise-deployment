@@ -256,6 +256,21 @@
     wait_sleep: 15
     wait_timeout: 15
 
+- name: Check if raw repository exists
+  uri:
+    url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/repositories/raw/hosted/raw-hosted"
+    method: GET
+    headers:
+      Content-Type: application/json
+    user: admin
+    password: "{{ nexus_universal_password }}"
+    validate_certs: false
+    force_basic_auth: true
+    status_code:
+      - 200
+      - 404
+  register: nexus_check_response
+
 - name: Create raw repository
   uri:
     url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/repositories/raw/hosted"
@@ -265,25 +280,21 @@
     user: admin
     password: "{{ nexus_universal_password }}"
     body_format: json
-    body: |
-      {
-        "name": "raw-hosted",
-        "online": true,
-        "storage": {
-          "blobStoreName": "default",
-          "strictContentTypeValidation": true,
-          "writePolicy": "ALLOW"
-        },
-        "cleanup": null,
-        "component": {
-          "proprietaryComponents": false
-        },
-        "raw": {
-          "contentDisposition": "ATTACHMENT"
-        }
-      }
+    body:
+      name: raw-hosted
+      online: true
+      storage:
+        blobStoreName: default
+        strictContentTypeValidation: true
+        writePolicy: ALLOW
+      cleanup: null
+      component:
+        proprietaryComponents: false
+      raw:
+        contentDisposition: ATTACHMENT
     validate_certs: false
     force_basic_auth: true
     status_code: 201
   register: nexus_response
   failed_when: nexus_response.status != 201 and nexus_response.content is not search('found duplicated key \'raw-hosted\'')
+  when: nexus_check_response.status == 404

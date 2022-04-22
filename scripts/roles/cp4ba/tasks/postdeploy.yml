@@ -376,17 +376,14 @@
         headers:
           Authorization: "Bearer {{ token_response.json | json_query('token') }}"
         body_format: json
-        body: |
-          {
-            "role_name": "ADS Admin",
-            "description": "",
-            "permissions": [
-              "administer_ads_platform",
-              "execute_ads_decision",
-              "manage_ads_decision",
-              "monitor_ads_runtime"
-            ]
-          }
+        body:
+          role_name: ADS Admin
+          description: ""
+          permissions:
+            - administer_ads_platform
+            - execute_ads_decision
+            - manage_ads_decision
+            - monitor_ads_runtime
         validate_certs: false
         status_code: 201
       register: admin_role_response
@@ -437,13 +434,10 @@
     headers:
       Authorization: "Bearer {{ token_response.json | json_query('token') }}"
     body_format: json
-    body: |
-      {
-        "username": "cpadmin",
-        "user_roles": [
-          "{{ ads_admin_role_id }}"
-        ]
-      }
+    body:
+      username: cpadmin
+      user_roles:
+        - "{{ ads_admin_role_id }}"
     validate_certs: false
     status_code:
       - 200
@@ -456,13 +450,11 @@
     headers:
       Authorization: "Bearer {{ token_response.json | json_query('token') }}"
     body_format: json
-    body: |
-      {
-        "credentialsType": "USERNAME",
-        "credentialsUsage": "MAVEN",
-        "discriminator": "https://nexus.{{ apps_endpoint_domain }}/repository/maven-releases/",
-        "credentials": "cpadmin:{{ cp4ba_universal_password }}"
-      }
+    body:
+      credentialsType: USERNAME
+      credentialsUsage: MAVEN
+      discriminator": "https://nexus.{{ apps_endpoint_domain }}/repository/maven-releases/"
+      credentials": "cpadmin:{{ cp4ba_universal_password }}"
     validate_certs: false
     status_code: 200
   register: ads_credential_response
