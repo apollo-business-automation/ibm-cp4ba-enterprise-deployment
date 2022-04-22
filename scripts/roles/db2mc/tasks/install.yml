@@ -198,7 +198,7 @@
     method: POST
     body_format: json
     body:
-      userid: cpadmin,
+      userid: cpadmin
       password: "{{ db2mc_universal_password }}"
     validate_certs: false
     status_code: 200
