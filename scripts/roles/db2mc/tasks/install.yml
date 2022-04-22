@@ -217,9 +217,9 @@
       databaseName: DB2MC
       port: 50000
       collectionCred:
-        user: "db2inst1"
-        password": "{{ db2mc_universal_password }}"
-      sslConnection": "false"
+        user: db2inst1
+        password: "{{ db2mc_universal_password }}"
+      sslConnection: false
     validate_certs: false
     timeout: 120
     status_code:
