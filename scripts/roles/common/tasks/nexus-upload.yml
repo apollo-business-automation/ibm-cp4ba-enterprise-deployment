@@ -44,9 +44,7 @@
         label_selectors:
           - app=sonatype-nexus
         namespace: nexus
-        wait: true
-        wait_sleep: 15
-        wait_timeout: 240
+        wait: false
 
     - name: Wait for Nexus Repo Deployment to be Available
       include_role:
