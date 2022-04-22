@@ -265,23 +265,18 @@
     user: admin
     password: "{{ nexus_universal_password }}"
     body_format: json
-    body: |
-      {
-        "name": "raw-hosted",
-        "online": true,
-        "storage": {
-          "blobStoreName": "default",
-          "strictContentTypeValidation": true,
-          "writePolicy": "ALLOW"
-        },
-        "cleanup": null,
-        "component": {
-          "proprietaryComponents": false
-        },
-        "raw": {
-          "contentDisposition": "ATTACHMENT"
-        }
-      }
+    body:
+      name: raw-hosted
+      online: true
+      storage:
+        blobStoreName: default
+        strictContentTypeValidation: true
+        writePolicy: ALLOW
+      cleanup: null
+      component:
+        proprietaryComponents: false
+      raw:
+        contentDisposition: ATTACHMENT
     validate_certs: false
     force_basic_auth: true
     status_code: 201

@@ -1,3 +1,52 @@
+# - name: Get OCP Apps domain
+#   include_role:
+#     name: common
+#     tasks_from: apps-endpoint
+#   vars:
+#     common_k8s_api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
+#     common_k8s_host: "{{ asset_repo_k8s_host | default(omit) }}"
+#     common_output_to_var: "apps_endpoint_domain"
+
+# - name: Get IAM access token
+#   uri:
+#     url: "https://cp-console.{{ apps_endpoint_domain }}/idprovider/v1/auth/identitytoken"
+#     method: POST
+#     headers:
+#       Content-Type: application/x-www-form-urlencoded;charset=UTF-8
+#     body_format: form-urlencoded
+#     body:
+#       grant_type: password
+#       username: cpadmin
+#       password: "{{ asset_repo_universal_password }}"
+#       scope: openid
+#     validate_certs: false
+#     status_code: 200
+#   register: token_response
+
+# - name: Add Asset Repo roles to cpadmins group
+#   uri:
+#     url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ cpadmins_group_id }}"
+#     method: PATCH
+#     headers:
+#       Authorization: "Bearer {{ token_response.json | json_query('accessToken') }}"
+#     body_format: json
+#     body:
+#       add_role_identifiers:
+#         - automation-assets-administrator-role
+#         - automation-assets-editor-role
+#         - automation-assets-viewer-role
+#     validate_certs: false
+#     status_code:
+#       - 200
+#       - 500
+#   register: group_response
+#   failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')
+
+# - debug:
+#     msg: "{{ group_response }}"
+
+# - meta: end_play
+
 - name: Execute Catalog Source role as prerequisite
   include_role:
     name: catalog_source

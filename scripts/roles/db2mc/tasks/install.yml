@@ -197,11 +197,9 @@
     url: "https://db2mc.{{ apps_endpoint_domain }}/dbapi/v4/auth/tokens"
     method: POST
     body_format: json
-    body: |
-      {
-        "userid": "cpadmin",
-        "password": "{{ db2mc_universal_password }}"
-      }
+    body:
+      userid: cpadmin,
+      password: "{{ db2mc_universal_password }}"
     validate_certs: false
     status_code: 200
   register: auth_token_response
@@ -213,18 +211,15 @@
     headers:
       Authorization: "Bearer {{ auth_token_response.json | json_query('token') }}"
     body_format: json
-    body: |
-      {
-        "host": "{{ db2mc_db2_hostname }}",
-        "dataServerType": "DB2LUW",
-        "databaseName": "DB2MC",
-        "port": "50000",
-        "collectionCred": {
-          "user": "db2inst1",
-          "password": "{{ db2mc_universal_password }}"
-        },
-        "sslConnection": "false"
-      }
+    body:
+      host: "{{ db2mc_db2_hostname }}"
+      dataServerType: DB2LUW
+      databaseName: DB2MC
+      port: 50000
+      collectionCred:
+        user: "db2inst1"
+        password": "{{ db2mc_universal_password }}"
+      sslConnection": "false"
     validate_certs: false
     timeout: 120
     status_code:
