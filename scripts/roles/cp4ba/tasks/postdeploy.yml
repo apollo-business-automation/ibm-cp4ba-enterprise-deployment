@@ -607,6 +607,8 @@
     name: common
     tasks_from: wait-resource-condition-generic
   vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"  
     common_api_version: route.openshift.io/v1
     common_resource_kind: Route
     common_resource_name: ierconfig
