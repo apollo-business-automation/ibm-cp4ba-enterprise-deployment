@@ -220,6 +220,8 @@
     - bados
     - bawaut
     - ch
+    - fpos
+    - ros
 
 - name: Remove DBs
   include_role:

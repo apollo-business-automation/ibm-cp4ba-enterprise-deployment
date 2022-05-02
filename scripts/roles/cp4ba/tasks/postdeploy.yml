@@ -582,6 +582,42 @@
       '
   register: command_status
 
+# Create Route for IER CPE configuration
+- name: Prepare yaml file for ierconfig Route
+  template:
+    src: ier/ier-cpe-route.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/ier-cpe-route.yaml"
+    mode: u+rwx
+
+- name: Create ierconfig Route
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    namespace: "{{ cp4ba_project_name }}"
+    src: "{{ cp4ba_output_directory }}/ier-cpe-route.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Wait for resource condition generic
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition-generic
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"  
+    common_api_version: route.openshift.io/v1
+    common_resource_kind: Route
+    common_resource_name: ierconfig
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_query: resources[*].status.ingress[0].conditions[0].status
+    common_condition_value: 'True'
+    common_retries: 10
+    common_delay: 10
+
 - name: Create Project
   include_role:
     name: common

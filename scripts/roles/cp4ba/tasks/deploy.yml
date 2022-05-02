@@ -132,7 +132,33 @@
     - css
     - es
     - tm
-    - ier
+
+- name: Backup CR
+  set_fact:
+    cr_bck: "{{ cr }}"
+
+- name: Add IER to CR
+  set_fact:
+    cr: "{{ cr | combine(lookup('template', 'fncm/cr-ier.yaml.j2') | from_yaml, recursive=true) }}"
+
+- name: Combine lists back to CR
+  set_fact:
+    cr: "{{ cr | combine(list_overwrites, recursive=true) }}"
+  vars:
+    list_overwrites:
+      spec:
+        datasource_configuration:
+          dc_os_datasources: "{{ cr_bck.spec.datasource_configuration.dc_os_datasources + cr.spec.datasource_configuration.dc_os_datasources }}"
+        initialize_configuration:
+          ic_obj_store_creation:
+            object_stores: "{{ cr_bck.spec.initialize_configuration.ic_obj_store_creation.object_stores +
+              cr.spec.initialize_configuration.ic_obj_store_creation.object_stores }}"
+          ic_icn_init_info:
+            icn_repos: "{{ cr_bck.spec.initialize_configuration.ic_icn_init_info.icn_repos + cr.spec.initialize_configuration.ic_icn_init_info.icn_repos }}"
+            icn_desktop: "{{ cr_bck.spec.initialize_configuration.ic_icn_init_info.icn_desktop +
+              cr.spec.initialize_configuration.ic_icn_init_info.icn_desktop }}"
+        verify_configuration:
+          vc_icn_verification: "{{ cr_bck.spec.verify_configuration.vc_icn_verification + cr.spec.verify_configuration.vc_icn_verification }}"
 
 - block:
 

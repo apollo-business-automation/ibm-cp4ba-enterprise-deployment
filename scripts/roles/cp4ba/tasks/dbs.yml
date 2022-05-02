@@ -24,6 +24,8 @@
     - bados
     - bawaut
     - ch
+    - fpos
+    - ros
 
 - name: Create & configure CP4BA DB
   kubernetes.core.k8s_exec:
@@ -186,6 +188,48 @@
       db2 CONNECT RESET;
       "
   register: command_status
+
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+- name: IER FPOS DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
+      db2 CONNECT TO CP4BA;
+      db2 CREATE LARGE TABLESPACE FPOS_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE USER TEMPORARY TABLESPACE FPOS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE SYSTEM TEMPORARY TABLESPACE FPOS_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+
+      db2 GRANT DBADM ON DATABASE TO user fpos;
+      db2 GRANT USE OF TABLESPACE FPOS_TS TO user fpos;
+      db2 GRANT USE OF TABLESPACE FPOS_TEMP_TS TO user fpos;
+      db2 CONNECT RESET;
+      "
+  register: command_status  
+
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+- name: IER ROS DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
+      db2 CONNECT TO CP4BA;
+      db2 CREATE LARGE TABLESPACE ROS_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE USER TEMPORARY TABLESPACE ROS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE SYSTEM TEMPORARY TABLESPACE ROS_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+
+      db2 GRANT DBADM ON DATABASE TO user ros;
+      db2 GRANT USE OF TABLESPACE ROS_TS TO user ros;
+      db2 GRANT USE OF TABLESPACE ROS_TEMP_TS TO user ros;
+      db2 CONNECT RESET;
+      "
+  register: command_status  
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=engine-creating-database
 - name: AAE DB
