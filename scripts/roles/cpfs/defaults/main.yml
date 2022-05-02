@@ -4,7 +4,7 @@ cpfs_dir_name: cpfs
 cpfs_k8s_api_key: ""
 cpfs_k8s_host: ""
 cpfs_operator_channel: v3
-cpfs_starting_csv: ibm-common-service-operator.v3.16.3
+cpfs_starting_csv: ibm-common-service-operator.v3.17.0
 cpfs_storage_class_name: ""
 cpfs_wildcard_key_path: ""
 cpfs_wildcard_crt_path: ""
