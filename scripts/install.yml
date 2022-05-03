@@ -122,10 +122,11 @@
   include_role:
     name: cp4ba
 
-- name: Install Asset Repo
-  include_role:
-    name: asset_repo
-  when: asset_repo_enabled
+# TODO activate when fixed
+# - name: Install Asset Repo
+#   include_role:
+#     name: asset_repo
+#   when: asset_repo_enabled
 
 - block:
 
