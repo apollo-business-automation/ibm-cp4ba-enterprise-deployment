@@ -289,8 +289,8 @@ data:
     ## For ODF (OCS) based class (e.g. on ARO or ROSA) this could be ocs-storagecluster-cephfs
     storage_class_name: managed-nfs-storage
 
-    ## Options are OCP and ROKS
-    ## OCP option also applies to other managed OpenShifts
+    ## Options are OCP and ROKS (ROKS is specific to managed OpenShift on IBM Cloud)
+    ## OCP option also applies to other managed OpenShifts ( like ARO, ROSA, etc. )
     deployment_platform: ROKS
 
     ## In the Platform, multiple users and keystores and other encrypted entries need a password.

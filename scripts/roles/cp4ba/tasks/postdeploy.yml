@@ -608,7 +608,7 @@
     tasks_from: wait-resource-condition-generic
   vars:
     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"  
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_api_version: route.openshift.io/v1
     common_resource_kind: Route
     common_resource_name: ierconfig
@@ -617,6 +617,223 @@
     common_condition_value: 'True'
     common_retries: 10
     common_delay: 10
+
+- name: Create a directory for IER config
+  ansible.builtin.file:
+    path: "{{ cp4ba_output_directory }}/ierconfig"
+    state: directory
+    mode: u+rwx
+
+- name: Extract IER config
+  ansible.builtin.unarchive:
+    src: "files/ier/ierconfig.tgz"
+    dest: "{{ cp4ba_output_directory }}/ierconfig"
+
+- name: Template ierconfig/configure/configuration/config.ini
+  template:
+    src: "{{ cp4ba_output_directory }}/ierconfig/configure/configuration/config.ini"
+    dest: "{{ cp4ba_output_directory }}/ierconfig/configure/configuration/config.ini"
+    mode: u+rwx
+
+- name: Template ierconfig/configure/profiles/configureWorkflows.xml
+  template:
+    src: "{{ cp4ba_output_directory }}/ierconfig/configure/profiles/configureWorkflows.xml"
+    dest: "{{ cp4ba_output_directory }}/ierconfig/configure/profiles/configureWorkflows.xml"
+    mode: u+rwx
+
+- name: Template ierconfig/configure/profiles/createMarkingSetsAndAddOns.xml
+  template:
+    src: "{{ cp4ba_output_directory }}/ierconfig/configure/profiles/createMarkingSetsAndAddOns.xml"
+    dest: "{{ cp4ba_output_directory }}/ierconfig/configure/profiles/createMarkingSetsAndAddOns.xml"
+    mode: u+rwx
+
+- name: Template ierconfig/configure/profiles/environmentObjectStoreConfiguration.xml
+  template:
+    src: "{{ cp4ba_output_directory }}/ierconfig/configure/profiles/environmentObjectStoreConfiguration.xml"
+    dest: "{{ cp4ba_output_directory }}/ierconfig/configure/profiles/environmentObjectStoreConfiguration.xml"
+    mode: u+rwx
+
+# Based on https://www.ibm.com/docs/en/cpfs?topic=apis-oidc-registration#get2 (Get access token by using username and password)
+- name: Get IAM access token
+  uri:
+    url: "https://cp-console.{{ apps_endpoint_domain }}/idprovider/v1/auth/identitytoken"
+    method: POST
+    headers:
+      Content-Type: application/x-www-form-urlencoded;charset=UTF-8
+    body_format: form-urlencoded
+    body:
+      grant_type: password
+      username: cpadmin
+      password: "{{ cp4ba_universal_password }}"
+      scope: openid
+    validate_certs: false
+    status_code: 200
+  register: cpadmin_token_response
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-data/4.0?topic=resources-generating-authorization-token
+- name: Exchange IAM access token for Zen token
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/v1/preauth/validateAuth"
+    method: GET
+    headers:
+      iam-token: "{{ cpadmin_token_response | json_query('json.access_token') }}"
+      username: cpadmin
+    validate_certs: false
+    status_code: 200
+  register: cpadmin_token_response
+
+- name: Create CodeModules folder
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/content-services-graphql/graphql"
+    method: POST
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+    body_format: json
+    body:
+      query: |
+        mutation CreateCodeModulesFolder {createFolder(repositoryIdentifier:
+        "FPOS", folderProperties: {name: "CodeModules", parent: {identifier: "/"} }) {id} }
+    validate_certs: false
+    status_code:
+      - 200
+  register: folder_response
+  failed_when: ( folder_response.json | json_query('errors') | length > 1 ) or
+    ( folder_response.json | json_query('errors[0].extensions.serverErrorMessage')
+      is not match('A uniqueness requirement has been violated. The value for property FolderName of class Folder is not unique.') )
+
+- name: Execute task createMarkingSetsAndAddOns
+  shell: |
+    {{ cp4ba_output_directory }}/ierconfig/configure/configmgr_cl execute -task createMarkingSetsAndAddOns
+  register: ier_configmgr_output
+  changed_when: true
+  failed_when: ier_configmgr_output.rc != 0 and
+    (ier_configmgr_output.stdout is not search('.*Parameter ImportData is either null or has an invalid value.*'))
+
+- name: Execute task configureFPOS
+  shell: |
+    {{ cp4ba_output_directory }}/ierconfig/configure/configmgr_cl execute -task configureFPOS
+  register: ier_configmgr_output
+  changed_when: true
+  failed_when: ier_configmgr_output.rc != 0 and
+    (ier_configmgr_output.stdout is not search('.*The current object store is already configured to the latest version.*'))
+
+- name: Execute task configureROS
+  shell: |
+    {{ cp4ba_output_directory }}/ierconfig/configure/configmgr_cl execute -task configureROS
+  register: ier_configmgr_output
+  changed_when: true
+  failed_when: ier_configmgr_output.rc != 0
+
+- name: Execute task configureWorkflows
+  shell: |
+    {{ cp4ba_output_directory }}/ierconfig/configure/configmgr_cl execute -task configureWorkflows
+  register: ier_configmgr_output
+  changed_when: true
+  failed_when: ier_configmgr_output.rc != 0 and
+    (ier_configmgr_output.stdout is not search('.*workflow component queues were configured with FileNet P8 Component Manager.*'))
+
+- name: Execute task transferWorkflows
+  shell: |
+    {{ cp4ba_output_directory }}/ierconfig/configure/configmgr_cl execute -task transferWorkflows
+  register: ier_configmgr_output
+  changed_when: true
+  failed_when: ier_configmgr_output.rc != 0
+
+
+- name: Copy AdditionalJars.tgz
+  copy:
+    src: "files/ier/AdditionalJars.tgz"
+    dest: "{{ cp4ba_output_directory }}/AdditionalJars.tgz"
+    mode: u+rwx
+
+# This is needed as ansible k8s_cp is not reliable for larger files
+- name: Nexus upload AdditionalJars.tgz
+  include_role:
+    name: common
+    tasks_from: nexus-upload
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_file_folder_path: "{{ cp4ba_output_directory }}"
+    common_file_name: AdditionalJars.tgz
+    common_universal_password: "{{ cp4ba_universal_password }}"
+
+- name: Get TM pod
+  kubernetes.core.k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
+    label_selectors:
+      - "app={{ cp4ba_cr_meta_name }}-tm-deploy"
+  register: tm_pod
+
+# Based on https://www.ibm.com/docs/en/enterprise-records/5.2.1?topic=in-configuring-content-navigator-task-manager-enterprise-records
+# Omit TM-Liberty.xml as it is already in cp4ba-tm-config
+- name: Download AdditionalJars.tgz to TM Pod
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: "{{ cp4ba_project_name }}"
+    pod: "{{ tm_pod.resources[0].metadata.name }}"
+    command: >
+      curl -kv --user "cpadmin:{{ cp4ba_universal_password }}" http://{{ nexus_hostname }}:8081/repository/raw-hosted/cp4ba/AdditionalJars.tgz
+      --output /tmp/AdditionalJars.tgz
+  register: command_status
+
+- name: Extract AdditionalJars.tgz to TM Pod
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: "{{ cp4ba_project_name }}"
+    pod: "{{ tm_pod.resources[0].metadata.name }}"
+    command: >
+      tar xvf /tmp/AdditionalJars.tgz -C /opt/ibm/extTM
+  register: command_status
+
+- name: Get TM Pods
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
+    label_selectors:
+      - "app={{ cp4ba_cr_meta_name }}-tm-deploy"
+  register: pods
+  retries: 40
+  delay: 15
+
+- name: Delete TM pods
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    state: absent
+    namespace: "{{ cp4ba_project_name }}"
+    name: "{{ item.metadata.name }}"
+  loop: "{{ pods.resources }}"
+
+- name: Wait for TM Deployment Available State
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: v1
+    common_resource_kind: Deployment
+    common_resource_name: "{{ cp4ba_cr_meta_name }}-tm-deploy"
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_name: Available
+    common_retries: 80
+    common_delay: 15
+
+# TODO Setup TM in BAN
+# TODO import FPOS dektop
 
 - name: Create Project
   include_role:

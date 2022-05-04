@@ -139,7 +139,7 @@
 
 - name: Add IER to CR
   set_fact:
-    cr: "{{ cr | combine(lookup('template', 'fncm/cr-ier.yaml.j2') | from_yaml, recursive=true) }}"
+    cr: "{{ cr | combine(lookup('template', 'ier/cr.yaml.j2') | from_yaml, recursive=true) }}"
 
 - name: Combine lists back to CR
   set_fact:
