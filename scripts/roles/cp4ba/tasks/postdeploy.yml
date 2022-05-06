@@ -740,7 +740,6 @@
   changed_when: true
   failed_when: ier_configmgr_output.rc != 0
 
-
 - name: Copy AdditionalJars.tgz
   copy:
     src: "files/ier/AdditionalJars.tgz"
@@ -832,8 +831,307 @@
     common_retries: 80
     common_delay: 15
 
-# TODO Setup TM in BAN
-# TODO import FPOS dektop
+- name: Navigator Logon
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/logon"
+    method: POST
+    body: "desktop=admin"
+    force_basic_auth: true
+    return_content: true
+    status_code: 200
+    headers:
+      Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+      auth-token-realm: InternalIamRealm
+      Content-Type: "application/x-www-form-urlencoded"
+    validate_certs: false
+    timeout: 60
+  register: login
+
+- name: icn session
+  set_fact:
+    content: "{{ login.content[4:] }}"
+    login_jsession: "{{ login.cookies['icn-JSESSIONID'] }}"
+    cookie_jsessionid_name: icn-JSESSIONID
+
+# - name: Get list of plugins installed
+#   uri:
+#     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/admin/configuration"
+#     method: POST
+#     return_content: true
+#     follow_redirects: all
+#     body: "action=list&id=navigator&userid=cpadmin&type=plugins&sorted=true&configuration=ApplicationConfig&\
+#       login_desktop=admin&application=navigator&securityTopic=plugins.plugins&desktop=admin"
+#     body_format: form-urlencoded
+#     validate_certs: false
+#     headers:
+#       Content-Type: "application/x-www-form-urlencoded"
+#       Connection: "keep-alive"
+#       Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
+#       security_token: "{{ content.security_token }}"
+#       Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+#       auth-token-realm: "InternalIamRealm"
+#     timeout: 60
+#   register: plugins_response
+
+# - name: Get plugin response
+#   set_fact:
+#     plugins_reponse_json: "{{ plugins_response.content[4:] }}"
+
+# - name: Set registered status to false
+#   set_fact:
+#     plugin_registered: false
+
+# - name: Check if the IER plugin is registered
+#   set_fact:
+#     plugin_registered: true
+#   when: "'IERApplicationPlugin' in item.id"
+#   loop: "{{ plugins_reponse_json.list }}"
+
+# - name: Load IERApplicationPlugin
+#   uri:
+#     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/plugin?\
+#       desktop=admin&\
+#       application=navigator&\
+#       fileName={{ 'https://cpd-'+cp4ba_project_name+'.'+apps_endpoint_domain+'/ier/EnterpriseRecordsPlugin/IERApplicationPlugin.jar' | urlencode() }}&\
+#       userid=cpadmin"
+#     method: GET
+#     return_content: true
+#     follow_redirects: all
+#     body_format: form-urlencoded
+#     validate_certs: false
+#     headers:
+#       Content-Type: "application/x-www-form-urlencoded"
+#       Connection: "keep-alive"
+#       Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
+#       security_token: "{{ content.security_token }}"
+#       Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+#       auth-token-realm: "InternalIamRealm"
+#     timeout: 60
+#   register: plugin_load_response
+#   failed_when: "'name' not in plugin_load_response.content"
+#   when: not plugin_registered
+
+# - name: Extract content from plugin load response
+#   set_fact:
+#     plugin_load_response_content: "{{ plugin_load_response.content[4:] }}"
+#   when: not plugin_registered
+
+# - name: Add IERApplicationPlugin
+#   uri:
+#     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/plugin"
+#     method: POST
+#     body: "{
+#         \"application\": \"navigator\",
+#         \"json_post\": \"{'configClass': '{{ plugin_load_response_content.configClass }}', 'name': '{{ plugin_load_response_content.name }}',
+#          'ordering': 1, 'filename': 'https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ier/EnterpriseRecordsPlugin/IERApplicationPlugin.jar',
+#          'version': '{{ plugin_load_response_content.version }}', 'dependencies': [], 'configuration': null}\",
+#         \"userid\": \"cpadmin\",
+#         \"id\": \"{{ plugin_load_response_content.id }}\",
+#         \"desktop\": \"admin\"
+#       }"
+#     return_content: true
+#     follow_redirects: all
+#     body_format: form-urlencoded
+#     validate_certs: false
+#     headers:
+#       Content-Type: "application/x-www-form-urlencoded"
+#       Connection: "keep-alive"
+#       Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
+#       security_token: "{{ content.security_token }}"
+#       Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+#       auth-token-realm: "InternalIamRealm"
+#     timeout: 60
+#   register: plugin_add_response
+#   failed_when: "'The configuration was added' not in plugin_add_response.content"
+#   when: not plugin_registered
+
+# - name: Register IERApplicationPlugin
+#   uri:
+#     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/plugin?\
+#     desktop=admin&\
+#     application=navigator&\
+#     fileName={{ 'https://cpd-'+cp4ba_project_name+'.'+apps_endpoint_domain+'/ier/EnterpriseRecordsPlugin/IERApplicationPlugin.jar' | urlencode() }}&\
+#     userid=cpadmin"
+#     method: GET
+#     return_content: true
+#     follow_redirects: all
+#     body_format: form-urlencoded
+#     validate_certs: false
+#     headers:
+#       Content-Type: "application/x-www-form-urlencoded"
+#       Connection: "keep-alive"
+#       Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
+#       security_token: "{{ content.security_token }}"
+#       Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+#       auth-token-realm: "InternalIamRealm"
+#     timeout: 60
+#   register: plugin_register_response
+#   failed_when: "'name' not in plugin_register_response.content"
+#   when: not plugin_registered
+
+# - name: Configure IERApplicationPlugin
+#   uri:
+#     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/plugin?\
+#       repositoryId=FPOS&\
+#       navigatorVersionNumber=4&\
+#       plugin=IERApplicationPlugin&\
+#       action=ierGetRepositoryAttributes&\
+#       desktop=admin"
+#     method: POST
+#     return_content: true
+#     follow_redirects: all
+#     body_format: form-urlencoded
+#     validate_certs: false
+#     headers:
+#       Content-Type: "application/x-www-form-urlencoded"
+#       Connection: "keep-alive"
+#       Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
+#       security_token: "{{ content.security_token }}"
+#       Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+#       auth-token-realm: "InternalIamRealm"
+#     timeout: 60
+#   register: plugin_configure_response
+#   failed_when: "'name' not in plugin_configure_response.content"
+#   when: not plugin_registered
+
+- name: Set Task Manager service URL
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/configuration/settings/default/taskManagerServiceURL"
+    method: POST
+    return_content: true
+    follow_redirects: all
+    body: "desktop=admin&value=https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/tm/api/v1"
+    body_format: form-urlencoded
+    validate_certs: false
+    headers:
+      Content-Type: "application/x-www-form-urlencoded"
+      Connection: "keep-alive"
+      Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
+      security_token: "{{ content.security_token }}"
+      Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+      auth-token-realm: "InternalIamRealm"
+    timeout: 60
+  register: navigator_response
+  failed_when: "'errors' in navigator_response.content"
+
+- name: Set Task manager log directory
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/configuration/settings/default/taskManagerLogDirectory"
+    method: POST
+    return_content: true
+    follow_redirects: all
+    body: "desktop=admin&value=/opt/ibm/viewerconfig/logs/"
+    body_format: form-urlencoded
+    validate_certs: false
+    headers:
+      Content-Type: "application/x-www-form-urlencoded"
+      Connection: "keep-alive"
+      Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
+      security_token: "{{ content.security_token }}"
+      Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+      auth-token-realm: "InternalIamRealm"
+    timeout: 60
+  register: navigator_response
+  failed_when: "'errors' in navigator_response.content"
+
+- name: Set Task manager administrator user ID
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/configuration/settings/default/taskManagerAdminUserId"
+    method: POST
+    return_content: true
+    follow_redirects: all
+    body: "desktop=admin&value=cpadmin"
+    body_format: form-urlencoded
+    validate_certs: false
+    headers:
+      Content-Type: "application/x-www-form-urlencoded"
+      Connection: "keep-alive"
+      Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
+      security_token: "{{ content.security_token }}"
+      Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+      auth-token-realm: "InternalIamRealm"
+    timeout: 60
+  register: navigator_response
+  failed_when: "'errors' in navigator_response.content"
+
+- name: Set Task manager administrator password
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/configuration/settings/default/taskManagerAdminPassword"
+    method: POST
+    return_content: true
+    follow_redirects: all
+    body: "desktop=admin&value={{ cp4ba_universal_password }}"
+    body_format: form-urlencoded
+    validate_certs: false
+    headers:
+      Content-Type: "application/x-www-form-urlencoded"
+      Connection: "keep-alive"
+      Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
+      security_token: "{{ content.security_token }}"
+      Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+      auth-token-realm: "InternalIamRealm"
+    timeout: 60
+  register: navigator_response
+  failed_when: "'errors' in navigator_response.content"
+
+- name: Set Daeja License Path
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/configuration/viewOne/default/virtualLicenseFilePath"
+    method: POST
+    return_content: true
+    follow_redirects: all
+    body: "desktop=admin&value=/opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides"
+    body_format: form-urlencoded
+    validate_certs: false
+    headers:
+      Content-Type: "application/x-www-form-urlencoded"
+      Connection: "keep-alive"
+      Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
+      security_token: "{{ content.security_token }}"
+      Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+      auth-token-realm: "InternalIamRealm"
+    timeout: 60
+  register: navigator_response
+  failed_when: "'errors' in navigator_response.content"
+
+- name: Get Navigator Pods
+  k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
+    label_selectors:
+      - "app={{ cp4ba_cr_meta_name }}-navigator-deploy"
+  register: pods
+  retries: 40
+  delay: 15
+
+- name: Delete Navigator pods
+  k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    state: absent
+    namespace: "{{ cp4ba_project_name }}"
+    name: "{{ item.metadata.name }}"
+  loop: "{{ pods.resources }}"
+
+- name: Wait for Navigator Deployment Available State
+  include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: v1
+    common_resource_kind: Deployment
+    common_resource_name: "{{ cp4ba_cr_meta_name }}-navigator-deploy"
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_name: Available
+    common_retries: 80
+    common_delay: 15
 
 - name: Create Project
   include_role:
