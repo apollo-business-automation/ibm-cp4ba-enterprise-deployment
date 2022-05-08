@@ -707,8 +707,7 @@
     {{ cp4ba_output_directory }}/ierconfig/configure/configmgr_cl execute -task createMarkingSetsAndAddOns
   register: ier_configmgr_output
   changed_when: true
-  failed_when: ier_configmgr_output.rc != 0 and
-    (ier_configmgr_output.stdout is not search('.*Parameter ImportData is either null or has an invalid value.*'))
+  failed_when: ier_configmgr_output.rc != 0
 
 - name: Execute task configureFPOS
   shell: |
