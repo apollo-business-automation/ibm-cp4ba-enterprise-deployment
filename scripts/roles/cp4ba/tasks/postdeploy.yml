@@ -1073,6 +1073,26 @@
   register: navigator_response
   failed_when: "'errors' in navigator_response.content"
 
+- name: Enable Task Manager
+  uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/configuration/settings/default/taskManagerServiceEnabled"
+    method: POST
+    return_content: true
+    follow_redirects: all
+    body: "desktop=admin&value=true"
+    body_format: form-urlencoded
+    validate_certs: false
+    headers:
+      Content-Type: "application/x-www-form-urlencoded"
+      Connection: "keep-alive"
+      Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
+      security_token: "{{ content.security_token }}"
+      Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+      auth-token-realm: "InternalIamRealm"
+    timeout: 60
+  register: navigator_response
+  failed_when: "'errors' in navigator_response.content"
+
 - name: Set Daeja License Path
   uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/configuration/viewOne/default/virtualLicenseFilePath"
