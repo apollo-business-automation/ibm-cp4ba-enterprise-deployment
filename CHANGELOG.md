@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 - Automated some IER configuration steps.
+- Automated Task Manager connection settings in Navigator.
+- Automated enabling of Navigator license files for Office and Redaction.
 
 ### Changed
 
