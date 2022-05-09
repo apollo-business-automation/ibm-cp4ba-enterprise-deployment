@@ -698,7 +698,7 @@
     status_code:
       - 200
   register: folder_response
-  failed_when: ( folder_response.json | json_query('errors') | length > 1 ) or
+  failed_when: ( folder_response.json | json_query('errors') | default([], true) | length > 1 ) and
     ( folder_response.json | json_query('errors[0].extensions.serverErrorMessage')
       is not match('A uniqueness requirement has been violated. The value for property FolderName of class Folder is not unique.') )
 
