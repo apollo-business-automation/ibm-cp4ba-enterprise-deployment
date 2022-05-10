@@ -2,7 +2,7 @@
 
 Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components with all kinds of prerequisites and extras on OpenShift.
 
-Last installation was performed on 2022-04-11 with CP4BA version 21.0.3-IF007 (also called 21.0.3.7 or 21.3.7)
+Last installation was performed on 2022-05-03 with CP4BA version 21.0.3-IF008 (also called 21.0.3.8 or 21.3.8)
 
 - [Documentation base](#documentation-base)
 - [Disclaimer ✋](#disclaimer-)
@@ -69,6 +69,7 @@ What is not included:
 - ICCs - not covered.
 - Caution! FNCM External share - Currently not supported with ZEN & IAM as per limitation on [FNCM limitations](https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=notes-known-limitations-issues#concept_gmf_x1h_1fb__ecm)
 - Caution! Process Mining currently works with caveats - IAF operator issues - waiting for fixes.
+- Caution! Asset Repository is now omitted due to a bug in IAF - waiting for fixes.
 - Workflow Server and Workstream Services - this is a dev deployment. BAW Authoring and (BAW + IAWS) are mutually exclusive in single project.
 
 ## What is in the package 📦
@@ -139,21 +140,21 @@ Multiple command line tools are installed inside a container to make the install
 
 ## Environments used for installation 💻
 
-With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift 4.8, however it was executed on the following once.
+With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift 4.8, however it was historically executed on the following once.
 
 - ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
 OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
-Successfully installed
-
-- ARO - Azure Red Hat OpenShift allowing to run managed Red Hat OpenShift on Azure  
-OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
 Successfully installed
 
 - Traditional OpenShift cluster created from scratch on top of virtualization platform  
 OpenShift 4.8.x on vms - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
 Successfully installed
 
-- ROSA - Red Hat OpenShift Service on AWS  
+- ARO - Azure Red Hat OpenShift allowing to run managed Red Hat OpenShift on Azure - not tested recently  
+OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
+Successfully installed
+
+- ROSA - Red Hat OpenShift Service on AWS - not tested recently  
 OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
 Successfully installed **but has issues** with passthrough Routes malfunction making it hard to access the platform.
 
@@ -288,8 +289,8 @@ data:
     ## For ODF (OCS) based class (e.g. on ARO or ROSA) this could be ocs-storagecluster-cephfs
     storage_class_name: managed-nfs-storage
 
-    ## Options are OCP and ROKS
-    ## OCP option also applies to other managed OpenShifts
+    ## Options are OCP and ROKS (ROKS is specific to managed OpenShift on IBM Cloud)
+    ## OCP option also applies to other managed OpenShifts ( like ARO, ROSA, etc. )
     deployment_platform: ROKS
 
     ## In the Platform, multiple users and keystores and other encrypted entries need a password.

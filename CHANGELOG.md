@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [2022-05-10]
+
+### Added
+
+- Automated some IER configuration steps.
+- Automated Task Manager connection settings in Navigator.
+- Automated enabling of Navigator license files for Office and Redaction.
+
+### Changed
+
+- Updated CP4BA to 21.0.3.8 with pinned catalogs.
+- Updated CPFS to 3.17.0.
+- Updated RPA to 21.0.2.4.
+
 ## [2022-05-02]
 
 ### Added
