@@ -39,6 +39,7 @@ firewall-cmd --zone=public --add-port=20048/tcp --permanent
 firewall-cmd --zone=public --add-port=111/tcp --permanent
 firewall-cmd --reload
 service rpcbind start; service nfs-server start
+# needed to sudo reboot
 systemctl enable nfs-server
 
 echo
