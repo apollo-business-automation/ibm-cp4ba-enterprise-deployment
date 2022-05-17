@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [2022-05-17]
+
+### Fixed
+
+- Set ansible modules static version dependencies as latest versions break the deployment.
+
 ## [2022-05-10]
 
 ### Added
