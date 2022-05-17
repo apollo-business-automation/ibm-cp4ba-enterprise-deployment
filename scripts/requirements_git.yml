@@ -2,10 +2,10 @@
 collections:
   - name: kubernetes.core
     src: git+http://github.com/ansible-collections/kubernetes.core
-    version: 2.2.3
+    version: 2.3.1
   - name: community.crypto
     src: git+http://github.com/ansible-collections/community.crypto
-    version: 2.2.2
+    version: 2.3.1
   - name: community.general
     src: git+http://github.com/ansible-collections/community.general
-    version: 4.6.1
+    version: 4.8.1
