@@ -1,7 +1,7 @@
 # Example of the functionality call
 #
 # - name: Add DB2 user
-#   include_role:
+#   ansible.builtin.include_role:
 #     name: common
 #     tasks_from: add-db2-user
 #   vars:
@@ -21,7 +21,8 @@
   register: command_status
   ignore_errors: true
 
-- block:
+- name: Create DB2 user
+  block:
 
     - name: Get DB2 LDAP pod
       kubernetes.core.k8s_info:

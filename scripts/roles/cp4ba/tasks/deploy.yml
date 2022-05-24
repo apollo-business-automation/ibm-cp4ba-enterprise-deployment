@@ -1,5 +1,5 @@
 - name: Get OCP Apps domain
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: apps-endpoint
   vars:
@@ -8,37 +8,37 @@
     common_output_to_var: "apps_endpoint_domain"
 
 - name: Load base CR to variable
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ lookup('template', 'cr.yaml.j2') | from_yaml }}"
 
 - name: Init variable for patterns
-  set_fact:
+  ansible.builtin.set_fact:
     patterns: []
 
 - name: Init variable for components
-  set_fact:
+  ansible.builtin.set_fact:
     components: []
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-checking-cluster-configuration point 3
 - name: Add RR pattern
-  set_fact:
+  ansible.builtin.set_fact:
     patterns: "{{ patterns + ['foundation'] }}"
 
 - name: Add RR to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'rr/cr.yaml.j2') | from_yaml, recursive=true) }}"
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-business-automation-navigator
 - name: Add BAN pattern
-  set_fact:
+  ansible.builtin.set_fact:
     patterns: "{{ patterns + ['foundation'] }}"
 
 - name: Add BAN to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'ban/cr.yaml.j2') | from_yaml, recursive=true) }}"
 
 - name: Add BAN Google IDP configuration to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(ban_insert, recursive=true) }}"
   vars:
     ban_insert:
@@ -50,37 +50,37 @@
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-business-automation-studio
 - name: Add BAS pattern
-  set_fact:
+  ansible.builtin.set_fact:
     patterns: "{{ patterns + ['foundation'] }}"
 
 - name: Add BAS component
-  set_fact:
+  ansible.builtin.set_fact:
     components: "{{ components + ['bas'] }}"
 
 - name: Add BAS to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'bas/cr.yaml.j2') | from_yaml, recursive=true) }}"
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-business-automation-insights
 - name: Add BAI pattern
-  set_fact:
+  ansible.builtin.set_fact:
     patterns: "{{ patterns + ['foundation'] }}"
 
 - name: Add BAI component
-  set_fact:
+  ansible.builtin.set_fact:
     components: "{{ components + ['bai'] }}"
 
 - name: Add BAI to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'bai/cr.yaml.j2') | from_yaml, recursive=true) }}"
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-operational-decision-manager
 - name: Add ODM pattern
-  set_fact:
+  ansible.builtin.set_fact:
     patterns: "{{ patterns + ['decisions'] }}"
 
 - name: Add ODM components
-  set_fact:
+  ansible.builtin.set_fact:
     components: "{{ components + [item] }}"
   with_items:
     - decisionCenter
@@ -88,32 +88,32 @@
     - decisionServerRuntime
 
 - name: Add ODM to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'odm/cr.yaml.j2') | from_yaml, recursive=true) }}"
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-automation-decision-services
 - name: Add ADS pattern
-  set_fact:
+  ansible.builtin.set_fact:
     patterns: "{{ patterns + ['decisions_ads'] }}"
 
 - name: Add ADS components
-  set_fact:
+  ansible.builtin.set_fact:
     components: "{{ components + [item] }}"
   with_items:
     - ads_designer
     - ads_runtime
 
 - name: Add ADS to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'ads/cr.yaml.j2') | from_yaml, recursive=true) }}"
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-filenet-content-manager
 - name: Add FNCM pattern
-  set_fact:
+  ansible.builtin.set_fact:
     patterns: "{{ patterns + ['content'] }}"
 
 - name: Add FNCM components
-  set_fact:
+  ansible.builtin.set_fact:
     components: "{{ components + [item] }}"
   with_items:
     - cmis
@@ -123,7 +123,7 @@
     - ier
 
 - name: Add FNCM to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'fncm/cr-'+item+'.yaml.j2') | from_yaml, recursive=true) }}"
   with_items:
     - cpe
@@ -134,15 +134,15 @@
     - tm
 
 - name: Backup CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr_bck: "{{ cr }}"
 
 - name: Add IER to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'ier/cr.yaml.j2') | from_yaml, recursive=true) }}"
 
 - name: Combine lists back to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(list_overwrites, recursive=true) }}"
   vars:
     list_overwrites:
@@ -160,10 +160,11 @@
         verify_configuration:
           vc_icn_verification: "{{ cr_bck.spec.verify_configuration.vc_icn_verification + cr.spec.verify_configuration.vc_icn_verification }}"
 
-- block:
+- name: Google and IDP for External Share
+  block:
 
     - name: Add Google TLS to CR
-      set_fact:
+      ansible.builtin.set_fact:
         cr: "{{ cr | combine(google_tls_insert, recursive=true) }}"
       vars:
         google_tls_insert:
@@ -173,41 +174,41 @@
 
 
     - name: Add IDP configuration to CR
-      set_fact:
+      ansible.builtin.set_fact:
         cr: "{{ cr | combine(lookup('template', 'fncm/cr-es-gid.yaml.j2') | from_yaml, recursive=true) }}"
 
   when: cp4ba_external_share_google | bool
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-business-automation-application
 - name: Add AAE pattern
-  set_fact:
+  ansible.builtin.set_fact:
     patterns: "{{ patterns + ['application'] }}"
 
 - name: Add AAE components
-  set_fact:
+  ansible.builtin.set_fact:
     components: "{{ components + [item] }}"
   with_items:
     - app_designer
     - ae_data_persistence
 
 - name: Set AAE data persistence to true in CR
-  set_fact:
+  ansible.builtin.set_fact:
     aae_data_persistence: true
 
 - name: Add AAE to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'aae/cr.yaml.j2') | from_yaml, recursive=true) }}"
 
 - name: Backup CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr_bck: "{{ cr }}"
 
 - name: Add AAE persistence to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'aae/cr-persistence.yaml.j2') | from_yaml, recursive=true) }}"
 
 - name: Combine lists back to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(list_overwrites, recursive=true) }}"
   vars:
     list_overwrites:
@@ -227,23 +228,23 @@
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-document-processing
 - name: Add ADP pattern
-  set_fact:
+  ansible.builtin.set_fact:
     patterns: "{{ patterns + ['document_processing'] }}"
 
 - name: Add ADP component
-  set_fact:
+  ansible.builtin.set_fact:
     components: "{{ components + ['document_processing_designer'] }}"
 
 - name: Backup CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr_bck: "{{ cr }}"
 
 - name: Add ADP to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'adp/cr.yaml.j2') | from_yaml, recursive=true) }}"
 
 - name: Combine lists back to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(list_overwrites, recursive=true) }}"
   vars:
     list_overwrites:
@@ -263,23 +264,23 @@
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-business-automation-workflow-authoring
 - name: Add BAWAUT pattern
-  set_fact:
+  ansible.builtin.set_fact:
     patterns: "{{ patterns + ['workflow'] }}"
 
 - name: Add BAWAUT component
-  set_fact:
+  ansible.builtin.set_fact:
     components: "{{ components + ['baw_authoring'] }}"
 
 - name: Backup CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr_bck: "{{ cr }}"
 
 - name: Add BAWAUT to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'bawaut/cr.yaml.j2') | from_yaml, recursive=true) }}"
 
 - name: Combine lists back to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(list_overwrites, recursive=true) }}"
   vars:
     list_overwrites:
@@ -298,7 +299,7 @@
           vc_icn_verification: "{{ cr_bck.spec.verify_configuration.vc_icn_verification + cr.spec.verify_configuration.vc_icn_verification }}"
 
 - name: Add patterns to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(patterns_insert, recursive=true) }}"
   vars:
     patterns_insert:
@@ -307,7 +308,7 @@
           sc_deployment_patterns: "{{ patterns | unique | join(',') }}"
 
 - name: Add components to CR
-  set_fact:
+  ansible.builtin.set_fact:
     cr: "{{ cr | combine(components_insert, recursive=true) }}"
   vars:
     components_insert:
@@ -316,14 +317,14 @@
           sc_optional_components: "{{ components | unique | join(',') }}"
 
 - name: Write CR to file
-  copy:
+  ansible.builtin.copy:
     content: '{{ cr | to_nice_yaml(indent=2, width=1337) }}'
     dest: "{{ cp4ba_output_directory }}/cr.yaml"
     mode: u+rwx
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=deployment-deploying-custom-resource-you-created-script
 - name: Add CP4BA CR
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     state: present
@@ -332,7 +333,7 @@
     src: "{{ cp4ba_output_directory }}/cr.yaml"
 
 - name: Manage Manual Operator ibm-zen-operator
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: manage-manual-operator
   vars:
@@ -342,7 +343,7 @@
     common_label_selector_stub: ibm-zen-operator
 
 - name: Wait for icp4ba Cartridge to be Ready
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:
@@ -357,7 +358,7 @@
     common_delay: 300
 
 - name: Wait for Prereqs Ready states
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition-generic
   vars:
@@ -392,7 +393,7 @@
     condition_query: "resources[*].status.conditions[?type == 'Ready'].status"
 
 - name: Manage Manual Operator ibm-bts-operator
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: manage-manual-operator
   vars:
@@ -402,7 +403,7 @@
     common_label_selector_stub: ibm-bts-operator
 
 - name: Manage Manual Operator cloud-native-postgresql
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: manage-manual-operator
   vars:
@@ -412,7 +413,7 @@
     common_label_selector_stub: cloud-native-postgresql
 
 - name: Wait for BTS Ready state
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition-generic
   vars:
@@ -428,7 +429,7 @@
     common_delay: 120
 
 - name: Wait for Deployments to be Available
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:
@@ -457,7 +458,7 @@
     - "{{ cp4ba_cr_meta_name }}-pbk-ae-deployment"
 
 - name: Wait for StatefulSets ready replicas
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition-generic
   vars:
@@ -477,7 +478,7 @@
     - "{{ cp4ba_cr_meta_name }}-rabbitmq-ha"
 
 - name: Wait for Deployments to be Available
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:
@@ -494,7 +495,7 @@
     - "{{ cp4ba_cr_meta_name }}-ier-deploy"
 
 - name: Wait for ADP NL extractor Deployment Available state
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:
@@ -509,7 +510,7 @@
     common_delay: 300
 
 - name: Wait for BAI InsightsEngine Ready state
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:
@@ -524,7 +525,7 @@
     common_delay: 120
 
 - name: Wait for Deployments to be Available
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:
@@ -547,7 +548,7 @@
     - "{{ cp4ba_cr_meta_name }}-instance1-aae-ae-deployment"
 
 - name: Wait for {{ cp4ba_cr_meta_name }}-pfs StatefulSet ready replicas
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition-generic
   vars:
@@ -563,7 +564,7 @@
     common_delay: 120
 
 - name: Wait for {{ cp4ba_cr_meta_name }}-workflow-authoring-baw-jms StatefulSet ready replicas
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition-generic
   vars:
@@ -579,7 +580,7 @@
     common_delay: 120
 
 - name: Wait for {{ cp4ba_cr_meta_name }}-workflow-authoring-baw-server StatefulSet ready replicas
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition-generic
   vars:
@@ -595,7 +596,7 @@
     common_delay: 120
 
 - name: Wait for Deployments to be Available
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:
@@ -620,7 +621,7 @@
     - "{{ cp4ba_cr_meta_name }}-ads-runtime-service"
 
 - name: Wait for CP4BA to be Ready
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:

@@ -1,18 +1,18 @@
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=cluster-setting-up-in-openshift-console
 - name: Create Catalog Source directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ catalog_source_output_directory }}"
     state: directory
     mode: u+rwx
 
 - name: Prepare yaml file for CatalogSource
-  template:
+  ansible.builtin.template:
     src: catalogsource.yaml.j2
     dest: "{{ catalog_source_output_directory }}/catalogsource.yaml"
     mode: u+rwx
 
 - name: Add CatalogSource
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ catalog_source_k8s_api_key | default(omit) }}"
     host: "{{ catalog_source_k8s_host | default(omit) }}"
     state: present
@@ -24,7 +24,7 @@
     wait_timeout: 15
 
 - name: Wait for CatalogSource
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ catalog_source_k8s_api_key | default(omit) }}"
     host: "{{ catalog_source_k8s_host | default(omit) }}"
     api_version: v1alpha1

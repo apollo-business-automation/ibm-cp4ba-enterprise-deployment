@@ -1,5 +1,5 @@
 # - name: Get OCP Apps domain
-#   include_role:
+#   ansible.builtin.include_role:
 #     name: common
 #     tasks_from: apps-endpoint
 #   vars:
@@ -8,7 +8,7 @@
 #     common_output_to_var: "apps_endpoint_domain"
 
 # - name: Get IAM access token
-#   uri:
+#   ansible.builtin.uri:
 #     url: "https://cp-console.{{ apps_endpoint_domain }}/idprovider/v1/auth/identitytoken"
 #     method: POST
 #     headers:
@@ -24,7 +24,7 @@
 #   register: token_response
 
 # - name: Add Asset Repo roles to cpadmins group
-#   uri:
+#   ansible.builtin.uri:
 #     url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ cpadmins_group_id }}"
 #     method: PATCH
 #     headers:
@@ -48,26 +48,26 @@
 # - meta: end_play
 
 - name: Execute Catalog Source role as prerequisite
-  include_role:
+  ansible.builtin.include_role:
     name: catalog_source
   vars:
     catalog_source_k8s_api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
     catalog_source_k8s_host: "{{ asset_repo_k8s_host | default(omit) }}"
 
 - name: Create Asset Repo directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ asset_repo_output_directory }}"
     state: directory
     mode: u+rwx
 
 - name: Prepare yaml file for the Operator Subscription
-  template:
+  ansible.builtin.template:
     src: subscription.yaml.j2
     dest: "{{ asset_repo_output_directory }}/subscription.yaml"
     mode: u+rwx
 
 - name: Add the Operator Subscription
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
     host: "{{ asset_repo_k8s_host | default(omit) }}"
     state: present
@@ -79,7 +79,7 @@
     wait_timeout: 15
 
 - name: Manage Manual Operator ibm-integration-asset-repository in {{ asset_repo_project_name }}
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: manage-manual-operator
   vars:
@@ -89,7 +89,7 @@
     common_label_selector_stub: ibm-integration-asset-repository
 
 - name: Wait for AssetRepository CRD to be Established
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-crd
   vars:
@@ -98,13 +98,13 @@
     common_crd_name: assetrepositories.integration.ibm.com
 
 - name: Prepare yaml file for AssetRepository instance
-  template:
+  ansible.builtin.template:
     src: assetrepository.yaml.j2
     dest: "{{ asset_repo_output_directory }}/assetrepository.yaml"
     mode: u+rwx
 
 - name: Add AssetRepository instance
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
     host: "{{ asset_repo_k8s_host | default(omit) }}"
     state: present
@@ -116,7 +116,7 @@
     wait_timeout: 15
 
 - name: Wait for AssetRepository to be Ready
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition-generic
   vars:

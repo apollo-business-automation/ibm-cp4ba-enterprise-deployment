@@ -1,7 +1,7 @@
 # Based on https://www.ibm.com/docs/en/cpfs?topic=online-uninstalling-foundational-services
 
 - name: Remove IBM Cloud Pak foundational services Operator
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: remove-operator
   vars:
@@ -11,7 +11,7 @@
     common_label_selector_stub: ibm-common-service-operator
 
 - name: Remove common-service Project
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: absent
@@ -23,7 +23,7 @@
     wait_timeout: 50
 
 - name: Get OperandRequest CRD
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     api_version: apiextensions.k8s.io/v1
@@ -33,10 +33,11 @@
   retries: 10
   delay: 1
 
-- block:
+- name: Delete all OperanRequests
+  block:
 
     - name: Get all OperandRequest
-      k8s_info:
+      kubernetes.core.k8s_info:
         api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
         host: "{{ cpfs_k8s_host | default(omit) }}"
         api_version: operator.ibm.com/v1alpha1
@@ -47,7 +48,7 @@
       delay: 1
 
     - name: Delete All OperandRequest
-      k8s:
+      kubernetes.core.k8s:
         api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
         host: "{{ cpfs_k8s_host | default(omit) }}"
         state: absent
@@ -58,7 +59,7 @@
       with_items: "{{ operand_requests.resources }}"
 
     - name: Wait All OperandRequest disappear
-      k8s_info:
+      kubernetes.core.k8s_info:
         api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
         host: "{{ cpfs_k8s_host | default(omit) }}"
         api_version: operator.ibm.com/v1alpha1
@@ -74,7 +75,7 @@
   when: operandrequest_crd.resources | length != 0
 
 - name: Get OperandConfig CRD
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     api_version: apiextensions.k8s.io/v1
@@ -85,7 +86,7 @@
   delay: 1
 
 - name: Remove OperandConfig common-service
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: absent
@@ -98,7 +99,7 @@
   when: operandconfig_crd.resources | length != 0
 
 - name: Get OperandRegistry CRD
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     api_version: apiextensions.k8s.io/v1
@@ -109,7 +110,7 @@
   delay: 1
 
 - name: Remove OperandRegistry common-service
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: absent
@@ -122,7 +123,7 @@
   when: operandregistry_crd.resources | length != 0
 
 - name: Get NamespaceScope CRD
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     api_version: apiextensions.k8s.io/v1
@@ -132,10 +133,11 @@
   retries: 10
   delay: 1
 
-- block:
+- name: Delete all NamespaceScope
+  block:
 
     - name: Get all NamespaceScope
-      k8s_info:
+      kubernetes.core.k8s_info:
         api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
         host: "{{ cpfs_k8s_host | default(omit) }}"
         api_version: operator.ibm.com/v1
@@ -146,7 +148,7 @@
       delay: 1
 
     - name: Delete All NamespaceScope
-      k8s:
+      kubernetes.core.k8s:
         api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
         host: "{{ cpfs_k8s_host | default(omit) }}"
         state: absent
@@ -162,7 +164,7 @@
   when: namespacescope_crd.resources | length != 0
 
 - name: Remove Operand Deployment Lifecycle Manager Operator
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: remove-operator
   vars:
@@ -172,7 +174,7 @@
     common_label_selector_stub: ibm-odlm
 
 - name: Remove ibmcloud-cluster-ca-cert Secret
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: absent
@@ -185,7 +187,7 @@
     wait_timeout: 50
 
 - name: Remove ibm-common-service-webhook-configuration MutatingWebhookConfiguration
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: absent
@@ -197,7 +199,7 @@
     wait_timeout: 50
 
 - name: Remove services Project
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: absent
@@ -209,7 +211,7 @@
     wait_timeout: 50
 
 - name: Remove ibm-common-services-status ConfigMap
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: absent
@@ -222,7 +224,7 @@
     wait_timeout: 50
 
 - name: Remove ibm-common-services Project
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: absent
@@ -234,7 +236,7 @@
     wait_timeout: 90
 
 - name: Get Cluster Monitoring ConfigMap
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     kind: ConfigMap
@@ -245,7 +247,7 @@
   delay: 1
 
 - name: Remove Cluster Monitoring ConfigMap
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: absent

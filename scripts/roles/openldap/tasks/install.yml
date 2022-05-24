@@ -1,11 +1,11 @@
 - name: Create OpenLdap directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ openldap_output_directory }}"
     state: directory
     mode: u+rwx
 
 - name: Create Project
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-project
   vars:
@@ -15,13 +15,13 @@
     common_output_directory: "{{ openldap_output_directory }}"
 
 - name: Prepare yaml file for anyuid ClusterRoleBinding
-  template:
+  ansible.builtin.template:
     src: anyuid-scc-clusterrolebinding.yaml.j2
     dest: "{{ openldap_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
     mode: u+rwx
 
 - name: Add anyuid ClusterRoleBinding
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ openldap_k8s_api_key | default(omit) }}"
     host: "{{ openldap_k8s_host | default(omit) }}"
     state: present
@@ -38,7 +38,7 @@
     repo_url: "https://jp-gouin.github.io/helm-openldap/"
 
 - name: Prepare yaml file for values of helm chart
-  template:
+  ansible.builtin.template:
     src: values.yaml.j2
     dest: "{{ openldap_output_directory }}/values.yaml"
     mode: u+rwx
@@ -55,7 +55,7 @@
       - "{{ openldap_output_directory }}/values.yaml"
 
 - name: Get OCP Apps Endpoint
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: apps-endpoint
   vars:
@@ -65,7 +65,7 @@
   when: apps_endpoint_domain is not defined
 
 - name: Crete Edge Route
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-edge-route
   vars:
@@ -81,7 +81,7 @@
     common_output_directory: "{{ openldap_output_directory }}"
 
 - name: Wait for openldap-phpldapadmin Deployment to be Available
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:
@@ -96,7 +96,7 @@
     common_delay: 15
 
 - name: Wait for openldap-openldap-stack-ha StatefulSet ready replicas
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition-generic
   vars:

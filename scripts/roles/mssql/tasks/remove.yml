@@ -1,5 +1,5 @@
 - name: Remove Project mssql
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ mssql_k8s_api_key | default(omit) }}"
     host: "{{ mssql_k8s_host | default(omit) }}"

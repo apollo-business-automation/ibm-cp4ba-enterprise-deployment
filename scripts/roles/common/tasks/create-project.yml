@@ -1,7 +1,7 @@
 # Example of the functionality call
 #
 # - name: Create Project
-#   include_role:
+#   ansible.builtin.include_role:
 #     name: common
 #     tasks_from: create-project
 #   vars:
@@ -12,13 +12,13 @@
 #     common_project_output_name: _project_output_name # Optional
 
 - name: Prepare yaml file for Project {{ common_namespace_name }}
-  template:
+  ansible.builtin.template:
     src: project.yaml.j2
     dest: "{{ common_output_directory }}/{{ common_project_output_name }}"
     mode: u+rwx
 
 - name: Add Project {{ common_namespace_name }}
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
     host: "{{ common_k8s_host | default(omit) }}"
     state: present
@@ -30,7 +30,7 @@
     wait_timeout: 15
 
 - name: Wait for Project {{ common_namespace_name }}
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
     host: "{{ common_k8s_host | default(omit) }}"
     api_version: project.openshift.io/v1

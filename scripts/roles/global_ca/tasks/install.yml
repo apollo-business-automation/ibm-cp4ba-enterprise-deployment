@@ -1,11 +1,11 @@
 - name: Create Global CA directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ global_ca_output_directory }}"
     state: directory
     mode: u+rwx
 
 - name: Get exiting secret
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ global_ca_k8s_api_key | default(omit) }}"
     host: "{{ global_ca_k8s_host | default(omit) }}"
     api_version: v1
@@ -18,13 +18,13 @@
   block:
 
     - name: Save Global CA key
-      copy:
+      ansible.builtincopy:
         dest: "{{ global_ca_output_directory }}/global-ca.key"
         content: "{{ global_ca_secret.resources[0].data['tls.key'] | b64decode }}"
         mode: u+rwx
 
     - name: Save Global CA crt
-      copy:
+      ansible.builtin.copy:
         dest: "{{ global_ca_output_directory }}/global-ca.crt"
         content: "{{ global_ca_secret.resources[0].data['tls.crt'] | b64decode }}"
         mode: u+rwx
@@ -56,25 +56,25 @@
         selfsigned_not_after: "+36500d"
 
     - name: Load TLS key data
-      slurp:
+      ansible.builtin.slurp:
         src: '{{ global_ca_output_directory }}/global-ca.key'
       register: slurped_key_data
 
     - name: Decode data and store as fact
-      set_fact:
+      ansible.builtin.set_fact:
         _global_ca_key: "{{ slurped_key_data.content }}"
 
     - name: Load TLS crt data
-      slurp:
+      ansible.builtin.slurp:
         src: '{{ global_ca_output_directory }}/global-ca.crt'
       register: slurped_crt_data
 
     - name: Decode data and store as fact
-      set_fact:
+      ansible.builtin.set_fact:
         _global_ca_crt: "{{ slurped_crt_data.content }}"
 
     - name: Create Project
-      include_role:
+      ansible.builtin.include_role:
         name: common
         tasks_from: create-project
       vars:
@@ -84,13 +84,13 @@
         common_output_directory: "{{ global_ca_output_directory }}"
 
     - name: Prepare yaml file for Secret
-      template:
+      ansible.builtin.template:
         src: secret.yaml.j2
         dest: "{{ global_ca_output_directory }}/secret.yaml"
         mode: u+rwx
 
     - name: Add Secret
-      k8s:
+      kubernetes.core.k8s:
         api_key: "{{ global_ca_k8s_api_key | default(omit) }}"
         host: "{{ global_ca_k8s_host | default(omit) }}"
         state: present
@@ -104,7 +104,7 @@
   when: global_ca_secret.resources | length == 0
 
 - name: Get OCP Apps domain
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: apps-endpoint
   vars:

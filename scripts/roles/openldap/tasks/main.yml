@@ -1,9 +1,9 @@
 - name: Set output directory variable
-  set_fact:
+  ansible.builtin.set_fact:
     openldap_output_directory: "{{ openldap_base_dir }}/{{ openldap_dir_name }}"
 
 - name: Remove openldap directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ openldap_output_directory }}"
     state: absent
 

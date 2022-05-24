@@ -1,9 +1,9 @@
 - name: Set output directory variable
-  set_fact:
+  ansible.builtin.set_fact:
     catalog_source_output_directory: "{{ catalog_source_base_dir }}/{{ catalog_source_dir_name }}"
 
 - name: Remove Catalog Source directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ catalog_source_output_directory }}"
     state: absent
 

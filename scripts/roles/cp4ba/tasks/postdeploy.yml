@@ -5,7 +5,7 @@
 #   as per LI at http://www-03.ibm.com/software/sla/sladb.nsf/lilookup/31BA4BF94C59AD55852586FE0060B39C?OpenDocument
 
 - name: Get Navigator Pod
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: v1
@@ -39,7 +39,7 @@
     - lic-server.v1
 
 - name: Get OCP Apps domain
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: apps-endpoint
   vars:
@@ -50,7 +50,7 @@
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-studio
 # Get access token for ZEN administrative initial user
 - name: Get Zen Initial Admin User Secret
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: v1
@@ -64,7 +64,7 @@
 # Based on introspection of Zen NGINX configs in Deployment ibm-nginx in /user-home/_global_/nginx-conf.d/icp4d-open-api-configmap.conf
 # Based on CP4BA Operator code ansible\roles\AS-ID\tasks\iam-verify-and-add.yml@69+
 - name: Get Zen Initial Admin User Acccess Token
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icp4d-api/v1/authorize"
     method: POST
     body_format: json
@@ -77,7 +77,7 @@
 
 # Groups endpoint found based on the network dev tools in the browser
 - name: Add All Roles to cpadmins group
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
     method: POST
     headers:
@@ -102,7 +102,7 @@
       - zen_user_role
 
 - name: Register ldap group with the zen group
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ group_response.json.group_id }}/members"
     method: POST
     headers:
@@ -117,10 +117,11 @@
       - 200
   when: group_response.status == 201
 
-- block:
+- name: Add ldap group to zen group
+  block:
 
     - name: Get the zen groups
-      uri:
+      ansible.builtin.uri:
         url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
         method: GET
         headers:
@@ -131,7 +132,7 @@
       register: get_groups_response
 
     - name: Register ldap group with the zen group cpadmins
-      uri:
+      ansible.builtin.uri:
         url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ group_id }}/members"
         method: POST
         headers:
@@ -155,7 +156,7 @@
 
 # Groups endpoint found based on the network dev tools in the browser
 - name: Add All Roles to cpusers groups
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
     method: POST
     headers:
@@ -181,7 +182,7 @@
   register: group_responses
 
 - name: Register ldap groups with the zen groups
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ item.json.group_id }}/members"
     method: POST
     headers:
@@ -197,10 +198,11 @@
   when: item.status == 201
   loop: "{{ group_responses.results }}"
 
-- block:
+- name: Add ldap group to zen group
+  block:
 
     - name: Get the zen groups
-      uri:
+      ansible.builtin.uri:
         url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
         method: GET
         headers:
@@ -211,7 +213,7 @@
       register: get_groups_response
 
     - name: Register ldap group with the zen group cpusers
-      uri:
+      ansible.builtin.uri:
         url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ group_id }}/members"
         method: POST
         headers:
@@ -238,7 +240,7 @@
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=secrets-creating-custom-bpc-workforce-secret
 - name: Get BPM Systems Federated Response
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/pfs/rest/bpm/federated/v1/systems"
     method: GET
     headers:
@@ -249,7 +251,7 @@
   register: bpm_systems_response
 
 - name: Prepare yaml file for the Workforce Insights Secret
-  template:
+  ansible.builtin.template:
     src: bai/workforce-insights-config-secret.yaml.j2
     dest: "{{ cp4ba_output_directory }}/workforce-insights-config-secret.yaml"
     mode: u+rwx
@@ -261,7 +263,7 @@
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut"
 
 - name: Add the Workforce Insights Secret
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     src: "{{ cp4ba_output_directory }}/workforce-insights-config-secret.yaml"
@@ -273,7 +275,7 @@
     wait_timeout: 15
 
 - name: Get BPC Pods
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: v1
@@ -286,7 +288,7 @@
   delay: 15
 
 - name: Delete BPC pods
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: v1
@@ -297,7 +299,7 @@
   loop: "{{ pods.resources }}"
 
 - name: Wait for BPC Deployment Available State
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:
@@ -313,7 +315,7 @@
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=gst-task-2-connecting-git-repository-sharing-decision-service
 - name: Create ADS organization in Gitea
-  uri:
+  ansible.builtin.uri:
     url: "https://gitea.{{ apps_endpoint_domain }}/api/v1/orgs"
     method: POST
     headers:
@@ -336,7 +338,7 @@
       - 422
 
 - name: Get maven plugins definition from ADS
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/download/index.json"
     method: GET
     headers:
@@ -350,7 +352,7 @@
   with_dict: "{{ ads_maven_plugins_response.json | json_query('resources') }}"
 
 - name: Get roles
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/roles"
     method: GET
     headers:
@@ -360,17 +362,18 @@
   register: roles_response
 
 - name: Retrieve existing ADS admin role ID
-  set_fact:
+  ansible.builtin.set_fact:
     ads_admin_role_id: "{{ roles_response.json | json_query(condition_query) | first | default('', true) }}"
   vars:
     condition_query:
       "rows[?doc.role_name == 'ADS Admin'].id"
 
-- block:
+- name: Create ADS admin role
+  block:
 
     # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=services-managing-user-permissions
     - name: Create ADS admin role
-      uri:
+      ansible.builtin.uri:
         url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/role"
         method: POST
         headers:
@@ -389,13 +392,13 @@
       register: admin_role_response
 
     - name: Set ADS admin role ID
-      set_fact:
+      ansible.builtin.set_fact:
         ads_admin_role_id: "{{ admin_role_response.json | json_query('id') }}"
 
   when: ads_admin_role_id | length == 0
 
 - name: Get groups
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
     method: GET
     headers:
@@ -405,13 +408,13 @@
   register: groups_response
 
 - name: Get cpadmins group id
-  set_fact:
+  ansible.builtin.set_fact:
     cpadmins_group_id: "{{ groups_response.json | json_query(condition_query) | first }}"
   vars:
     condition_query: "results[?name == 'cpadmins'].group_id"
 
 - name: Add ADS Admin role to cpadmins group
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ cpadmins_group_id }}"
     method: PATCH
     headers:
@@ -428,7 +431,7 @@
   failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')
 
 - name: Add ADS Admin role to default admin user
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user/admin?add_roles=true"
     method: PUT
     headers:
@@ -444,7 +447,7 @@
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=credentials-configuring-maven-repository-manager
 - name: Add Maven credential
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/rest-api/api/admin/credential"
     method: POST
     headers:
@@ -460,7 +463,7 @@
   register: ads_credential_response
 
 - name: Create ADP organization in Gitea
-  uri:
+  ansible.builtin.uri:
     url: "https://gitea.{{ apps_endpoint_domain }}/api/v1/orgs"
     method: POST
     headers:
@@ -483,7 +486,7 @@
       - 422
 
 - name: Get Natural Language Extractor Pod
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: v1
@@ -508,7 +511,7 @@
 
 # This is needed as ansible k8s_cp is not reliable for larger files
 - name: Nexus upload imports.tar.xz
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: nexus-upload
   vars:
@@ -584,13 +587,13 @@
 
 # Create Route for IER CPE configuration
 - name: Prepare yaml file for ierconfig Route
-  template:
+  ansible.builtin.template:
     src: ier/ier-cpe-route.yaml.j2
     dest: "{{ cp4ba_output_directory }}/ier-cpe-route.yaml"
     mode: u+rwx
 
 - name: Create ierconfig Route
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     state: present
@@ -603,7 +606,7 @@
     wait_timeout: 15
 
 - name: Wait for resource condition generic
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition-generic
   vars:
@@ -630,32 +633,32 @@
     dest: "{{ cp4ba_output_directory }}/ierconfig"
 
 - name: Template ierconfig/configure/configuration/config.ini
-  template:
+  ansible.builtin.template:
     src: "{{ cp4ba_output_directory }}/ierconfig/configure/configuration/config.ini"
     dest: "{{ cp4ba_output_directory }}/ierconfig/configure/configuration/config.ini"
     mode: u+rwx
 
 - name: Template ierconfig/configure/profiles/configureWorkflows.xml
-  template:
+  ansible.builtin.template:
     src: "{{ cp4ba_output_directory }}/ierconfig/configure/profiles/configureWorkflows.xml"
     dest: "{{ cp4ba_output_directory }}/ierconfig/configure/profiles/configureWorkflows.xml"
     mode: u+rwx
 
 - name: Template ierconfig/configure/profiles/createMarkingSetsAndAddOns.xml
-  template:
+  ansible.builtin.template:
     src: "{{ cp4ba_output_directory }}/ierconfig/configure/profiles/createMarkingSetsAndAddOns.xml"
     dest: "{{ cp4ba_output_directory }}/ierconfig/configure/profiles/createMarkingSetsAndAddOns.xml"
     mode: u+rwx
 
 - name: Template ierconfig/configure/profiles/environmentObjectStoreConfiguration.xml
-  template:
+  ansible.builtin.template:
     src: "{{ cp4ba_output_directory }}/ierconfig/configure/profiles/environmentObjectStoreConfiguration.xml"
     dest: "{{ cp4ba_output_directory }}/ierconfig/configure/profiles/environmentObjectStoreConfiguration.xml"
     mode: u+rwx
 
 # Based on https://www.ibm.com/docs/en/cpfs?topic=apis-oidc-registration#get2 (Get access token by using username and password)
 - name: Get IAM access token
-  uri:
+  ansible.builtin.uri:
     url: "https://cp-console.{{ apps_endpoint_domain }}/idprovider/v1/auth/identitytoken"
     method: POST
     headers:
@@ -672,7 +675,7 @@
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-data/4.0?topic=resources-generating-authorization-token
 - name: Exchange IAM access token for Zen token
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/v1/preauth/validateAuth"
     method: GET
     headers:
@@ -683,7 +686,7 @@
   register: cpadmin_token_response
 
 - name: Create CodeModules folder
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/content-services-graphql/graphql"
     method: POST
     headers:
@@ -703,14 +706,14 @@
       is not match('A uniqueness requirement has been violated. The value for property FolderName of class Folder is not unique.') )
 
 - name: Execute task createMarkingSetsAndAddOns
-  shell: |
+  ansible.builtin.shell: |
     {{ cp4ba_output_directory }}/ierconfig/configure/configmgr_cl execute -task createMarkingSetsAndAddOns
   register: ier_configmgr_output
   changed_when: true
   failed_when: ier_configmgr_output.rc != 0
 
 - name: Execute task configureFPOS
-  shell: |
+  ansible.builtin.shell: |
     {{ cp4ba_output_directory }}/ierconfig/configure/configmgr_cl execute -task configureFPOS
   register: ier_configmgr_output
   changed_when: true
@@ -718,14 +721,14 @@
     (ier_configmgr_output.stdout is not search('.*The current object store is already configured to the latest version.*'))
 
 - name: Execute task configureROS
-  shell: |
+  ansible.builtin.shell: |
     {{ cp4ba_output_directory }}/ierconfig/configure/configmgr_cl execute -task configureROS
   register: ier_configmgr_output
   changed_when: true
   failed_when: ier_configmgr_output.rc != 0
 
 - name: Execute task configureWorkflows
-  shell: |
+  ansible.builtin.shell: |
     {{ cp4ba_output_directory }}/ierconfig/configure/configmgr_cl execute -task configureWorkflows
   register: ier_configmgr_output
   changed_when: true
@@ -733,21 +736,21 @@
     (ier_configmgr_output.stdout is not search('.*workflow component queues were configured with FileNet P8 Component Manager.*'))
 
 - name: Execute task transferWorkflows
-  shell: |
+  ansible.builtin.shell: |
     {{ cp4ba_output_directory }}/ierconfig/configure/configmgr_cl execute -task transferWorkflows
   register: ier_configmgr_output
   changed_when: true
   failed_when: ier_configmgr_output.rc != 0
 
 - name: Copy AdditionalJars.tgz
-  copy:
+  ansible.builtin.copy:
     src: "files/ier/AdditionalJars.tgz"
     dest: "{{ cp4ba_output_directory }}/AdditionalJars.tgz"
     mode: u+rwx
 
 # This is needed as ansible k8s_cp is not reliable for larger files
 - name: Nexus upload AdditionalJars.tgz
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: nexus-upload
   vars:
@@ -792,7 +795,7 @@
   register: command_status
 
 - name: Get TM Pods
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: v1
@@ -805,7 +808,7 @@
   delay: 15
 
 - name: Delete TM pods
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: v1
@@ -816,7 +819,7 @@
   loop: "{{ pods.resources }}"
 
 - name: Wait for TM Deployment Available State
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:
@@ -831,7 +834,7 @@
     common_delay: 15
 
 - name: Navigator Logon
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/logon"
     method: POST
     body: "desktop=admin"
@@ -847,13 +850,13 @@
   register: login
 
 - name: icn session
-  set_fact:
+  ansible.builtin.set_fact:
     content: "{{ login.content[4:] }}"
     login_jsession: "{{ login.cookies['icn-JSESSIONID'] }}"
     cookie_jsessionid_name: icn-JSESSIONID
 
 # - name: Get list of plugins installed
-#   uri:
+#   ansible.builtin.uri:
 #     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/admin/configuration"
 #     method: POST
 #     return_content: true
@@ -873,21 +876,21 @@
 #   register: plugins_response
 
 # - name: Get plugin response
-#   set_fact:
+#   ansible.builtin.set_fact:
 #     plugins_reponse_json: "{{ plugins_response.content[4:] }}"
 
 # - name: Set registered status to false
-#   set_fact:
+#   ansible.builtin.set_fact:
 #     plugin_registered: false
 
 # - name: Check if the IER plugin is registered
-#   set_fact:
+#   ansible.builtin.set_fact:
 #     plugin_registered: true
 #   when: "'IERApplicationPlugin' in item.id"
 #   loop: "{{ plugins_reponse_json.list }}"
 
 # - name: Load IERApplicationPlugin
-#   uri:
+#   ansible.builtin.uri:
 #     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/plugin?\
 #       desktop=admin&\
 #       application=navigator&\
@@ -911,12 +914,12 @@
 #   when: not plugin_registered
 
 # - name: Extract content from plugin load response
-#   set_fact:
+#   ansible.builtin.set_fact:
 #     plugin_load_response_content: "{{ plugin_load_response.content[4:] }}"
 #   when: not plugin_registered
 
 # - name: Add IERApplicationPlugin
-#   uri:
+#   ansible.builtin.uri:
 #     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/plugin"
 #     method: POST
 #     body: "{
@@ -945,7 +948,7 @@
 #   when: not plugin_registered
 
 # - name: Register IERApplicationPlugin
-#   uri:
+#   ansible.builtin.uri:
 #     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/plugin?\
 #     desktop=admin&\
 #     application=navigator&\
@@ -969,7 +972,7 @@
 #   when: not plugin_registered
 
 # - name: Configure IERApplicationPlugin
-#   uri:
+#   ansible.builtin.uri:
 #     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/plugin?\
 #       repositoryId=FPOS&\
 #       navigatorVersionNumber=4&\
@@ -994,7 +997,7 @@
 #   when: not plugin_registered
 
 - name: Set Task Manager service URL
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/configuration/settings/default/taskManagerServiceURL"
     method: POST
     return_content: true
@@ -1014,7 +1017,7 @@
   failed_when: "'errors' in navigator_response.content"
 
 - name: Set Task manager log directory
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/configuration/settings/default/taskManagerLogDirectory"
     method: POST
     return_content: true
@@ -1034,7 +1037,7 @@
   failed_when: "'errors' in navigator_response.content"
 
 - name: Set Task manager administrator user ID
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/configuration/settings/default/taskManagerAdminUserId"
     method: POST
     return_content: true
@@ -1054,7 +1057,7 @@
   failed_when: "'errors' in navigator_response.content"
 
 - name: Set Task manager administrator password
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/configuration/settings/default/taskManagerAdminPassword"
     method: POST
     return_content: true
@@ -1074,8 +1077,10 @@
   failed_when: "'errors' in navigator_response.content"
 
 - name: Enable Task Manager
-  uri:
-    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/configuration/settings/default/taskManagerServiceEnabled"
+  ansible.builtin.uri:
+    url: >-
+      https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/
+      jaxrs/api/admin/configuration/settings/default/taskManagerServiceEnabled
     method: POST
     return_content: true
     follow_redirects: all
@@ -1094,7 +1099,7 @@
   failed_when: "'errors' in navigator_response.content"
 
 - name: Set Daeja License Path
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/configuration/viewOne/default/virtualLicenseFilePath"
     method: POST
     return_content: true
@@ -1114,7 +1119,7 @@
   failed_when: "'errors' in navigator_response.content"
 
 - name: Get Navigator Pods
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: v1
@@ -1127,7 +1132,7 @@
   delay: 15
 
 - name: Delete Navigator pods
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: v1
@@ -1138,7 +1143,7 @@
   loop: "{{ pods.resources }}"
 
 - name: Wait for Navigator Deployment Available State
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:
@@ -1153,7 +1158,7 @@
     common_delay: 15
 
 - name: Create Project
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-project
   vars:
@@ -1164,19 +1169,19 @@
     common_project_output_name: "cp4ba-output-project.yaml"
 
 - name: Prepare post-deploy.md
-  template:
+  ansible.builtin.template:
     src: postdeploy.md.j2
     dest: "{{ cp4ba_output_directory }}/postdeploy.md"
     mode: u+rwx
 
 - name: Prepare post-deploy.md Config Map
-  template:
+  ansible.builtin.template:
     src: postdeploy-configmap.yaml.j2
     dest: "{{ cp4ba_output_directory }}/postdeploy-configmap.yaml"
     mode: u+rwx
 
 - name: Add post-deploy.md Config Map
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     state: present

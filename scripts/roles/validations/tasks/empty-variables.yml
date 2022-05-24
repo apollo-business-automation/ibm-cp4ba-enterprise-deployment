@@ -1,5 +1,5 @@
 - name: Validate filled in Entries
-  fail:
+  ansible.builtin.fail:
     msg: "The {{ item.name }} variable has to be defined and have a value"
   when: "not item.value or item.value == None or item.value | length == 0"
   with_items:

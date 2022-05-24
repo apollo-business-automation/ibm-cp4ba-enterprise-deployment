@@ -13,6 +13,7 @@ exclude_paths:
   - ./scripts/tooling
   - ./scripts/servicing-pod.yaml
   - .pre-commit-config.yaml
+  - ./scripts/roles/common/tasks/wait-resource-condition-generic.yml
 
 use_default_rules: true
 

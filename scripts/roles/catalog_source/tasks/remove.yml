@@ -1,5 +1,5 @@
 - name: Remove Catalog Sources
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ catalog_source_k8s_api_key | default(omit) }}"
     host: "{{ catalog_source_k8s_host | default(omit) }}"

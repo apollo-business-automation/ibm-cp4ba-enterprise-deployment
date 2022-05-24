@@ -8,7 +8,7 @@
     - internal-variables.yml
   tasks:
     - name: Input Validations
-      include_role:
+      ansible.builtin.include_role:
         name: validations
         tasks_from: input-validations
 

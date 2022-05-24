@@ -1,11 +1,11 @@
 - name: Create directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ gitea_output_directory }}"
     state: directory
     mode: u+rwx
 
 - name: Create Project
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-project
   vars:
@@ -15,7 +15,7 @@
     common_output_directory: "{{ gitea_output_directory }}"
 
 - name: Get OCP Apps Endpoint
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: apps-endpoint
   vars:
@@ -30,7 +30,7 @@
     repo_url: "https://dl.gitea.io/charts/"
 
 - name: Prepare yaml file for values of helm chart
-  template:
+  ansible.builtin.template:
     src: values.yaml.j2
     dest: "{{ gitea_output_directory }}/values.yaml"
     mode: u+rwx
@@ -47,7 +47,7 @@
       - "{{ gitea_output_directory }}/values.yaml"
 
 - name: Crete Edge Route
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-edge-route
   vars:
@@ -63,7 +63,7 @@
     common_output_directory: "{{ gitea_output_directory }}"
 
 - name: Wait for gitea pod to be ready
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:
@@ -78,7 +78,7 @@
     common_delay: 15
 
 - name: Sync LDAP Users
-  uri:
+  ansible.builtin.uri:
     url: "https://gitea.{{ apps_endpoint_domain }}/api/v1/admin/cron/sync_external_users"
     method: POST
     headers:

@@ -1,5 +1,5 @@
 - name: Remove Project akhq
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ akhq_k8s_api_key | default(omit) }}"
     host: "{{ akhq_k8s_host | default(omit) }}"

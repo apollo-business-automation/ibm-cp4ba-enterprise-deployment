@@ -1,9 +1,9 @@
 - name: Set output directory variable
-  set_fact:
+  ansible.builtin.set_fact:
     nexus_output_directory: "{{ nexus_base_dir }}/{{ nexus_dir_name }}"
 
 - name: Remove nexus directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ nexus_output_directory }}"
     state: absent
 

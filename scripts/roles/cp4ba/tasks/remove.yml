@@ -1,5 +1,5 @@
 - name: Get ICP4ACluster CRD
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: apiextensions.k8s.io/v1
@@ -10,7 +10,7 @@
   delay: 30
 
 - name: Remove cp4ba cluster
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
@@ -25,7 +25,7 @@
 
 # wait for the CartridgeRequirements instances to disappear as if we do not wait, they will have finalizers left
 - name: Wait for CartridgeRequirements instances to disappear
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: base.automation.ibm.com/v1beta1
@@ -38,7 +38,7 @@
 
 # wait for the Cartridge instances to disappear as if we do not wait, they will have finalizers left
 - name: Wait for Cartridge intances to disappear
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: core.automation.ibm.com/v1beta1
@@ -50,7 +50,7 @@
   until: cartridges.resources | length == 0
 
 - name: Wait for InsightsEngine intances to disappear
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: insightsengine.automation.ibm.com/v1beta1
@@ -62,7 +62,7 @@
   until: insightsengines.resources | length == 0
 
 - name: Get AutomationBase CRD
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: apiextensions.k8s.io/v1
@@ -74,7 +74,7 @@
   delay: 30
 
 - name: Remove AutomationBase
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
@@ -88,7 +88,7 @@
   when: automationbase_crd.resources | length != 0
 
 - name: Get AutomationUIConfig CRD
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: apiextensions.k8s.io/v1
@@ -100,7 +100,7 @@
   delay: 30
 
 - name: Remove AutomationUIConfig
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
@@ -115,7 +115,7 @@
 
 # wait for the Client instances to disappear as if we do not wait, they will have finalizers left
 - name: Wait for Client intances to disappear
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: oidc.security.ibm.com/v1
@@ -128,7 +128,7 @@
   ignore_errors: true
 
 - name: Clear Client instances finalizers
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: clear-resource-finalizers
   vars:
@@ -140,7 +140,7 @@
   when: clients.resources | length != 0
 
 - name: Remove CP4BA Operator
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: remove-operator
   vars:
@@ -150,7 +150,7 @@
     common_label_selector_stub: ibm-cp4a-operator
 
 - name: Remove Operators
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: remove-operator
   vars:
@@ -168,7 +168,7 @@
     - "ibm-automation-core"
 
 - name: Remove Project cp4ba
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
@@ -180,7 +180,7 @@
     wait_timeout: 600
 
 - name: Remove DB connections from DB2MC
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: remove-db2mc-connection
   vars:
@@ -197,7 +197,7 @@
   when: db2mc_enabled
 
 - name: Remove DB2 users
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: remove-db2-user
   vars:
@@ -224,7 +224,7 @@
     - ros
 
 - name: Remove DBs
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: remove-db
   vars:

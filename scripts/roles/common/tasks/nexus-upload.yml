@@ -1,7 +1,7 @@
 # Example of the functionality call
 #
 # - name: Nexus upload
-#   include_role:
+#   ansible.builtin.include_role:
 #     name: common
 #     tasks_from: nexus-upload
 #   vars:
@@ -12,14 +12,14 @@
 #     common_universal_password: "{{ prefix_universal_password }}"
 
 - name: Get OCP Apps domain
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: apps-endpoint
   vars:
     common_output_to_var: "apps_endpoint_domain"
 
 - name: Upload to Nexus
-  command: |
+  ansible.builtin.command: |
     curl -kX 'POST' \
     'https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=raw-hosted' \
     -H 'accept: application/json' \
@@ -32,7 +32,8 @@
   register: import_curl_result
   changed_when: true
 
-- block:
+- name: Restart and reupload
+  block:
 
     - name: Restart Nexus pod if upload failed
       kubernetes.core.k8s:
@@ -47,7 +48,7 @@
         wait: false
 
     - name: Wait for Nexus Repo Deployment to be Available
-      include_role:
+      ansible.builtin.include_role:
         name: common
         tasks_from: wait-resource-condition
       vars:
@@ -60,7 +61,7 @@
         common_delay: 15
 
     - name: Upload to Nexus
-      command: |
+      ansible.builtin.command: |
         curl -kX 'POST' \
         'https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=raw-hosted' \
         -H 'accept: application/json' \

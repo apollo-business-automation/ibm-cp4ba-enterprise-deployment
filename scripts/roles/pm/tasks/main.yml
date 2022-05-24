@@ -1,9 +1,9 @@
 - name: Set output directory variable
-  set_fact:
+  ansible.builtin.set_fact:
     pm_output_directory: "{{ pm_base_dir }}/{{ pm_dir_name }}"
 
 - name: Remove PM directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ pm_output_directory }}"
     state: absent
 

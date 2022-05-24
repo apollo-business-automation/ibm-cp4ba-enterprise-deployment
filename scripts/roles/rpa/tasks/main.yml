@@ -1,9 +1,9 @@
 - name: Set output directory variable
-  set_fact:
+  ansible.builtin.set_fact:
     rpa_output_directory: "{{ rpa_base_dir }}/{{ rpa_dir_name }}"
 
 - name: Remove RPA directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ rpa_output_directory }}"
     state: absent
 

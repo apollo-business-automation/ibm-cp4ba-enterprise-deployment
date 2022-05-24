@@ -1,7 +1,7 @@
 # Example of the functionality call
 #
 # - name: Crete Edge Route
-#   include_role:
+#   ansible.builtin.include_role:
 #     name: common
 #     tasks_from: create-edge-route
 #   vars:
@@ -17,43 +17,43 @@
 #     common_output_directory: "{{ prefix_output_directory }}"
 
 - name: Check that the {{ common_wildcard_key_path }} exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ common_wildcard_key_path }}"
   register: common_wildcard_key_file
 
 - name: Check that the {{ common_ca_crt_path }} exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ common_ca_crt_path }}"
   register: common_ca_crt_file
 
 - name: Ensure we have CA certificates and wildcards
-  include_role:
+  ansible.builtin.include_role:
     name: global_ca
   when: not common_wildcard_key_file.stat.exists or not common_ca_crt_file.stat.exists
 
 - name: Load TLS key data
-  slurp:
+  ansible.builtin.slurp:
     src: '{{ common_wildcard_key_path }}'
   register: common_edge_route_slurped_wildcard_key_data
 
 - name: Load TLS crt data
-  slurp:
+  ansible.builtin.slurp:
     src: '{{ common_wildcard_crt_path }}'
   register: common_edge_route_slurped_wildcard_crt_data
 
 - name: Load TLS ca data
-  slurp:
+  ansible.builtin.slurp:
     src: '{{ common_ca_crt_path }}'
   register: common_edge_route_slurped_ca_data
 
 - name: Prepare yaml file for {{ common_service_name }}-route Route
-  template:
+  ansible.builtin.template:
     src: edge-route.yaml.j2
     dest: "{{ common_output_directory }}/edge-route.yaml"
     mode: u+rwx
 
 - name: Create {{ common_service_name }}-route Route
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
     host: "{{ common_k8s_host | default(omit) }}"
     state: present
@@ -66,7 +66,7 @@
     wait_timeout: 15
 
 - name: Wait for resource condition generic
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition-generic
   vars:

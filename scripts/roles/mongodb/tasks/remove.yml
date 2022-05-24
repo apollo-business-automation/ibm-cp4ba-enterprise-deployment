@@ -1,5 +1,5 @@
 - name: Remove Project mongodb
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ mongodb_k8s_api_key | default(omit) }}"
     host: "{{ mongodb_k8s_host | default(omit) }}"
@@ -12,7 +12,7 @@
     wait_timeout: 120
 
 - name: Remove CRB mongodb-anyuid
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ cerebro_k8s_api_key | default(omit) }}"
     host: "{{ cerebro_k8s_host | default(omit) }}"

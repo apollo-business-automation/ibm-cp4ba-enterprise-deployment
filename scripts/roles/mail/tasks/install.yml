@@ -1,11 +1,11 @@
 - name: Create Mail directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ mail_output_directory }}"
     state: directory
     mode: u+rwx
 
 - name: Create Project
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-project
   vars:
@@ -15,13 +15,13 @@
     common_output_directory: "{{ mail_output_directory }}"
 
 - name: Prepare yaml file for privileged ClusterRoleBinding
-  template:
+  ansible.builtin.template:
     src: privileged-scc-clusterrolebinding.yaml.j2
     dest: "{{ mail_output_directory }}/privileged-scc-clusterrolebinding.yaml"
     mode: u+rwx
 
 - name: Add privileged ClusterRoleBinding
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ mail_k8s_api_key | default(omit) }}"
     host: "{{ mail_k8s_host | default(omit) }}"
     state: present
@@ -44,17 +44,17 @@
     subject_alt_name: DNS:mailserver
 
 - name: Check that the {{ mail_ca_key_path }} exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ mail_ca_key_path }}"
   register: mail_ca_key_file
 
 - name: Check that the {{ mail_ca_crt_path }} exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ mail_ca_crt_path }}"
   register: mail_ca_crt_file
 
 - name: Ensure we have CA certificates
-  include_role:
+  ansible.builtin.include_role:
     name: global_ca
   when: not mail_ca_key_file.stat.exists or not mail_ca_crt_file.stat.exists
 
@@ -69,31 +69,31 @@
     ownca_not_after: "+36500d"
 
 - name: Load TLS key data
-  slurp:
+  ansible.builtin.slurp:
     src: '{{ mail_output_directory }}/mailserver.key'
   register: slurped_key_data
 
 - name: Decode data and store as fact
-  set_fact:
+  ansible.builtin.set_fact:
     _tls_key: "{{ slurped_key_data.content }}"
 
 - name: Load TLS crt data
-  slurp:
+  ansible.builtin.slurp:
     src: '{{ mail_output_directory }}/mailserver.crt'
   register: slurped_crt_data
 
 - name: Decode data and store as fact
-  set_fact:
+  ansible.builtin.set_fact:
     _tls_crt: "{{ slurped_crt_data.content }}"
 
 - name: Prepare yaml file for Secret
-  template:
+  ansible.builtin.template:
     src: secret.yaml.j2
     dest: "{{ mail_output_directory }}/secret.yaml"
     mode: u+rwx
 
 - name: Add Secret
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ mail_k8s_api_key | default(omit) }}"
     host: "{{ mail_k8s_host | default(omit) }}"
     state: present
@@ -105,13 +105,13 @@
     wait_timeout: 15
 
 - name: Prepare yaml file for PVC
-  template:
+  ansible.builtin.template:
     src: pvc.yaml.j2
     dest: "{{ mail_output_directory }}/pvc.yaml"
     mode: u+rwx
 
 - name: Add PVC
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ mail_k8s_api_key | default(omit) }}"
     host: "{{ mail_k8s_host | default(omit) }}"
     state: present
@@ -123,13 +123,13 @@
     wait_timeout: 15
 
 - name: Prepare yaml file for Config Maps
-  template:
+  ansible.builtin.template:
     src: configmaps.yaml.j2
     dest: "{{ mail_output_directory }}/configmaps.yaml"
     mode: u+rwx
 
 - name: Add Config Maps
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ mail_k8s_api_key | default(omit) }}"
     host: "{{ mail_k8s_host | default(omit) }}"
     state: present
@@ -141,13 +141,13 @@
     wait_timeout: 15
 
 - name: Prepare yaml file for Deployment
-  template:
+  ansible.builtin.template:
     src: deployment.yaml.j2
     dest: "{{ mail_output_directory }}/deployment.yaml"
     mode: u+rwx
 
 - name: Add Deployment
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ mail_k8s_api_key | default(omit) }}"
     host: "{{ mail_k8s_host | default(omit) }}"
     state: present
@@ -159,13 +159,13 @@
     wait_timeout: 600
 
 - name: Prepare yaml file for Service
-  template:
+  ansible.builtin.template:
     src: service.yaml.j2
     dest: "{{ mail_output_directory }}/service.yaml"
     mode: u+rwx
 
 - name: Add Service
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ mail_k8s_api_key | default(omit) }}"
     host: "{{ mail_k8s_host | default(omit) }}"
     state: present

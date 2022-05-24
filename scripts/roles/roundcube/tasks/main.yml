@@ -1,9 +1,9 @@
 - name: Set output directory variable
-  set_fact:
+  ansible.builtin.set_fact:
     roundcube_output_directory: "{{ roundcube_base_dir }}/{{ roundcube_dir_name }}"
 
 - name: Remove Roundcube directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ roundcube_output_directory }}"
     state: absent
 

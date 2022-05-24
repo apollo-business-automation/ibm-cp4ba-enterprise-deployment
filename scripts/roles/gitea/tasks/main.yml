@@ -1,9 +1,9 @@
 - name: Set output directory variable
-  set_fact:
+  ansible.builtin.set_fact:
     gitea_output_directory: "{{ gitea_base_dir }}/{{ gitea_dir_name }}"
 
 - name: Remove gitea directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ gitea_output_directory }}"
     state: absent
 
