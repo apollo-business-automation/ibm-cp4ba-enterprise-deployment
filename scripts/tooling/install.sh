@@ -14,6 +14,11 @@ if [[ $CONTAINER_RUN_MODE == "true" ]]; then
   exit_test $? "Install Python3 Failed"
 
   echo
+  echo ">>>>$(print_timestamp) Install Python3 Pip package"
+  yum install python3-pip -y
+  exit_test $? "Install Python3 Pip Failed"
+
+  echo
   echo ">>>>$(print_timestamp) Setup Pip"
   pip3 install --upgrade setuptools	--user
   exit_test $? "Setup Pip setuptools Failed"
