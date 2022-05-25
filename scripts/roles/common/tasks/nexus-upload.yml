@@ -89,7 +89,8 @@
         body:
           raw.directory: cp4ba
           raw.asset1:
-            filename: "{{ common_file_folder_path }}/{{ common_file_name }}"
+            content: "{{ lookup('file', common_file_folder_path+'/'+common_file_name) }}"
+            filename: "{{ common_file_name }}"
           raw.asset1.filename: "{{ common_file_name }}"
         validate_certs: false
         status_code: 204
