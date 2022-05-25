@@ -132,6 +132,43 @@
     common_namespace_name: ibm-common-services
     common_label_selector_stub: ibm-namespace-scope-operator
 
+- name: Wait for CommonService instance common-service to appear
+  kubernetes.core.k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: operator.ibm.com/v3
+    kind: CommonService
+    name: common-service
+    namespace: ibm-common-services
+  register: common_service
+  retries: 10
+  delay: 15
+  until: common_service.resources | length == 1
+
+- name: Update OIDCClient watcher resources for better stability
+  kubernetes.core.k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: present
+    api_version: operator.ibm.com/v3
+    kind: CommonService
+    name: common-service
+    namespace: ibm-common-services
+    definition:
+      spec:
+        services:
+          - name: ibm-iam-operator
+            spec:
+              oidcclientwatcher:
+                replicas: 1
+                resources:
+                  limits:
+                    cpu: 1000m
+                    memory: 325Mi
+                  requests:
+                    cpu: 20m
+                    memory: 40Mi
+
 - name: Manage Manual Operator operand-deployment-lifecycle-manager-app
   ansible.builtin.include_role:
     name: common
