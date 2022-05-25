@@ -143,6 +143,7 @@
           user_identifiers: []
           ldap_groups: ["cn={{ group_name }},ou=Groups,dc=cp"]
         validate_certs: false
+        return_content: true
       register: register_group_response
       vars:
         group_id_query: json.results[?name == 'cpadmins']
@@ -224,6 +225,7 @@
           user_identifiers: []
           ldap_groups: ["cn={{ group_name }},ou=Groups,dc=cp"]
         validate_certs: false
+        return_content: true
       register: register_group_response
       loop:
         - cpusers
@@ -839,7 +841,6 @@
     method: POST
     body: "desktop=admin"
     force_basic_auth: true
-    return_content: true
     status_code: 200
     headers:
       Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
@@ -847,6 +848,7 @@
       Content-Type: "application/x-www-form-urlencoded"
     validate_certs: false
     timeout: 60
+    return_content: true
   register: login
 
 - name: icn session

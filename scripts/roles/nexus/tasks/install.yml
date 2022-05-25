@@ -176,6 +176,7 @@
     validate_certs: false
     force_basic_auth: true
     status_code: 201
+    return_content: true
   register: nexus_query_response
   failed_when: >
     (nexus_query_response.status != 201) and
@@ -199,6 +200,7 @@
     validate_certs: false
     force_basic_auth: true
     status_code: 200
+    return_content: true
   register: nexus_query_response
   failed_when: >
     (nexus_query_response.status != 200) and
@@ -295,6 +297,7 @@
     validate_certs: false
     force_basic_auth: true
     status_code: 201
+    return_content: true
   register: nexus_response
   failed_when: nexus_response.status != 201 and nexus_response.content is not search('found duplicated key \'raw-hosted\'')
   when: nexus_check_response.status == 404
