@@ -18,7 +18,7 @@
   block:
 
     - name: Save Global CA key
-      ansible.builtincopy:
+      ansible.builtin.copy:
         dest: "{{ global_ca_output_directory }}/global-ca.key"
         content: "{{ global_ca_secret.resources[0].data['tls.key'] | b64decode }}"
         mode: u+rwx

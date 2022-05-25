@@ -74,6 +74,7 @@ catalog_source_action: "{{ global_action }}"
 
 global_ca_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 global_ca_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+global_ca_action: "{{ global_action }}"
 
 db2_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 db2_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
