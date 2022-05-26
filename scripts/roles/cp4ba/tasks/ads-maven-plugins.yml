@@ -24,45 +24,44 @@
         dest: "{{ cp4ba_output_directory }}/{{ item.value.path }}"
         mode: u+rwx
 
-    # Ansible 2.10+
-    - name: Upload plugin to Nexus
-      ansible.builtin.uri:
-        url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=maven-releases"
-        method: POST
-        body_format: form-multipart
-        body:
-          maven2.asset1:
-            content: "{{ lookup('file', cp4ba_output_directory+'/'+item.value.path) }}"
-            filename: "{{ item.value.path }}"
-          maven2.groupId: "{{ item.value.maven_coordinates.groupId }}"
-          maven2.artifactId: "{{ item.value.maven_coordinates.artifactId }}"
-          maven2.version: "{{ item.value.maven_coordinates.version }}"
-          maven2.asset1.extension: "{{ item.value.maven_coordinates.packaging }}"
-        validate_certs: false
-        status_code: 200
-        user: cpadmin
-        password: "{{ cp4ba_universal_password }}"
-        force_basic_auth: true
-      register: token_response
-      vars:
-        jar_name: "{{ ads_maven_plugins_response.json | json_query('resources.annotations_maven_plugin.path') }}"
-
-# TODO get rid of if newer way is working
+    # TODO from ansible 2.10+ but line endings of jar files are changed and CP4BA components cannot use these modified jars.
     # - name: Upload plugin to Nexus
-    #   ansible.builtin.command: |
-    #     curl -kX 'POST' \
-    #     'https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=maven-releases' \
-    #     -H 'accept: application/json' \
-    #     -H 'Content-Type: multipart/form-data' \
-    #     -F 'maven2.groupId={{ item.value.maven_coordinates.groupId }}' \
-    #     -F 'maven2.artifactId={{ item.value.maven_coordinates.artifactId }}' \
-    #     -F 'maven2.version={{ item.value.maven_coordinates.version }}' \
-    #     -F 'maven2.asset1=@{{ cp4ba_output_directory }}/{{ item.value.path }}' \
-    #     -F 'maven2.asset1.extension={{ item.value.maven_coordinates.packaging }}' \
-    #     --user "cpadmin:{{ cp4ba_universal_password }}" \
-    #     -s -o /dev/null -w "%{http_code}"
-    #   register: ads_curl_result
-    #   changed_when: true
-    #   failed_when: ads_curl_result.stdout != "204"
+    #   ansible.builtin.uri:
+    #     url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=maven-releases"
+    #     method: POST
+    #     body_format: form-multipart
+    #     body:
+    #       maven2.asset1:
+    #         content: "{{ lookup('file', cp4ba_output_directory+'/'+item.value.path) }}"
+    #         filename: "{{ item.value.path }}"
+    #       maven2.groupId: "{{ item.value.maven_coordinates.groupId }}"
+    #       maven2.artifactId: "{{ item.value.maven_coordinates.artifactId }}"
+    #       maven2.version: "{{ item.value.maven_coordinates.version }}"
+    #       maven2.asset1.extension: "{{ item.value.maven_coordinates.packaging }}"
+    #     validate_certs: false
+    #     status_code: 200
+    #     user: cpadmin
+    #     password: "{{ cp4ba_universal_password }}"
+    #     force_basic_auth: true
+    #   register: token_response
+    #   vars:
+    #     jar_name: "{{ ads_maven_plugins_response.json | json_query('resources.annotations_maven_plugin.path') }}"
+
+    - name: Upload plugin to Nexus
+      ansible.builtin.command: |
+        curl -kX 'POST' \
+        'https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=maven-releases' \
+        -H 'accept: application/json' \
+        -H 'Content-Type: multipart/form-data' \
+        -F 'maven2.groupId={{ item.value.maven_coordinates.groupId }}' \
+        -F 'maven2.artifactId={{ item.value.maven_coordinates.artifactId }}' \
+        -F 'maven2.version={{ item.value.maven_coordinates.version }}' \
+        -F 'maven2.asset1=@{{ cp4ba_output_directory }}/{{ item.value.path }}' \
+        -F 'maven2.asset1.extension={{ item.value.maven_coordinates.packaging }}' \
+        --user "cpadmin:{{ cp4ba_universal_password }}" \
+        -s -o /dev/null -w "%{http_code}"
+      register: ads_curl_result
+      changed_when: true
+      failed_when: ads_curl_result.stdout != "204"
 
   when: ads_maven_plugin_response.status == 404

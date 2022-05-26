@@ -18,40 +18,40 @@
   vars:
     common_output_to_var: "apps_endpoint_domain"
 
-- name: Upload to Nexus
-  ansible.builtin.uri:
-    url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=raw-hosted"
-    method: POST
-    body_format: form-multipart
-    body:
-      raw.directory: cp4ba
-      raw.asset1:
-        content: "{{ lookup('file', common_file_folder_path+'/'+common_file_name) }}"
-        filename: "{{ common_file_name }}"
-      raw.asset1.filename: "{{ common_file_name }}"
-    validate_certs: false
-    status_code:
-      - 204
-    user: cpadmin
-    password: "{{ cp4ba_universal_password }}"
-    force_basic_auth: true
-  register: nexus_upload_result
-  ignore_errors: true
-
-# TODO
+# TODO from ansible 2.10+ but line endings of jar files are changed and CP4BA components cannot use these modified jars.
 # - name: Upload to Nexus
-#   ansible.builtin.command: |
-#     curl -kX 'POST' \
-#     'https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=raw-hosted' \
-#     -H 'accept: application/json' \
-#     -H 'Content-Type: multipart/form-data' \
-#     -F 'raw.directory=cp4ba' \
-#     -F 'raw.asset1=@{{ common_file_folder_path }}/{{ common_file_name }}' \
-#     -F 'raw.asset1.filename={{ common_file_name }}' \
-#     --user "cpadmin:{{ common_universal_password }}" \
-#     -s -o /dev/null -w "%{http_code}"
-#   register: import_curl_result
-#   changed_when: true
+#   ansible.builtin.uri:
+#     url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=raw-hosted"
+#     method: POST
+#     body_format: form-multipart
+#     body:
+#       raw.directory: cp4ba
+#       raw.asset1:
+#         content: "{{ lookup('file', common_file_folder_path+'/'+common_file_name) }}"
+#         filename: "{{ common_file_name }}"
+#       raw.asset1.filename: "{{ common_file_name }}"
+#     validate_certs: false
+#     status_code:
+#       - 204
+#     user: cpadmin
+#     password: "{{ cp4ba_universal_password }}"
+#     force_basic_auth: true
+#   register: nexus_upload_result
+#   ignore_errors: true
+
+- name: Upload to Nexus
+  ansible.builtin.command: |
+    curl -kX 'POST' \
+    'https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=raw-hosted' \
+    -H 'accept: application/json' \
+    -H 'Content-Type: multipart/form-data' \
+    -F 'raw.directory=cp4ba' \
+    -F 'raw.asset1=@{{ common_file_folder_path }}/{{ common_file_name }}' \
+    -F 'raw.asset1.filename={{ common_file_name }}' \
+    --user "cpadmin:{{ common_universal_password }}" \
+    -s -o /dev/null -w "%{http_code}"
+  register: import_curl_result
+  changed_when: true
 
 - name: Restart and reupload
   block:
@@ -81,37 +81,37 @@
         common_retries: 80
         common_delay: 15
 
-    - name: Upload to Nexus
-      ansible.builtin.uri:
-        url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=raw-hosted"
-        method: POST
-        body_format: form-multipart
-        body:
-          raw.directory: cp4ba
-          raw.asset1:
-            content: "{{ lookup('file', common_file_folder_path+'/'+common_file_name) }}"
-            filename: "{{ common_file_name }}"
-          raw.asset1.filename: "{{ common_file_name }}"
-        validate_certs: false
-        status_code: 204
-        user: cpadmin
-        password: "{{ cp4ba_universal_password }}"
-        force_basic_auth: true
-
-    #  TODO
+    # TODO from ansible 2.10+ but line endings of jar files are changed and CP4BA components cannot use these modified jars.
     # - name: Upload to Nexus
-    #   ansible.builtin.command: |
-    #     curl -kX 'POST' \
-    #     'https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=raw-hosted' \
-    #     -H 'accept: application/json' \
-    #     -H 'Content-Type: multipart/form-data' \
-    #     -F 'raw.directory=cp4ba' \
-    #     -F 'raw.asset1=@{{ common_file_folder_path }}/{{ common_file_name }}' \
-    #     -F 'raw.asset1.filename={{ common_file_name }}' \
-    #     --user "cpadmin:{{ common_universal_password }}" \
-    #     -s -o /dev/null -w "%{http_code}"
-    #   register: import_curl_result
-    #   failed_when: import_curl_result.stdout != "204"
-    #   changed_when: true
+    #   ansible.builtin.uri:
+    #     url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=raw-hosted"
+    #     method: POST
+    #     body_format: form-multipart
+    #     body:
+    #       raw.directory: cp4ba
+    #       raw.asset1:
+    #         content: "{{ lookup('file', common_file_folder_path+'/'+common_file_name) }}"
+    #         filename: "{{ common_file_name }}"
+    #       raw.asset1.filename: "{{ common_file_name }}"
+    #     validate_certs: false
+    #     status_code: 204
+    #     user: cpadmin
+    #     password: "{{ cp4ba_universal_password }}"
+    #     force_basic_auth: true
 
-  when: nexus_upload_result.status != "204"
+    - name: Upload to Nexus
+      ansible.builtin.command: |
+        curl -kX 'POST' \
+        'https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=raw-hosted' \
+        -H 'accept: application/json' \
+        -H 'Content-Type: multipart/form-data' \
+        -F 'raw.directory=cp4ba' \
+        -F 'raw.asset1=@{{ common_file_folder_path }}/{{ common_file_name }}' \
+        -F 'raw.asset1.filename={{ common_file_name }}' \
+        --user "cpadmin:{{ common_universal_password }}" \
+        -s -o /dev/null -w "%{http_code}"
+      register: import_curl_result
+      failed_when: import_curl_result.stdout != "204"
+      changed_when: true
+
+  when: import_curl_result.stdout != "204"
