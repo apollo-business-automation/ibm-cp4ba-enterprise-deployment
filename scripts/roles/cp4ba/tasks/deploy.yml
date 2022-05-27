@@ -337,7 +337,7 @@
     name: common
     tasks_from: manage-manual-operator
   vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_namespace_name: ibm-common-services
     common_label_selector_stub: ibm-zen-operator
