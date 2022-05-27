@@ -22,7 +22,7 @@ spec:
 # disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 #
 ###############################################################################
-# CP4BA 21.0.3 IF008 catalog
+# CP4BA 21.0.3 IF009 catalog
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -32,12 +32,12 @@ spec:
   displayName: ibm-cp4a-operator
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-cp-automation-catalog@sha256:b69511c70ec8fc004add547b5db648d31bfcf686a5027807f2eadc992ea8b36a
+  image: icr.io/cpopen/ibm-cp-automation-catalog@sha256:783a771ae289790cb8d5cc00d817c4b30d4b432939c619097b203ec13d144239
   updateStrategy:
     registryPoll:
       interval: 45m
 ---
-# IBM Automation Foundation Base 1.3.6
+# IBM Automation Foundation Base 1.3.7
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -47,12 +47,12 @@ spec:
   displayName: IBM Automation Foundation Operators
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-cp-automation-foundation-catalog@sha256:2b23bf765ba424b5a33acefad9a243cc7578574fb444bd0c0b3294b33656919f
+  image: icr.io/cpopen/ibm-cp-automation-foundation-catalog@sha256:267bbc17bad1966be259bb9a6951c520c6fb824bfa42bbec22570ba49883d4ae
   updateStrategy:
     registryPoll:
       interval: 45m
 ---
-# IBM Automation Foundation Core 1.3.6
+# IBM Automation Foundation Core 1.3.7
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -62,7 +62,7 @@ spec:
   displayName: IBM Automation Foundation Core Operators
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-automation-foundation-core-catalog@sha256:c92754aa3144a4e4d6a729d26f219e77e9581bb058494d6727ef087582b73887
+  image: icr.io/cpopen/ibm-automation-foundation-core-catalog@sha256:5502c003afe7a0590ce123c3bbbd76e46374af641b3a210e3c25cfe2381e4647
   updateStrategy:
     registryPoll:
       interval: 45m
