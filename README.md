@@ -2,7 +2,7 @@
 
 Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components with all kinds of prerequisites and extras on OpenShift.
 
-Last installation was performed on 2022-05-03 with CP4BA version 21.0.3-IF008 (also called 21.0.3.8 or 21.3.8)
+Last installation was performed on 2022-05-31 with CP4BA version 21.0.3-IF009 (also called 21.0.3.9 or 21.3.9)
 
 - [Documentation base](#documentation-base)
 - [Disclaimer ✋](#disclaimer-)
