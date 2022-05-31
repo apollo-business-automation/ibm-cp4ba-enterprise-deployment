@@ -1,13 +1,13 @@
 # Based on https://github.com/tchiotludo/akhq
 
 - name: Create AKHQ directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ akhq_output_directory }}"
     state: directory
     mode: u+rwx
 
 - name: Create Project
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-project
   vars:
@@ -22,12 +22,12 @@
     repo_url: "https://akhq.io/"
 
 - name: Check that the {{ akhq_ca_crt_path }} exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ akhq_ca_crt_path }}"
   register: akhq_ca_crt_file
 
 - name: Ensure we have CA crt
-  include_role:
+  ansible.builtin.include_role:
     name: global_ca
   when: not akhq_ca_crt_file.stat.exists
 
@@ -41,16 +41,16 @@
     cert_alias: global-ca
 
 - name: Load jks data
-  slurp:
+  ansible.builtin.slurp:
     src: "{{ akhq_output_directory }}/truststore.jks"
   register: slurped_jks_data
 
 - name: Decode data and store as fact
-  set_fact:
+  ansible.builtin.set_fact:
     _jks: "{{ slurped_jks_data.content }}"
 
 - name: Get OCP Apps Endpoint
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: apps-endpoint
   vars:
@@ -60,7 +60,7 @@
   when: apps_endpoint_domain is not defined
 
 - name: Prepare yaml file for values of helm chart
-  template:
+  ansible.builtin.template:
     src: values.yaml.j2
     dest: "{{ akhq_output_directory }}/values.yaml"
     mode: u+rwx
@@ -77,7 +77,7 @@
       - "{{ akhq_output_directory }}/values.yaml"
 
 - name: Crete Edge Route
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-edge-route
   vars:
@@ -93,7 +93,7 @@
     common_output_directory: "{{ akhq_output_directory }}"
 
 - name: Wait for akhq Deployment to be Available
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:

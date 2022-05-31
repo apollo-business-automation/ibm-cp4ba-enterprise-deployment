@@ -1,11 +1,11 @@
 - name: Create directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ nexus_output_directory }}"
     state: directory
     mode: u+rwx
 
 - name: Create Project
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-project
   vars:
@@ -15,13 +15,13 @@
     common_output_directory: "{{ nexus_output_directory }}"
 
 - name: Prepare yaml file for the Operator Group
-  template:
+  ansible.builtin.template:
     src: operatorgroup.yaml.j2
     dest: "{{ nexus_output_directory }}/operatorgroup.yaml"
     mode: u+rwx
 
 - name: Add the Operator Group
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ nexus_k8s_api_key | default(omit) }}"
     host: "{{ nexus_k8s_host | default(omit) }}"
     state: present
@@ -33,13 +33,13 @@
     wait_timeout: 15
 
 - name: Prepare yaml file for the Operator Subscription
-  template:
+  ansible.builtin.template:
     src: subscription.yaml.j2
     dest: "{{ nexus_output_directory }}/subscription.yaml"
     mode: u+rwx
 
 - name: Add the Operator Subscription
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ nexus_k8s_api_key | default(omit) }}"
     host: "{{ nexus_k8s_host | default(omit) }}"
     state: present
@@ -51,7 +51,7 @@
     wait_timeout: 15
 
 - name: Manage Manual Operator Nexus
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: manage-manual-operator
   vars:
@@ -61,7 +61,7 @@
     common_label_selector_stub: nxrm-operator-certified
 
 - name: Wait for NexusRepo CRD to be Established
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-crd
   vars:
@@ -70,13 +70,13 @@
     common_crd_name: nexusrepos.sonatype.com
 
 - name: Prepare yaml file for the Nexus Repo
-  template:
+  ansible.builtin.template:
     src: nexusrepo.yaml.j2
     dest: "{{ nexus_output_directory }}/nexusrepo.yaml"
     mode: u+rwx
 
 - name: Add the Nexus Repo Instance
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ nexus_k8s_api_key | default(omit) }}"
     host: "{{ nexus_k8s_host | default(omit) }}"
     state: present
@@ -88,7 +88,7 @@
     wait_timeout: 15
 
 - name: Wait for Nexus Repo Deployment to be Available
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:
@@ -103,7 +103,7 @@
     common_delay: 15
 
 - name: Get OCP Apps Endpoint
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: apps-endpoint
   vars:
@@ -113,7 +113,7 @@
   when: apps_endpoint_domain is not defined
 
 - name: Crete Edge Route
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-edge-route
   vars:
@@ -129,7 +129,7 @@
     common_output_directory: "{{ nexus_output_directory }}"
 
 - name: Change default admin password
-  uri:
+  ansible.builtin.uri:
     url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/security/users/admin/change-password"
     method: PUT
     headers:
@@ -145,7 +145,7 @@
     ('Unauthorized' not in nexus_query_response.msg)
 
 - name: Check if we have the new admin password
-  uri:
+  ansible.builtin.uri:
     url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/security/users/admin/change-password"
     method: PUT
     headers:
@@ -159,13 +159,13 @@
   when: ('Unauthorized' in nexus_query_response.msg)
 
 - name: Prepare ldap config json
-  template:
+  ansible.builtin.template:
     src: ldap-config.json.j2
     dest: "{{ nexus_output_directory }}/ldap-config.json"
     mode: u+rwx
 
 - name: Create LDAP Connection
-  uri:
+  ansible.builtin.uri:
     url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/security/ldap"
     method: POST
     headers:
@@ -176,19 +176,20 @@
     validate_certs: false
     force_basic_auth: true
     status_code: 201
+    return_content: true
   register: nexus_query_response
   failed_when: >
     (nexus_query_response.status != 201) and
     ('Duplicated record' not in nexus_query_response.content)
 
 - name: Prepare nexus role for cpadmins as Nexus admins
-  template:
+  ansible.builtin.template:
     src: nexus-role.json.j2
     dest: "{{ nexus_output_directory }}/nexus-role.json"
     mode: u+rwx
 
 - name: Create Nexus role for cpadmins as Nexus admins
-  uri:
+  ansible.builtin.uri:
     url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/security/roles"
     method: POST
     headers:
@@ -199,13 +200,14 @@
     validate_certs: false
     force_basic_auth: true
     status_code: 200
+    return_content: true
   register: nexus_query_response
   failed_when: >
     (nexus_query_response.status != 200) and
     ('already exists' not in nexus_query_response.content)
 
 - name: Disable Anonymous access
-  uri:
+  ansible.builtin.uri:
     url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/security/anonymous"
     method: PUT
     headers:
@@ -222,7 +224,7 @@
     status_code: 200
 
 - name: Create Project
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-project
   vars:
@@ -233,19 +235,19 @@
     common_project_output_name: "nexus-output-project.yaml"
 
 - name: Prepare Maven Settings
-  template:
+  ansible.builtin.template:
     src: maven-settings.xml.j2
     dest: "{{ nexus_output_directory }}/maven-settings.xml"
     mode: u+rwx
 
 - name: Prepare Maven Config Map
-  template:
+  ansible.builtin.template:
     src: nexus-maven-settings-configmap.yaml.j2
     dest: "{{ nexus_output_directory }}/nexus-maven-settings-configmap.yaml"
     mode: u+rwx
 
 - name: Add the Nexus maven config map
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ nexus_k8s_api_key | default(omit) }}"
     host: "{{ nexus_k8s_host | default(omit) }}"
     state: present
@@ -257,7 +259,7 @@
     wait_timeout: 15
 
 - name: Check if raw repository exists
-  uri:
+  ansible.builtin.uri:
     url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/repositories/raw/hosted/raw-hosted"
     method: GET
     headers:
@@ -272,7 +274,7 @@
   register: nexus_check_response
 
 - name: Create raw repository
-  uri:
+  ansible.builtin.uri:
     url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/repositories/raw/hosted"
     method: POST
     headers:
@@ -295,6 +297,7 @@
     validate_certs: false
     force_basic_auth: true
     status_code: 201
+    return_content: true
   register: nexus_response
   failed_when: nexus_response.status != 201 and nexus_response.content is not search('found duplicated key \'raw-hosted\'')
   when: nexus_check_response.status == 404

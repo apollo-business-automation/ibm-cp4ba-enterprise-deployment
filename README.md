@@ -140,14 +140,14 @@ Multiple command line tools are installed inside a container to make the install
 
 ## Environments used for installation 💻
 
-With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift 4.8, however it was historically executed on the following once.
+With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift 4.10, however it was historically executed on the following once.
 
 - ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
 OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
 Successfully installed
 
 - Traditional OpenShift cluster created from scratch on top of virtualization platform  
-OpenShift 4.8.x on vms - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
+OpenShift 4.8.x & 4.10.x on vms - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
 Successfully installed
 
 - ARO - Azure Red Hat OpenShift allowing to run managed Red Hat OpenShift on Azure - not tested recently  
@@ -387,7 +387,7 @@ spec:
     spec:
       containers:
         - name: apollo-one-shot
-          image: ubi8/ubi:8.5
+          image: ubi9/ubi:9.0.0
           command: ["/bin/bash"]
           args:
             ["-c","cd /usr; yum install git -y && git clone --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
@@ -503,7 +503,7 @@ spec:
     spec:
       containers:
         - name: apollo-one-shot
-          image: ubi8/ubi:8.5
+          image: ubi9/ubi:9.0.0
           command: ["/bin/bash"]
           args:
             ["-c","cd /usr; yum install git -y && git clone --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]

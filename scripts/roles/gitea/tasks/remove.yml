@@ -1,5 +1,5 @@
 - name: Remove Project gitea
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ gitea_k8s_api_key | default(omit) }}"
     host: "{{ gitea_k8s_host | default(omit) }}"

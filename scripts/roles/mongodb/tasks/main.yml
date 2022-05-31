@@ -1,9 +1,9 @@
 - name: Set output directory variable
-  set_fact:
+  ansible.builtin.set_fact:
     mongodb_output_directory: "{{ mongodb_base_dir }}/{{ mongodb_dir_name }}"
 
 - name: Remove mongodb directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ mongodb_output_directory }}"
     state: absent
 

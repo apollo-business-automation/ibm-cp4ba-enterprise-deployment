@@ -1,18 +1,18 @@
 - name: Execute Catalog Source role as prerequisite
-  include_role:
+  ansible.builtin.include_role:
     name: catalog_source
   vars:
     catalog_source_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
     catalog_source_k8s_host: "{{ pm_k8s_host | default(omit) }}"
 
 - name: Create PM directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ pm_output_directory }}"
     state: directory
     mode: u+rwx
 
 - name: Add DB2 user
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: add-db2-user
   vars:
@@ -67,13 +67,13 @@
   failed_when: command_status.rc != 0 and command_status.stdout is not search('.*User \"root@processmining\" already exists.*')
 
 - name: Prepare yaml file for the Operator Subscription
-  template:
+  ansible.builtin.template:
     src: subscription.yaml.j2
     dest: "{{ pm_output_directory }}/subscription.yaml"
     mode: u+rwx
 
 - name: Add the Operator Subscription
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ pm_k8s_api_key | default(omit) }}"
     host: "{{ pm_k8s_host | default(omit) }}"
     state: present
@@ -85,7 +85,7 @@
     wait_timeout: 15
 
 - name: Manage Manual Operator processmining-subscription in {{ pm_project_name }}
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: manage-manual-operator
   vars:
@@ -95,7 +95,7 @@
     common_label_selector_stub: ibm-automation-processmining
 
 - name: Wait for ProcessMining CRD to be Established
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-crd
   vars:
@@ -104,55 +104,55 @@
     common_crd_name: processminings.processmining.ibm.com
 
 - name: Check that the {{ pm_wildcard_key_path }} exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ pm_wildcard_key_path }}"
   register: pm_wildcard_key_file
 
 - name: Check that the {{ pm_ca_crt_path }} exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ pm_ca_crt_path }}"
   register: pm_ca_crt_file
 
 - name: Ensure we have CA certificates and wildcards
-  include_role:
+  ansible.builtin.include_role:
     name: global_ca
   when: not pm_wildcard_key_file.stat.exists or not pm_ca_crt_file.stat.exists
 
 - name: Load TLS key data
-  slurp:
+  ansible.builtin.slurp:
     src: '{{ pm_wildcard_key_path }}'
   register: slurped_key_data
 
 - name: Decode data and store as fact
-  set_fact:
+  ansible.builtin.set_fact:
     _tls_key: "{{ slurped_key_data.content }}"
 
 - name: Load TLS crt data
-  slurp:
+  ansible.builtin.slurp:
     src: '{{ pm_wildcard_crt_path }}'
   register: slurped_crt_data
 
 - name: Decode data and store as fact
-  set_fact:
+  ansible.builtin.set_fact:
     _tls_crt: "{{ slurped_crt_data.content }}"
 
 - name: Load CA TLS crt data
-  slurp:
+  ansible.builtin.slurp:
     src: '{{ pm_ca_crt_path }}'
   register: slurped_ca_crt_data
 
 - name: Decode data and store as fact
-  set_fact:
+  ansible.builtin.set_fact:
     _ca_tls_crt: "{{ slurped_ca_crt_data.content }}"
 
 - name: Prepare yaml file for Secrets
-  template:
+  ansible.builtin.template:
     src: secrets.yaml.j2
     dest: "{{ pm_output_directory }}/secrets.yaml"
     mode: u+rwx
 
 - name: Add Secrets
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ pm_k8s_api_key | default(omit) }}"
     host: "{{ pm_k8s_host | default(omit) }}"
     state: present
@@ -164,13 +164,13 @@
     wait_timeout: 15
 
 - name: Prepare yaml file for ProcessMining instance
-  template:
+  ansible.builtin.template:
     src: processmining.yaml.j2
     dest: "{{ pm_output_directory }}/processmining.yaml"
     mode: u+rwx
 
 - name: Add ProcessMining instance
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ pm_k8s_api_key | default(omit) }}"
     host: "{{ pm_k8s_host | default(omit) }}"
     state: present
@@ -182,7 +182,7 @@
     wait_timeout: 15
 
 - name: Manage Manual Operator ibm-apicatalog
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: manage-manual-operator
   vars:
@@ -194,7 +194,7 @@
 # Based on validate successful deployment by following https://www.ibm.com/docs/en/cloud-paks/1.0?topic=platform-how-validate-successful-installation
 # TODO uncomment when PM fixed, now it never becomes ready
 # - name: Wait for ProcessMining to be Ready
-#   include_role:
+#   ansible.builtin.include_role:
 #     name: common
 #     tasks_from: wait-resource-condition
 #   vars:
@@ -210,7 +210,7 @@
 
 # TODO remove when PM fixed, now it never becomes ready in CR
 - name: Wait for processmining-taskprocessor Deployment to be Available
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:

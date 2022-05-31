@@ -1,5 +1,5 @@
 - name: Get OCP Apps domain
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: apps-endpoint
   vars:
@@ -9,7 +9,7 @@
 
 # Based on https://www.ibm.com/docs/en/cpfs?topic=apis-oidc-registration#get2 (Get access token by using username and password)
 - name: Get IAM access token
-  uri:
+  ansible.builtin.uri:
     url: "https://cp-console.{{ apps_endpoint_domain }}/idprovider/v1/auth/identitytoken"
     method: POST
     headers:
@@ -26,7 +26,7 @@
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-data/4.0?topic=resources-generating-authorization-token
 - name: Exchange IAM access token for Zen token
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/v1/preauth/validateAuth"
     method: GET
     headers:
@@ -37,7 +37,7 @@
   register: token_response
 
 - name: Get groups
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
     method: GET
     headers:
@@ -47,13 +47,13 @@
   register: groups_response
 
 - name: Get cpadmins group id
-  set_fact:
+  ansible.builtin.set_fact:
     cpadmins_group_id: "{{ groups_response.json | json_query(condition_query) | first }}"
   vars:
     condition_query: "results[?name == 'cpadmins'].group_id"
 
 - name: Wait for Assetrepo roles
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/roles"
     method: GET
     headers:
@@ -75,7 +75,7 @@
       "rows[?id == 'automation-assets-viewer-role']"
 
 - name: Add Asset Repo roles to cpadmins group
-  uri:
+  ansible.builtin.uri:
     url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ cpadmins_group_id }}"
     method: PATCH
     headers:

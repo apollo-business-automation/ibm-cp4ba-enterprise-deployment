@@ -1,18 +1,18 @@
 - name: Execute Catalog Source role as prerequisite
-  include_role:
+  ansible.builtin.include_role:
     name: catalog_source
   vars:
     catalog_source_k8s_api_key: "{{ db2_k8s_api_key | default(omit) }}"
     catalog_source_k8s_host: "{{ db2_k8s_host | default(omit) }}"
 
 - name: Create DB2 directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ db2_output_directory }}"
     state: directory
     mode: u+rwx
 
 - name: Create Project
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-project
   vars:
@@ -21,16 +21,17 @@
     common_namespace_name: db2
     common_output_directory: "{{ db2_output_directory }}"
 
-- block:
+- name: No root squash for DB2
+  block:
 
     - name: Prepare yaml for No Root Squash DB2 Service Account for NFS on IBM Cloud
-      template:
+      ansible.builtin.template:
         src: service-account.yaml.j2
         dest: "{{ db2_output_directory }}/service-account.yaml"
         mode: u+rwx
 
     - name: Add No Root Squash DB2 Service Account for NFS on IBM Cloud
-      k8s:
+      kubernetes.core.k8s:
         api_key: "{{ db2_k8s_api_key | default(omit) }}"
         host: "{{ db2_k8s_host | default(omit ) }}"
         state: present
@@ -42,13 +43,13 @@
         wait_timeout: 15
 
     - name: Prepare yaml for No Root Squash DB2 Role Binding for NFS on IBM Cloud
-      template:
+      ansible.builtin.template:
         src: privileged-scc-clusterrolebinding.yaml.j2
         dest: "{{ db2_output_directory }}/privileged-scc-clusterrolebinding.yaml"
         mode: u+rwx
 
     - name: Add No Root Squash DB2 Role Binding for NFS on IBM Cloud
-      k8s:
+      kubernetes.core.k8s:
         api_key: "{{ db2_k8s_api_key | default(omit) }}"
         host: "{{ db2_k8s_host | default(omit ) }}"
         state: present
@@ -60,13 +61,13 @@
         wait_timeout: 15
 
     - name: Prepare yaml for No Root Squash DB2 Daemon Set
-      template:
+      ansible.builtin.template:
         src: daemon-set.yaml.j2
         dest: "{{ db2_output_directory }}/daemon-set.yaml"
         mode: u+rwx
 
     - name: Add No Root Squash DB2 Daemon Set
-      k8s:
+      kubernetes.core.k8s:
         api_key: "{{ db2_k8s_api_key | default(omit) }}"
         host: "{{ db2_k8s_host | default(omit ) }}"
         state: present
@@ -80,13 +81,13 @@
   when: db2_deployment_platform == "ROKS"
 
 - name: Prepare yaml file for the Operator Group
-  template:
+  ansible.builtin.template:
     src: operatorgroup.yaml.j2
     dest: "{{ db2_output_directory }}/operatorgroup.yaml"
     mode: u+rwx
 
 - name: Add the Operator Group
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ db2_k8s_api_key | default(omit) }}"
     host: "{{ db2_k8s_host | default(omit) }}"
     state: present
@@ -98,13 +99,13 @@
     wait_timeout: 15
 
 - name: Prepare yaml file for the Operator Subscription
-  template:
+  ansible.builtin.template:
     src: subscription.yaml.j2
     dest: "{{ db2_output_directory }}/subscription.yaml"
     mode: u+rwx
 
 - name: Add the Operator Subscription
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ db2_k8s_api_key | default(omit) }}"
     host: "{{ db2_k8s_host | default(omit) }}"
     state: present
@@ -116,7 +117,7 @@
     wait_timeout: 15
 
 - name: Manage Manual Operator DB2
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: manage-manual-operator
   vars:
@@ -126,7 +127,7 @@
     common_label_selector_stub: db2u-operator
 
 - name: Wait for Db2uCluster CRD to be Established
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-crd
   vars:
@@ -135,7 +136,7 @@
     common_crd_name: db2uclusters.db2u.databases.ibm.com
 
 - name: Create ICR Secret
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-icr-secret
   vars:
@@ -149,13 +150,13 @@
 # Based on LI at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument
 # DB2 Standard Edition is a supporting program with limitation of 16 CPU and 128 Memory
 - name: Prepare yaml file for Db2uCluster Instance
-  template:
+  ansible.builtin.template:
     src: db2ucluster.yaml.j2
     dest: "{{ db2_output_directory }}/db2ucluster.yaml"
     mode: u+rwx
 
 - name: Add the Db2uCluster Instance
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ db2_k8s_api_key | default(omit) }}"
     host: "{{ db2_k8s_host | default(omit) }}"
     state: present
@@ -167,7 +168,7 @@
     wait_timeout: 15
 
 - name: Wait for the Db2uCluster Instance Ready State
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ db2_k8s_api_key | default(omit) }}"
     host: "{{ db2_k8s_host | default(omit) }}"
     api_version: db2u.databases.ibm.com/v1

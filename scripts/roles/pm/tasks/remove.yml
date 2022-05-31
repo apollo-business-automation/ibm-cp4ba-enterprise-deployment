@@ -1,5 +1,5 @@
 - name: Get ProcessMining CRD
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ pm_k8s_api_key | default(omit) }}"
     host: "{{ pm_k8s_host | default(omit) }}"
     api_version: apiextensions.k8s.io/v1
@@ -10,7 +10,7 @@
   delay: 1
 
 - name: Delete ProcessMining instance
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ pm_k8s_api_key | default(omit) }}"
     host: "{{ pm_k8s_host | default(omit) }}"
@@ -24,7 +24,7 @@
   when: processmining_crd.resources | length != 0
 
 - name: Delete Secrets
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ pm_k8s_api_key | default(omit) }}"
     host: "{{ pm_k8s_host | default(omit) }}"
@@ -40,7 +40,7 @@
     - pm-tls-secret
 
 - name: Remove Operators
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: remove-operator
   vars:
@@ -53,7 +53,7 @@
     - "db2u-operator"
 
 - name: Get DB2 Pod
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ pm_k8s_api_key | default(omit) }}"
     host: "{{ pm_k8s_host | default(omit) }}"
     api_version: v1
@@ -65,7 +65,8 @@
   retries: 40
   delay: 15
 
-- block:
+- name: Delete Db2 for IPM
+  block:
 
     - name: Connect to DB
       kubernetes.core.k8s_exec:
@@ -80,7 +81,8 @@
       register: db_connect_status
       ignore_errors: true
 
-    - block:
+    - name: Delete pm db2
+      block:
 
         - name: Delete Tablespaces
           kubernetes.core.k8s_exec:
@@ -117,7 +119,7 @@
           failed_when: command_status.rc != 0 and command_status.stdout is not search('.*-601:CREATE TABLE.*')
 
         - name: Remove DB2 user
-          include_role:
+          ansible.builtin.include_role:
             name: common
             tasks_from: remove-db2-user
           vars:

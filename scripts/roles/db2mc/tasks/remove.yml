@@ -1,5 +1,5 @@
 - name: Remove Project db2mc
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ db2mc_k8s_api_key | default(omit) }}"
     host: "{{ db2mc_k8s_host | default(omit) }}"
@@ -11,7 +11,7 @@
     wait_timeout: 120
 
 - name: Remove DB
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: remove-db
   vars:

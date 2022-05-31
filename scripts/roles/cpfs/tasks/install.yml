@@ -1,18 +1,18 @@
 - name: Execute Catalog Source role as prerequisite
-  include_role:
+  ansible.builtin.include_role:
     name: catalog_source
   vars:
     catalog_source_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     catalog_source_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
 
 - name: Create CPFS directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ cpfs_output_directory }}"
     state: directory
     mode: u+rwx
 
 - name: Get Cluster Monitoring ConfigMap
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     kind: ConfigMap
@@ -25,13 +25,13 @@
 - name: Manage Config Map
   block:
     - name: Prepare yaml file for Cluster Monitoring ConfigMap
-      template:
+      ansible.builtin.template:
         src: cluster-monitoring-config.yaml.j2
         dest: "{{ cpfs_output_directory }}/cluster-monitoring-config.yaml"
         mode: u+rwx
 
     - name: Add Cluster Monitoring ConfigMap
-      k8s:
+      kubernetes.core.k8s:
         api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
         host: "{{ cpfs_k8s_host | default(omit) }}"
         state: present
@@ -47,7 +47,7 @@
 # TODO add better configmap handling in case it exists and doesn't contain user worload enabled?
 
 - name: Create Project common-service
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-project
   vars:
@@ -57,7 +57,7 @@
     common_output_directory: "{{ cpfs_output_directory }}"
 
 - name: Create Project ibm-common-services
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-project
   vars:
@@ -67,13 +67,13 @@
     common_output_directory: "{{ cpfs_output_directory }}"
 
 - name: Prepare yaml file for the Operator Group
-  template:
+  ansible.builtin.template:
     src: operatorgroup.yaml.j2
     dest: "{{ cpfs_output_directory }}/operatorgroup.yaml"
     mode: u+rwx
 
 - name: Add the Operator Group
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: present
@@ -85,13 +85,13 @@
     wait_timeout: 15
 
 - name: Prepare yaml file for the Operator Subscription
-  template:
+  ansible.builtin.template:
     src: subscription.yaml.j2
     dest: "{{ cpfs_output_directory }}/subscription.yaml"
     mode: u+rwx
 
 - name: Add the Operator Subscription
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: present
@@ -103,7 +103,7 @@
     wait_timeout: 15
 
 - name: Manage Manual Operator ibm-common-service-operator in common-service
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: manage-manual-operator
   vars:
@@ -113,7 +113,7 @@
     common_label_selector_stub: ibm-common-service-operator
 
 - name: Manage Manual Operator ibm-common-service-operator in ibm-common-service
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: manage-manual-operator
   vars:
@@ -123,7 +123,7 @@
     common_label_selector_stub: ibm-common-service-operator
 
 - name: Manage Manual Operator ibm-namespace-scope-operator
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: manage-manual-operator
   vars:
@@ -132,8 +132,45 @@
     common_namespace_name: ibm-common-services
     common_label_selector_stub: ibm-namespace-scope-operator
 
+- name: Wait for CommonService instance common-service to appear
+  kubernetes.core.k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: operator.ibm.com/v3
+    kind: CommonService
+    name: common-service
+    namespace: ibm-common-services
+  register: common_service
+  retries: 10
+  delay: 15
+  until: common_service.resources | length == 1
+
+- name: Update OIDCClient watcher resources for better stability
+  kubernetes.core.k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: present
+    api_version: operator.ibm.com/v3
+    kind: CommonService
+    name: common-service
+    namespace: ibm-common-services
+    definition:
+      spec:
+        services:
+          - name: ibm-iam-operator
+            spec:
+              oidcclientwatcher:
+                replicas: 1
+                resources:
+                  limits:
+                    cpu: 1000m
+                    memory: 325Mi
+                  requests:
+                    cpu: 20m
+                    memory: 40Mi
+
 - name: Manage Manual Operator operand-deployment-lifecycle-manager-app
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: manage-manual-operator
   vars:
@@ -143,7 +180,7 @@
     common_label_selector_stub: ibm-odlm
 
 - name: Wait for SecretShare CRD to be Established
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-crd
   vars:
@@ -152,7 +189,7 @@
     common_crd_name: secretshares.ibmcpcs.ibm.com
 
 - name: Wait for SecretShare instance common-services to appear
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     api_version: ibmcpcs.ibm.com/v1
@@ -165,7 +202,7 @@
   until: secret_share.resources | length == 1
 
 - name: Patch SecretShare instance common-services to omit sharing into other namespaces
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: present
@@ -179,7 +216,7 @@
         secretshares: []
 
 - name: Wait for CRDs to be Established
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-crd
   vars:
@@ -194,7 +231,7 @@
 # it can happen that there are multiple "groups" of Operators with different InstallPlans
 # causing normal execution to fail and retry next time.
 - name: Get OperandRequest instance
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     api_version: operator.ibm.com/v1alpha1
@@ -204,7 +241,7 @@
   register: operand_request
 
 - name: Wait for OperandConfig instance Initialized or Running state
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     api_version: operator.ibm.com/v1alpha1
@@ -221,7 +258,7 @@
   when: (operand_request.resources | length == 0)
 
 - name: Get OperandConfig
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     api_version: operator.ibm.com/v1alpha1
@@ -236,7 +273,7 @@
   block:
 
     - name: Get index of ibm-iam-operator
-      set_fact:
+      ansible.builtin.set_fact:
         service_index: "{{ index | int }}"
       loop: "{{ operand_config | json_query('resources[0].spec.services') | flatten(levels=1) }}"
       when: item.name == "ibm-iam-operator"
@@ -265,7 +302,7 @@
   block:
 
     - name: Get index of ibm-mongodb-operator
-      set_fact:
+      ansible.builtin.set_fact:
         service_index: "{{ index | int }}"
       loop: "{{ operand_config | json_query('resources[0].spec.services') | flatten(levels=1) }}"
       when: item.name == "ibm-mongodb-operator"
@@ -293,7 +330,7 @@
   block:
 
     - name: Get index of ibm-healthcheck-operator
-      set_fact:
+      ansible.builtin.set_fact:
         service_index: "{{ index | int }}"
       loop: "{{ operand_config | json_query('resources[0].spec.services') | flatten(levels=1) }}"
       when: item.name == "ibm-healthcheck-operator"
@@ -318,7 +355,7 @@
     condition_query: "resources[0].spec.services[?name == 'ibm-healthcheck-operator'].spec.mustgatherService.persistentVolumeClaim.storageClassName"
 
 - name: Create ICR Secret
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-icr-secret
   vars:
@@ -330,13 +367,13 @@
     common_namespace_name: db2
 
 - name: Prepare yaml file for the OperandRequest instance
-  template:
+  ansible.builtin.template:
     src: operandrequest.yaml.j2
     dest: "{{ cpfs_output_directory }}/operandrequest.yaml"
     mode: u+rwx
 
 - name: Apply OperandRequest instance
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: present
@@ -348,7 +385,7 @@
     wait_timeout: 15
 
 - name: Manage Manual Operators
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: manage-manual-operator
   vars:
@@ -369,7 +406,7 @@
     - ibm-platform-api-operator-app
 
 - name: Manage Manual Operator ibm-ingress-nginx-operator
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: manage-manual-operator
   vars:
@@ -379,7 +416,7 @@
     common_label_selector_stub: ibm-ingress-nginx-operator-app
 
 - name: Wait for OperandRequest instance Running phase
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     api_version: operator.ibm.com/v1alpha1
@@ -394,7 +431,7 @@
     condition_query: "resources[*].status.phase"
 
 - name: Wait for IAM Ready status as an indicator that CPFS is installed
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     kind: ConfigMap
@@ -408,55 +445,55 @@
     condition_query: "resources[*].data.iamstatus"
 
 - name: Check that the {{ cpfs_wildcard_key_path }} exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ cpfs_wildcard_key_path }}"
   register: cpfs_wildcard_key_file
 
 - name: Check that the {{ cpfs_ca_crt_path }} exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ cpfs_ca_crt_path }}"
   register: cpfs_ca_crt_file
 
 - name: Ensure we have CA certificates and wildcards
-  include_role:
+  ansible.builtin.include_role:
     name: global_ca
   when: not cpfs_wildcard_key_file.stat.exists or not cpfs_ca_crt_file.stat.exists
 
 - name: Load TLS key data
-  slurp:
+  ansible.builtin.slurp:
     src: '{{ cpfs_wildcard_key_path }}'
   register: slurped_key_data
 
 - name: Decode data and store as fact
-  set_fact:
+  ansible.builtin.set_fact:
     _tls_key: "{{ slurped_key_data.content }}"
 
 - name: Load TLS crt data
-  slurp:
+  ansible.builtin.slurp:
     src: '{{ cpfs_wildcard_crt_path }}'
   register: slurped_crt_data
 
 - name: Decode data and store as fact
-  set_fact:
+  ansible.builtin.set_fact:
     _tls_crt: "{{ slurped_crt_data.content }}"
 
 - name: Load CA TLS crt data
-  slurp:
+  ansible.builtin.slurp:
     src: '{{ cpfs_ca_crt_path }}'
   register: slurped_ca_crt_data
 
 - name: Decode data and store as fact
-  set_fact:
+  ansible.builtin.set_fact:
     _ca_tls_crt: "{{ slurped_ca_crt_data.content }}"
 
 - name: Prepare yaml file for Secret
-  template:
+  ansible.builtin.template:
     src: license-service-secret.yaml.j2
     dest: "{{ cpfs_output_directory }}/license-service-secret.yaml"
     mode: u+rwx
 
 - name: Add Secret
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: present
@@ -469,7 +506,7 @@
 
 # Based on https://www.ibm.com/docs/en/cpfs?topic=operator-using-custom-certificates
 - name: Apply custom certificate for License Service
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: present
@@ -482,14 +519,14 @@
         httpsCertsSource: "custom"
 
 - name: Prepare yaml file for the License Service Reporter
-  template:
+  ansible.builtin.template:
     src: ibmlicenseservicereporter.yaml.j2
     dest: "{{ cpfs_output_directory }}/ibmlicenseservicereporter.yaml"
     mode: u+rwx
 
 # Based on Based on https://www.ibm.com/docs/en/cpfs?topic=reporter-deploying-license-service
 - name: Apply License Service Reporter instance
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: present
@@ -503,7 +540,7 @@
 - name: Configure License Service Reporter if not done already
   block:
     - name: Get index of ibm-licensing-operator
-      set_fact:
+      ansible.builtin.set_fact:
         service_index: "{{ index | int }}"
       loop: "{{ operand_config | json_query('resources[0].spec.services') | flatten(levels=1) }}"
       when: item.name == "ibm-licensing-operator"
@@ -528,7 +565,7 @@
     condition_query: "resources[0].spec.services[?name == 'ibm-licensing-operator'].spec.IBMLicenseServiceReporter"
 
 - name: Wait for license reporter Deployment to be Available
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:
@@ -546,7 +583,7 @@
 # Based on https://www.ibm.com/docs/en/cpfs?topic=operator-replacing-foundational-services-endpoint-certificates
 
 - name: Wait for management ingress operator Deployment to be Available
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
   vars:
@@ -561,7 +598,7 @@
     common_delay: 15
 
 - name: Get yaml of ManagementIngress
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     api_version: operator.ibm.com/v1alpha1
@@ -572,10 +609,11 @@
   retries: 40
   delay: 30
 
-- block:
+- name: Replace CPFS certificate
+  block:
 
     - name: Patch certificate settings
-      k8s:
+      kubernetes.core.k8s:
         api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
         host: "{{ cpfs_k8s_host | default(omit) }}"
         state: present
@@ -601,7 +639,7 @@
       until: "log.log is search('.*Not watching certificate: route-cert, IgnoreRouteCert is true.*')"
 
     - name: Delete certificate
-      k8s:
+      kubernetes.core.k8s:
         api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
         host: "{{ cpfs_k8s_host | default(omit) }}"
         state: absent
@@ -614,7 +652,7 @@
         wait_timeout: 50
 
     - name: Delete route secret
-      k8s:
+      kubernetes.core.k8s:
         api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
         host: "{{ cpfs_k8s_host | default(omit) }}"
         state: absent
@@ -627,13 +665,13 @@
         wait_timeout: 50
 
     - name: Prepare yaml file for Secret
-      template:
+      ansible.builtin.template:
         src: route-tls-secret.yaml.j2
         dest: "{{ cpfs_output_directory }}/route-tls-secret.yaml"
         mode: u+rwx
 
     - name: Add Secret
-      k8s:
+      kubernetes.core.k8s:
         api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
         host: "{{ cpfs_k8s_host | default(omit) }}"
         state: present
@@ -645,7 +683,7 @@
         wait_timeout: 15
 
     - name: Delete ca secret
-      k8s:
+      kubernetes.core.k8s:
         api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
         host: "{{ cpfs_k8s_host | default(omit) }}"
         state: absent
@@ -669,7 +707,7 @@
           - app=auth-idp
 
     - name: Wait for IAM to be Available
-      include_role:
+      ansible.builtin.include_role:
         name: common
         tasks_from: wait-resource-condition
       vars:
@@ -683,12 +721,12 @@
         common_retries: 80
         common_delay: 15
 
-  when: ingress | json_query(condition_query) | bool != true
+  when: not (ingress | json_query(condition_query) | bool)
   vars:
     condition_query: 'resources[0].spec.ignoreRouteCert'
 
 - name: Get cpfsadmin user password in secret
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     api_version: v1
@@ -699,14 +737,15 @@
   retries: 40
   delay: 30
 
-- block:
+- name: Update cpfs admin username
+  block:
 
     # Based on https://www.ibm.com/docs/en/cpfs?topic=configurations-changing-cluster-administrator-access-credentials#pwd
     # cloudctl command replaced with actual Secret and Pod restarts because per
     # https://www.ibm.com/docs/en/cloud-paks/cp-integration/2020.3?topic=SSGT7J_20.3/cloudctl/3.x.x/cli_pm_commands.html#update-secret
     # it does "Update a secret and restart deployments that use the secret."
     - name: Change cpfsadmin user password in secret
-      k8s:
+      kubernetes.core.k8s:
         api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
         host: "{{ cpfs_k8s_host | default(omit) }}"
         state: present
@@ -736,7 +775,7 @@
         - app=secret-watcher
 
     - name: Wait for Deployments which use cpfsadmin secret to be Available
-      include_role:
+      ansible.builtin.include_role:
         name: common
         tasks_from: wait-resource-condition
       vars:
@@ -761,7 +800,7 @@
     condition_query: 'resources[0].data.admin_password'
 
 - name: Get OCP Apps domain
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: apps-endpoint
   vars:
@@ -770,7 +809,7 @@
     common_output_to_var: "apps_endpoint_domain"
 
 - name: Get access token for administrative user
-  uri:
+  ansible.builtin.uri:
     url: "https://cp-console.{{ apps_endpoint_domain }}/idprovider/v1/auth/identitytoken"
     method: POST
     body_format: form-urlencoded
@@ -784,17 +823,17 @@
   register: auth_token_response
 
 - name: Set access token for administrative user
-  set_fact:
+  ansible.builtin.set_fact:
     access_token: "{{ auth_token_response.json | json_query('access_token') }}"
 
 - name: Prepare JSON file for LDAP connection
-  template:
+  ansible.builtin.template:
     src: ldap-connection.json.j2
     dest: "{{ cpfs_output_directory }}/ldap-connection.json"
     mode: u+rwx
 
 - name: Add LDAP connection
-  uri:
+  ansible.builtin.uri:
     url: "https://cp-console.{{ apps_endpoint_domain }}/idmgmt/identity/api/v1/directory/ldap/onboardDirectory"
     method: POST
     headers:

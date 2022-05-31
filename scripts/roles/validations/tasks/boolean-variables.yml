@@ -1,5 +1,5 @@
 - name: Validate True/False Entries
-  fail:
+  ansible.builtin.fail:
     msg: "The {{ item.name }} variable has to be boolean"
   when: "item.value  | type_debug != 'bool'"
   with_items:

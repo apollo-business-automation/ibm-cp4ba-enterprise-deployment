@@ -1,5 +1,5 @@
 - name: Check if plugin exists
-  uri:
+  ansible.builtin.uri:
     url: "https://nexus.{{ apps_endpoint_domain }}/repository/maven-releases/{{ item.value.maven_coordinates.groupId | replace('.', '/') }}/\
       {{ item.value.maven_coordinates.artifactId }}/{{ item.value.maven_coordinates.version }}/{{ item.value.path | replace('_', '-') }}"
     method: GET
@@ -12,30 +12,32 @@
       - 404
   register: ads_maven_plugin_response
 
-- block:
+- name: Get plugin to nexus
+  block:
 
     - name: Download plugin
-      get_url:
+      ansible.builtin.get_url:
         url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/download/{{ item.value.path }}"
         headers:
           Authorization: "Bearer {{ token_response.json | json_query('token') }}"
         validate_certs: false
         dest: "{{ cp4ba_output_directory }}/{{ item.value.path }}"
+        mode: u+rwx
 
-    # Ansible 2.10+
+    # TODO from ansible 2.10+ but line endings of jar files are changed and CP4BA components cannot use these modified jars.
     # - name: Upload plugin to Nexus
-    #   uri:
-    #     url: "https://nexus-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=maven-releases"
+    #   ansible.builtin.uri:
+    #     url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=maven-releases"
     #     method: POST
     #     body_format: form-multipart
     #     body:
     #       maven2.asset1:
-    #         filename: "{{ cp4ba_output_directory }}/{{ jar_name }}"
-    #         mime_type: application/octet-stream
-    #       maven2.groupId: com.ibm.decision
-    #       maven2.artifactId: annotations
-    #       maven2.version: 1.0.12
-    #       maven2.asset1.extension: jar
+    #         content: "{{ lookup('file', cp4ba_output_directory+'/'+item.value.path) }}"
+    #         filename: "{{ item.value.path }}"
+    #       maven2.groupId: "{{ item.value.maven_coordinates.groupId }}"
+    #       maven2.artifactId: "{{ item.value.maven_coordinates.artifactId }}"
+    #       maven2.version: "{{ item.value.maven_coordinates.version }}"
+    #       maven2.asset1.extension: "{{ item.value.maven_coordinates.packaging }}"
     #     validate_certs: false
     #     status_code: 200
     #     user: cpadmin
@@ -46,7 +48,7 @@
     #     jar_name: "{{ ads_maven_plugins_response.json | json_query('resources.annotations_maven_plugin.path') }}"
 
     - name: Upload plugin to Nexus
-      command: |
+      ansible.builtin.command: |
         curl -kX 'POST' \
         'https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/components?repository=maven-releases' \
         -H 'accept: application/json' \
@@ -59,6 +61,7 @@
         --user "cpadmin:{{ cp4ba_universal_password }}" \
         -s -o /dev/null -w "%{http_code}"
       register: ads_curl_result
+      changed_when: true
       failed_when: ads_curl_result.stdout != "204"
 
   when: ads_maven_plugin_response.status == 404

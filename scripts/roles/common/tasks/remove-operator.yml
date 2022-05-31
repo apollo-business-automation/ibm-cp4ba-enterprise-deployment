@@ -1,7 +1,7 @@
 # Example of the functionality call
 #
 # - name: Remove Operator
-#   include_role:
+#   ansible.builtin.include_role:
 #     name: common
 #     tasks_from: remove-operator
 #   vars:
@@ -11,7 +11,7 @@
 #     common_label_selector_stub: _label_selector_stub
 
 - name: Set label_selectors
-  set_fact:
+  ansible.builtin.set_fact:
     common_label_selector: "{{ ('operators.coreos.com/'+common_label_selector_stub+'.'+common_namespace_name)[:84] }}"
 
 # Based on
@@ -47,7 +47,7 @@
     wait_timeout: 50
 
 - name: Wait for {{ common_label_selector }} Deployment to terminate
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: apps/v1
@@ -61,7 +61,7 @@
   until: deployments.resources | length == 0
 
 - name: Get Role Bindings left by Operator for label {{ common_label_selector }}
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
     host: "{{ common_k8s_host | default(omit) }}"
     api_version: rbac.authorization.k8s.io/v1
@@ -74,7 +74,7 @@
   delay: 1
 
 - name: Remove leftover Role Bindings
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
     host: "{{ common_k8s_host | default(omit) }}"
     state: absent

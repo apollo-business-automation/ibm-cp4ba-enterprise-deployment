@@ -1,7 +1,7 @@
 # Example of the functionality call
 #
 # - name: Clear resources finalizers
-#   include_role:
+#   ansible.builtin.include_role:
 #     name: common
 #     tasks_from: clear-resource-finalizers
 #   vars:
@@ -14,7 +14,7 @@
 
 - name: Get resource with api '{{ common_api_version }}', kind '{{ common_kind }}',
     name '{{ common_resource_name | default("N/A") }}' in namespace {{ common_namespace_name }}
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
     host: "{{ common_k8s_host | default(omit) }}"
     api_version: "{{ common_api_version }}"

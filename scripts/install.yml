@@ -1,5 +1,5 @@
 - name: Create Project
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: create-project
   vars:
@@ -9,7 +9,7 @@
     common_output_directory: "{{ generic_directory }}"
 
 - name: Get OCP Apps domain
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: apps-endpoint
   vars:
@@ -26,23 +26,23 @@
   register: git_repo_information
 
 - name: Prepare Usage md
-  template:
+  ansible.builtin.template:
     src: usage.md.j2
     dest: "{{ generic_directory }}/usage.md"
     mode: u+rwx
 
 - name: Set path to usage.md
-  set_fact: 
+  ansible.builtin.set_fact: 
     usage_path: "{{ generic_directory }}/usage.md"
 
 - name: Prepare usage Config Map
-  template:
+  ansible.builtin.template:
     src: usage-configmap.yaml.j2
     dest: "{{ generic_directory }}/usage-configmap.yaml"
     mode: u+rwx
 
 - name: Add the usage config map
-  k8s:
+  kubernetes.core.k8s:
     api_key: "{{ ocp_cluster_token | default(omit) }}"
     host: "{{ ocp_api_endpoint | default(omit) }}"
     state: present
@@ -54,100 +54,101 @@
     wait_timeout: 15
 
 - name: Install Catalog Source
-  include_role:
+  ansible.builtin.include_role:
     name: catalog_source
 
 - name: Install Global CA
-  include_role:
+  ansible.builtin.include_role:
     name: global_ca
 
 - name: Install DB2
-  include_role:
+  ansible.builtin.include_role:
     name: db2
 
 - name: Install DB2MC
-  include_role:
+  ansible.builtin.include_role:
     name: db2mc
   when: db2mc_enabled
 
 - name: Install openldap
-  include_role:
+  ansible.builtin.include_role:
     name: openldap
 
 - name: Install gitea
-  include_role:
+  ansible.builtin.include_role:
     name: gitea
 
 - name: Install nexus
-  include_role:
+  ansible.builtin.include_role:
     name: nexus
 
 - name: Install Mail
-  include_role:
+  ansible.builtin.include_role:
     name: mail
 
 - name: Install Roundcube
-  include_role:
+  ansible.builtin.include_role:
     name: roundcube
   when: roundcube_enabled
 
 - name: Install Cerebro
-  include_role:
+  ansible.builtin.include_role:
     name: cerebro
   when: cerebro_enabled
 
 - name: Install AKHQ
-  include_role:
+  ansible.builtin.include_role:
     name: akhq
   when: akhq_enabled
 
 - name: Install Kibana
-  include_role:
+  ansible.builtin.include_role:
     name: kibana
 
 - name: Install MongoDB
-  include_role:
+  ansible.builtin.include_role:
     name: mongodb
 
 - name: Install Mongo Express
-  include_role:
+  ansible.builtin.include_role:
     name: mongo_express
   when: mongo_express_enabled
 
 - name: Install CPFS
-  include_role:
+  ansible.builtin.include_role:
     name: cpfs
 
 - name: Install CP4BA
-  include_role:
+  ansible.builtin.include_role:
     name: cp4ba
 
 # TODO activate when fixed
 # - name: Install Asset Repo
-#   include_role:
+#   ansible.builtin.include_role:
 #     name: asset_repo
 #   when: asset_repo_enabled
 
-- block:
+- name: RPA group
+  block:
 
     - name: Install MSSQL
-      include_role:
+      ansible.builtin.include_role:
         name: mssql
 
     - name: Install RPA
-      include_role:
+      ansible.builtin.include_role:
         name: rpa
 
   when: rpa_enabled
 
 - name: Install PM
-  include_role:
+  ansible.builtin.include_role:
     name: pm
   when: pm_enabled
 
 # TODO activate when fixed
 # - name: Assign Asset Repo Roles
-#   include_role:
+#   ansible.builtin.include_role:
 #     name: asset_repo
 #     tasks_from: assign-roles
 #   when: asset_repo_enabled

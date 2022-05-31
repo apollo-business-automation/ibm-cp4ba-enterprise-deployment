@@ -1,5 +1,5 @@
 - name: Remove Project mail
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ mail_k8s_api_key | default(omit) }}"
     host: "{{ mail_k8s_host | default(omit) }}"
@@ -11,7 +11,7 @@
     wait_timeout: 120
 
 - name: Remove CRB mail-privileged
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ cerebro_k8s_api_key | default(omit) }}"
     host: "{{ cerebro_k8s_host | default(omit) }}"

@@ -1,5 +1,5 @@
 - name: Get AssetRepository CRD
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
     host: "{{ asset_repo_k8s_host | default(omit) }}"
     api_version: apiextensions.k8s.io/v1
@@ -10,7 +10,7 @@
   delay: 1
 
 - name: Delete AssetRepository instance
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
     host: "{{ asset_repo_k8s_host | default(omit) }}"
@@ -24,7 +24,7 @@
   when: assetrepository_crd.resources | length != 0
 
 - name: Wait for Client to disappear
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: oidc.security.ibm.com/v1
@@ -38,7 +38,7 @@
   ignore_errors: true
 
 - name: Clear Client finalizers
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: clear-resource-finalizers
   vars:
@@ -51,7 +51,7 @@
   when: client.resources | length != 0
 
 - name: Remove Assets Operator
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: remove-operator
   vars:
@@ -61,7 +61,7 @@
     common_label_selector_stub: "ibm-integration-asset-repository"
 
 - name: Wait for CouchDBCluster instances removal
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
     host: "{{ asset_repo_k8s_host | default(omit) }}"
     api_version: couchdb.databases.cloud.ibm.com/v1
@@ -73,7 +73,7 @@
   until: copach_db_clusters.resources | length == 0
 
 - name: Remove CoachDB Operator
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: remove-operator
   vars:

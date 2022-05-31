@@ -1,7 +1,7 @@
 # Example of the functionality call
 #
 # - name: Remove DB2 user
-#   include_role:
+#   ansible.builtin.include_role:
 #     name: common
 #     tasks_from: remove-db2-user
 #   vars:
@@ -10,7 +10,7 @@
 #     common_db2_user: _db2_user
 
 - name: Get DB2 Pod
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
     host: "{{ common_k8s_host | default(omit) }}"
     api_version: v1
@@ -22,7 +22,8 @@
   retries: 40
   delay: 15
 
-- block:
+- name: Handle db2 user removal
+  block:
 
     - name: Check if DB2 user still exists
       kubernetes.core.k8s_exec:
@@ -35,7 +36,8 @@
       register: command_status
       ignore_errors: true
 
-    - block:
+    - name: Delete db2 user
+      block:
 
         - name: Get DB2 LDAP pod
           kubernetes.core.k8s_info:

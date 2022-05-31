@@ -10,8 +10,8 @@ if TYPE_CHECKING:
 
 class CommonRoleVariableRule(AnsibleLintRule):
     id: str = 'common_role_variable_rule'
-    shortdesc: str = 'Do not allow use of common_ prefix outside of common role in set_fact'
-    description: str = 'Do not allow use of common_ prefix outside of common role in set_fact'
+    shortdesc: str = 'Do not allow use of common_ prefix outside of common role in ansible.builtin.set_fact'
+    description: str = 'Do not allow use of common_ prefix outside of common role in ansible.builtin.set_fact'
     severity = 'HIGH'
     tags = ['common_role_variable_rule']
 

@@ -1,5 +1,5 @@
 - name: Remove Project mongo_express
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_key: "{{ mongo_express_k8s_api_key | default(omit) }}"
     host: "{{ mongo_express_k8s_host | default(omit) }}"

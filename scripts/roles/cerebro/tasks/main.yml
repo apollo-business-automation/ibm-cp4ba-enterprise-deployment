@@ -1,9 +1,9 @@
 - name: Set output directory variable
-  set_fact:
+  ansible.builtin.set_fact:
     cerebro_output_directory: "{{ cerebro_base_dir }}/{{ cerebro_dir_name }}"
 
 - name: Remove Cerebro directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ cerebro_output_directory }}"
     state: absent
 

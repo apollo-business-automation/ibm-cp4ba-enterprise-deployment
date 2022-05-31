@@ -1,7 +1,7 @@
 # Example of the functionality call
 #
 # - name: Add DB2MC connection
-#   include_role:
+#   ansible.builtin.include_role:
 #     name: common
 #     tasks_from: add-db2mc-connection
 #   vars:
@@ -13,20 +13,20 @@
 #     common_db2_hostname: "{{ prefix_db2_hostname }}"
 
 - name: Get OCP Apps domain
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: apps-endpoint
   vars:
     common_output_to_var: "apps_endpoint_domain"
 
 - name: Prepare JSON file for db2mc token request
-  template:
+  ansible.builtin.template:
     src: db2mc-token-request.json.j2
     dest: "{{ common_output_directory }}/db2mc-token-request.json"
     mode: u+rwx
 
 - name: Get auth token
-  uri:
+  ansible.builtin.uri:
     url: "https://db2mc.{{ apps_endpoint_domain }}/dbapi/v4/auth/tokens"
     method: POST
     body_format: json
@@ -36,17 +36,17 @@
   register: auth_token_response
 
 - name: Set auth token
-  set_fact:
+  ansible.builtin.set_fact:
     auth_token: "{{ auth_token_response.json | json_query('token') }}"
 
 - name: Prepare JSON file for db2mc connection
-  template:
+  ansible.builtin.template:
     src: db2mc-profile.json.j2
     dest: "{{ common_output_directory }}/db2mc-profile.json"
     mode: u+rwx
 
 - name: Adding DB to DB2MC
-  uri:
+  ansible.builtin.uri:
     url: "https://db2mc.{{ apps_endpoint_domain }}/dbapi/v4/dbprofiles"
     method: POST
     headers:

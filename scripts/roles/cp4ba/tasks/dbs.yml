@@ -1,5 +1,5 @@
 - name: Add DB2 users
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: add-db2-user
   vars:
@@ -208,7 +208,7 @@
       db2 GRANT USE OF TABLESPACE FPOS_TEMP_TS TO user fpos;
       db2 CONNECT RESET;
       "
-  register: command_status  
+  register: command_status
 
 # Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
 - name: IER ROS DB
@@ -229,7 +229,7 @@
       db2 GRANT USE OF TABLESPACE ROS_TEMP_TS TO user ros;
       db2 CONNECT RESET;
       "
-  register: command_status  
+  register: command_status
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=engine-creating-database
 - name: AAE DB
@@ -638,7 +638,7 @@
   register: command_status
 
 - name: Add DB connections to DB2MC
-  include_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: add-db2mc-connection
   vars:

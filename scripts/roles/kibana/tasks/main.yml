@@ -1,9 +1,9 @@
 - name: Set output directory variable
-  set_fact:
+  ansible.builtin.set_fact:
     kibana_output_directory: "{{ kibana_base_dir }}/{{ kibana_dir_name }}"
 
 - name: Remove kibana directory for generated files
-  file:
+  ansible.builtin.file:
     path: "{{ kibana_output_directory }}"
     state: absent
 
