@@ -7,6 +7,57 @@
     - variables.yml
     - internal-variables.yml
   tasks:
+    - name: CP4BA config variables
+      ansible.builtin.set_fact:
+        cp4ba_config:
+          deployment_patterns:
+            foundation: true
+            decisions: true
+            decisions_ads: true
+            content: true
+            application: true
+            document_processing: true
+            workflow: true
+            workflow-workstreams: false
+          optional_components:
+            bas: true
+            bai: true
+            decisionCenter: true
+            decisionRunner: true
+            decisionServerRuntime: true
+            ads_designer: true
+            ads_runtime: true
+            cmis: true
+            css: true
+            es: true
+            tm: true
+            ier: true
+            app_designer: true
+            ae_data_persistence: true
+            document_processing_designer: true
+            baw_authoring: true
+      when: cp4ba_config is not defined
+
+    - name: Mongodb config variable
+      ansible.builtin.set_fact:
+        mongodb_enabled: true
+      when: mongodb_enabled is not defined
+
+    - name: Kibana config variable
+      ansible.builtin.set_fact:
+        kibana_enabled: true
+      when: kibana_enabled is not defined
+
+    - name: Mail config variable
+      ansible.builtin.set_fact:
+        mail_enabled: true
+      when: mail_enabled is not defined
+
+    - name: Gitea config variable
+      ansible.builtin.set_fact:
+        gitea_enabled: true
+      when: gitea_enabled is not defined
+
     - name: Input Validations
       ansible.builtin.include_role:
         name: validations

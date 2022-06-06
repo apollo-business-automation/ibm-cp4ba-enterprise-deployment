@@ -1,0 +1,55 @@
+- name: Add DB2 users
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: add-db2-user
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_db2_user: "{{ item }}"
+    common_universal_password: "{{ cp4ba_universal_password }}"
+  with_items:
+    - aae
+    - aeos
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=engine-creating-database
+- name: AAE DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
+      db2 CONNECT TO CP4BA;
+      db2 CREATE REGULAR TABLESPACE AAE_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE USER TEMPORARY TABLESPACE AAE_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE SYSTEM TEMPORARY TABLESPACE AAE_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+
+      db2 GRANT DBADM ON DATABASE TO user aae;
+      db2 GRANT USE OF TABLESPACE AAE_TS TO user aae;
+      db2 GRANT USE OF TABLESPACE AAE_TEMP_TS TO user aae;
+      db2 CONNECT RESET;
+      "
+  register: command_status
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=engine-creating-database
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+- name: AAE Data persistence DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
+      db2 CONNECT TO CP4BA;
+      db2 CREATE LARGE TABLESPACE AEOS_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE USER TEMPORARY TABLESPACE AEOS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE SYSTEM TEMPORARY TABLESPACE AEOS_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+
+      db2 GRANT DBADM ON DATABASE TO user aeos;
+      db2 GRANT USE OF TABLESPACE AEOS_TS TO user aeos;
+      db2 GRANT USE OF TABLESPACE AEOS_TEMP_TS TO user aeos;
+      db2 CONNECT RESET;
+      "
+  register: command_status
