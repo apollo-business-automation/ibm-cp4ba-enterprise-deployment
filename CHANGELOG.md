@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [2022-06-07]
+
+### Fixed
+
+- Updated helm chart version of mongodb as previous version used was deleted from repo.
+
 ## [2022-05-31]
 
 ### Changed
