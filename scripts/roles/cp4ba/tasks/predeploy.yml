@@ -19,7 +19,6 @@
 
 - name: Manage BAN
   include_tasks: predeploy/ban.yml
-  when: cp4ba_config.deployment_patterns.foundation
 
 - name: Manage BAS
   include_tasks: predeploy/bas.yml
@@ -56,6 +55,10 @@
 - name: Manage AAE
   include_tasks: predeploy/aae.yml
   when: cp4ba_config.deployment_patterns.application
+
+- name: Manage AAE
+  include_tasks: predeploy/aae-data-persistence.yml
+  when: cp4ba_config.optional_components.ae_data_persistence
 
 - name: Manage ADP
   include_tasks: predeploy/adp.yml

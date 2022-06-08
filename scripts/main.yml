@@ -35,6 +35,7 @@
             app_designer: true
             ae_data_persistence: true
             document_processing_designer: true
+            document_processing_runtime: false
             baw_authoring: true
       when: cp4ba_config is not defined
 

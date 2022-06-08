@@ -16,7 +16,6 @@
 
 - name: Manage schemas for BAN
   include_tasks: db/ban.yml
-  when: cp4ba_config.deployment_patterns.foundation
 
 - name: Manage schemas for BAS
   include_tasks: db/bas.yml
@@ -37,7 +36,10 @@
 - name: Manage schemas for AAE
   include_tasks: db/aae.yml
   when: cp4ba_config.deployment_patterns.application
-# TODO resolve ae_data_persistence
+
+- name: Manage schemas for AAE Data persistence
+  include_tasks: db/aae-data-persistence.yml
+  when: cp4ba_config.optional_components.ae_data_persistence
 
 - name: Manage schemas for ADP
   include_tasks: db/adp.yml

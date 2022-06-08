@@ -4,9 +4,6 @@ spec:
       admin_secret_name: cp4ba-instance1-aae-app-engine-admin-secret
       admin_user: cpadmin
       replica_size: 2 # to fulfill PDB requirement
-      data_persistence:
-        enable: false
-        object_store_name: AEOS
       autoscaling:
         enabled: false
       database:
@@ -15,4 +12,5 @@ spec:
         port: "50000"
         current_schema: AAE
       data_persistence:
-        enable: {{ aae_data_persistence }}
+        enable: "{{ aae_data_persistence | default(false) }}"
+        object_store_name: AEOS
