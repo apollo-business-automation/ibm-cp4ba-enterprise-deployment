@@ -12,6 +12,36 @@ spec:
     registryPoll:
       interval: 45m
 ---      
+# IPM
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-automation-processminings
+  namespace: openshift-marketplace
+spec:
+  displayName: IBM ProcessMining Operators
+  publisher: IBM
+  sourceType: grpc
+  image: icr.io/cpopen/processmining-operator-catalog:1.1.1
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
+# IPM dependency
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-cloud-databases-redis-operator-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: ibm-cloud-databases-redis-operator-catalog
+  publisher: IBM
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-cloud-databases-redis-catalog@sha256:9d4eec7ba489efefa6e8be937a79173a4c0cfad5ca5ad2f648f0eed10261a165
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
 ################################################################################
 #
 # Licensed Materials - Property of IBM

@@ -410,15 +410,16 @@
     merge_type: merge
     src: "{{ cp4ba_output_directory }}/cr.yaml"
 
-- name: Manage Manual Operator ibm-zen-operator
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: manage-manual-operator
-  vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_namespace_name: ibm-common-services
-    common_label_selector_stub: ibm-zen-operator
+# TODO manual approval
+# - name: Manage Manual Operator ibm-zen-operator
+#   ansible.builtin.include_role:
+#     name: common
+#     tasks_from: manage-manual-operator
+#   vars:
+#     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+#     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+#     common_namespace_name: ibm-common-services
+#     common_label_selector_stub: ibm-zen-operator
 
 - name: Wait for icp4ba Cartridge to be Ready
   ansible.builtin.include_role:
@@ -473,25 +474,27 @@
 - name: Manage BTS
   block:
 
-    - name: Manage Manual Operator ibm-bts-operator
-      ansible.builtin.include_role:
-        name: common
-        tasks_from: manage-manual-operator
-      vars:
-        common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
-        common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-        common_namespace_name: ibm-common-services
-        common_label_selector_stub: ibm-bts-operator
+# TODO manual approval
+    # - name: Manage Manual Operator ibm-bts-operator
+    #   ansible.builtin.include_role:
+    #     name: common
+    #     tasks_from: manage-manual-operator
+    #   vars:
+    #     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+    #     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    #     common_namespace_name: ibm-common-services
+    #     common_label_selector_stub: ibm-bts-operator
 
-    - name: Manage Manual Operator cloud-native-postgresql
-      ansible.builtin.include_role:
-        name: common
-        tasks_from: manage-manual-operator
-      vars:
-        common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
-        common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-        common_namespace_name: ibm-common-services
-        common_label_selector_stub: cloud-native-postgresql
+# TODO manual approval
+    # - name: Manage Manual Operator cloud-native-postgresql
+    #   ansible.builtin.include_role:
+    #     name: common
+    #     tasks_from: manage-manual-operator
+    #   vars:
+    #     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+    #     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    #     common_namespace_name: ibm-common-services
+    #     common_label_selector_stub: cloud-native-postgresql
 
     # TODO remove when BTS startup probe implemented START
     - name: Wait for BTS Deployment to appear

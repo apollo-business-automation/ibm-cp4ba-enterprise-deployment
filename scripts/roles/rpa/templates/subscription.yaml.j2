@@ -5,8 +5,8 @@ metadata:
   namespace: "{{ rpa_project_name }}"
 spec:
   channel: "{{ rpa_operator_channel }}"
-  installPlanApproval: Manual
+  # TODO manual approval installPlanApproval: Manual
   name: ibm-automation-rpa
   source: ibm-operator-catalog
   sourceNamespace: openshift-marketplace
-  startingCSV: "{{ rpa_starting_csv }}"
+  # TODO manual approval startingCSV: "{{ rpa_starting_csv }}"

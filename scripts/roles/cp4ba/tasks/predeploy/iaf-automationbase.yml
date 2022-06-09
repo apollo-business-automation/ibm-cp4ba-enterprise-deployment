@@ -64,35 +64,38 @@
     merge_type: merge
     src: "{{ cp4ba_output_directory }}/automationbase.yaml"
 
-- name: Manage Manual Operator ibm-crossplane-operator-app
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: manage-manual-operator
-  vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_namespace_name: ibm-common-services
-    common_label_selector_stub: ibm-crossplane-operator-app
+# TODO manual approval
+# - name: Manage Manual Operator ibm-crossplane-operator-app
+#   ansible.builtin.include_role:
+#     name: common
+#     tasks_from: manage-manual-operator
+#   vars:
+#     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+#     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+#     common_namespace_name: ibm-common-services
+#     common_label_selector_stub: ibm-crossplane-operator-app
 
-- name: Manage Manual Operator ibm-crossplane-provider-kubernetes-operator-app
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: manage-manual-operator
-  vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_namespace_name: ibm-common-services
-    common_label_selector_stub: ibm-crossplane-provider-kubernetes-operator-app
+# TODO manual approval
+# - name: Manage Manual Operator ibm-crossplane-provider-kubernetes-operator-app
+#   ansible.builtin.include_role:
+#     name: common
+#     tasks_from: manage-manual-operator
+#   vars:
+#     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+#     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+#     common_namespace_name: ibm-common-services
+#     common_label_selector_stub: ibm-crossplane-provider-kubernetes-operator-app
 
-- name: Manage Manual Operator ibm-events-operator
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: manage-manual-operator
-  vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_namespace_name: ibm-common-services
-    common_label_selector_stub: ibm-events-operator
+# TODO manual approval
+# - name: Manage Manual Operator ibm-events-operator
+#   ansible.builtin.include_role:
+#     name: common
+#     tasks_from: manage-manual-operator
+#   vars:
+#     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+#     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+#     common_namespace_name: ibm-common-services
+#     common_label_selector_stub: ibm-events-operator
 
 - name: Wait for AutomationBase instance Ready state
   ansible.builtin.include_role:

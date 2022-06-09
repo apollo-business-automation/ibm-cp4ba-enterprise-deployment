@@ -74,15 +74,16 @@
     merge_type: merge
     src: "{{ cp4ba_output_directory }}/subscription.yaml"
 
-- name: Manage Manual Operator ibm-cp4a-operator
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: manage-manual-operator
-  vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_namespace_name: "{{ cp4ba_project_name }}"
-    common_label_selector_stub: ibm-cp4a-operator
+# TODO manual approval
+# - name: Manage Manual Operator ibm-cp4a-operator
+#   ansible.builtin.include_role:
+#     name: common
+#     tasks_from: manage-manual-operator
+#   vars:
+#     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+#     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+#     common_namespace_name: "{{ cp4ba_project_name }}"
+#     common_label_selector_stub: ibm-cp4a-operator
 
 - name: Wait for ICP4ACluster CRD to be Established
   ansible.builtin.include_role:

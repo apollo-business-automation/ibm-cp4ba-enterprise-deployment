@@ -78,15 +78,16 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Manage Manual Operator ibm-integration-asset-repository in {{ asset_repo_project_name }}
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: manage-manual-operator
-  vars:
-    common_k8s_api_key: "{{ asset_repo_k8s_api_key | default(omit)  }}"
-    common_k8s_host: "{{ asset_repo_k8s_host | default(omit) }}"
-    common_namespace_name: "{{ asset_repo_project_name }}"
-    common_label_selector_stub: ibm-integration-asset-repository
+# TODO manual approval
+# - name: Manage Manual Operator ibm-integration-asset-repository in {{ asset_repo_project_name }}
+#   ansible.builtin.include_role:
+#     name: common
+#     tasks_from: manage-manual-operator
+#   vars:
+#     common_k8s_api_key: "{{ asset_repo_k8s_api_key | default(omit)  }}"
+#     common_k8s_host: "{{ asset_repo_k8s_host | default(omit) }}"
+#     common_namespace_name: "{{ asset_repo_project_name }}"
+#     common_label_selector_stub: ibm-integration-asset-repository
 
 - name: Wait for AssetRepository CRD to be Established
   ansible.builtin.include_role:
