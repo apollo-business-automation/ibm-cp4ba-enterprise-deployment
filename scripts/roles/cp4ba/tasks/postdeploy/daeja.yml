@@ -1,0 +1,158 @@
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-navigator
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-navigator point 2.
+# License files generated following https://www.ibm.com/docs/en/daeja-viewone/5.0.x?topic=modules-enabling-viewer-add-in-content-navigator
+# IBM Daeja ViewONE Virtual Permanent Redaction Server Module & IBM Daeja ViewONE Virtual Module for Microsoft Office are part of CP4BA
+#   as per LI at http://www-03.ibm.com/software/sla/sladb.nsf/lilookup/31BA4BF94C59AD55852586FE0060B39C?OpenDocument
+
+- name: Get OCP Apps domain
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: apps-endpoint
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_output_to_var: "apps_endpoint_domain"
+
+- name: Get Navigator Pod
+  kubernetes.core.k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
+    label_selectors:
+      - app={{ cp4ba_cr_meta_name }}-navigator-deploy
+  register: pods
+  retries: 40
+  delay: 15
+
+- name: Copy Daeja License files to output dir
+  ansible.builtin.copy:
+    src: "files/ban/{{ item }}"
+    dest: "{{ cp4ba_output_directory }}/{{ item }}"
+    mode: 0664
+  with_items:
+    - lic-server-virtual.v1
+    - lic-server.v1
+
+- name: Copy Daeja License
+  kubernetes.core.k8s_cp:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: "{{ cp4ba_project_name }}"
+    pod: "{{ pods.resources[0].metadata.name }}"
+    remote_path: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/
+    local_path: "{{ cp4ba_output_directory }}/{{ item }}"
+  with_items:
+    - lic-server-virtual.v1
+    - lic-server.v1
+
+# Based on https://www.ibm.com/docs/en/cpfs?topic=apis-oidc-registration#get2 (Get access token by using username and password)
+- name: Get IAM access token
+  ansible.builtin.uri:
+    url: "https://cp-console.{{ apps_endpoint_domain }}/idprovider/v1/auth/identitytoken"
+    method: POST
+    headers:
+      Content-Type: application/x-www-form-urlencoded;charset=UTF-8
+    body_format: form-urlencoded
+    body:
+      grant_type: password
+      username: cpadmin
+      password: "{{ cp4ba_universal_password }}"
+      scope: openid
+    validate_certs: false
+    status_code: 200
+  register: cpadmin_token_response
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-data/4.0?topic=resources-generating-authorization-token
+- name: Exchange IAM access token for Zen token
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/v1/preauth/validateAuth"
+    method: GET
+    headers:
+      iam-token: "{{ cpadmin_token_response | json_query('json.access_token') }}"
+      username: cpadmin
+    validate_certs: false
+    status_code: 200
+  register: cpadmin_token_response
+
+- name: Navigator Logon
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/logon"
+    method: POST
+    body: "desktop=admin"
+    force_basic_auth: true
+    status_code: 200
+    headers:
+      Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+      auth-token-realm: InternalIamRealm
+      Content-Type: "application/x-www-form-urlencoded"
+    validate_certs: false
+    timeout: 60
+    return_content: true
+  register: login
+
+- name: icn session
+  ansible.builtin.set_fact:
+    content: "{{ login.content[4:] }}"
+    login_jsession: "{{ login.cookies['icn-JSESSIONID'] }}"
+    cookie_jsessionid_name: icn-JSESSIONID
+
+- name: Set Daeja License Path
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/admin/configuration/viewOne/default/virtualLicenseFilePath"
+    method: POST
+    return_content: true
+    follow_redirects: all
+    body: "desktop=admin&value=/opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides"
+    body_format: form-urlencoded
+    validate_certs: false
+    headers:
+      Content-Type: "application/x-www-form-urlencoded"
+      Connection: "keep-alive"
+      Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
+      security_token: "{{ content.security_token }}"
+      Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+      auth-token-realm: "InternalIamRealm"
+    timeout: 60
+  register: navigator_response
+  failed_when: "'errors' in navigator_response.content"
+
+- name: Get Navigator Pods
+  kubernetes.core.k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
+    label_selectors:
+      - "app={{ cp4ba_cr_meta_name }}-navigator-deploy"
+  register: pods
+  retries: 40
+  delay: 15
+
+- name: Delete Navigator pods
+  kubernetes.core.k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    state: absent
+    namespace: "{{ cp4ba_project_name }}"
+    name: "{{ item.metadata.name }}"
+  loop: "{{ pods.resources }}"
+
+- name: Wait for Navigator Deployment Available State
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: v1
+    common_resource_kind: Deployment
+    common_resource_name: "{{ cp4ba_cr_meta_name }}-navigator-deploy"
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_name: Available
+    common_retries: 80
+    common_delay: 15
