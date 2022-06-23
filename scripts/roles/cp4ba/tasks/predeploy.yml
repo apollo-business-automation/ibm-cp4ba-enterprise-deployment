@@ -14,6 +14,9 @@
 - name: Manage AutomationUIConfig
   include_tasks: predeploy/iaf-automationuiconfig.yml
 
+- name: Manage Shared
+  include_tasks: predeploy/shared.yml
+
 - name: Manage RR
   include_tasks: predeploy/rr.yml
 

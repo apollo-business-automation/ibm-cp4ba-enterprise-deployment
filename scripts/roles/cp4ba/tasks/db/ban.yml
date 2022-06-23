@@ -29,4 +29,3 @@
       db2 CONNECT RESET;
       "
   register: command_status
-  when: cp4ba_config.deployment_patterns.foundation

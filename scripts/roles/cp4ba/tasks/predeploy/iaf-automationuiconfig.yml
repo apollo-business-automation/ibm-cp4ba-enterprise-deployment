@@ -1,4 +1,3 @@
-
 - name: Check that the {{ cp4ba_wildcard_key_path }} exists
   ansible.builtin.stat:
     path: "{{ cp4ba_wildcard_key_path }}"

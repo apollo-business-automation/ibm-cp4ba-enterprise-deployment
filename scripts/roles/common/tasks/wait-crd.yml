@@ -19,6 +19,6 @@
   register: common_crd
   retries: 10
   delay: 1
-  until: ('True' in common_crd | json_query(condition_query) | unique )
+  until: common_crd.resources and ('True' in common_crd | json_query(condition_query) | unique )
   vars:
     condition_query: "resources[0].status.conditions[?type == 'Established'].status"
