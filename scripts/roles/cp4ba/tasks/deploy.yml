@@ -112,7 +112,7 @@
 - name: Add ADS to CR
   ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'ads/cr-runtime.yaml.j2') | from_yaml, recursive=true) }}"
-  when: cp4ba_config.deployment_patterns.ads_runtime
+  when: cp4ba_config.optional_components.ads_runtime
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-filenet-content-manager
 - name: Add FNCM pattern
@@ -206,7 +206,7 @@
             verify_configuration:
               vc_icn_verification: "{{ cr_bck.spec.verify_configuration.vc_icn_verification + cr.spec.verify_configuration.vc_icn_verification }}"
 
-  when: cp4ba_config.deployment_patterns.ier
+  when: cp4ba_config.optional_components.ier
 
 - name: Google and IDP for External Share
   block:
@@ -225,7 +225,7 @@
       ansible.builtin.set_fact:
         cr: "{{ cr | combine(lookup('template', 'fncm/cr-es-gid.yaml.j2') | from_yaml, recursive=true) }}"
 
-  when: cp4ba_external_share_google and cp4ba_config.deployment_patterns.es
+  when: cp4ba_external_share_google and cp4ba_config.optional_components.es
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-business-automation-application
 - name: Add AAE pattern
@@ -236,17 +236,17 @@
 - name: Add AAE components
   ansible.builtin.set_fact:
     components: "{{ components + ['app_designer'] }}"
-  when: cp4ba_config.deployment_patterns.app_designer
+  when: cp4ba_config.optional_components.app_designer
 
 - name: Add AAE components
   ansible.builtin.set_fact:
     components: "{{ components + ['ae_data_persistence'] }}"
-  when: cp4ba_config.deployment_patterns.ae_data_persistence
+  when: cp4ba_config.optional_components.ae_data_persistence
 
 - name: Set AAE data persistence to true in CR
   ansible.builtin.set_fact:
     aae_data_persistence: true
-  when: cp4ba_config.deployment_patterns.ae_data_persistence
+  when: cp4ba_config.optional_components.ae_data_persistence
 
 - name: Add AAE to CR
   ansible.builtin.set_fact:
@@ -283,7 +283,7 @@
             verify_configuration:
               vc_icn_verification: "{{ cr_bck.spec.verify_configuration.vc_icn_verification + cr.spec.verify_configuration.vc_icn_verification }}"
 
-  when: cp4ba_config.deployment_patterns.ae_data_persistence
+  when: cp4ba_config.optional_components.ae_data_persistence
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=resource-configuring-document-processing
 - name: Add ADP pattern
