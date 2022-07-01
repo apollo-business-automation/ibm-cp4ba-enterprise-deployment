@@ -36,12 +36,9 @@
     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_output_directory: "{{ cp4ba_output_directory }}"
-    common_icr_secret_name: "{{ item }}"
+    common_icr_secret_name: ibm-entitlement-key
     common_icr_password: "{{ cp4ba_icr_password }}"
     common_namespace_name: "{{ cp4ba_project_name }}"
-  with_items:
-    - admin.registrykey
-    - ibm-entitlement-key
 
 - name: Prepare yaml file for OperatorGroup
   ansible.builtin.template:
