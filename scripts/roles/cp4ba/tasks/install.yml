@@ -33,7 +33,8 @@
       when: _cp4ba_run_deploy
 
     - name: End play
-      ansible.builtin.meta: end_play
+      ansible.builtin.fail:
+        msg: CP4BA deployment failed.
 
 - name: Deploy CR & Log
   include_tasks: cr-log.yml
