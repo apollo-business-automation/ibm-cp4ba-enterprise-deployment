@@ -26,3 +26,7 @@ rulesdir:
 skip_list:
   - var-naming
   - command-instead-of-module
+  - new-line-at-end-of-file
+  - trailing-spaces
+  - empty-lines
+  - indentation
