@@ -31,7 +31,7 @@ spec:
     trusted_certificate_list: []
     sc_install_automation_base: true # Originaly Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=insights-customizing-kafka-elasticsearch-server-configuration,
     # but that no longer is valid, with false, the automation base connection information for elastic search are not created properly
-    # which then stops processing of the Cloud Pak operator.
+    # which then stops processing of the Cloud Pak operator. TODO: Should probably still be false, verify
     # TODO causing errors with other secrets like, BAI, ADP - CDS, enable when fixed   external_tls_certificate_secret: cp4ba-wildcard
     storage_configuration:
       sc_slow_file_storage_classname: "{{ cp4ba_storage_class_name }}"
