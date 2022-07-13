@@ -40,7 +40,7 @@
   when: cp4ba_config.deployment_patterns.decisions
 
 - name: Manage ADS
-  include_tasks: predeploy/odm.yml
+  include_tasks: predeploy/ads.yml
   when: cp4ba_config.deployment_patterns.decisions_ads
 
 - name: Manage FNCM ES Google ID
