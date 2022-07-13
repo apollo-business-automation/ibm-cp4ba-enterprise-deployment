@@ -37,6 +37,7 @@
             document_processing_designer: true
             document_processing_runtime: false
             baw_authoring: true
+            application: true
       when: cp4ba_config is not defined
 
     - name: Mongodb config variable
