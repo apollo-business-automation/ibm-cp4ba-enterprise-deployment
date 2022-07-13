@@ -722,13 +722,13 @@
 - name: Deployment wait list
   ansible.builtin.set_fact:
     wait_list:
-      - "{{ cp4ba_config.deployment_patterns.workflow and cp4ba_config.optional_components.bai | ternary(cp4ba_cr_meta_name+'-mls-itp') }}"
+      - "{{ cp4ba_config.deployment_patterns.workflow and cp4ba_config.optional_components.bai | ternary(cp4ba_cr_meta_name+'-mls-itp','') }}"
       - "{{ cp4ba_config.deployment_patterns.workflow and cp4ba_config.optional_components.bai | ternary(cp4ba_cr_meta_name+'-mls-wfi') }}"
-      - "{{ cp4ba_config.optional_components.decisionCenter | ternary(cp4ba_cr_meta_name+'-odm-decisioncenter') }}"
-      - "{{ cp4ba_config.optional_components.decisionServerRuntime | ternary(cp4ba_cr_meta_name+'-odm-decisionserverruntime') }}"
-      - "{{ cp4ba_config.optional_components.decisionServerRuntime | ternary(cp4ba_cr_meta_name+'-odm-decisionserverconsole') }}"
-      - "{{ cp4ba_config.optional_components.decisionRunner | ternary(cp4ba_cr_meta_name+'-odm-decisionrunner') }}"
-      - "{{ cp4ba_config.optional_components.application | ternary(cp4ba_cr_meta_name+'-instance1-aae-ae-deployment') }}"
+      - "{{ cp4ba_config.optional_components.decisionCenter | ternary(cp4ba_cr_meta_name+'-odm-decisioncenter','') }}"
+      - "{{ cp4ba_config.optional_components.decisionServerRuntime | ternary(cp4ba_cr_meta_name+'-odm-decisionserverruntime','') }}"
+      - "{{ cp4ba_config.optional_components.decisionServerRuntime | ternary(cp4ba_cr_meta_name+'-odm-decisionserverconsole','') }}"
+      - "{{ cp4ba_config.optional_components.decisionRunner | ternary(cp4ba_cr_meta_name+'-odm-decisionrunner','') }}"
+      - "{{ cp4ba_config.optional_components.application | ternary(cp4ba_cr_meta_name+'-instance1-aae-ae-deployment','') }}"
 
 - name: Wait for Deployments to be Available
   ansible.builtin.include_role:
@@ -800,15 +800,15 @@
 - name: Deployment wait list
   ansible.builtin.set_fact:
     wait_list:
-      - "{{ cp4ba_config.optional_components.ads_runtime | ternary(cp4ba_cr_meta_name'-ads-run-service') }}"
-      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name'-ads-parsing-service') }}"
-      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name'-ads-git-service') }}"
-      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name'-ads-download-service') }}"
-      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name'-ads-rest-api') }}"
-      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name'-ads-front') }}"
-      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name'-ads-embedded-build-service') }}"
-      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name'-ads-credentials-service') }}"
-      - "{{ cp4ba_config.optional_components.ads_runtime | ternary(cp4ba_cr_meta_name'-ads-runtime-service') }}"
+      - "{{ cp4ba_config.optional_components.ads_runtime | ternary(cp4ba_cr_meta_name+'-ads-run-service','') }}"
+      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-parsing-service','') }}"
+      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-git-service','') }}"
+      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-download-service','') }}"
+      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-rest-api','') }}"
+      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-front','') }}"
+      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-embedded-build-service','') }}"
+      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-credentials-service','') }}"
+      - "{{ cp4ba_config.optional_components.ads_runtime | ternary(cp4ba_cr_meta_name+'-ads-runtime-service','') }}"
 
 - name: Wait for Deployments to be Available
   ansible.builtin.include_role:
