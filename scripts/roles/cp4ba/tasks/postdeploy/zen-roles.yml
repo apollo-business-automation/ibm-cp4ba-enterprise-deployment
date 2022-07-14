@@ -111,7 +111,7 @@
         group_name: "{{ get_groups_response | json_query(group_id_query) | first | json_query('name') }}"
       failed_when: >
         (register_group_response.status != 200) and
-        ('duplicate key value' not in register_group_response.content)
+        ('duplicate_rule_for_group_id' not in register_group_response.content)
 
   when: group_response.status == 409
 
@@ -196,6 +196,6 @@
         group_name: "{{ get_groups_response | json_query(group_id_query) | first | json_query('name') }}"
       failed_when: >
         (register_group_response.status != 200) and
-        ('duplicate key value' not in register_group_response.content)
+        ('duplicate_rule_for_group_id' not in register_group_response.content)
 
   when: (409 in group_responses | json_query('results[*].status'))
