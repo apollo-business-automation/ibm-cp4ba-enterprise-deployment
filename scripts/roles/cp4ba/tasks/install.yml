@@ -26,7 +26,15 @@
       include_tasks: deploy.yml
       when: _cp4ba_run_deploy
 
+    - name: Set failted state to false
+      ansible.builtin.set_fact:
+        _cp4ba_run_deploy_failed: false
+
   rescue:
+
+    - name: Set failed state
+      ansible.builtin.set_fact:
+        _cp4ba_run_deploy_failed: true
 
     - name: CR & Log
       include_tasks: cr-log.yml
