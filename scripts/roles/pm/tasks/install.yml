@@ -192,15 +192,16 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Manage Manual Operator ibm-apicatalog
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: manage-manual-operator
-  vars:
-    common_k8s_api_key: "{{ pm_k8s_api_key | default(omit)  }}"
-    common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
-    common_namespace_name: ibm-common-services
-    common_label_selector_stub: ibm-apicatalog
+#  TODO remove completely when validated, apicatalog removed in CPFS 3.19
+# - name: Manage Manual Operator ibm-apicatalog
+#   ansible.builtin.include_role:
+#     name: common
+#     tasks_from: manage-manual-operator
+#   vars:
+#     common_k8s_api_key: "{{ pm_k8s_api_key | default(omit)  }}"
+#     common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
+#     common_namespace_name: ibm-common-services
+#     common_label_selector_stub: ibm-apicatalog
 
 # Based on validate successful deployment by following https://www.ibm.com/docs/en/cloud-paks/1.0?topic=platform-how-validate-successful-installation
 # TODO uncomment when PM fixed, now it never becomes ready
