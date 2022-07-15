@@ -50,7 +50,8 @@
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     namespace: "{{ cp4ba_project_name }}"
     pod: "{{ pods.resources[0].metadata.name }}"
-    remote_path: /data-org/db_sample_data/imports.tar.xz
+    # TODO add mechanism to either use db2 or postgress which is supported.
+    remote_path: /data-org/db_sample_data/db2_imports.tar.xz
     local_path: "{{ cp4ba_output_directory }}/imports.tar.xz"
     state: from_pod
 
