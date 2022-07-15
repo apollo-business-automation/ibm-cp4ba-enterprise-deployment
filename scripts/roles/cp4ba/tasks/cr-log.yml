@@ -54,6 +54,7 @@
         kind: Deployment
         name: ibm-cp4a-operator
         namespace: "{{ cp4ba_project_name }}"
+        since_seconds: 3600
       register: log
       retries: 30
       delay: 60
