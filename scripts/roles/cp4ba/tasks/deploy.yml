@@ -578,7 +578,7 @@
 
   when: cp4ba_config.optional_components.bas or cp4ba_config.optional_components.ads_designer or
     cp4ba_config.optional_components.document_processing_designer or cp4ba_config.deployment_patterns.workflow or
-    cp4ba_config.deployment_patterns.workflow-workstreams
+    cp4ba_config.deployment_patterns.workflow_workstreams
 
 - name: Deployments wait list
   ansible.builtin.set_fact:

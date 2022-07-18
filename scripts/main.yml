@@ -18,7 +18,7 @@
             application: true
             document_processing: true
             workflow: true
-            workflow-workstreams: false
+            workflow_workstreams: false
           optional_components:
             bas: true
             bai: true
