@@ -71,17 +71,17 @@
 - name: Add ODM components
   ansible.builtin.set_fact:
     components: "{{ components + ['decisionCenter'] }}"
-  when: cp4ba_config.optional_components.decisionCenter
+  when: cp4ba_config.optional_components.decision_center
 
 - name: Add ODM components
   ansible.builtin.set_fact:
     components: "{{ components + ['decisionRunner'] }}"
-  when: cp4ba_config.optional_components.decisionRunner
+  when: cp4ba_config.optional_components.decision_runner
 
 - name: Add ODM components
   ansible.builtin.set_fact:
     components: "{{ components + ['decisionServerRuntime'] }}"
-  when: cp4ba_config.optional_components.decisionServerRuntime
+  when: cp4ba_config.optional_components.decision_server_runtime
 
 - name: Add ODM to CR
   ansible.builtin.set_fact:
@@ -724,10 +724,10 @@
     wait_list:
       - "{{ cp4ba_config.deployment_patterns.workflow and cp4ba_config.optional_components.bai | ternary(cp4ba_cr_meta_name+'-mls-itp','') }}"
       - "{{ cp4ba_config.deployment_patterns.workflow and cp4ba_config.optional_components.bai | ternary(cp4ba_cr_meta_name+'-mls-wfi','') }}"
-      - "{{ cp4ba_config.optional_components.decisionCenter | ternary(cp4ba_cr_meta_name+'-odm-decisioncenter','') }}"
-      - "{{ cp4ba_config.optional_components.decisionServerRuntime | ternary(cp4ba_cr_meta_name+'-odm-decisionserverruntime','') }}"
-      - "{{ cp4ba_config.optional_components.decisionServerRuntime | ternary(cp4ba_cr_meta_name+'-odm-decisionserverconsole','') }}"
-      - "{{ cp4ba_config.optional_components.decisionRunner | ternary(cp4ba_cr_meta_name+'-odm-decisionrunner','') }}"
+      - "{{ cp4ba_config.optional_components.decision_center | ternary(cp4ba_cr_meta_name+'-odm-decisioncenter','') }}"
+      - "{{ cp4ba_config.optional_components.decision_server_runtime | ternary(cp4ba_cr_meta_name+'-odm-decisionserverruntime','') }}"
+      - "{{ cp4ba_config.optional_components.decision_server_runtime | ternary(cp4ba_cr_meta_name+'-odm-decisionserverconsole','') }}"
+      - "{{ cp4ba_config.optional_components.decision_runner | ternary(cp4ba_cr_meta_name+'-odm-decisionrunner','') }}"
       - "{{ cp4ba_config.optional_components.application | ternary(cp4ba_cr_meta_name+'-instance1-aae-ae-deployment','') }}"
 
 - name: Wait for Deployments to be Available

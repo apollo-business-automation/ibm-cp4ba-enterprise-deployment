@@ -22,9 +22,9 @@
           optional_components:
             bas: true
             bai: true
-            decisionCenter: true
-            decisionRunner: true
-            decisionServerRuntime: true
+            decision_center: true
+            decision_runner: true
+            decision_server_runtime: true
             ads_designer: true
             ads_runtime: true
             cmis: true
