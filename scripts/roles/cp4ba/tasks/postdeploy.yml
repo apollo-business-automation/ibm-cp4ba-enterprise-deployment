@@ -12,6 +12,10 @@
   include_tasks: postdeploy/ads.yml
   when: cp4ba_config.deployment_patterns.decisions_ads
 
+- name: Manage ADS
+  include_tasks: postdeploy/odm.yml
+  when: cp4ba_config.deployment_patterns.decisions
+
 - name: Manage ADP
   include_tasks: postdeploy/adp.yml
   when: cp4ba_config.deployment_patterns.document_processing
