@@ -28,9 +28,13 @@
             ads_designer: true
             ads_runtime: true
             cmis: true
+            # css: Content Search Services
             css: true
+            # es = External Share
             es: true
+            # tm = Task Management
             tm: true
+            # ier = IBM Enterprise Records
             ier: true
             app_designer: true
             ae_data_persistence: true
