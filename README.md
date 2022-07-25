@@ -302,6 +302,42 @@ data:
 
     # Always review these parameters for changes
 
+    # configuration of cp4ba components to be installed. Please be sure you select all that is needed both from the 
+    # deployment patterns as well as from the optional components.
+    cp4ba_config:
+      deployment_patterns:
+        foundation: true
+        decisions: true
+        decisions_ads: true
+        content: true
+        application: true
+        document_processing: true
+        workflow: true
+        workflow_workstreams: false
+      optional_components:
+        bas: true
+        bai: true
+        decision_center: true
+        decision_runner: true
+        decision_server_runtime: true
+        ads_designer: true
+        ads_runtime: true
+        cmis: true
+        # css: Content Search Services
+        css: true
+        # es = External Share
+        es: true
+        # tm = Task Management
+        tm: true
+        # ier = IBM Enterprise Records
+        ier: true
+        app_designer: true
+        ae_data_persistence: true
+        document_processing_designer: true
+        document_processing_runtime: false
+        baw_authoring: true
+        application: true
+
     ## Set to false if you don't want to install (or remove) Process Mining
     pm_enabled: true
 
