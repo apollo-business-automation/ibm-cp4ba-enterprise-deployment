@@ -17,7 +17,7 @@
     kind: CustomResourceDefinition
     name: "{{ common_crd_name }}"
   register: common_crd
-  retries: 10
+  retries: 20
   delay: 1
   until: common_crd.resources and ('True' in common_crd | json_query(condition_query) | unique )
   vars:
