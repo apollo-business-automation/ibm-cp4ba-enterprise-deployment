@@ -10,8 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Updated CP4BA to 22.0.1
 - Possibility to define which components should be deployed
+- Updated the config map example with definition of which components should be deployed
 
-## [Unreleased]
+## [Released]
 
 ### Changed
 
