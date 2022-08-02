@@ -54,6 +54,7 @@ spec:
         storage:
           class: "{{ cp4ba_storage_class_name }}"
           size: 10Gi
+        # ToDo: Hotfix for elasticsearch and PFS certificates issues.
     tls:
       issuerRef:
         name: iaf-issuer
