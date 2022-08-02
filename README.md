@@ -302,8 +302,9 @@ data:
 
     # Always review these parameters for changes
 
-    # configuration of cp4ba components to be installed. Please be sure you select all that is needed both from the 
+    # Configuration of cp4ba components to be installed. Please be sure you select all that is needed both from the 
     # deployment patterns as well as from the optional components.
+    # Dependencies can be determined from documentation at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments
     cp4ba_config:
       deployment_patterns:
         foundation: true
