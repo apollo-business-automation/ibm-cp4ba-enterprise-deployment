@@ -2,7 +2,7 @@
 
 Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components with all kinds of prerequisites and extras on OpenShift.
 
-Last installation was performed on 2022-05-03 with CP4BA version 21.0.3-IF008 (also called 21.0.3.8 or 21.3.8)
+Last installation was performed on 2022-05-03 with CP4BA version 22.0.1-IF001 (also called 22.0.1.1 or 21.1.1)
 
 - [Documentation base](#documentation-base)
 - [Disclaimer ✋](#disclaimer-)
@@ -68,8 +68,7 @@ Result of this Enterprise deployment is not fully supported:
 What is not included:
 - ICCs - not covered.
 - Caution! FNCM External share - Currently not supported with ZEN & IAM as per limitation on [FNCM limitations](https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=notes-known-limitations-issues#concept_gmf_x1h_1fb__ecm)
-- Caution! Process Mining currently works with caveats - IAF operator issues - waiting for fixes.
-- Caution! Asset Repository is now omitted due to a bug in IAF - waiting for fixes.
+- Caution! Asset Repository is now omitted due to a bug in IAF - waiting for fixes. And the latest version only support OCP 4.10+.
 - Workflow Server and Workstream Services - this is a dev deployment. BAW Authoring and (BAW + IAWS) are mutually exclusive in single project.
 
 ## What is in the package 📦
@@ -305,6 +304,7 @@ data:
     # Configuration of cp4ba components to be installed. Please be sure you select all that is needed both from the 
     # deployment patterns as well as from the optional components.
     # Dependencies can be determined from documentation at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments
+    # Only some combinations were tested.
     cp4ba_config:
       deployment_patterns:
         foundation: true

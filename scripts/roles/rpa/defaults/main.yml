@@ -3,9 +3,9 @@ rpa_base_dir: /tmp
 rpa_dir_name: rpa
 rpa_k8s_api_key: ""
 rpa_k8s_host: ""
-rpa_operator_channel: v1.2
+rpa_operator_channel: v1.3
 # TODO manual approval rpa_starting_csv: ibm-automation-rpa.v1.2.5
-rpa_version: 1.2.5
+rpa_version: 1.3.1
 rpa_project_name: cp4ba
 rpa_storage_class_name: ""
 rpa_universal_password: ""

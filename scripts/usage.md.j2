@@ -136,9 +136,12 @@ As UI for MongoDB
 
 ### Useful info
 
-If you want to investigate the actual ansible code that is running in the operator, you can get it from running operator pod from /opt/ansible/ directory.
+If you want to investigate the actual ansible code that is running in the operator, you can get it from running operator pod from /opt/ansible/roles directory.
 ```bash
-oc cp -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} --no-headers | grep cp4a-operator | awk '{print $1}'`:/opt/ansible/ ansible
+# CP4BA
+oc cp -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} --no-headers | grep cp4a-operator | awk '{print $1}'`:/opt/ansible/roles cp4ba-ansible-roles
+# Content
+oc cp -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} --no-headers | grep ibm-content-operator | awk '{print $1}'`:/opt/ansible/roles content-ansible-roles
 
 ```
 
@@ -146,7 +149,7 @@ Order of capabilities deployment can be found in operator code in */opt/ansible/
 
 To get logs from Operator.
 ```bash
-oc logs deployment/ibm-cp4a-operator -c operator > cp4ba-operator.log
+oc logs deployment/ibm-cp4a-operator > cp4ba-operator.log
 
 ```
 

@@ -5,7 +5,7 @@ pm_k8s_api_key: ""
 pm_k8s_host: ""
 pm_operator_channel: v2.0
 # TODO manual approval pm_starting_csv: ibm-automation-processmining.v1.1.1
-pm_version: 1.12.0.5
+pm_version: 1.13.0
 pm_project_name: cp4ba
 pm_storage_class_name: ""
 pm_universal_password: ""
