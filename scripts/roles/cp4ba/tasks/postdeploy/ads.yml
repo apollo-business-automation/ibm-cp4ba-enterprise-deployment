@@ -155,3 +155,8 @@
     validate_certs: false
     status_code: 200
   register: ads_credential_response
+
+# TODO debug
+- name: maven credential result
+  ansible.builtin.debug:
+    msg: "{{ ads_credential_response }}"
