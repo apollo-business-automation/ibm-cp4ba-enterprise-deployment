@@ -14,6 +14,7 @@ It is divided into sections similar to the main overview picture on the landing 
 
 ## Extras
 
+{% if db2mc_enabled == true %}
 ### DB2MC
 
 As DB2 database management UI.
@@ -28,6 +29,7 @@ As DB2 database management UI.
 
 - cpadmin / {{ universal_password }}
 
+{% endif %}
 ### Gitea
 
 As Git server provider.
@@ -56,6 +58,7 @@ OAS: https://nexus.{{ apps_endpoint_domain }}/swagger-ui/
 - Credentials you should use: cpadmin / {{ universal_password }}
 - Initial administrative user credentials: admin / {{ universal_password }}
 
+{% if roundcube_enabled == true %}
 ### Roundcube
 
 As mail client.
@@ -69,6 +72,8 @@ As mail client.
 - for cpadmin: cpadmin@cp.local / {{ universal_password }} (you can also use only *cpadmin* without domain as username to login)
 - for cpuser: cpuser@cp.local / {{ universal_password }} (you can also use only *cpuser* without domain as username to login)
 
+{% endif %}
+{% if cerebro_enabled == true %}
 ### Cerebro
 
 As elastic search browser.
@@ -83,6 +88,8 @@ Pre-configured for IAF elastic search.
 
 - elasticsearch-admin / {{ universal_password }}
 
+{% endif %}
+{% if akhq_enabled == true %}
 ### AKHQ
 
 As kafka browser.
@@ -93,6 +100,7 @@ Pre-configured for IAF Kafka with custom user (cpadmin / {{ universal_password }
 
 - UI: https://akhq.{{ apps_endpoint_domain }}
 
+{% endif %}
 ### Kibana
 
 As elastic search content browser and for BAI dashboards.
@@ -120,6 +128,7 @@ Not exposed outside the cluster.
 - for cpadmin: cpadmin@cp.local / {{ universal_password }}
 - for cpuser: cpuser@cp.local / {{ universal_password }}
 
+{% if mongo_express_enabled == true %}
 ### Mongo Express
 
 As UI for MongoDB
@@ -132,6 +141,7 @@ As UI for MongoDB
 
 - cpadmin / {{ universal_password }}
 
+{% endif %}
 ## CP4BA - CP4BA capabilities
 
 ### Useful info
@@ -163,6 +173,7 @@ oc exec -it -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} 
 
 ```
 
+{% if cp4ba_config.deployment_patterns.foundation == true %}
 ### Resource Registry (RR) (foundation pattern)
 
 #### Endpoints
@@ -186,7 +197,9 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 ####  Credentials
 
 - cpadmin / {{ universal_password }}
+{% endif %}
 
+{% if cp4ba_config.optional_components.bai == true %}
 ### Business Automation Studio (BAS) (foundation pattern)
 
 #### Endpoints
@@ -197,6 +210,8 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 
 - cpadmin / {{ universal_password }}
 
+{% endif %}
+{% if cp4ba_config.optional_components.bai == true %}
 ### Business Automation Insights (BAI) (foundation pattern)
 
 #### Endpoints
@@ -217,7 +232,9 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 oc cp -n {{ cp4ba_project_name }} `oc get pod --no-headers -n {{ cp4ba_project_name }} | grep cp4a-operator | awk '{print $1}'`:/tmp/ansible-operator/runner/tmp/bai/templates/bai_all_in_one.yaml bai_all_in_one.yaml
 
 ```
+{% endif %}
 
+{% if cp4ba_config.deployment_patterns.decisions == true %}
 ### Operational Decision Manager (ODM) (decisions pattern)
 
 You may get 400 not authorized error when accessing endpoints. In this case clear cookies and refresh browser.  
@@ -240,6 +257,8 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 - cpadmin / {{ universal_password }}
 - odmAdmin / {{ universal_password }} who can be used for ODM Basic Auth
 
+{% endif %}
+{% if cp4ba_config.deployment_patterns.decisions_ads == true %}
 ### Automation Decision Services (ADS) (decisions_ads pattern)
 
 #### Endpoints
@@ -253,6 +272,8 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 
 - cpadmin / {{ universal_password }}
 
+{% endif %}
+{% if cp4ba_config.deployment_patterns.content == true %}
 ### FileNet Content Manager (FNCM) (content pattern)
 
 #### Endpoints
@@ -285,6 +306,8 @@ For external share you need to use ingress prefixed set of endpoints.
 
 - cpadmin / {{ universal_password }}
 
+{% endif %}
+{% if cp4ba_config.deployment_patterns.application == true %}
 ### Automation Application Engine (AAE) (application pattern)
 
 #### Endpoints
@@ -296,6 +319,8 @@ For external share you need to use ingress prefixed set of endpoints.
 
 - cpadmin / {{ universal_password }}
 
+{% endif %}
+{% if cp4ba_config.deployment_patterns.document_processing == true %}
 ### Automation Document Processing (ADP) (document_processing pattern)
 
 #### Endpoints
@@ -307,6 +332,8 @@ For external share you need to use ingress prefixed set of endpoints.
 
 - cpadmin / {{ universal_password }}
 
+{% endif %}
+{% if cp4ba_config.optional_components.baw_authoring == true %}
 ### Business Automation Workflow Authoring (BAWAUT)
 
 #### Endpoints
@@ -327,6 +354,7 @@ For external share you need to use ingress prefixed set of endpoints.
 
 - cpadmin / {{ universal_password }}
 
+{% endif %}
 ## CP4BA - IAF capabilities
 
 ### BTS
@@ -385,6 +413,7 @@ Alternative custom user: cpadmin / {{ universal_password }}
 - Sasl Mechanism: SCRAM-SHA-512  
 - Root CA cert (used in *Path to root CA certificates file*): ```oc get kafka iaf-system -n {{ cp4ba_project_name }} -o jsonpath='{.status.listeners[1].certificates[0]}'```  
 
+{% if pm_enabled == true %}
 ### Process Mining
 
 #### Endpoints
@@ -396,6 +425,7 @@ Alternative custom user: cpadmin / {{ universal_password }}
 
 - cpadmin / {{ universal_password }}
 
+{% endif %}
 #### Useful info
 
 If you want to investigate the actual ansible code that is running in the operator, you can get it from running operator pod from /opt/ansible/ directory.
@@ -408,6 +438,7 @@ To get logs for Operator.
 oc get pods -n {{ cp4ba_project_name }} -o name | grep processmining-operator-controller | xargs oc logs  > process-mining-operator.log
 ```
 
+{% if asset_repo_enabled == true %}
 ### Asset Repository
 
 #### Endpoints
@@ -418,6 +449,8 @@ oc get pods -n {{ cp4ba_project_name }} -o name | grep processmining-operator-co
 
 - cpadmin / {{ universal_password }}
 
+{% endif %}
+{% if rpa_enabled == true %}
 ### RPA
 
 #### Endpoints
@@ -429,6 +462,7 @@ oc get pods -n {{ cp4ba_project_name }} -o name | grep processmining-operator-co
 
 - cpadmin / {{ universal_password }}
 
+{% endif %}
 ## CPFS
 
 As Cloud Pak Foundational Services.
