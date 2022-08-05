@@ -16,6 +16,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Changed
 
+- Updated CP4BA to 22.0.1
+- Possibility to define which components should be deployed
+- Updated the config map example with definition of which components should be deployed
+
+## [Released]
+
+### Changed
+
 - Updated CP4BA to 21.0.3.9 with pinned catalogs.
 - Updated RPA to 21.0.2.5.
 - Updated IPM to 1.12.0.5.

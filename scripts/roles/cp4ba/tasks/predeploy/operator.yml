@@ -1,0 +1,193 @@
+- name: Prepare yaml file for shared PVC
+  ansible.builtin.template:
+    src: operator/sharedpvc.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/sharedpvc.yaml"
+    mode: u+rwx
+
+- name: Add Shared PVC
+  kubernetes.core.k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/sharedpvc.yaml"
+
+- name: Prepare yaml file for log PVC
+  ansible.builtin.template:
+    src: operator/logpvc.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/logpvc.yaml"
+    mode: u+rwx
+
+- name: Add log PVC
+  kubernetes.core.k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/logpvc.yaml"
+
+- name: Create ICR Secret
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: create-icr-secret
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_output_directory: "{{ cp4ba_output_directory }}"
+    common_icr_secret_name: ibm-entitlement-key
+    common_icr_password: "{{ cp4ba_icr_password }}"
+    common_namespace_name: "{{ cp4ba_project_name }}"
+
+- name: Prepare yaml file for OperatorGroup
+  ansible.builtin.template:
+    src: operator/operatorgroup.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/operatorgroup.yaml"
+    mode: u+rwx
+
+- name: Add OperatorGroup
+  kubernetes.core.k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/operatorgroup.yaml"
+
+- name: Prepare yaml file for Subscription
+  ansible.builtin.template:
+    src: operator/subscription.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/subscription.yaml"
+    mode: u+rwx
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=cluster-setting-up-in-openshift-console
+- name: Add Subscription
+  kubernetes.core.k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/subscription.yaml"
+
+# TODO manual approval
+# - name: Manage Manual Operator ibm-cp4a-operator
+#   ansible.builtin.include_role:
+#     name: common
+#     tasks_from: manage-manual-operator
+#   vars:
+#     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+#     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+#     common_namespace_name: "{{ cp4ba_project_name }}"
+#     common_label_selector_stub: ibm-cp4a-operator
+
+- name: Wait Operator ibm-cp4a-operator
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: wait-operator
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_namespace_name: "{{ cp4ba_project_name }}"
+    common_label_selector_stub: ibm-cp4a-operator
+
+- name: Wait for ICP4ACluster CRD to be Established
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: wait-crd
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_crd_name: icp4aclusters.icp4a.ibm.com
+
+- name: Download DB2 JDBC license
+  kubernetes.core.k8s_cp:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    remote_path: /opt/ibm/db2/V11.5.0.0/java/db2jcc_license_cu.jar
+    local_path: "{{ cp4ba_output_directory }}/db2jcc_license_cu.jar"
+    state: from_pod
+
+# This is needed as ansible k8s_cp is not reliable for larger files
+- name: Nexus upload DB2 JDBC license
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: nexus-upload
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_file_folder_path: "{{ cp4ba_output_directory }}"
+    common_file_name: db2jcc_license_cu.jar
+    common_universal_password: "{{ cp4ba_universal_password }}"
+
+- name: Download DB2 JDBC driver
+  kubernetes.core.k8s_cp:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    remote_path: /opt/ibm/db2/V11.5.0.0/java/db2jcc4.jar
+    local_path: "{{ cp4ba_output_directory }}/db2jcc4.jar"
+    state: from_pod
+
+# This is needed as ansible k8s_cp is not reliable for larger files
+- name: Nexus upload DB2 JDBC driver
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: nexus-upload
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_file_folder_path: "{{ cp4ba_output_directory }}"
+    common_file_name: db2jcc4.jar
+    common_universal_password: "{{ cp4ba_universal_password }}"
+
+- name: Get CP4BA operator pod
+  kubernetes.core.k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: "{{ cp4ba_project_name }}"
+    label_selectors:
+      - name=ibm-cp4a-operator
+  register: cp4ba_operator_pod
+
+- name: Set CP4BA operator pod name
+  ansible.builtin.set_fact:
+    cp4ba_operator_pod_name: "{{ cp4ba_operator_pod.resources[0].metadata.name }}"
+
+- name: Create jdbc folder in Operator
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: "{{ cp4ba_project_name }}"
+    pod: "{{ cp4ba_operator_pod_name }}"
+    command: >
+      mkdir -p /opt/ansible/share/jdbc/db2/
+  register: command_status
+
+- name: Download DB2 JDBC license to Operator
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: "{{ cp4ba_project_name }}"
+    pod: "{{ cp4ba_operator_pod_name }}"
+    command: >
+      curl -kv --user "cpadmin:{{ cp4ba_universal_password }}" http://{{ nexus_hostname }}:8081/repository/raw-hosted/cp4ba/db2jcc_license_cu.jar
+      --output /opt/ansible/share/jdbc/db2/db2jcc_license_cu.jar
+  register: command_status
+
+- name: Download DB2 JDBC driver to Operator
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: "{{ cp4ba_project_name }}"
+    pod: "{{ cp4ba_operator_pod_name }}"
+    command: >
+      curl -kv --user "cpadmin:{{ cp4ba_universal_password }}" http://{{ nexus_hostname }}:8081/repository/raw-hosted/cp4ba/db2jcc4.jar
+      --output /opt/ansible/share/jdbc/db2/db2jcc4.jar
+  register: command_status

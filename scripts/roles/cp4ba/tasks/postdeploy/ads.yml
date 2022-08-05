@@ -1,0 +1,162 @@
+- name: Get OCP Apps domain
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: apps-endpoint
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_output_to_var: "apps_endpoint_domain"
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=gst-task-2-connecting-git-repository-sharing-decision-service
+- name: Create ADS organization in Gitea
+  ansible.builtin.uri:
+    url: "https://gitea.{{ apps_endpoint_domain }}/api/v1/orgs"
+    method: POST
+    headers:
+      Content-Type: application/json
+    body_format: json
+    body:
+      description: ""
+      full_name: ""
+      location: ""
+      repo_admin_change_team_access: true
+      username: ads
+      visibility: private
+      website: ""
+    user: cpadmin
+    password: "{{ cp4ba_universal_password }}"
+    force_basic_auth: true
+    validate_certs: false
+    status_code:
+      - 201
+      - 422
+
+- name: Get maven plugins definition from ADS
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/download/index.json"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    validate_certs: false
+    status_code: 200
+  register: ads_maven_plugins_response
+
+- name: Process ADS maven plugins
+  include_tasks: ads-maven-plugins.yml
+  with_dict: "{{ ads_maven_plugins_response.json | json_query('resources') }}"
+
+- name: Get roles
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/roles"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    validate_certs: false
+    status_code: 200
+  register: roles_response
+
+- name: Retrieve existing ADS admin role ID
+  ansible.builtin.set_fact:
+    ads_admin_role_id: "{{ roles_response.json | json_query(condition_query) | first | default('', true) }}"
+  vars:
+    condition_query:
+      "rows[?doc.role_name == 'ADS Admin'].id"
+
+- name: Create ADS admin role
+  block:
+
+    # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=services-managing-user-permissions
+    - name: Create ADS admin role
+      ansible.builtin.uri:
+        url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/role"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+        body_format: json
+        body:
+          role_name: ADS Admin
+          description: ""
+          permissions:
+            - administer_ads_platform
+            - execute_ads_decision
+            - manage_ads_decision
+            - monitor_ads_runtime
+        validate_certs: false
+        status_code: 201
+      register: admin_role_response
+
+    - name: Set ADS admin role ID
+      ansible.builtin.set_fact:
+        ads_admin_role_id: "{{ admin_role_response.json | json_query('id') }}"
+
+  when: ads_admin_role_id | length == 0
+
+- name: Get groups
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    validate_certs: false
+    status_code: 200
+  register: groups_response
+
+- name: Get cpadmins group id
+  ansible.builtin.set_fact:
+    cpadmins_group_id: "{{ groups_response.json | json_query(condition_query) | first }}"
+  vars:
+    condition_query: "results[?name == 'cpadmins'].group_id"
+
+- name: Add ADS Admin role to cpadmins group
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ cpadmins_group_id }}"
+    method: PATCH
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    body_format: json
+    body:
+      add_role_identifiers:
+        - "{{ ads_admin_role_id }}"
+    validate_certs: false
+    status_code:
+      - 200
+      - 500
+  register: group_response
+  failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')
+
+- name: Add ADS Admin role to default admin user
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user/admin?add_roles=true"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    body_format: json
+    body:
+      username: cpadmin
+      user_roles:
+        - "{{ ads_admin_role_id }}"
+    validate_certs: false
+    status_code:
+      - 200
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=credentials-configuring-maven-repository-manager
+- name: Add Maven credential
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/rest-api/api/admin/credential"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    body_format: json
+    body:
+      credentialsType: USERNAME
+      credentialsUsage: MAVEN
+      discriminator": "https://nexus.{{ apps_endpoint_domain }}/repository/maven-releases/"
+      credentials": "cpadmin:{{ cp4ba_universal_password }}"
+    validate_certs: false
+    status_code: 200
+  register: ads_credential_response
+
+# TODO debug
+- name: maven credential result
+  ansible.builtin.debug:
+    msg: "{{ ads_credential_response }}"

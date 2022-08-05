@@ -10,10 +10,9 @@ The following list specifies when you need to perform particular post-deployment
   - [Operational Decision Manager (ODM) (decisions pattern)](#operational-decision-manager-odm-decisions-pattern)
     - [BAI event emitter](#bai-event-emitter) - When you want to enable BAI event emitting for your Rule Application.
     - [Rule designer in eclipse](#rule-designer-in-eclipse) - When you want to install Rule Designer in Eclipse to develop Rule Applications.
-    - [Rule designer IAM OpenID Connect](#rule-designer-iam-openid-connect) - When you want to deploy Rule Applications from your local Rule Designer to ODM.
+    - [Rule designer Zen connection](#rule-designer-zen-connection) - When you want to deploy Rule Applications from your local Rule Designer to ODM.
   - [Automation Decision Services (ADS) (decisions_ads pattern)](#automation-decision-services-ads-decisions_ads-pattern)
     - [ADS project git repo & connection](#ads-project-git-repo--connection) - When you want to connect your ADS solution to GIT repository.
-    - [Connect Nexus for external libraries](#connect-nexus-for-external-libraries) - When you want to use published external libraries from Nexus.
     - [Develop custom libraries](#develop-custom-libraries) - When you want to create your custom ADS libraries.
   - [FileNet Content Manager (FNCM) (content pattern)](#filenet-content-manager-fncm-content-pattern)
     - [Update Google OIDC redirect URIs](#update-google-oidc-redirect-uris) - (don't use now) When you configured Google ID for External Share.
@@ -76,45 +75,46 @@ After you have some rule project ready, configure it to emit BAI events using ht
 
 ### Rule designer in eclipse
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=manager-installing-rule-designer
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=manager-installing-rule-designer
 
-Download Eclipse 4.16 from https://archive.eclipse.org/eclipse/downloads/drops4/R-4.16-202006040540/ (Platform Runtime Binary section)  
-Open it, Help > Install New Software > Select *Work with: All Available Sites* > In *type filter text* Search for *Eclipse Marketplace*  
-Select *Marketplace Client* and install it (Next, Next, Accept, Finish).  
-Wait for installation to complete in the bottom right corner.  
-Restart eclipse.  
+Download Eclipse 2020-06 from https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2020-06/R/eclipse-jee-2020-06-R-win32-x86_64.zip
 In the following URL you may want to use different rule designer version, replace 81100 with the appropriate version you need.  
-Go to https://marketplace.eclipse.org/content/ibm-operational-decision-manager-developers-v-81100-rule-designer  
+Go to https://marketplace.eclipse.org/content/ibm-operational-decision-manager-developers-v-811x-rule-designer
 Drag and drop Install button in your eclipse.  
 Confirm > Accept license > Finish  
 Wait for the installation completion.  
 Restart eclipse  
 Window > Perspective > Open Perspective > Other > Rule  
 
-Note: You may face JAXB exceptions when connecting to ODM. Using JDK8 resolve this error.
+Note: You may face JAXB exceptions when connecting to ODM. Using JDK8 resolve this error.  
+In you eclise.ini before -vmargs the following
+```text
+-vm 
+<path_to_jdk>\bin\javaw.exe
+```
 
-### Rule designer IAM OpenID Connect
+### Rule designer Zen connection
 
-Based on https://www.ibm.com/docs/en/odm/8.11.0?topic=parties-configuring-rule-designer
-Download OIDC providers from https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/OdmOidcProvidersRD.json and copy the file to your eclipse directory.  
+Based on https://www.ibm.com/docs/en/odm/8.11.0?topic=parties-configuring-rule-designer  
 Download truststore.jks from https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/truststore.jks and copy the file to your eclipse directory.  
 
 Based on https://www.ibm.com/docs/en/odm/8.11.0?topic=designer-passing-parameters-rule
 Add the following to eclipse.ini  
 ```text
--Dcom.ibm.rules.authentication.oidcconfig=OdmOidcProvidersRD.json
 -Djavax.net.ssl.trustStore=truststore.jks
 ```
 
 When configuring RES connection in Deployment use  
 URL: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/res  
-Method: OpenID Connect  
-Provider: iam  
+Method: Zen API Key  
+UserID: cpadmin  
+API Key: As generated following https://www.ibm.com/docs/en/cloud-paks/1.0?topic=users-generating-api-keys-authentication
 
 When configuring Decision Center use  
 URL: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter  
-Authentication: OpenID Connect  
-Provider: iam
+Authentication: Zen API Key  
+User ID: cpadmin  
+API Key: As generated following https://www.ibm.com/docs/en/cloud-paks/1.0?topic=users-generating-api-keys-authentication
 
 ## Automation Decision Services (ADS) (decisions_ads pattern)
 

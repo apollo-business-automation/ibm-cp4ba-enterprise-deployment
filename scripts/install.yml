@@ -77,6 +77,7 @@
 - name: Install gitea
   ansible.builtin.include_role:
     name: gitea
+  when: gitea_enabled
 
 - name: Install nexus
   ansible.builtin.include_role:
@@ -85,6 +86,7 @@
 - name: Install Mail
   ansible.builtin.include_role:
     name: mail
+  when: mail_enabled
 
 - name: Install Roundcube
   ansible.builtin.include_role:
@@ -104,10 +106,12 @@
 - name: Install Kibana
   ansible.builtin.include_role:
     name: kibana
+  when: kibana_enabled
 
 - name: Install MongoDB
   ansible.builtin.include_role:
     name: mongodb
+  when: mongodb_enabled
 
 - name: Install Mongo Express
   ansible.builtin.include_role:

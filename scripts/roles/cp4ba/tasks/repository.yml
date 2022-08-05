@@ -2,7 +2,7 @@
 
 - name: Download installation repository
   ansible.builtin.get_url:
-    url: https://github.com/IBM/cloud-pak/raw/master/repo/case/ibm-cp-automation-{{ cp4ba_case_version }}.tgz
+    url: https://github.com/IBM/cloud-pak/raw/master/repo/case/ibm-cp-automation/{{ cp4ba_case_version }}/ibm-cp-automation-{{ cp4ba_case_version }}.tgz
     dest: "{{ cp4ba_output_directory }}/ibm-cp-automation-{{ cp4ba_case_version }}.tgz"
     mode: u+rw
   retries: 10
