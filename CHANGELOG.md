@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [2022-08-05]
+
+### Added
+
+- Possibility to define which components should be deployed.
+
+### Changed
+
+- Updated CP4BA to 22.0.1.
+- Updated RPA to 21.0.3.
+- Updated IPM to 1.13.0.
+- Updated the config map example with definition of which components should be deployed.
+
+### Fixed
+
+- IPM installation now completes successfully and doesn't break IAF operator.
+
 ## [2022-06-07]
 
 ### Fixed
@@ -13,14 +30,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Updated helm chart version of mongodb as previous version used was deleted from repo.
 
 ## [2022-05-31]
-
-### Changed
-
-- Updated CP4BA to 22.0.1
-- Possibility to define which components should be deployed
-- Updated the config map example with definition of which components should be deployed
-
-## [Released]
 
 ### Changed
 
