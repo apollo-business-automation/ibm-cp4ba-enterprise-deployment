@@ -8,7 +8,7 @@
     common_db2_user: icndb
     common_universal_password: "{{ cp4ba_universal_password }}"
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=navigator-preparing-database
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=navigator-preparing-database
 # Based on https://www.ibm.com/docs/en/content-navigator/3.0.11?topic=navigator-creating-db2-database-content
 - name: BAN DB
   kubernetes.core.k8s_exec:

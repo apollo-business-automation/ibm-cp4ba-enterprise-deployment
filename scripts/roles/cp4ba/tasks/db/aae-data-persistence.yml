@@ -8,7 +8,7 @@
     common_db2_user: aeos
     common_universal_password: "{{ cp4ba_universal_password }}"
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=engine-creating-database
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=engine-creating-database
 # Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
 - name: AAE Data persistence DB
   kubernetes.core.k8s_exec:

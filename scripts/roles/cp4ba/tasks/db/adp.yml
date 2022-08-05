@@ -11,7 +11,7 @@
     - base
     - devos1
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-preparing-db2-databases-document
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-preparing-db2-databases-document
 - name: BASE DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -32,7 +32,7 @@
       "
   register: command_status
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-preparing-db2-databases-document
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-preparing-db2-databases-document
 - name: TENANT1 DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -63,7 +63,7 @@
   register: command_status
   failed_when: command_status.rc != 0 and command_status.stdout is not search('.*The database alias \"TENANT1\" already exists.*')
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-preparing-db2-databases-document
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-preparing-db2-databases-document
 - name: TENANT2 DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -94,7 +94,7 @@
   register: command_status
   failed_when: command_status.rc != 0 and command_status.stdout is not search('.*The database alias \"TENANT2\" already exists.*')
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-preparing-db2-databases-document
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-preparing-db2-databases-document
 # DEVOS Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
 - name: DEVOS1 DB
   kubernetes.core.k8s_exec:
@@ -116,7 +116,7 @@
       "
   register: command_status
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-preparing-db2-databases-document
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-preparing-db2-databases-document
 - name: ADP copy DB init files
   kubernetes.core.k8s_cp:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -129,7 +129,7 @@
     no_preserve: true
     state: to_pod
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-preparing-db2-databases-document
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-preparing-db2-databases-document
 - name: ADP cleanup db2inst1 folder
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -140,7 +140,7 @@
       sudo rm -rf /mnt/blumeta0/home/db2inst1/sqllib/_adp_tmp/
   register: command_status
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-preparing-db2-databases-document
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-preparing-db2-databases-document
 - name: ADP create db2inst1 folder
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -153,7 +153,7 @@
       "
   register: command_status
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-preparing-db2-databases-document
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-preparing-db2-databases-document
 - name: ADP move files to be accessible by db2inst1 user
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -164,7 +164,7 @@
       sudo mv -f /tmp/_adp_tmp_DB2 /mnt/blumeta0/home/db2inst1/sqllib/_adp_tmp/DB2
   register: command_status
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-preparing-db2-databases-document
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-preparing-db2-databases-document
 - name: ADP set DB init files ownership
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -175,7 +175,7 @@
       sudo chown -R db2inst1:db2iadm1 /mnt/blumeta0/home/db2inst1/sqllib/_adp_tmp/DB2
   register: command_status
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-preparing-db2-databases-document
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-preparing-db2-databases-document
 - name: ADP make init scripts executable
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"

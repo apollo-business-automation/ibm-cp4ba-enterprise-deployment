@@ -8,7 +8,7 @@
     common_db2_user: odm
     common_universal_password: "{{ cp4ba_universal_password }}"
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=manager-configuring-external-database
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=manager-configuring-external-database
 - name: ODM DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"

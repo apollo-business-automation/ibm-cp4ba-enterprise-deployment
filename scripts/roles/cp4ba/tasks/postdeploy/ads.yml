@@ -7,7 +7,7 @@
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_output_to_var: "apps_endpoint_domain"
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=gst-task-2-connecting-git-repository-sharing-decision-service
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=gst-task-2-connecting-git-repository-sharing-decision-service
 - name: Create ADS organization in Gitea
   ansible.builtin.uri:
     url: "https://gitea.{{ apps_endpoint_domain }}/api/v1/orgs"
@@ -65,7 +65,7 @@
 - name: Create ADS admin role
   block:
 
-    # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=services-managing-user-permissions
+    # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=services-managing-user-permissions
     - name: Create ADS admin role
       ansible.builtin.uri:
         url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/role"
@@ -139,7 +139,7 @@
     status_code:
       - 200
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=credentials-configuring-maven-repository-manager
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=credentials-configuring-maven-repository-manager
 - name: Add Maven credential
   ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/rest-api/api/admin/credential"

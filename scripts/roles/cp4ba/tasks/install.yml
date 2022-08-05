@@ -1,4 +1,4 @@
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=openshift-installing-production-deployments
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=openshift-installing-production-deployments
 
 - name: Execute Catalog Source role as prerequisite
   ansible.builtin.include_role:

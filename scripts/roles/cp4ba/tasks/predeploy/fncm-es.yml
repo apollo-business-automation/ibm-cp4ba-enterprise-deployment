@@ -1,7 +1,7 @@
 - name: Create Google TLS secret
   block:
 
-    # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=manager-configuring-identity-provider-connection point 4.
+    # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=manager-configuring-identity-provider-connection point 4.
     - name: Prepare yaml file for FNCM IDP Secret
       ansible.builtin.template:
         src: fncm/fncm-google-idp-secret.yaml.j2

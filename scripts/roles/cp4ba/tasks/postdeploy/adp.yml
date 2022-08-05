@@ -43,7 +43,7 @@
   retries: 40
   delay: 15
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-loading-default-sample-data
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-loading-default-sample-data
 - name: Download Init Tenants scripts
   kubernetes.core.k8s_cp:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"

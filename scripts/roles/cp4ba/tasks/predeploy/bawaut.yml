@@ -1,4 +1,4 @@
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=authoring-creating-secrets-protect-sensitive-configuration-data
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=authoring-creating-secrets-protect-sensitive-configuration-data
 - name: Prepare yaml file for BAWAUT Secret
   ansible.builtin.template:
     src: bawaut/bawaut-secret.yaml.j2
@@ -35,7 +35,7 @@
     # Make sure FNCM secret already exists
     - ch
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=services-optional-customizing-runtime-server-properties
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=services-optional-customizing-runtime-server-properties
 # Based on https://www.ibm.com/docs/en/baw/20.x?topic=work-configuring-email-notifications
 # Based on https://www.ibm.com/docs/en/baw/20.x?topic=configuration-creating-100customxml-file
 - name: Prepare yaml file for BAWAUT Secret
