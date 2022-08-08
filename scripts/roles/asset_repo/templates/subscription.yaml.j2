@@ -5,8 +5,7 @@ metadata:
   namespace: "{{ asset_repo_project_name }}"
 spec:
   channel: "{{ asset_repo_operator_channel }}"
-  installPlanApproval: Manual
+  # TODO manual approval installPlanApproval: Manual
   name: ibm-integration-asset-repository
   source: ibm-operator-catalog
   sourceNamespace: openshift-marketplace
-  startingCSV: "{{ asset_repo_starting_csv }}"

@@ -1,0 +1,138 @@
+- name: Add DB2 users
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: add-db2-user
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_db2_user: "{{ item }}"
+    common_universal_password: "{{ cp4ba_universal_password }}"
+  with_items:
+    - batos
+    - bados
+    - badocs
+    - bawaut
+    - ch
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=authoring-creating-required-databases
+- name: Set BAW DB2_WORKLOAD
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
+      db2set DB2_WORKLOAD=FILENET_CM;
+      "
+  register: command_status
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=authoring-creating-required-databases
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+- name: BADOCS DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
+      db2 CONNECT TO CP4BA;
+      db2 CREATE LARGE TABLESPACE BADOCS_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE USER TEMPORARY TABLESPACE BADOCS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE SYSTEM TEMPORARY TABLESPACE BADOCS_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+
+      db2 GRANT DBADM ON DATABASE TO user badocs;
+      db2 GRANT USE OF TABLESPACE BADOCS_TS TO user badocs;
+      db2 GRANT USE OF TABLESPACE BADOCS_TEMP_TS TO user badocs;
+      db2 CONNECT RESET;
+      "
+  register: command_status
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=authoring-creating-required-databases
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+- name: BATOS DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
+      db2 CONNECT TO CP4BA;
+      db2 CREATE LARGE TABLESPACE BATOS_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE USER TEMPORARY TABLESPACE BATOS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE SYSTEM TEMPORARY TABLESPACE BATOS_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+
+      db2 GRANT DBADM ON DATABASE TO user batos;
+      db2 GRANT USE OF TABLESPACE BATOS_TS TO user batos;
+      db2 GRANT USE OF TABLESPACE BATOS_TEMP_TS TO user batos;
+      db2 CONNECT RESET;
+      "
+  register: command_status
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=authoring-creating-required-databases
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+- name: BADOS DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
+      db2 CONNECT TO CP4BA;
+      db2 CREATE LARGE TABLESPACE BADOS_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE USER TEMPORARY TABLESPACE BADOS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE SYSTEM TEMPORARY TABLESPACE BADOS_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+
+      db2 GRANT DBADM ON DATABASE TO user bados;
+      db2 GRANT USE OF TABLESPACE BADOS_TS TO user bados;
+      db2 GRANT USE OF TABLESPACE BADOS_TEMP_TS TO user bados;
+      db2 CONNECT RESET;
+      "
+  register: command_status
+
+# BAWAUTDB Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=crd-creating-required-databases-in-db2
+- name: BAWAUT DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
+      db2 CONNECT TO CP4BA;
+      db2 CREATE REGULAR TABLESPACE BAWAUT_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE USER TEMPORARY TABLESPACE BAWAUT_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE SYSTEM TEMPORARY TABLESPACE BAWAUT_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+
+      db2 GRANT DBADM ON DATABASE TO user bawaut;
+      db2 GRANT USE OF TABLESPACE BAWAUT_TS TO user bawaut;
+      db2 GRANT USE OF TABLESPACE BAWAUT_TEMP_TS TO user bawaut;
+      db2 CONNECT RESET;
+      "
+  register: command_status
+
+# Based on https://www.ibm.com/docs/en/baw/20.x?topic=system-preparing-database-case-history-store
+# Based on
+# https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=bawraws-optional-enabling-timeline-visualizer-widget-display-business-automation-workflow-process-activity-flow
+- name: CH (Case History) DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
+      db2 CONNECT TO CP4BA;
+      db2 CREATE LARGE TABLESPACE CH_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE USER TEMPORARY TABLESPACE CH_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE SYSTEM TEMPORARY TABLESPACE CH_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+
+      db2 GRANT DBADM ON DATABASE TO user ch;
+      db2 GRANT USE OF TABLESPACE CH_TS TO user ch;
+      db2 GRANT USE OF TABLESPACE CH_TEMP_TS TO user ch;
+      db2 CONNECT RESET;
+      "
+  register: command_status

@@ -2,7 +2,7 @@ spec:
   bastudio_configuration:
     admin_secret_name: bas-admin-secret
     admin_user: cpadmin
-    replica_size: 2 # to fulfill PDB requirement
+    replica_size: 1 # TODO to fulfill PDB requirement
     database:
       type: db2
       host: "{{ cp4ba_db2_hostname }}"
@@ -18,7 +18,7 @@ spec:
     playback_server:
       admin_secret_name: playback-server-admin-secret
       admin_user: cpadmin
-      replica_size: 2 # to fulfill PDB requirement
+      replica_size: 1 # TODO to fulfill PDB requirement
       autoscaling:
         enabled: false
       database:

@@ -1,0 +1,62 @@
+- name: Get OCP Apps domain
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: apps-endpoint
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_output_to_var: "apps_endpoint_domain"
+
+- name: Get groups
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    validate_certs: false
+    status_code: 200
+  register: groups_response
+
+- name: Get cpadmins group id
+  ansible.builtin.set_fact:
+    cpadmins_group_id: "{{ groups_response.json | json_query(condition_query) | first }}"
+  vars:
+    condition_query: "results[?name == 'cpadmins'].group_id"
+
+- name: Add ODM Admin role to cpadmins group
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ cpadmins_group_id }}"
+    method: PATCH
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    body_format: json
+    body:
+      add_role_identifiers:
+        - odm_admin_role
+        - odm_runtime_admin_role
+        - odm_runtime_user_role
+        - odm_business_user_role
+    validate_certs: false
+    status_code:
+      - 200
+      - 500
+  register: group_response
+  failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')
+
+- name: Add ODM Admin role to default admin user
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user/admin?add_roles=true"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    body_format: json
+    body:
+      username: cpadmin
+      user_roles:
+        - odm_admin_role
+        - odm_runtime_admin_role
+        - odm_runtime_user_role
+        - odm_business_user_role
+    validate_certs: false
+    status_code:
+      - 200

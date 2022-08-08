@@ -1,4 +1,4 @@
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=openshift-installing-production-deployments
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=openshift-installing-production-deployments
 
 - name: Execute Catalog Source role as prerequisite
   ansible.builtin.include_role:
@@ -26,98 +26,27 @@
       include_tasks: deploy.yml
       when: _cp4ba_run_deploy
 
-  always:
-
-    - name: Create Project
-      ansible.builtin.include_role:
-        name: common
-        tasks_from: create-project
-      vars:
-        common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-        common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-        common_namespace_name: "{{ cp4ba_output_namespace }}"
-        common_output_directory: "{{ cp4ba_output_directory }}"
-        common_project_output_name: "cp4ba-output-project.yaml"
-
-    - name: Get current CP4BA CR
-      kubernetes.core.k8s_info:
-        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-        host: "{{ cp4ba_k8s_host | default(omit) }}"
-        api_version: icp4a.ibm.com/v1
-        kind: ICP4ACluster
-        name: "{{ cp4ba_cr_meta_name }}"
-        namespace: "{{ cp4ba_project_name }}"
-      register: cp4ba_cr
-      retries: 10
-      delay: 1
-
-    - name: Set current CP4BA CR contents
+    - name: Set failted state to false
       ansible.builtin.set_fact:
-        cp4ba_cr_content: "{{ cp4ba_cr.resources[0] }}"
+        _cp4ba_run_deploy_failed: false
 
-    - name: Prepare current CP4BA CR Config Map
-      ansible.builtin.template:
-        src: cp4ba-cr-configmap.yaml.j2
-        dest: "{{ cp4ba_output_directory }}/cp4ba-cr-configmap.yaml"
-        mode: u+rwx
+  rescue:
 
-    - name: Add the current CP4BA CR Config Map
-      kubernetes.core.k8s:
-        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-        host: "{{ cp4ba_k8s_host | default(omit) }}"
-        state: present
-        force: false
-        merge_type: merge
-        src: "{{ cp4ba_output_directory }}/cp4ba-cr-configmap.yaml"
-        wait: true
-        wait_sleep: 15
-        wait_timeout: 15
-
-    - name: Get log of CP4BA Operator
-      kubernetes.core.k8s_log:
-        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-        host: "{{ cp4ba_k8s_host | default(omit) }}"
-        api_version: apps/v1
-        kind: Deployment
-        name: ibm-cp4a-operator
-        namespace: "{{ cp4ba_project_name }}"
-      register: log
-      retries: 30
-      delay: 60
-      no_log: true
-
-    - name: Get failed tasks from log
-      ansible.builtin.shell: |
-        set -e -o pipefail
-        grep -B3 -A15 "playbook task failed" | head -c 950K
-      args:
-        stdin: "{{ log.log }}"
-      register: grep_output
-      changed_when: true
-      ignore_errors: true
-      failed_when: grep_output.rc != 0 and (grep_output.stderr | length > 0)
-
-    - name: Set failed tasks content
+    - name: Set failed state
       ansible.builtin.set_fact:
-        cp4ba_failed_tasks_content: "{{ grep_output.stdout | replace('\u001b', '') }}"
+        _cp4ba_run_deploy_failed: true
 
-    - name: Prepare failed tasks log Config Map
-      ansible.builtin.template:
-        src: cp4ba-operator-log-configmap.yaml.j2
-        dest: "{{ cp4ba_output_directory }}/cp4ba-operator-log-configmap.yaml"
-        mode: u+rwx
+    - name: CR & Log
+      include_tasks: cr-log.yml
+      when: _cp4ba_run_deploy
 
-    - name: Add failed tasks log Config Map
-      kubernetes.core.k8s:
-        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-        host: "{{ cp4ba_k8s_host | default(omit) }}"
-        state: present
-        force: false
-        merge_type: merge
-        src: "{{ cp4ba_output_directory }}/cp4ba-operator-log-configmap.yaml"
-        wait: true
-        wait_sleep: 15
-        wait_timeout: 15
+    - name: End play
+      ansible.builtin.fail:
+        msg: CP4BA deployment failed.
+
+- name: Deploy CR & Log
+  include_tasks: cr-log.yml
+  when: _cp4ba_run_deploy
 
 - name: Postdeploy
   include_tasks: postdeploy.yml

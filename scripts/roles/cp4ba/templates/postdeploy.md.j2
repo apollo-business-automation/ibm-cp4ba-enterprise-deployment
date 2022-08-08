@@ -1,6 +1,6 @@
 # CP4BA post-deploy
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=deployments-completing-post-installation-tasks
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployments-completing-post-installation-tasks
 
 The following list specifies when you need to perform particular post-deployment steps
   - [Business Automation Studio (BAS) (foundation pattern)](#business-automation-studio-bas-foundation-pattern)
@@ -10,10 +10,9 @@ The following list specifies when you need to perform particular post-deployment
   - [Operational Decision Manager (ODM) (decisions pattern)](#operational-decision-manager-odm-decisions-pattern)
     - [BAI event emitter](#bai-event-emitter) - When you want to enable BAI event emitting for your Rule Application.
     - [Rule designer in eclipse](#rule-designer-in-eclipse) - When you want to install Rule Designer in Eclipse to develop Rule Applications.
-    - [Rule designer IAM OpenID Connect](#rule-designer-iam-openid-connect) - When you want to deploy Rule Applications from your local Rule Designer to ODM.
+    - [Rule designer Zen connection](#rule-designer-zen-connection) - When you want to deploy Rule Applications from your local Rule Designer to ODM.
   - [Automation Decision Services (ADS) (decisions_ads pattern)](#automation-decision-services-ads-decisions_ads-pattern)
     - [ADS project git repo & connection](#ads-project-git-repo--connection) - When you want to connect your ADS solution to GIT repository.
-    - [Connect Nexus for external libraries](#connect-nexus-for-external-libraries) - When you want to use published external libraries from Nexus.
     - [Develop custom libraries](#develop-custom-libraries) - When you want to create your custom ADS libraries.
   - [FileNet Content Manager (FNCM) (content pattern)](#filenet-content-manager-fncm-content-pattern)
     - [Update Google OIDC redirect URIs](#update-google-oidc-redirect-uris) - (don't use now) When you configured Google ID for External Share.
@@ -40,11 +39,11 @@ For logging in to CP4BA pillars use *Authentication type: Enterprise LDAP* and u
 
 ## Business Automation Studio (BAS) (foundation pattern)
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-business-automation-studio
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=tasks-business-automation-studio
 
 ### Deploy toolkits and configurators
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=reference-downloadable-toolkits
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=reference-downloadable-toolkits
 
 To your local system download the following
 - TWX file from https://github.com/icp4a/odm-toolkit/tree/master/contribution/1.2/Action%20Configurator
@@ -64,11 +63,11 @@ Some of them are used as Configurators, don't be confused that they don't appear
 
 Part of WFI configuration has already been done automatically.
 
-Set up WFI following https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=dashboards-enabling-workforce-insights
+Set up WFI following https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=dashboards-enabling-workforce-insights
 
 ## Operational Decision Manager (ODM) (decisions pattern)
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-operational-decision-manager
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=tasks-operational-decision-manager
 
 ### BAI event emitter
 
@@ -76,49 +75,50 @@ After you have some rule project ready, configure it to emit BAI events using ht
 
 ### Rule designer in eclipse
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=manager-installing-rule-designer
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=manager-installing-rule-designer
 
-Download Eclipse 4.16 from https://archive.eclipse.org/eclipse/downloads/drops4/R-4.16-202006040540/ (Platform Runtime Binary section)  
-Open it, Help > Install New Software > Select *Work with: All Available Sites* > In *type filter text* Search for *Eclipse Marketplace*  
-Select *Marketplace Client* and install it (Next, Next, Accept, Finish).  
-Wait for installation to complete in the bottom right corner.  
-Restart eclipse.  
+Download Eclipse 2020-06 from https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2020-06/R/eclipse-jee-2020-06-R-win32-x86_64.zip
 In the following URL you may want to use different rule designer version, replace 81100 with the appropriate version you need.  
-Go to https://marketplace.eclipse.org/content/ibm-operational-decision-manager-developers-v-81100-rule-designer  
+Go to https://marketplace.eclipse.org/content/ibm-operational-decision-manager-developers-v-811x-rule-designer
 Drag and drop Install button in your eclipse.  
 Confirm > Accept license > Finish  
 Wait for the installation completion.  
 Restart eclipse  
 Window > Perspective > Open Perspective > Other > Rule  
 
-Note: You may face JAXB exceptions when connecting to ODM. Using JDK8 resolve this error.
+Note: You may face JAXB exceptions when connecting to ODM. Using JDK8 resolve this error.  
+In you eclise.ini before -vmargs the following
+```text
+-vm 
+<path_to_jdk>\bin\javaw.exe
+```
 
-### Rule designer IAM OpenID Connect
+### Rule designer Zen connection
 
-Based on https://www.ibm.com/docs/en/odm/8.11.0?topic=parties-configuring-rule-designer
-Download OIDC providers from https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/OdmOidcProvidersRD.json and copy the file to your eclipse directory.  
+Based on https://www.ibm.com/docs/en/odm/8.11.0?topic=parties-configuring-rule-designer  
 Download truststore.jks from https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/truststore.jks and copy the file to your eclipse directory.  
 
 Based on https://www.ibm.com/docs/en/odm/8.11.0?topic=designer-passing-parameters-rule
 Add the following to eclipse.ini  
 ```text
--Dcom.ibm.rules.authentication.oidcconfig=OdmOidcProvidersRD.json
 -Djavax.net.ssl.trustStore=truststore.jks
 ```
 
 When configuring RES connection in Deployment use  
 URL: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/res  
-Method: OpenID Connect  
-Provider: iam  
+Method: Zen API Key  
+UserID: cpadmin  
+API Key: As generated following https://www.ibm.com/docs/en/cloud-paks/1.0?topic=users-generating-api-keys-authentication
 
 When configuring Decision Center use  
 URL: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter  
-Authentication: OpenID Connect  
-Provider: iam
+Authentication: Zen API Key  
+User ID: cpadmin  
+API Key: As generated following https://www.ibm.com/docs/en/cloud-paks/1.0?topic=users-generating-api-keys-authentication
 
 ## Automation Decision Services (ADS) (decisions_ads pattern)
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-automation-decision-services
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=tasks-automation-decision-services
 
 ### ADS project git repo & connection
 
@@ -176,12 +176,12 @@ Installed VSCode and added Java Extension Pack
 
 ## FileNet Content Manager (FNCM) (content pattern)
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-filenet-content-manager
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=tasks-filenet-content-manager
 
 ### Update Google OIDC redirect URIs
 
 If you plan to use Google ID for External Share  
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=manager-configuring-redirect-url-identity-provider and  
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=manager-configuring-redirect-url-identity-provider and  
 on https://developers.google.com/identity/protocols/oauth2/openid-connect#setredirecturi  
 Watch video and follow with your own google account and Client ID you used in the pre-deploy section  
 [Video fncm-es-google-oidc-post.mp4 download](https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/blob/main/assets/fncm-es-google-oidc-post.mp4?raw=true) 
@@ -189,7 +189,7 @@ Watch video and follow with your own google account and Client ID you used in th
 
 ### External Share
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=manager-configuring-external-share-after-deployment
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=manager-configuring-external-share-after-deployment
 
 If you plan to use External Share  
 
@@ -253,7 +253,7 @@ Click Save
 
 ### External Share capability in BAN
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=cesad-configuring-share-plug-in-in-business-automation-navigator  
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=cesad-configuring-share-plug-in-in-business-automation-navigator  
 Based on https://www.ibm.com/docs/en/content-navigator/3.0.11?topic=components-configuring-external-share  
 
 If you plan to use External Share  
@@ -319,12 +319,12 @@ If you want to share content, use https://ingress-es-{{ cp4ba_project_name }}.{{
 
 ### IER configuration
 
-Follow official documentation at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=fcm-configuring-enterprise-records to finish IER configuration.  
+Follow official documentation at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=fcm-configuring-enterprise-records to finish IER configuration.  
 URLs are available in *apollo-one-shot* Project in *usage* ConfigMap (IER CPE HTTP URL and IER application plugin).
 
 Some steps were already automated:
 - FPOS and ROS were created
-- CPE Configuration URL was created (https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=records-creating-content-platform-engine-route-http-protocol)
+- CPE Configuration URL was created (https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=records-creating-content-platform-engine-route-http-protocol)
 - IER config mgr was run to setup FPOS and ROS for IER (https://www.ibm.com/docs/en/enterprise-records/5.2.1?topic=rercmbucl-creating-object-store-configuration-new-installation-profile-by-using-commands)
 - Task Manager pod has TM_JOB_URL parameter set (https://www.ibm.com/docs/en/enterprise-records/5.2.1?topic=in-configuring-content-navigator-task-manager-enterprise-records)
 - Additional Jars and configs were added to Task manager (https://www.ibm.com/docs/en/enterprise-records/5.2.1?topic=in-configuring-content-navigator-task-manager-enterprise-records)
@@ -332,11 +332,11 @@ Some steps were already automated:
 
 ## Automation Document Processing (ADP) (document_processing pattern)
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=tasks-document-processing
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=tasks-document-processing
 
 ### Connect ADP project to Git
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=processing-setting-up-remote-git-organization
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-setting-up-remote-git-organization
 
 Needed if you want to be able to deploy Share, Version and Deploy ADP project
 

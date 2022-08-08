@@ -32,7 +32,7 @@ spec:
         database_port: "50000"
         dc_common_conn_name: CH_dbconnection
   workflow_authoring_configuration:
-    replicas: 2 # TODO Need 2 because of PDB, wait for pdb resolved and change to 1
+    replicas: 1 # TODO Need 2 because of PDB, wait for pdb resolved and change to 1
     admin_user: cpadmin
     database:
       enable_ssl: false
@@ -87,7 +87,7 @@ spec:
     workforce_insights:
       replicas: 1
   pfs_configuration:
-    replicas: 2 # TODO to fulfill PDB requirement
+    replicas: 1 # TODO to fulfill PDB requirement
   initialize_configuration:
     ic_obj_store_creation:
       object_stores:

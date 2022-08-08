@@ -37,10 +37,12 @@
 - name: Remove MongoDB
   ansible.builtin.include_role:
     name: mongodb
+  when: mongodb_enabled    
 
 - name: Remove Kibana
   ansible.builtin.include_role:
     name: kibana
+  when: kibana_enabled    
 
 - name: Remove AKHQ
   ansible.builtin.include_role:
@@ -60,6 +62,7 @@
 - name: Remove Mail
   ansible.builtin.include_role:
     name: mail
+  when: mail_enabled    
 
 - name: Remove nexus
   ansible.builtin.include_role:
@@ -68,6 +71,7 @@
 - name: Remove gitea
   ansible.builtin.include_role:
     name: gitea
+  when: gitea_enabled    
 
 - name: Remove openldap
   ansible.builtin.include_role:

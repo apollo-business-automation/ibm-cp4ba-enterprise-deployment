@@ -5,8 +5,7 @@ metadata:
   namespace: common-service
 spec:
   channel: "{{cpfs_operator_channel}}"
-  installPlanApproval: Manual
+  # TODO manual approval installPlanApproval: Manual
   name: ibm-common-service-operator
   source: opencloud-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: "{{cpfs_starting_csv}}"  

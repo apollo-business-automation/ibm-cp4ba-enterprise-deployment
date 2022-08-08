@@ -17,7 +17,7 @@ spec:
     sc_deployment_baw_license: non-production
     sc_deployment_license: non-production
     image_pull_secrets:
-      - admin.registrykey
+      - ibm-entitlement-key
     show_sensitive_log: true
     root_ca_secret: cp4ba-root-ca
     sc_deployment_patterns: ""
@@ -29,7 +29,9 @@ spec:
     sc_deployment_hostname_suffix: "{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}"
     sc_image_repository: cp.icr.io
     trusted_certificate_list: []
-    sc_install_automation_base: false # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=insights-customizing-kafka-elasticsearch-server-configuration
+    sc_install_automation_base: true # Originaly Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=insights-customizing-kafka-elasticsearch-server-configuration,
+    # but that no longer is valid, with false, the automation base connection information for elastic search are not created properly
+    # which then stops processing of the Cloud Pak operator. TODO: Should probably still be false, verify
     # TODO causing errors with other secrets like, BAI, ADP - CDS, enable when fixed   external_tls_certificate_secret: cp4ba-wildcard
     storage_configuration:
       sc_slow_file_storage_classname: "{{ cp4ba_storage_class_name }}"

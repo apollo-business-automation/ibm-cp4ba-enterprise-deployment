@@ -1,0 +1,29 @@
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=dp-creating-secrets-protect-sensitive-document-processing-configuration-data
+- name: Prepare yaml file for ADP Secret
+  ansible.builtin.template:
+    src: adp/adp-secret.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/adp-secret.yaml"
+    mode: u+rwx
+
+- name: Add ADP Secret
+  kubernetes.core.k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/adp-secret.yaml"
+
+- name: Add ADP OS to FNCM Secret
+  kubernetes.core.k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    api_version: v1
+    kind: Secret
+    name: ibm-fncm-secret
+    namespace: "{{ cp4ba_project_name }}"
+    definition:
+      data:
+        devos1DBUsername: "{{ 'devos1' | b64encode }}"
+        devos1DBPassword: "{{ cp4ba_universal_password | b64encode }}"

@@ -1,0 +1,69 @@
+- name: Add DB2 users
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: add-db2-user
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_db2_user: "{{ item }}"
+    common_universal_password: "{{ cp4ba_universal_password }}"
+  with_items:
+    - gcd
+    - os1
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=manager-preparing-databases
+- name: Set DB2_WORKLOAD
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
+      db2set DB2_WORKLOAD=FILENET_CM;
+      "
+  register: command_status
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=manager-preparing-databases
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-space-content-platform-engine-gcd
+- name: GCD DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
+      db2 CONNECT TO CP4BA;
+      db2 CREATE LARGE TABLESPACE GCD_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE USER TEMPORARY TABLESPACE GCD_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE SYSTEM TEMPORARY TABLESPACE GCD_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+
+      db2 GRANT DBADM ON DATABASE TO user gcd;
+      db2 GRANT USE OF TABLESPACE GCD_TS TO user gcd;
+      db2 GRANT USE OF TABLESPACE GCD_TEMP_TS TO user gcd;
+      db2 CONNECT RESET;
+      "
+  register: command_status
+
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=manager-preparing-databases
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+- name: OS1 DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: db2
+    pod: c-db2ucluster-db2u-0
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
+      db2 CONNECT TO CP4BA;
+      db2 CREATE LARGE TABLESPACE OS1_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE USER TEMPORARY TABLESPACE OS1_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      db2 CREATE SYSTEM TEMPORARY TABLESPACE OS1_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+
+      db2 GRANT DBADM ON DATABASE TO user os1;
+      db2 GRANT USE OF TABLESPACE OS1_TS TO user os1;
+      db2 GRANT USE OF TABLESPACE OS1_TEMP_TS TO user os1;
+      db2 CONNECT RESET;
+      "
+  register: command_status

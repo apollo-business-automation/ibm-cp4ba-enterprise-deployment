@@ -5,8 +5,7 @@ metadata:
   namespace: "{{ pm_project_name }}"
 spec:
   channel: "{{ pm_operator_channel }}"
-  installPlanApproval: Manual
+  # TODO manual approval installPlanApproval: Manual
   name: ibm-automation-processmining
-  source: ibm-operator-catalog
+  source: ibm-automation-processminings
   sourceNamespace: openshift-marketplace
-  startingCSV: "{{ pm_starting_csv }}"

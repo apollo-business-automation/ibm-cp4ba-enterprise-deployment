@@ -1,0 +1,15 @@
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=engine-creating-secrets-protect-sensitive-configuration-data
+- name: Prepare yaml file for AAE Secret
+  ansible.builtin.template:
+    src: aae/aae-secret.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/aae-secret.yaml"
+    mode: u+rwx
+
+- name: Add AAE Secret
+  kubernetes.core.k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/aae-secret.yaml"
