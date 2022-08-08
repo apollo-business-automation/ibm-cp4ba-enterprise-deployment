@@ -298,6 +298,32 @@ data:
     ## Password must be alphanumeric (upper and lower case; no special characters allowed).
     universal_password: Passw0rd
 
+    # apollo-one-shot deployment installs its own OpenLdap server. 
+    # If you do not want to use it and have an external LDAP server you prefer, then uncomment the ldap_configuration and fill the values.
+    # Example values are provided bellow.
+    # IMPORTANT: The provided LDAP will be used for all the components you are going to install.
+    # 
+    # ToDo: how to correctly handle the username and password in the config? (it is a plain)
+    # 
+    #ldap_configuration:
+    #  lc_ldap_username: cn=admin, dc=cp
+    #  lc_ldap_password: Passw0rd
+    #  lc_selected_ldap_type: IBM Security Directory Server
+    #  lc_ldap_server: "external_ldap_hostname"
+    #  lc_ldap_port: "389"
+    #  lc_bind_secret: ldap-bind-secret
+    #  lc_ldap_base_dn: dc=cp
+    #  lc_ldap_ssl_enabled: false
+    #  lc_ldap_user_name_attribute: "*:cn"
+    #  lc_ldap_user_display_name_attr: cn
+    #  lc_ldap_group_base_dn: ou=Groups,dc=cp
+    #  lc_ldap_group_name_attribute: "*:cn"
+    #  lc_ldap_group_display_name_attr: cn
+    #  lc_ldap_group_membership_search_filter: "(|(&(objectclass=groupofnames)(member={0}))(&(objectclass=groupofuniquenames)(uniquemember={0})))"
+    #  lc_ldap_group_member_id_map: "groupofnames:member"
+    #  tds:
+    #    lc_user_filter: "(&(cn=%v)(objectclass=inetOrgPerson))"
+    #    lc_group_filter: "(&(cn=%v)(|(objectclass=groupofnames)(objectclass=groupofuniquenames)(objectclass=groupofurls)))"
 
     # Always review these parameters for changes
 
