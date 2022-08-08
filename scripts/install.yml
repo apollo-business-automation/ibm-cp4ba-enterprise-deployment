@@ -126,11 +126,10 @@
   ansible.builtin.include_role:
     name: cp4ba
 
-# TODO activate when fixed
-# - name: Install Asset Repo
-#   ansible.builtin.include_role:
-#     name: asset_repo
-#   when: asset_repo_enabled
+- name: Install Asset Repo
+  ansible.builtin.include_role:
+    name: asset_repo
+  when: asset_repo_enabled
 
 - name: RPA group
   block:
@@ -150,7 +149,7 @@
     name: pm
   when: pm_enabled
 
-# TODO activate when fixed
+# TODO activate when fixed if still needed
 # - name: Assign Asset Repo Roles
 #   ansible.builtin.include_role:
 #     name: asset_repo

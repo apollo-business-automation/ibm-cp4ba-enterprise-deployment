@@ -16,15 +16,6 @@
     merge_type: merge
     src: "{{ cp4ba_output_directory }}/root-ca-secret.yaml"
 
-# TODO verify if we need this when Zen front door is used. Maybe for External Share ingress Routes?
-# echo
-# echo ">>>>$(print_timestamp) Create wildcard certificate Secret"
-# # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=certificates-providing-external-routes
-# oc create secret tls cp4ba-wildcard --cert ../global-ca/wildcard.crt --key ../global-ca/wildcard.key
-# # TODO needed the same for ADP CDS pod with different name, report bug, wait for fix. roles\common\tasks\fncm\fncm-ext-tls-certification.yml
-# doesnt ganarate this secret, CDS deployment counts on it exist. temporarily resolved by omitting external_tls_certificate_secret from main cr.yaml
-# # oc create secret tls cp4ba-fncm-ext-tls-secret --cert ../global-ca/wildcard.crt --key ../global-ca/wildcard.key
-
 - name: Prepare yaml file for LDAP bind Secret
   ansible.builtin.template:
     src: shared/ldap-secret.yaml.j2
