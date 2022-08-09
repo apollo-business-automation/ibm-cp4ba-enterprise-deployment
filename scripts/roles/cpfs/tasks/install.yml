@@ -39,15 +39,16 @@
 
 # TODO add better configmap handling in case it exists and doesn't contain user worload enabled?
 
-- name: Create Project common-service
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: create-project
-  vars:
-    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
-    common_namespace_name: common-service
-    common_output_directory: "{{ cpfs_output_directory }}"
+# TODO
+# - name: Create Project common-service
+#   ansible.builtin.include_role:
+#     name: common
+#     tasks_from: create-project
+#   vars:
+#     common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+#     common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+#     common_namespace_name: common-service
+#     common_output_directory: "{{ cpfs_output_directory }}"
 
 - name: Create Project ibm-common-services
   ansible.builtin.include_role:
