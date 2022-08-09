@@ -524,7 +524,7 @@
                 "scheme": HTTPS,
                 "httpHeaders":[{"name": "Host", "value": "localhost"}]},
               "periodSeconds": 30,
-              "failureThreshold": 30
+              "failureThreshold": 50
             }
     # TODO remove when BTS startup probe implemented STOP
 
