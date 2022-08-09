@@ -137,7 +137,7 @@
     api_version: operator.ibm.com/v3
     kind: CommonService
     name: common-service
-    namespace: openshift-marketplace
+    namespace: ibm-common-services
   register: common_service
   retries: 10
   delay: 15
