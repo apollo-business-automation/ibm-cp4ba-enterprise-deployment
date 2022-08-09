@@ -521,7 +521,7 @@
               "httpGet": {
                 "path": "/umshealth/rest/health/alive",
                 "port": 9443,
-                "scheme": HTTPS,timeoutSeconds: 1
+                "scheme": HTTPS,
                 "httpHeaders":[{"name": "Host", "value": "localhost"}]},
               "periodSeconds": 30,
               "failureThreshold": 30,
