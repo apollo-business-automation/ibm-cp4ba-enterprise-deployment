@@ -1,0 +1,14 @@
+# case 4.0.9 / csv 1.1.11
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-db2uoperator-catalog
+  namespace: db2
+spec:
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-db2uoperator-catalog@sha256:bb98c93a44172fd9709a4644c639639c2d5a3cf6692e269dd685d87ccaa191c0
+  displayName: IBM Db2U Catalog
+  publisher: IBM
+  updateStrategy:
+    registryPoll:
+      interval: 45m

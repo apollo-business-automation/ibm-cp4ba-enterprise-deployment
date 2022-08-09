@@ -167,6 +167,22 @@
     - "ibm-automation"
     - "ibm-automation-core"
 
+- name: Remove Catalog Sources
+  kubernetes.core.k8s:
+    state: absent
+    api_key: "{{ catalog_source_k8s_api_key | default(omit) }}"
+    host: "{{ catalog_source_k8s_host | default(omit) }}"
+    api_version: v1alpha1
+    kind: CatalogSource
+    name: "{{ item }}"
+    namespace: "{{ cp4ba_project_name }}"
+    wait: true
+  with_items:
+    - ibm-cp4a-operator-catalog
+    - ibm-cp-automation-foundation-catalog
+    - ibm-automation-foundation-core-catalog
+    - opencloud-operators
+
 - name: Remove Project cp4ba
   kubernetes.core.k8s:
     state: absent

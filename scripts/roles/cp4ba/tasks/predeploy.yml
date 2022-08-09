@@ -8,6 +8,42 @@
     common_namespace_name: "{{ cp4ba_project_name }}"
     common_output_directory: "{{ cp4ba_output_directory }}"
 
+- name: Prepare yaml file for CatalogSource
+  ansible.builtin.template:
+    src: catalogsource.yaml.j2
+    dest: "{{ cp4ba_output_directory }}/catalogsource.yaml"
+    mode: u+rwx
+
+- name: Add CatalogSource
+  kubernetes.core.k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cp4ba_output_directory }}/catalogsource.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Wait for CatalogSource
+  kubernetes.core.k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1alpha1
+    kind: CatalogSource
+    name: "{{ item }}"
+    namespace: "{{ cp4ba_project_name }}"
+  register: catalogsource
+  retries: 40
+  delay: 5
+  until: ('READY' in catalogsource | json_query('resources[*].status.connectionState.lastObservedState') | unique)
+  with_items:
+    - ibm-cp4a-operator-catalog
+    - ibm-cp-automation-foundation-catalog
+    - ibm-automation-foundation-core-catalog
+    - opencloud-operators 
+
 - name: Manage Operator
   include_tasks: predeploy/operator.yml
 

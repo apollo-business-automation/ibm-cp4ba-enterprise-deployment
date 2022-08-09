@@ -223,6 +223,21 @@
     wait_sleep: 5
     wait_timeout: 50
 
+- name: Remove Catalog Sources
+  kubernetes.core.k8s:
+    state: absent
+    api_key: "{{ catalog_source_k8s_api_key | default(omit) }}"
+    host: "{{ catalog_source_k8s_host | default(omit) }}"
+    api_version: v1alpha1
+    kind: CatalogSource
+    name: "{{ item }}"
+    namespace: ibm-common-services
+    wait: true
+  with_items:
+    - opencloud-operators
+    - bts-operator
+    - cloud-native-postgresql-catalog
+
 - name: Remove ibm-common-services Project
   kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"

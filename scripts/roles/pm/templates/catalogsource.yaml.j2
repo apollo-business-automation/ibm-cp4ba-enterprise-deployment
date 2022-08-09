@@ -1,0 +1,44 @@
+# case 1.1.2 / csv 1.1.2
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-automation-processminings
+  namespace: "{{ pm_project_name }}"
+spec:
+  displayName: IBM ProcessMining Operators
+  publisher: IBM
+  sourceType: grpc
+  image: icr.io/cpopen/processmining-operator-catalog@sha256:76d348f2d22161e3542af0954b87a7fa3509f6ad99aed144ab03c2e8b4512106
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
+# case 1.5.3 / csv 1.5.3
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-cloud-databases-redis-operator-catalog
+  namespace: "{{ pm_project_name }}"
+spec:
+  displayName: ibm-cloud-databases-redis-operator-catalog
+  publisher: IBM
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-cloud-databases-redis-catalog@sha256:a787e47b2c86acad65060c565ed513b623dd016d743ccf62b98dbb5b96f8e860
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
+#  case 4.0.9 / csv 1.1.11
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-db2uoperator-catalog
+  namespace: "{{ pm_project_name }}"
+spec:
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-db2uoperator-catalog@sha256:bb98c93a44172fd9709a4644c639639c2d5a3cf6692e269dd685d87ccaa191c0
+  displayName: IBM Db2U Catalog
+  publisher: IBM
+  updateStrategy:
+    registryPoll:
+      interval: 45m

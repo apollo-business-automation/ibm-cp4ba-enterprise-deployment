@@ -6,5 +6,5 @@ metadata:
 spec:
   channel: "{{ asset_repo_operator_channel }}"
   name: ibm-integration-asset-repository
-  source: ibm-operator-catalog
-  sourceNamespace: openshift-marketplace
+  source: ibm-integration-asset-repository-catalog
+  sourceNamespace: "{{ asset_repo_project_name }}"
