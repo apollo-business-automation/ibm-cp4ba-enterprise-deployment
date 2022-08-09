@@ -39,16 +39,15 @@
 
 # TODO add better configmap handling in case it exists and doesn't contain user worload enabled?
 
-# TODO
-# - name: Create Project common-service
-#   ansible.builtin.include_role:
-#     name: common
-#     tasks_from: create-project
-#   vars:
-#     common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-#     common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
-#     common_namespace_name: common-service
-#     common_output_directory: "{{ cpfs_output_directory }}"
+- name: Create Project common-service
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
+    common_namespace_name: common-service
+    common_output_directory: "{{ cpfs_output_directory }}"
 
 - name: Create Project ibm-common-services
   ansible.builtin.include_role:
@@ -85,7 +84,7 @@
     api_version: v1alpha1
     kind: CatalogSource
     name: "{{ item }}"
-    namespace: ibm-common-services
+    namespace: openshift-marketplace
   register: catalogsource
   retries: 40
   delay: 5
@@ -138,7 +137,7 @@
     api_version: operator.ibm.com/v3
     kind: CommonService
     name: common-service
-    namespace: ibm-common-services
+    namespace: openshift-marketplace
   register: common_service
   retries: 10
   delay: 15

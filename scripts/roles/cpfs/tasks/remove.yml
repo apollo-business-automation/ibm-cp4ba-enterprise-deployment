@@ -231,7 +231,7 @@
     api_version: v1alpha1
     kind: CatalogSource
     name: "{{ item }}"
-    namespace: ibm-common-services
+    namespace: openshift-marketplace
     wait: true
   with_items:
     - opencloud-operators

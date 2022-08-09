@@ -175,7 +175,7 @@
     api_version: v1alpha1
     kind: CatalogSource
     name: "{{ item }}"
-    namespace: "{{ cp4ba_project_name }}"
+    namespace: openshift-marketplace
     wait: true
   with_items:
     - ibm-cp4a-operator-catalog

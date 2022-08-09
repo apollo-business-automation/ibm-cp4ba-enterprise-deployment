@@ -3,7 +3,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
   name: ibm-cp4a-operator-catalog
-  namespace: "{{ cp4ba_project_name }}"
+  namespace: openshift-marketplace
 spec:
   displayName: ibm-cp4a-operator
   publisher: IBM
@@ -18,7 +18,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
   name: ibm-cp-automation-foundation-catalog
-  namespace: "{{ cp4ba_project_name }}"
+  namespace: openshift-marketplace
 spec:
   displayName: IBM Automation Foundation Operators
   publisher: IBM
@@ -33,29 +33,12 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
   name: ibm-automation-foundation-core-catalog
-  namespace: "{{ cp4ba_project_name }}"
+  namespace: openshift-marketplace
 spec:
   displayName: IBM Automation Foundation Core Operators
   publisher: IBM
   sourceType: grpc
   image: icr.io/cpopen/ibm-automation-foundation-core-catalog@sha256:5502c003afe7a0590ce123c3bbbd76e46374af641b3a210e3c25cfe2381e4647
-  updateStrategy:
-    registryPoll:
-      interval: 45m
----
-# case 1.15.0 / csv 3.19.0
-apiVersion: operators.coreos.com/v1alpha1
-kind: CatalogSource
-metadata:
-  annotations:
-    bedrock_catalogsource_priority: '1'
-  name: opencloud-operators
-  namespace: "{{ cp4ba_project_name }}"
-spec:
-  displayName: IBMCS Operators
-  publisher: IBM
-  sourceType: grpc
-  image: icr.io/cpopen/ibm-common-service-catalog@sha256:87904dee339ee4bbcbdc07949abc8df82bf6d85706f90795e6dae5e45f876b19
   updateStrategy:
     registryPoll:
       interval: 45m
