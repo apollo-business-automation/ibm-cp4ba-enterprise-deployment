@@ -144,3 +144,18 @@
     common_k8s_host: "{{ rpa_k8s_host | default(omit) }}"
     common_namespace_name: "{{ rpa_project_name }}"
     common_label_selector_stub: "ibm-cloud-databases-redis-operator"
+
+- name: Remove Catalog Sources
+  kubernetes.core.k8s:
+    state: absent
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
+    api_version: v1alpha1
+    kind: CatalogSource
+    name: "{{ item }}"
+    namespace: "{{ rpa_project_name }}"
+    wait: true
+  with_items:
+    - ibm-robotic-process-automation-catalog
+    - ibm-cloud-databases-redis-operator-catalog
+    - ibmmq-operator-catalogsource

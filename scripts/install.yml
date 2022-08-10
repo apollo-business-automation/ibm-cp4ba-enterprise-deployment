@@ -53,9 +53,10 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Install Catalog Source
-  ansible.builtin.include_role:
-    name: catalog_source
+# TODO should not be needed
+# - name: Install Catalog Source
+#   ansible.builtin.include_role:
+#     name: catalog_source
 
 - name: Install Global CA
   ansible.builtin.include_role:
@@ -150,7 +151,7 @@
     name: pm
   when: pm_enabled
 
-# TODO activate when fixed
+# TODO activate when fixed if still needed
 # - name: Assign Asset Repo Roles
 #   ansible.builtin.include_role:
 #     name: asset_repo

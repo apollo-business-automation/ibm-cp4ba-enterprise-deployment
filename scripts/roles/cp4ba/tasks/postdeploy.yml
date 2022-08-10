@@ -1,6 +1,3 @@
-- name: Manage Daeja license
-  include_tasks: postdeploy/daeja.yml
-
 - name: Manage Zen roles
   include_tasks: postdeploy/zen-roles.yml
 

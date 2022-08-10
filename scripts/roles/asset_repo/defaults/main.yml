@@ -4,7 +4,6 @@ asset_repo_dir_name: asset-repo
 asset_repo_k8s_api_key: ""
 asset_repo_k8s_host: ""
 asset_repo_operator_channel: v1.5
-# TODO manual approval asset_repo_starting_csv: ibm-integration-asset-repository.v1.5.1
 asset_repo_version: 2022.2.1-1
 asset_repo_project_name: cp4ba
 asset_repo_storage_class_name: ""

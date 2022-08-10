@@ -147,16 +147,13 @@
     headers:
       Authorization: "Bearer {{ token_response.json | json_query('token') }}"
     body_format: json
-    body:
-      credentialsType: USERNAME
-      credentialsUsage: MAVEN
-      discriminator": "https://nexus.{{ apps_endpoint_domain }}/repository/maven-releases/"
-      credentials": "cpadmin:{{ cp4ba_universal_password }}"
+    body: |
+      {
+        "credentialsType": "USERNAME",
+        "credentialsUsage": "MAVEN",
+        "discriminator": "https://nexus.{{ apps_endpoint_domain }}/repository/maven-releases/",
+        "credentials": "cpadmin:{{ cp4ba_universal_password }}"
+      }
     validate_certs: false
     status_code: 200
   register: ads_credential_response
-
-# TODO debug
-- name: maven credential result
-  ansible.builtin.debug:
-    msg: "{{ ads_credential_response }}"

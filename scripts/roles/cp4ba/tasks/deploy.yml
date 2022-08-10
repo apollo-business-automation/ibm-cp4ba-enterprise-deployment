@@ -410,17 +410,6 @@
     merge_type: merge
     src: "{{ cp4ba_output_directory }}/cr.yaml"
 
-# TODO manual approval
-# - name: Manage Manual Operator ibm-zen-operator
-#   ansible.builtin.include_role:
-#     name: common
-#     tasks_from: manage-manual-operator
-#   vars:
-#     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-#     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-#     common_namespace_name: ibm-common-services
-#     common_label_selector_stub: ibm-zen-operator
-
 - name: Wait for icp4ba Cartridge to be Ready
   ansible.builtin.include_role:
     name: common
@@ -474,29 +463,7 @@
 - name: Manage BTS
   block:
 
-# TODO manual approval
-    # - name: Manage Manual Operator ibm-bts-operator
-    #   ansible.builtin.include_role:
-    #     name: common
-    #     tasks_from: manage-manual-operator
-    #   vars:
-    #     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
-    #     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    #     common_namespace_name: ibm-common-services
-    #     common_label_selector_stub: ibm-bts-operator
-
-# TODO manual approval
-    # - name: Manage Manual Operator cloud-native-postgresql
-    #   ansible.builtin.include_role:
-    #     name: common
-    #     tasks_from: manage-manual-operator
-    #   vars:
-    #     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit)  }}"
-    #     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    #     common_namespace_name: ibm-common-services
-    #     common_label_selector_stub: cloud-native-postgresql
-
-    # TODO remove when BTS startup probe implemented START
+    # TODO remove when BTS startup probe implemented START - still needed in 22.0.1.1
     - name: Wait for BTS Deployment to appear
       kubernetes.core.k8s_info:
         api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -556,7 +523,9 @@
                 "scheme": HTTPS,
                 "httpHeaders":[{"name": "Host", "value": "localhost"}]},
               "periodSeconds": 30,
-              "failureThreshold": 30
+              "failureThreshold": 30,
+              "timeoutSeconds": 5,
+              "initialDelaySeconds": 30
             }
     # TODO remove when BTS startup probe implemented STOP
 

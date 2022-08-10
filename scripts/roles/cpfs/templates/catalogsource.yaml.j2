@@ -1,0 +1,50 @@
+# case 1.15.0 / csv 3.19.0
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  annotations:
+    bedrock_catalogsource_priority: '1'
+  name: opencloud-operators
+  namespace: openshift-marketplace
+spec:
+  displayName: IBMCS Operators
+  publisher: IBM
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-common-service-catalog@sha256:87904dee339ee4bbcbdc07949abc8df82bf6d85706f90795e6dae5e45f876b19
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
+# case 1.0.8 / csv 3.19.0
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  annotations:
+    bedrock_catalogsource_priority: '1'
+  name: bts-operator
+  namespace: openshift-marketplace
+spec:
+  displayName: BTS Operator
+  publisher: IBM
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-bts-operator-catalog@sha256:68596113ad291b36b78d53207f73b53691f9f0154a21f38c717c08a0100deb9f
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
+# case 4.0.8 / csv 1.14.0
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  annotations:
+    bedrock_catalogsource_priority: '1'
+  name: cloud-native-postgresql-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: Cloud Native Postgresql Catalog
+  publisher: IBM
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-cpd-cloud-native-postgresql-operator-catalog@sha256:f3feb39b0dfb444a46d99a9cd160c616f8548d84d452cbc89e4985f0a2574486
+  updateStrategy:
+    registryPoll:
+      interval: 45m
