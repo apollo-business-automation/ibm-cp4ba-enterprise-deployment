@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [2022-08-10]
+
+### Changed
+
+- All IBM SW now uses pinned catalog sources to prevent issues with new version releases.
+
 ## [2022-08-05]
 
 ### Added

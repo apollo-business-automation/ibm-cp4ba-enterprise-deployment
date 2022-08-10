@@ -46,8 +46,6 @@ Not for production use. Suitable for Demo and PoC environments - but with enterp
 
 **!Important** - Keep in mind that this deployment contains capabilities (the ones which are not bundled with CP4BA) which are not eligible to run on Worker Nodes covered by CP4BA OCP Restricted licenses. More info on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=clusters-restricted-openshift-entitlement.
 
-**!Important** - Keep in mind that this deployment contains *IBM Daeja ViewONE Virtual Module for Microsoft Office* and *IBM Daeja ViewONE Virtual Module for Permanent Redaction* enabled which require additional licenses as per official license information at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument (or its newer revision).
-
 ## Benefits 🚀
 
 - Automatic deployment of the whole platform where you don't need to take care about almost any prerequisites
