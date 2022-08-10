@@ -463,7 +463,6 @@
 - name: Manage BTS
   block:
 
-
     # TODO remove when BTS startup probe implemented START - still needed in 22.0.1.1
     - name: Wait for BTS Deployment to appear
       kubernetes.core.k8s_info:
