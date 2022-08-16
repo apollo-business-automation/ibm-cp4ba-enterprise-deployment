@@ -196,7 +196,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 
 ####  Credentials
 
-- {{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 {% endif %}
 
 {% if cp4ba_config.optional_components.bai == true %}
@@ -208,7 +208,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 
 ####  Credentials
 
-- {{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 {% if cp4ba_config.optional_components.bai == true %}
@@ -223,7 +223,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 
 ####  Credentials
 
-- for BAI - {{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}
+- for BAI - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 - for Flink - username: eventprocessing-admin (```oc get secret -n {{ cp4ba_project_name }} $(oc get InsightsEngine -n {{ cp4ba_project_name }} iaf-insights-engine -o jsonpath='{.status.components.flinkUi.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.username}' | base64 -d```) / password: ```oc get secret -n {{ cp4ba_project_name }} $(oc get InsightsEngine -n {{ cp4ba_project_name }} iaf-insights-engine -o jsonpath='{.status.components.flinkUi.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.password}' | base64 -d```
 
 #### Extracting generated templates from operator for debug
@@ -254,7 +254,7 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 
 ####  Credentials
 
-- {{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 - odmAdmin / {{ universal_password }} who can be used for ODM Basic Auth
 
 {% endif %}
@@ -270,7 +270,7 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 
 ####  Credentials
 
-- {{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 {% if cp4ba_config.deployment_patterns.content == true %}
@@ -304,7 +304,7 @@ For external share you need to use ingress prefixed set of endpoints.
 
 ####  Credentials
 
-- {{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 {% if cp4ba_config.deployment_patterns.application == true %}
@@ -317,7 +317,7 @@ For external share you need to use ingress prefixed set of endpoints.
 
 ####  Credentials
 
-- {{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 {% if cp4ba_config.deployment_patterns.document_processing == true %}
@@ -330,7 +330,7 @@ For external share you need to use ingress prefixed set of endpoints.
 
 ####  Credentials
 
-- {{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 {% if cp4ba_config.optional_components.baw_authoring == true %}
@@ -352,7 +352,7 @@ For external share you need to use ingress prefixed set of endpoints.
 
 ####  Credentials
 
-- {{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 ## CP4BA - IAF capabilities
@@ -367,7 +367,7 @@ For external share you need to use ingress prefixed set of endpoints.
 
 #### Credentials
 
-- {{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 ### Platform UI
 
@@ -377,7 +377,7 @@ For external share you need to use ingress prefixed set of endpoints.
 
 #### Credentials
 
-- {{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 ### Elastic Search
 
@@ -423,7 +423,7 @@ Alternative custom user: cpadmin / {{ universal_password }}
 
 ####  Credentials
 
-- {{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 #### Useful info
@@ -447,7 +447,7 @@ oc get pods -n {{ cp4ba_project_name }} -o name | grep processmining-operator-co
 
 ####  Credentials
 
-- {{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 {% if rpa_enabled == true %}
@@ -460,7 +460,7 @@ oc get pods -n {{ cp4ba_project_name }} -o name | grep processmining-operator-co
 
 ####  Credentials
 
-- {{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 ## CPFS
@@ -475,7 +475,7 @@ As Cloud Pak Foundational Services.
 #### Credentials
 
 - for CPFS admin: cpfsadmin / {{ universal_password }} (IBM provided credentials (admin only))  
-- for CP4BA admin: {{ lc_principal_admin_user }} / {{ lc_principal_admin_user }} (Enterprise LDAP)  
+- for CP4BA admin: {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }} (Enterprise LDAP)  
 
 ### License Service
 
