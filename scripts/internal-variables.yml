@@ -52,6 +52,9 @@ generic_directory: /tmp
     # google_client_secret: TODO_GOOGLE_CLIENT_SECRET
 external_share_google: false
 
+# main platform admin user
+principal_admin_user: cpadmin
+
 ldap_configuration:
  lc_ldap_username: "{{ ldap_configuration.lc_selected_ldap_type  | default('cp=admin, dc=cp') }}"
  lc_ldap_password: "{{ ldap_configuration.lc_selected_ldap_type  | default(universal_password) }}"
