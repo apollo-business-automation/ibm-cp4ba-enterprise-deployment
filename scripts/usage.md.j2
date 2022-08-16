@@ -510,6 +510,8 @@ As DB2 database storage for the platform.
 
 - db2inst1 / {{ universal_password }}
 
+{% if openldap_enabled == true %}
+
 ### OpenLDAP + phpLDAPadmin
 
 As LDAP directory provider and management tool.
@@ -539,6 +541,8 @@ LDAP contains the following groups in ou=Groups,dc=cp:
 - TaskAdmins - for FNCM TM - members: uid=cpadmin,ou=Users,dc=cp;  
 - TaskAuditors - for FNCM TM - members: uid=cpadmin,ou=Users,dc=cp;
 - TaskUsers - for FNCM TM - members: uid=cpadmin,ou=Users,dc=cp; uid=cpuser,ou=Users,dc=cp  
+
+{% endif %}
 
 ### MSSQL
 
