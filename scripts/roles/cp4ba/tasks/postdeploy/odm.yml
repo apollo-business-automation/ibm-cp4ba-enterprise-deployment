@@ -45,7 +45,7 @@
       register: group_response
       failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')
 
-  with_items: "{{ ldap_configuration.lc_admin_groups }}"
+  with_items: "{{ lc_admin_groups }}"
 
 - name: Add ODM Admin role to default admin user
   ansible.builtin.uri:
@@ -55,7 +55,7 @@
       Authorization: "Bearer {{ token_response.json | json_query('token') }}"
     body_format: json
     body:
-      username: "{{ ldap_configuration.lc_principal_admin_user }}"
+      username: "{{ lc_principal_admin_user }}"
       user_roles:
         - odm_admin_role
         - odm_runtime_admin_role

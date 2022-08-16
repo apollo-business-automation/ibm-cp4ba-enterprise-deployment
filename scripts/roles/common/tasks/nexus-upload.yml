@@ -34,8 +34,8 @@
 #     validate_certs: false
 #     status_code:
 #       - 204
-#     user: "{{ ldap_configuration.lc_principal_admin_user }}"
-#     password: "{{ ldap_configuration.lc_principal_admin_password }}"
+#     user: "{{ lc_principal_admin_user }}"
+#     password: "{{ lc_principal_admin_password }}"
 #     force_basic_auth: true
 #   register: nexus_upload_result
 #   ignore_errors: true
@@ -96,8 +96,8 @@
     #       raw.asset1.filename: "{{ common_file_name }}"
     #     validate_certs: false
     #     status_code: 204
-    #     user: "{{ ldap_configuration.lc_principal_admin_user }}"
-    #     password: "{{ ldap_configuration.lc_principal_admin_password }}"
+    #     user: "{{ lc_principal_admin_user }}"
+    #     password: "{{ lc_principal_admin_password }}"
     #     force_basic_auth: true
 
     - name: Upload to Nexus

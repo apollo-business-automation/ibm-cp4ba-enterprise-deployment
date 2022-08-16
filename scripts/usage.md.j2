@@ -41,7 +41,7 @@ OAS: https://gitea.{{ apps_endpoint_domain }}/api/swagger#/
 
 ####  Credentials
 
-- Credentials you should use: "{{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_password }}"
+- Credentials you should use: "{{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}"
 - Initial administrative user credentials: giteaadmin / {{ universal_password }}
 
 ### Nexus
@@ -55,7 +55,7 @@ OAS: https://nexus.{{ apps_endpoint_domain }}/swagger-ui/
 
 #### Credentials
 
-- Credentials you should use: "{{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_password }}"
+- Credentials you should use: "{{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}"
 - Initial administrative user credentials: admin / {{ universal_password }}
 
 {% if roundcube_enabled == true %}
@@ -69,8 +69,8 @@ As mail client.
 
 #### Credentials
 
-- for admin: "{{ ldap_configuration.lc_principal_admin_user }}@{{ ldap_configuration.lc_ldap_domain }} / {{ universal_password }} (you can also use only *{{ ldap_configuration.lc_principal_admin_user }}* without domain as username to login)"
-- for user: "cpuser@{{ ldap_configuration.lc_ldap_domain }} / {{ universal_password }} (you can also use only *cpuser* without domain as username to login)"
+- for admin: "{{ lc_principal_admin_user }}@{{ lc_ldap_domain }} / {{ universal_password }} (you can also use only *{{ lc_principal_admin_user }}* without domain as username to login)"
+- for user: "cpuser@{{ lc_ldap_domain }} / {{ universal_password }} (you can also use only *cpuser* without domain as username to login)"
 
 {% endif %}
 {% if cerebro_enabled == true %}
@@ -94,7 +94,7 @@ Pre-configured for IAF elastic search.
 
 As kafka browser.
 
-Pre-configured for IAF Kafka with custom user ({{ {{ ldap_configuration.lc_principal_admin_user }} }} / {{ {{ ldap_configuration.lc_principal_admin_password }} }}). Admin credentials can be found in this doc in [IAF Kafka section](#ibm-automation-foundation-iaf---kafka--apicurio).
+Pre-configured for IAF Kafka with custom user ({{ {{ lc_principal_admin_user }} }} / {{ {{ lc_principal_admin_password }} }}). Admin credentials can be found in this doc in [IAF Kafka section](#ibm-automation-foundation-iaf---kafka--apicurio).
 
 #### Endpoints
 
@@ -117,7 +117,7 @@ As elastic search content browser and for BAI dashboards.
 
 As mail server.
 
-Any email received at *\*@{{ ldap_configuration.lc_ldap_domain }}* except *{{ ldap_configuration.lc_principal_admin_user }}@{{ ldap_configuration.lc_ldap_domain }}* and *cpuser@{{ ldap_configuration.lc_ldap_domain }}* will be delivered to *{{ ldap_configuration.lc_principal_admin_user }}*.
+Any email received at *\*@{{ lc_ldap_domain }}* except *{{ lc_principal_admin_user }}@{{ lc_ldap_domain }}* and *cpuser@{{ lc_ldap_domain }}* will be delivered to *{{ lc_principal_admin_user }}*.
 
 #### Endpoints
 
@@ -125,8 +125,8 @@ Not exposed outside the cluster.
 
 #### Credentials
 
-- for admin: "{{ ldap_configuration.lc_principal_admin_user }}@{{ ldap_configuration.lc_ldap_domain }}/ {{ ldap_configuration.lc_principal_admin_password  }}"
-- for user: "cpuser@{{ ldap_configuration.lc_ldap_domain }} / {{ universal_password }}"
+- for admin: "{{ lc_principal_admin_user }}@{{ lc_ldap_domain }}/ {{ lc_principal_admin_password  }}"
+- for user: "cpuser@{{ lc_ldap_domain }} / {{ universal_password }}"
 
 {% if mongo_express_enabled == true %}
 ### Mongo Express
@@ -196,7 +196,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 
 ####  Credentials
 
-- "{{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_user }}"
+- "{{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}"
 {% endif %}
 
 {% if cp4ba_config.optional_components.bai == true %}
@@ -208,7 +208,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 
 ####  Credentials
 
-- "{{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_user }}"
+- "{{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}"
 
 {% endif %}
 {% if cp4ba_config.optional_components.bai == true %}
@@ -223,7 +223,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 
 ####  Credentials
 
-- for BAI - "{{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_user }}"
+- for BAI - "{{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}"
 - for Flink - username: eventprocessing-admin (```oc get secret -n {{ cp4ba_project_name }} $(oc get InsightsEngine -n {{ cp4ba_project_name }} iaf-insights-engine -o jsonpath='{.status.components.flinkUi.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.username}' | base64 -d```) / password: ```oc get secret -n {{ cp4ba_project_name }} $(oc get InsightsEngine -n {{ cp4ba_project_name }} iaf-insights-engine -o jsonpath='{.status.components.flinkUi.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.password}' | base64 -d```
 
 #### Extracting generated templates from operator for debug
@@ -254,7 +254,7 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 
 ####  Credentials
 
-- "{{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_user }}"
+- "{{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}"
 - odmAdmin / {{ universal_password }} who can be used for ODM Basic Auth
 
 {% endif %}
@@ -270,7 +270,7 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 
 ####  Credentials
 
-- "{{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_user }}"
+- "{{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}"
 
 {% endif %}
 {% if cp4ba_config.deployment_patterns.content == true %}
@@ -304,7 +304,7 @@ For external share you need to use ingress prefixed set of endpoints.
 
 ####  Credentials
 
-- "{{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_user }}"
+- "{{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}"
 
 {% endif %}
 {% if cp4ba_config.deployment_patterns.application == true %}
@@ -317,7 +317,7 @@ For external share you need to use ingress prefixed set of endpoints.
 
 ####  Credentials
 
-- "{{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_user }}"
+- "{{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}"
 
 {% endif %}
 {% if cp4ba_config.deployment_patterns.document_processing == true %}
@@ -330,7 +330,7 @@ For external share you need to use ingress prefixed set of endpoints.
 
 ####  Credentials
 
-- "{{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_user }}"
+- "{{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}"
 
 {% endif %}
 {% if cp4ba_config.optional_components.baw_authoring == true %}
@@ -352,7 +352,7 @@ For external share you need to use ingress prefixed set of endpoints.
 
 ####  Credentials
 
-- "{{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_user }}"
+- "{{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}"
 
 {% endif %}
 ## CP4BA - IAF capabilities
@@ -367,7 +367,7 @@ For external share you need to use ingress prefixed set of endpoints.
 
 #### Credentials
 
-- "{{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_user }}"
+- "{{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}"
 
 ### Platform UI
 
@@ -377,7 +377,7 @@ For external share you need to use ingress prefixed set of endpoints.
 
 #### Credentials
 
-- "{{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_user }}"
+- "{{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}"
 
 ### Elastic Search
 
@@ -423,7 +423,7 @@ Alternative custom user: cpadmin / {{ universal_password }}
 
 ####  Credentials
 
-- "{{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_user }}"
+- "{{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}"
 
 {% endif %}
 #### Useful info
@@ -447,7 +447,7 @@ oc get pods -n {{ cp4ba_project_name }} -o name | grep processmining-operator-co
 
 ####  Credentials
 
-- "{{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_user }}"
+- "{{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}"
 
 {% endif %}
 {% if rpa_enabled == true %}
@@ -460,7 +460,7 @@ oc get pods -n {{ cp4ba_project_name }} -o name | grep processmining-operator-co
 
 ####  Credentials
 
-- "{{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_user }}"
+- "{{ lc_principal_admin_user }} / {{ lc_principal_admin_user }}"
 
 {% endif %}
 ## CPFS
@@ -475,7 +475,7 @@ As Cloud Pak Foundational Services.
 #### Credentials
 
 - for CPFS admin: cpfsadmin / {{ universal_password }} (IBM provided credentials (admin only))  
-- "for CP4BA admin: {{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_user }} (Enterprise LDAP)"  
+- "for CP4BA admin: {{ lc_principal_admin_user }} / {{ lc_principal_admin_user }} (Enterprise LDAP)"  
 
 ### License Service
 
@@ -522,25 +522,25 @@ As LDAP directory provider and management tool.
 
 #### Credentials
 
-- "{{ ldap_configuration.lc_bind_admin_user }} / {{ ldap_configuration.lc_bind_admin_password }}"
+- "{{ lc_bind_admin_user }} / {{ lc_bind_admin_password }}"
 
 #### Users and Groups
 
-LDAP contains the following users in {{ ldap_configuration.lc_ldap_base_dn }}.:  
-- "{{ ldap_configuration.lc_principal_admin_user }}/{{ ldap_configuration.lc_principal_admin_password }}"
+LDAP contains the following users in {{ lc_ldap_base_dn }}.:  
+- "{{ lc_principal_admin_user }}/{{ lc_principal_admin_password }}"
 - cpadmin1/{{ universal_password }}  
 - cpadmin2/{{ universal_password }}  
 - cpuser/{{ universal_password }}  
 - cpuser1/{{ universal_password }}  
 - cpuser2/{{ universal_password }}  
 
-LDAP contains the following groups in {{ ldap_configuration.lc_ldap_group_base_dn }}:  
-- "{{ ldap_configuration.lc_principal_admin_group }} - members: {{ ldap_configuration.lc_ldap_user_id_attribute }}={{ ldap_configuration.lc_principal_admin_user }},{{ ldap_configuration.lc_ldap_base_dn }}; {{ ldap_configuration.lc_ldap_user_id_attribute }}=cpadmin1,{{ ldap_configuration.lc_ldap_base_dn }}; {{ ldap_configuration.lc_ldap_user_id_attribute }}=cpadmin2,{{ ldap_configuration.lc_ldap_base_dn }}"
-- "cpusers - members: {{ ldap_configuration.lc_ldap_user_id_attribute }}={{ ldap_configuration.lc_principal_admin_user }},{{ ldap_configuration.lc_ldap_base_dn }}; {{ ldap_configuration.lc_ldap_user_id_attribute }}=cpadmin1,{{ ldap_configuration.lc_ldap_base_dn }}; {{ ldap_configuration.lc_ldap_user_id_attribute }}=cpadmin2,{{ ldap_configuration.lc_ldap_base_dn }}; {{ ldap_configuration.lc_ldap_user_id_attribute }}=cpuser,{{ ldap_configuration.lc_ldap_base_dn }}; {{ ldap_configuration.lc_ldap_user_id_attribute }}=cpuser1,{{ ldap_configuration.lc_ldap_base_dn }}; {{ ldap_configuration.lc_ldap_user_id_attribute }}=cpuser2,{{ ldap_configuration.lc_ldap_base_dn }}"
-- "cpusers1 - members: {{ ldap_configuration.lc_ldap_user_id_attribute }}=cpuser,{{ ldap_configuration.lc_ldap_base_dn }}; {{ ldap_configuration.lc_ldap_user_id_attribute }}=cpuser1,{{ ldap_configuration.lc_ldap_base_dn }}; {{ ldap_configuration.lc_ldap_user_id_attribute }}=cpuser2,{{ ldap_configuration.lc_ldap_base_dn }}"
-- "TaskAdmins - for FNCM TM - members: {{ ldap_configuration.lc_ldap_user_id_attribute }}={{ ldap_configuration.lc_principal_admin_user }},{{ ldap_configuration.lc_ldap_base_dn }};"
-- "TaskAuditors - for FNCM TM - members: {{ ldap_configuration.lc_ldap_user_id_attribute }}={{ ldap_configuration.lc_principal_admin_user }},{{ ldap_configuration.lc_ldap_base_dn }};"
-- "TaskUsers - for FNCM TM - members: {{ ldap_configuration.lc_ldap_user_id_attribute }}={{ ldap_configuration.lc_principal_admin_user }},{{ ldap_configuration.lc_ldap_base_dn }}; {{ ldap_configuration.lc_ldap_user_id_attribute }}=cpuser,{{ ldap_configuration.lc_ldap_base_dn }}"
+LDAP contains the following groups in {{ lc_ldap_group_base_dn }}:  
+- "{{ lc_principal_admin_group }} - members: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpadmin1,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpadmin2,{{ lc_ldap_base_dn }}"
+- "cpusers - members: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpadmin1,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpadmin2,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser1,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser2,{{ lc_ldap_base_dn }}"
+- "cpusers1 - members: {{ lc_ldap_user_id_attribute }}=cpuser,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser1,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser2,{{ lc_ldap_base_dn }}"
+- "TaskAdmins - for FNCM TM - members: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_base_dn }};"
+- "TaskAuditors - for FNCM TM - members: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_base_dn }};"
+- "TaskUsers - for FNCM TM - members: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser,{{ lc_ldap_base_dn }}"
 
 {% endif %}
 

@@ -16,8 +16,8 @@
 #     body_format: form-urlencoded
 #     body:
 #       grant_type: password
-#       username: "{{ ldap_configuration.lc_principal_admin_user }}"
-#       password: "{{ ldap_configuration.lc_principal_admin_password }}"
+#       username: "{{ lc_principal_admin_user }}"
+#       password: "{{ lc_principal_admin_password }}"
 #       scope: openid
 #     validate_certs: false
 #     status_code: 200
@@ -41,7 +41,7 @@
 #       - 500
 #   register: group_response
 #   failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')
-#   with_items: "{{ ldap_configuration.lc_admin_groups }}"
+#   with_items: "{{ lc_admin_groups }}"
 
 # - debug:
 #     msg: "{{ group_response }}"

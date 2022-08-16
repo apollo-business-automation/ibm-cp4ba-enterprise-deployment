@@ -17,7 +17,7 @@ spec:
             name: AEOS_dbconnection
             dc_os_datasource_name: AEOS
             dc_os_xa_datasource_name: AEOSXA
-          oc_cpe_obj_store_admin_user_groups: "{{ ldap_configuration.lc_admin_groups + ldap_configuration.lc_admin_users }}" 
+          oc_cpe_obj_store_admin_user_groups: "{{ lc_admin_groups + lc_admin_users }}" 
           oc_cpe_obj_store_asa_name: aeos_asa
           oc_cpe_obj_store_asa_file_systems_storage_device_name: aeos_file_system_storage
           oc_cpe_obj_store_asa_root_dir_path: /opt/ibm/asa/aeos_storagearea1

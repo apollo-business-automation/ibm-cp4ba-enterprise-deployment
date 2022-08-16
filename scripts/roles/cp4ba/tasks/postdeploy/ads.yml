@@ -23,8 +23,8 @@
       username: ads
       visibility: private
       website: ""
-    user: "{{ ldap_configuration.lc_principal_admin_user }}"
-    password: "{{ ldap_configuration.lc_principal_admin_password }}"
+    user: "{{ lc_principal_admin_user }}"
+    password: "{{ lc_principal_admin_password }}"
     force_basic_auth: true
     validate_certs: false
     status_code:
@@ -126,7 +126,7 @@
       register: group_response
       failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')
       
-  with_items: "{{ ldap_configuration.lc_admin_groups }}"
+  with_items: "{{ lc_admin_groups }}"
 
 - name: Add ADS Admin role to default admin user
   ansible.builtin.uri:
@@ -136,7 +136,7 @@
       Authorization: "Bearer {{ token_response.json | json_query('token') }}"
     body_format: json
     body:
-      username: "{{ ldap_configuration.lc_principal_admin_user }}"
+      username: "{{ lc_principal_admin_user }}"
       user_roles:
         - "{{ ads_admin_role_id }}"
     validate_certs: false
@@ -155,7 +155,7 @@
       credentialsType: USERNAME
       credentialsUsage: MAVEN
       discriminator": "https://nexus.{{ apps_endpoint_domain }}/repository/maven-releases/"
-      credentials": "{{ ldap_configuration.lc_principal_admin_user }}:{{ ldap_configuration.lc_principal_admin_password }}"
+      credentials": "{{ lc_principal_admin_user }}:{{ lc_principal_admin_password }}"
     validate_certs: false
     status_code: 200
   register: ads_credential_response

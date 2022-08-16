@@ -1,34 +1,34 @@
 {
   "name": "LDAP",
   "protocol": "{{ 'ldap' if not lc_ldap_use_ssl else 'ldaps' }}",
-  "host": "{{ ldap_configuration.lc_ldap_server }}",
-  "port": "{{ ldap_configuration.lc_ldap_port }}",
-  "searchBase": "{{ ldap_configuration.lc_ldap_base_dn | regex_replace('^(.+?)([Dd][Cc]=.*)$', '\\2') }}",
+  "host": "{{ lc_ldap_server }}",
+  "port": "{{ lc_ldap_port }}",
+  "searchBase": "{{ lc_ldap_base_dn | regex_replace('^(.+?)([Dd][Cc]=.*)$', '\\2') }}",
   "authScheme": "SIMPLE",
   # ToDo what should be the right authRealm here?
-  "authRealm": "{{ ldap_configuration.lc_ldap_domain }}",
-  "authUsername": "{{ ldap_configuration.lc_bind_admin_user }}",
-  "authPassword": "{{ ldap_configuration.lc_bind_admin_password }}"
+  "authRealm": "{{ lc_ldap_domain }}",
+  "authUsername": "{{ lc_bind_admin_user }}",
+  "authPassword": "{{ lc_bind_admin_password }}"
   "connectionTimeoutSeconds": 30,
   "connectionRetryDelaySeconds": 300,
   "maxIncidentsCount": 3,
-  "userBaseDn": "{{ ldap_configuration.lc_ldap_base_dn }}",
+  "userBaseDn": "{{ lc_ldap_base_dn }}",
   "userSubtree": false,
   # ToDo add configuration
-  "userObjectClass": "{{ ldap_configuration.lc_ldap_user_object_class }}",
+  "userObjectClass": "{{ lc_ldap_user_object_class }}",
   "userLdapFilter": "",
-  "userIdAttribute": "{{ ldap_configuration.lc_ldap_user_id_attribute }}",
-  "userRealNameAttribute": "{{ ldap_configuration.lc_ldap_user_display_name_attr }}",
+  "userIdAttribute": "{{ lc_ldap_user_id_attribute }}",
+  "userRealNameAttribute": "{{ lc_ldap_user_display_name_attr }}",
   "userEmailAddressAttribute": "mail",
   "userPasswordAttribute": "",
   "ldapGroupsAsRoles": true,
   "groupType": "static",
-  "groupBaseDn": "{{ ldap_configuration.lc_ldap_group_base_dn }}",
+  "groupBaseDn": "{{ lc_ldap_group_base_dn }}",
   "groupSubtree": false,
   # ToDo add configuration
-  "groupObjectClass": "{{ ldap_configuration.lc_ldap_group_object_class }}",
-  "groupIdAttribute": "{{ ldap_configuration.lc_ldap_group_id_attribute }}",
+  "groupObjectClass": "{{ lc_ldap_group_object_class }}",
+  "groupIdAttribute": "{{ lc_ldap_group_id_attribute }}",
   # ToDo add configuration
   "groupMemberAttribute": "member",
-  "groupMemberFormat": "{{ ldap_configuration.lc_ldap_user_id_attribute }}=${username},{{ ldap_configuration.lc_ldap_base_dn }}",
+  "groupMemberFormat": "{{ lc_ldap_user_id_attribute }}=${username},{{ lc_ldap_base_dn }}",
 }

@@ -51,7 +51,7 @@
     status_code:
       - 201
       - 409
-  with_items: "{{ ldap_configuration.lc_admin_groups }}" 
+  with_items: "{{ lc_admin_groups }}" 
   register: group_response
   vars:
     user_roles:
@@ -72,7 +72,7 @@
     body_format: json
     body:
       user_identifiers: []
-      ldap_groups: ["cn={{ item.json.name }},{{ ldap_configuration.lc_ldap_group_base_dn }}"]
+      ldap_groups: ["cn={{ item.json.name }},{{ lc_ldap_group_base_dn }}"]
     validate_certs: false
     status_code:
       - 200
@@ -103,11 +103,11 @@
         body_format: json
         body:
           user_identifiers: []
-          ldap_groups: ["cn={{ group_name }},{{ ldap_configuration.lc_ldap_group_base_dn }}"]
+          ldap_groups: ["cn={{ group_name }},{{ lc_ldap_group_base_dn }}"]
         validate_certs: false
         return_content: true
       register: register_group_response
-      loop: "{{ ldap_configuration.lc_admin_groups }}"
+      loop: "{{ lc_admin_groups }}"
       vars:
         group_id_query: json.results[?name == '{{ item }}']
         group_id: "{{ get_groups_response | json_query(group_id_query) | first | json_query('group_id') }}"
@@ -140,7 +140,7 @@
       - iaf-automation-developer
       - iaf-automation-operator
       - zen_user_role
-  with_items: "{{ ldap_configuration.lc_general_groups }}" 
+  with_items: "{{ lc_general_groups }}" 
   register: group_responses
 
 - name: Register ldap groups with the zen groups
@@ -153,7 +153,7 @@
     body_format: json
     body:
       user_identifiers: []
-      ldap_groups: ["cn={{ item.json.name }},{{ ldap_configuration.lc_ldap_group_base_dn }}"]
+      ldap_groups: ["cn={{ item.json.name }},{{ lc_ldap_group_base_dn }}"]
     validate_certs: false
     status_code:
       - 200
@@ -184,11 +184,11 @@
         body_format: json
         body:
           user_identifiers: []
-          ldap_groups: ["cn={{ group_name }},{{ ldap_configuration.lc_ldap_group_base_dn }}"]
+          ldap_groups: ["cn={{ group_name }},{{ lc_ldap_group_base_dn }}"]
         validate_certs: false
         return_content: true
       register: register_group_response
-      loop: "{{ ldap_configuration.lc_general_groups }}"
+      loop: "{{ lc_general_groups }}"
       vars:
         group_id_query: json.results[?name == '{{ item }}']
         group_id: "{{ get_groups_response | json_query(group_id_query) | first | json_query('group_id') }}"

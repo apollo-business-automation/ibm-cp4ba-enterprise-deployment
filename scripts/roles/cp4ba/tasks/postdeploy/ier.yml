@@ -88,8 +88,8 @@
     body_format: form-urlencoded
     body:
       grant_type: password
-      username: "{{ ldap_configuration.lc_principal_admin_user }}"
-      password: "{{ ldap_configuration.lc_principal_admin_password }}"
+      username: "{{ lc_principal_admin_user }}"
+      password: "{{ lc_principal_admin_password }}"
       scope: openid
     validate_certs: false
     status_code: 200
@@ -102,7 +102,7 @@
     method: GET
     headers:
       iam-token: "{{ admin_token_response | json_query('json.access_token') }}"
-      username: "{{ ldap_configuration.lc_principal_admin_user }}"
+      username: "{{ lc_principal_admin_user }}"
     validate_certs: false
     status_code: 200
   register: admin_token_response
@@ -192,7 +192,7 @@
 #     method: POST
 #     return_content: true
 #     follow_redirects: all
-#     body: "action=list&id=navigator&userid={{ ldap_configuration.lc_principal_admin_user }}&type=plugins&sorted=true&configuration=ApplicationConfig&\
+#     body: "action=list&id=navigator&userid={{ lc_principal_admin_user }}&type=plugins&sorted=true&configuration=ApplicationConfig&\
 #       login_desktop=admin&application=navigator&securityTopic=plugins.plugins&desktop=admin"
 #     body_format: form-urlencoded
 #     validate_certs: false
@@ -226,7 +226,7 @@
 #       desktop=admin&\
 #       application=navigator&\
 #       fileName={{ 'https://cpd-'+cp4ba_project_name+'.'+apps_endpoint_domain+'/ier/EnterpriseRecordsPlugin/IERApplicationPlugin.jar' | urlencode() }}&\
-#       userid={{ ldap_configuration.lc_principal_admin_user }}"
+#       userid={{ lc_principal_admin_user }}"
 #     method: GET
 #     return_content: true
 #     follow_redirects: all
@@ -258,7 +258,7 @@
 #         \"json_post\": \"{'configClass': '{{ plugin_load_response_content.configClass }}', 'name': '{{ plugin_load_response_content.name }}',
 #          'ordering': 1, 'filename': 'https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ier/EnterpriseRecordsPlugin/IERApplicationPlugin.jar',
 #          'version': '{{ plugin_load_response_content.version }}', 'dependencies': [], 'configuration': null}\",
-#         \"userid\": \"{{ ldap_configuration.lc_principal_admin_user }}\",
+#         \"userid\": \"{{ lc_principal_admin_user }}\",
 #         \"id\": \"{{ plugin_load_response_content.id }}\",
 #         \"desktop\": \"admin\"
 #       }"
@@ -284,7 +284,7 @@
 #     desktop=admin&\
 #     application=navigator&\
 #     fileName={{ 'https://cpd-'+cp4ba_project_name+'.'+apps_endpoint_domain+'/ier/EnterpriseRecordsPlugin/IERApplicationPlugin.jar' | urlencode() }}&\
-#     userid={{ ldap_configuration.lc_principal_admin_user }}"
+#     userid={{ lc_principal_admin_user }}"
 #     method: GET
 #     return_content: true
 #     follow_redirects: all

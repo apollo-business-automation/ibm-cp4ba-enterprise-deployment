@@ -33,7 +33,7 @@ spec:
         dc_common_conn_name: CH_dbconnection
   workflow_authoring_configuration:
     replicas: 1 # TODO Need 2 because of PDB, wait for pdb resolved and change to 1
-    admin_user: "{{ ldap_configuration.lc_principal_admin_user }}"
+    admin_user: "{{ lc_principal_admin_user }}"
     database:
       enable_ssl: false
       type: db2
@@ -97,7 +97,7 @@ spec:
             name: BADOCS_dbconnection
             dc_os_datasource_name: BADOCS
             dc_os_xa_datasource_name: BADOCSXA
-          oc_cpe_obj_store_admin_user_groups: "{{ ldap_configuration.lc_admin_groups + ldap_configuration.lc_admin_users }}" 
+          oc_cpe_obj_store_admin_user_groups: "{{ lc_admin_groups + lc_admin_users }}" 
           oc_cpe_obj_store_asa_name: badocs_asa
           oc_cpe_obj_store_asa_file_systems_storage_device_name: badocs_file_system_storage
           oc_cpe_obj_store_asa_root_dir_path: /opt/ibm/asa/badocs_storagearea1
@@ -107,7 +107,7 @@ spec:
             name: BADOS_dbconnection
             dc_os_datasource_name: BADOS
             dc_os_xa_datasource_name: BADOSXA
-          oc_cpe_obj_store_admin_user_groups: "{{ ldap_configuration.lc_admin_groups + ldap_configuration.lc_admin_users }}"
+          oc_cpe_obj_store_admin_user_groups: "{{ lc_admin_groups + lc_admin_users }}"
           oc_cpe_obj_store_asa_name: bados_asa
           oc_cpe_obj_store_asa_file_systems_storage_device_name: bados_file_system_storage
           oc_cpe_obj_store_asa_root_dir_path: /opt/ibm/asa/bados_storagearea1
@@ -117,15 +117,15 @@ spec:
             name: BATOS_dbconnection
             dc_os_datasource_name: BATOS
             dc_os_xa_datasource_name: BATOSXA
-          oc_cpe_obj_store_admin_user_groups: "{{ ldap_configuration.lc_admin_groups + ldap_configuration.lc_admin_users }}" 
+          oc_cpe_obj_store_admin_user_groups: "{{ lc_admin_groups + lc_admin_users }}" 
           oc_cpe_obj_store_asa_name: batos_asa
           oc_cpe_obj_store_asa_file_systems_storage_device_name: batos_file_system_storage
           oc_cpe_obj_store_asa_root_dir_path: /opt/ibm/asa/batos_storagearea1            
           oc_cpe_obj_store_enable_workflow: true
           oc_cpe_obj_store_workflow_region_name: batos_region_name
           oc_cpe_obj_store_workflow_data_tbl_space: BATOS_TS
-          oc_cpe_obj_store_workflow_admin_group: "{{ ldap_configuration.lc_principal_admin_group }}"
-          oc_cpe_obj_store_workflow_config_group: "{{ ldap_configuration.lc_principal_admin_group }}"
+          oc_cpe_obj_store_workflow_admin_group: "{{ lc_principal_admin_group }}"
+          oc_cpe_obj_store_workflow_config_group: "{{ lc_principal_admin_group }}"
           oc_cpe_obj_store_workflow_pe_conn_point_name: pe_conn_batos
     ic_icn_init_info:
       icn_repos:

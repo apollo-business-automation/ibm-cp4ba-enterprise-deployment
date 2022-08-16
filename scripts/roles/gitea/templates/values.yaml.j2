@@ -34,19 +34,19 @@ gitea:
   admin:
     username: "giteaadmin"
     password: '{{ gitea_universal_password }}'
-    email: "giteaadmin@{{ ldap_configuration.lc_ldap_domain }}"
+    email: "giteaadmin@{{ lc_ldap_domain }}"
   ldap:
     - name: LDAP
       securityProtocol: unencrypted
-      host: "{{ ldap_configuration.lc_ldap_server }}"
-      port: "{{ ldap_configuration.lc_ldap_port }}"
-      userSearchBase: "{{ ldap_configuration.lc_ldap_base_dn }}"
-      userFilter: "(&({{ ldap_configuration.lc_ldap_user_id_attribute }}=%v)(objectclass={{ ldap_configuration.lc_ldap_user_object_class }}))"
+      host: "{{ lc_ldap_server }}"
+      port: "{{ lc_ldap_port }}"
+      userSearchBase: "{{ lc_ldap_base_dn }}"
+      userFilter: "(&({{ lc_ldap_user_id_attribute }}=%v)(objectclass={{ lc_ldap_user_object_class }}))"
       adminFilter: (employeeType=admin)
       emailAttribute: mail
-      bindDn: "{{ ldap_configuration.lc_bind_admin_user }}"
-      bindPassword: '{{ ldap_configuration.lc_bind_admin_password }}'
-      usernameAttribute: "{{ ldap_configuration.lc_ldap_user_display_name_attr }}"
+      bindDn: "{{ lc_bind_admin_user }}"
+      bindPassword: '{{ lc_bind_admin_password }}'
+      usernameAttribute: "{{ lc_ldap_user_display_name_attr }}"
       synchronize-users: 
 memcached:
   enabled: true

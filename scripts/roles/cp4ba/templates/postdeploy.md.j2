@@ -35,7 +35,7 @@ oc project {{ cp4ba_project_name }}
 ```
 
 
-For logging in to CP4BA pillars use *Authentication type: Enterprise LDAP* and user *{{ ldap_configuration.lc_principal_admin_user }}* with password "{{ ldap_configuration.lc_principal_admin_password }}" if not stated otherwise.
+For logging in to CP4BA pillars use *Authentication type: Enterprise LDAP* and user *{{ lc_principal_admin_user }}* with password "{{ lc_principal_admin_password }}" if not stated otherwise.
 
 ## Business Automation Studio (BAS) (foundation pattern)
 
@@ -50,7 +50,7 @@ To your local system download the following
 - TWX file from https://github.com/icp4a/odm-toolkit/tree/master/contribution/1.2/Toolkit
 
 Go to Studio https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bas/BAStudio/build/index.jsp?#/apps/platformRepo  
-Login with Enterprise LDAP with {{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_password }}  
+Login with Enterprise LDAP with {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}  
 
 Click Toolkits  
 Click Import  
@@ -107,13 +107,13 @@ Add the following to eclipse.ini
 When configuring RES connection in Deployment use  
 URL: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/res  
 Method: Zen API Key  
-UserID: "{{ ldap_configuration.lc_principal_admin_user }}"  
+UserID: "{{ lc_principal_admin_user }}"  
 API Key: As generated following https://www.ibm.com/docs/en/cloud-paks/1.0?topic=users-generating-api-keys-authentication
 
 When configuring Decision Center use  
 URL: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter  
 Authentication: Zen API Key  
-User ID: "{{ ldap_configuration.lc_principal_admin_user }}"  
+User ID: "{{ lc_principal_admin_user }}"  
 API Key: As generated following https://www.ibm.com/docs/en/cloud-paks/1.0?topic=users-generating-api-keys-authentication
 
 ## Automation Decision Services (ADS) (decisions_ads pattern)
@@ -127,7 +127,7 @@ Create Repository. Change *name* in the payload to correspond to your project na
 ```bash
 curl --insecure --request POST "https://gitea.{{ apps_endpoint_domain }}/api/v1/orgs/ads/repos" \
 --header  "Content-Type: application/json" \
---user '{{ ldap_configuration.lc_principal_admin_user }}:{{ ldap_configuration.lc_principal_admin_password }}' \
+--user '{{ lc_principal_admin_user }}:{{ lc_principal_admin_password }}' \
 --data-raw '
 {
   "auto_init": false,
@@ -150,8 +150,8 @@ Open your ADS Sandbox project
 On the top right, click Connect  
 
 Repository URI: https://gitea.{{ apps_endpoint_domain }}/ads/sandbox.git  (adjust *sandbox*)  
-Username: {{ ldap_configuration.lc_principal_admin_user }}  
-Password: {{ ldap_configuration.lc_principal_admin_password }}  
+Username: {{ lc_principal_admin_user }}  
+Password: {{ lc_principal_admin_password }}  
 Click Connect
 
 ### Develop custom libraries
@@ -197,7 +197,7 @@ Configure SMTP
 Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=users-configuring-content-platform-engine-external-sharing point 3
 
 Go to Acce console https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/acce/    
-Login with Enterprise LDAP with {{ ldap_configuration.lc_principal_admin_user }} / {{ ldap_configuration.lc_principal_admin_password }}  
+Login with Enterprise LDAP with {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}  
 On P8DOMAIN domain navigate to *SMTP Subsystem*  
 Check *Enable email services*  
 SMTP host: {{ cp4ba_mail_hostname }}  
@@ -345,8 +345,8 @@ Click Configure
 Switch to Git server configuration  
 Git vendor: Gitea  
 Git server organization URL: https://gitea.{{ apps_endpoint_domain }}/adp  
-Username: {{ ldap_configuration.lc_principal_admin_user }}  
+Username: {{ lc_principal_admin_user }}  
 Type of credentials: Password  
-Credentials: {{ ldap_configuration.lc_principal_admin_password }}  
+Credentials: {{ lc_principal_admin_password }}  
 Click Test  
 Click Save  

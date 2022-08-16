@@ -182,13 +182,13 @@
     (nexus_query_response.status != 201) and
     ('Duplicated record' not in nexus_query_response.content)
 
-- name: Prepare nexus role for {{ ldap_configuration.lc_principal_admin_group }} as Nexus admins
+- name: Prepare nexus role for {{ lc_principal_admin_group }} as Nexus admins
   ansible.builtin.template:
     src: nexus-role.json.j2
     dest: "{{ nexus_output_directory }}/nexus-role.json"
     mode: u+rwx
 
-- name: Create Nexus role for {{ ldap_configuration.lc_principal_admin_group }} as Nexus admins
+- name: Create Nexus role for {{ lc_principal_admin_group }} as Nexus admins
   ansible.builtin.uri:
     url: "https://nexus.{{ apps_endpoint_domain }}/service/rest/v1/security/roles"
     method: POST

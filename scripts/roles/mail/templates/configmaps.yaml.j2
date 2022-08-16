@@ -7,8 +7,8 @@ metadata:
     app: mailserver
 data:
   postfix-virtual.cf: |
-    cpuser@{{ ldap_configuration.lc_ldap_domain }} cpuser@{{ ldap_configuration.lc_ldap_domain }}
-    @{{ ldap_configuration.lc_ldap_domain }} {{ ldap_configuration.lc_principal_admin_user }}@{{ ldap_configuration.lc_ldap_domain }}
+    cpuser@{{ lc_ldap_domain }} cpuser@{{ lc_ldap_domain }}
+    @{{ lc_ldap_domain }} {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}
 
   postfix-main.cf: |
     smtpd_recipient_restrictions = permit_sasl_authenticated,permit_mynetworks
@@ -43,10 +43,10 @@ data:
   {% if lc_ldap_use_ssl %}
   LDAP_START_TLS: yes
   {% endif %}
-  LDAP_SERVER_HOST: "{{ ldap_configuration.lc_ldap_server }}" # your ldap container/IP/ServerName
-  LDAP_SEARCH_BASE: "{{ ldap_configuration.lc_ldap_base_dn }}"
-  LDAP_BIND_DN: "{{ ldap_configuration.lc_bind_admin_user }}"
-  LDAP_BIND_PW: "{{ ldap_configuration.lc_bind_admin_password }}"
-  LDAP_QUERY_FILTER_USER: "(&(objectclass={{ ldap_configuration.lc_ldap_user_object_class }})(mail=%s))"
-  LDAP_QUERY_FILTER_GROUP: "(&(objectclass={{ ldap_configuration.lc_ldap_group_object_class }})(mail=%s))"
+  LDAP_SERVER_HOST: "{{ lc_ldap_server }}" # your ldap container/IP/ServerName
+  LDAP_SEARCH_BASE: "{{ lc_ldap_base_dn }}"
+  LDAP_BIND_DN: "{{ lc_bind_admin_user }}"
+  LDAP_BIND_PW: "{{ lc_bind_admin_password }}"
+  LDAP_QUERY_FILTER_USER: "(&(objectclass={{ lc_ldap_user_object_class }})(mail=%s))"
+  LDAP_QUERY_FILTER_GROUP: "(&(objectclass={{ lc_ldap_group_object_class }})(mail=%s))"
   LDAP_QUERY_FILTER_DOMAIN: "(mail=*@%s)"

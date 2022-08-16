@@ -57,8 +57,8 @@
     body_format: form-urlencoded
     body:
       grant_type: password
-      username: "{{ ldap_configuration.lc_principal_admin_user }}"
-      password: "{{ ldap_configuration.lc_principal_admin_password }}"
+      username: "{{ lc_principal_admin_user }}"
+      password: "{{ lc_principal_admin_password }}"
       scope: openid
     validate_certs: false
     status_code: 200
@@ -71,7 +71,7 @@
     method: GET
     headers:
       iam-token: "{{ admin_token_response | json_query('json.access_token') }}"
-      username: "{{ ldap_configuration.lc_principal_admin_user }}"
+      username: "{{ lc_principal_admin_user }}"
     validate_certs: false
     status_code: 200
   register: admin_token_response
