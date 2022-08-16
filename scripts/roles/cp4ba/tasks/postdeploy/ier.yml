@@ -88,12 +88,12 @@
     body_format: form-urlencoded
     body:
       grant_type: password
-      username: cpadmin
-      password: "{{ cp4ba_universal_password }}"
+      username: "{{ ldap_configuration.lc_principal_admin_user }}"
+      password: "{{ ldap_configuration.lc_principal_admin_password }}"
       scope: openid
     validate_certs: false
     status_code: 200
-  register: cpadmin_token_response
+  register: admin_token_response
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-data/4.0?topic=resources-generating-authorization-token
 - name: Exchange IAM access token for Zen token
@@ -101,11 +101,11 @@
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/v1/preauth/validateAuth"
     method: GET
     headers:
-      iam-token: "{{ cpadmin_token_response | json_query('json.access_token') }}"
-      username: cpadmin
+      iam-token: "{{ admin_token_response | json_query('json.access_token') }}"
+      username: "{{ ldap_configuration.lc_principal_admin_user }}"
     validate_certs: false
     status_code: 200
-  register: cpadmin_token_response
+  register: admin_token_response
 
 - name: Create CodeModules folder
   ansible.builtin.uri:
@@ -113,7 +113,7 @@
     method: POST
     headers:
       Content-Type: application/json
-      Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+      Authorization: "Bearer {{ admin_token_response.json | json_query('accessToken') }}"
     body_format: json
     body:
       query: |
@@ -172,7 +172,7 @@
     force_basic_auth: true
     status_code: 200
     headers:
-      Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+      Authorization: "Bearer {{ admin_token_response.json | json_query('accessToken') }}"
       auth-token-realm: InternalIamRealm
       Content-Type: "application/x-www-form-urlencoded"
     validate_certs: false
@@ -192,7 +192,7 @@
 #     method: POST
 #     return_content: true
 #     follow_redirects: all
-#     body: "action=list&id=navigator&userid=cpadmin&type=plugins&sorted=true&configuration=ApplicationConfig&\
+#     body: "action=list&id=navigator&userid={{ ldap_configuration.lc_principal_admin_user }}&type=plugins&sorted=true&configuration=ApplicationConfig&\
 #       login_desktop=admin&application=navigator&securityTopic=plugins.plugins&desktop=admin"
 #     body_format: form-urlencoded
 #     validate_certs: false
@@ -201,7 +201,7 @@
 #       Connection: "keep-alive"
 #       Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
 #       security_token: "{{ content.security_token }}"
-#       Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+#       Authorization: "Bearer {{ admin_token_response.json | json_query('accessToken') }}"
 #       auth-token-realm: "InternalIamRealm"
 #     timeout: 60
 #   register: plugins_response
@@ -226,7 +226,7 @@
 #       desktop=admin&\
 #       application=navigator&\
 #       fileName={{ 'https://cpd-'+cp4ba_project_name+'.'+apps_endpoint_domain+'/ier/EnterpriseRecordsPlugin/IERApplicationPlugin.jar' | urlencode() }}&\
-#       userid=cpadmin"
+#       userid={{ ldap_configuration.lc_principal_admin_user }}"
 #     method: GET
 #     return_content: true
 #     follow_redirects: all
@@ -237,7 +237,7 @@
 #       Connection: "keep-alive"
 #       Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
 #       security_token: "{{ content.security_token }}"
-#       Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+#       Authorization: "Bearer {{ admin_token_response.json | json_query('accessToken') }}"
 #       auth-token-realm: "InternalIamRealm"
 #     timeout: 60
 #   register: plugin_load_response
@@ -258,7 +258,7 @@
 #         \"json_post\": \"{'configClass': '{{ plugin_load_response_content.configClass }}', 'name': '{{ plugin_load_response_content.name }}',
 #          'ordering': 1, 'filename': 'https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ier/EnterpriseRecordsPlugin/IERApplicationPlugin.jar',
 #          'version': '{{ plugin_load_response_content.version }}', 'dependencies': [], 'configuration': null}\",
-#         \"userid\": \"cpadmin\",
+#         \"userid\": \"{{ ldap_configuration.lc_principal_admin_user }}\",
 #         \"id\": \"{{ plugin_load_response_content.id }}\",
 #         \"desktop\": \"admin\"
 #       }"
@@ -271,7 +271,7 @@
 #       Connection: "keep-alive"
 #       Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
 #       security_token: "{{ content.security_token }}"
-#       Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+#       Authorization: "Bearer {{ admin_token_response.json | json_query('accessToken') }}"
 #       auth-token-realm: "InternalIamRealm"
 #     timeout: 60
 #   register: plugin_add_response
@@ -284,7 +284,7 @@
 #     desktop=admin&\
 #     application=navigator&\
 #     fileName={{ 'https://cpd-'+cp4ba_project_name+'.'+apps_endpoint_domain+'/ier/EnterpriseRecordsPlugin/IERApplicationPlugin.jar' | urlencode() }}&\
-#     userid=cpadmin"
+#     userid={{ ldap_configuration.lc_principal_admin_user }}"
 #     method: GET
 #     return_content: true
 #     follow_redirects: all
@@ -295,7 +295,7 @@
 #       Connection: "keep-alive"
 #       Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
 #       security_token: "{{ content.security_token }}"
-#       Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+#       Authorization: "Bearer {{ admin_token_response.json | json_query('accessToken') }}"
 #       auth-token-realm: "InternalIamRealm"
 #     timeout: 60
 #   register: plugin_register_response
@@ -320,7 +320,7 @@
 #       Connection: "keep-alive"
 #       Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
 #       security_token: "{{ content.security_token }}"
-#       Authorization: "Bearer {{ cpadmin_token_response.json | json_query('accessToken') }}"
+#       Authorization: "Bearer {{ admin_token_response.json | json_query('accessToken') }}"
 #       auth-token-realm: "InternalIamRealm"
 #     timeout: 60
 #   register: plugin_configure_response

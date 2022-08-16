@@ -23,8 +23,8 @@ spec:
     firstTenant:
       name: ibm
       owner:
-        email: cpadmin@cp.local
-        name: cpadmin
+        email: "{{ ldap_configuration.lc_principal_admin_user }}@{{ ldap_configuration.lc_ldap_domain }}"
+        name: "{{ ldap_configuration.lc_principal_admin_user }}"
     replicas: 1
     smtp:
       port: 587

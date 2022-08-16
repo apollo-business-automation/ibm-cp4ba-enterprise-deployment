@@ -22,8 +22,8 @@
       username: adp
       visibility: private
       website: ""
-    user: cpadmin
-    password: "{{ cp4ba_universal_password }}"
+    user: "{{ ldap_configuration.lc_principal_admin_user }}"
+    password: "{{ ldap_configuration.lc_principal_admin_password }}"
     force_basic_auth: true
     validate_certs: false
     status_code:
@@ -75,7 +75,8 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: >
-      sudo curl -kv --user "cpadmin:{{ cp4ba_universal_password }}" http://{{ nexus_hostname }}:8081/repository/raw-hosted/cp4ba/imports.tar.xz
+      sudo curl -kv --user "{{ ldap_configuration.lc_principal_admin_user }}:{{ ldap_configuration.lc_principal_admin_password }}" 
+      http://{{ nexus_hostname }}:8081/repository/raw-hosted/cp4ba/imports.tar.xz
       --output /mnt/blumeta0/home/db2inst1/sqllib/_adp_tmp/DB2/imports.tar.xz
   register: command_status
 

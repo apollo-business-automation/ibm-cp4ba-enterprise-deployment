@@ -12,6 +12,7 @@
 #     common_password: "{{ prefix_universal_password }}"
 #     common_output_directory: "{{ prefix_output_directory }}"
 #     common_db2_hostname: "{{ prefix_db2_hostname }}"
+#     common_db2_password: "{{ prefix_db2_password }}"
 
 - name: Get OCP Apps domain
   ansible.builtin.include_role:

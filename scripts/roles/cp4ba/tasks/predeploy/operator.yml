@@ -179,7 +179,8 @@
     namespace: "{{ cp4ba_project_name }}"
     pod: "{{ cp4ba_operator_pod_name }}"
     command: >
-      curl -kv --user "cpadmin:{{ cp4ba_universal_password }}" http://{{ nexus_hostname }}:8081/repository/raw-hosted/cp4ba/db2jcc_license_cu.jar
+      curl -kv --user "{{ ldap_configuration.lc_principal_admin_user }}:{{ ldap_configuration.lc_principal_admin_password }}" 
+      http://{{ nexus_hostname }}:8081/repository/raw-hosted/cp4ba/db2jcc_license_cu.jar
       --output /opt/ansible/share/jdbc/db2/db2jcc_license_cu.jar
   register: command_status
 
@@ -190,6 +191,7 @@
     namespace: "{{ cp4ba_project_name }}"
     pod: "{{ cp4ba_operator_pod_name }}"
     command: >
-      curl -kv --user "cpadmin:{{ cp4ba_universal_password }}" http://{{ nexus_hostname }}:8081/repository/raw-hosted/cp4ba/db2jcc4.jar
+      curl -kv --user "{{ ldap_configuration.lc_principal_admin_user }}:{{ ldap_configuration.lc_principal_admin_password }}" 
+      http://{{ nexus_hostname }}:8081/repository/raw-hosted/cp4ba/db2jcc4.jar
       --output /opt/ansible/share/jdbc/db2/db2jcc4.jar
   register: command_status

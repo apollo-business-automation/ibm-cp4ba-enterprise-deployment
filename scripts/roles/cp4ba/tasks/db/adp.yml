@@ -6,7 +6,7 @@
     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_db2_user: "{{ item }}"
-    common_password: "{{ cp4ba_universal_password }}"
+    common_db2_password: "{{ cp4ba_db2_password }}"
   with_items:
     - base
     - devos1
@@ -263,6 +263,7 @@
     common_password: "{{ cp4ba_db2mc_universal_password }}"
     common_output_directory: "{{ cp4ba_output_directory }}"
     common_db2_hostname: "{{ cp4ba_db2_hostname }}"
+    common_db2_password: "{{ cp4ba_db2_password }}"
   with_items:
     - TENANT1
     - TENANT2

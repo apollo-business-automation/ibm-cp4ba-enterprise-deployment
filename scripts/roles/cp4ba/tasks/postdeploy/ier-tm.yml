@@ -37,7 +37,8 @@
     namespace: "{{ cp4ba_project_name }}"
     pod: "{{ tm_pod.resources[0].metadata.name }}"
     command: >
-      curl -kv --user "cpadmin:{{ cp4ba_universal_password }}" http://{{ nexus_hostname }}:8081/repository/raw-hosted/cp4ba/AdditionalJars.tgz
+      curl -kv --user "{{ ldap_configuration.lc_principal_admin_user }}:{{ ldap_configuration.lc_principal_admin_password }}" 
+      http://{{ nexus_hostname }}:8081/repository/raw-hosted/cp4ba/AdditionalJars.tgz
       --output /tmp/AdditionalJars.tgz
   register: command_status
 

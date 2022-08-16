@@ -8,7 +8,7 @@
 #     common_k8s_api_key: "{{ prefix_k8s_api_key | default(omit) }}"
 #     common_k8s_host: "{{ prefix_k8s_host | default(omit) }}"
 #     common_db2_user: _db2_user
-#     common_password: "{{ prefix_universal_password }}"
+#     common_db2_password: "{{ prefix_universal_password }}"
 
 - name: Check if DB2 user already exists
   kubernetes.core.k8s_exec:
@@ -43,7 +43,7 @@
         namespace: db2
         pod: "{{ ldap_pod.resources[0].metadata.name }}"
         command: |
-          /opt/ibm/ldap_scripts/addLdapUser.py -u {{ common_db2_user }} -p {{ common_password }} -r user
+          /opt/ibm/ldap_scripts/addLdapUser.py -u {{ common_db2_user }} -p {{ common_db2_password }} -r user
       register: command_status
 
   when: command_status.rc == 1 and command_status.stderr is search('.*no such user.*')

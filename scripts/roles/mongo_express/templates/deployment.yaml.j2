@@ -47,6 +47,6 @@ spec:
             - name: ME_CONFIG_MONGODB_SERVER
               value: "{{ mongo_express_mongodb_hostname }}"
             - name: ME_CONFIG_BASICAUTH_USERNAME
-              value: "cpadmin"
+              value: "{{ mongo_express_admin_user }}"
             - name: ME_CONFIG_BASICAUTH_PASSWORD
               value: "{{ mongo_express_universal_password }}"

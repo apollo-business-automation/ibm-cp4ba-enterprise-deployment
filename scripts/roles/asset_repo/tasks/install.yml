@@ -16,16 +16,16 @@
 #     body_format: form-urlencoded
 #     body:
 #       grant_type: password
-#       username: cpadmin
-#       password: "{{ asset_repo_universal_password }}"
+#       username: "{{ ldap_configuration.lc_principal_admin_user }}"
+#       password: "{{ ldap_configuration.lc_principal_admin_password }}"
 #       scope: openid
 #     validate_certs: false
 #     status_code: 200
 #   register: token_response
 
-# - name: Add Asset Repo roles to cpadmins group
+# - name: Add Asset Repo roles to admin groups
 #   ansible.builtin.uri:
-#     url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ cpadmins_group_id }}"
+#     url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ item }}"
 #     method: PATCH
 #     headers:
 #       Authorization: "Bearer {{ token_response.json | json_query('accessToken') }}"
@@ -41,6 +41,7 @@
 #       - 500
 #   register: group_response
 #   failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')
+#   with_items: "{{ ldap_configuration.lc_admin_groups }}"
 
 # - debug:
 #     msg: "{{ group_response }}"

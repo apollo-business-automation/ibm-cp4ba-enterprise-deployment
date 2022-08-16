@@ -32,7 +32,7 @@ spec:
               mountPath: /opt/ibm/console/certs              
           env:
             - name: ADMIN_NAME
-              value: cpadmin
+              value: "{{ db2mc_admin_user }}"
             - name: LICENSE
               value: accept
             - name: POD_NAME
