@@ -365,6 +365,9 @@ data:
         baw_authoring: true
         application: true
 
+    ## Set to false if you provide your own LDAP, madatory to set the ldap_configuration
+    openldap_enabled: true
+
     ## Set to false if you don't want to install (or remove) Process Mining
     pm_enabled: true
 

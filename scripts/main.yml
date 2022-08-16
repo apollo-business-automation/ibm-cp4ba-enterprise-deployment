@@ -44,6 +44,11 @@
             application: true
       when: cp4ba_config is not defined
 
+    - name: Openldap config variable
+      ansible.builtin.set_fact:
+        openldap_enabled: true'
+      when: openldap_enabled is not defined
+
     - name: Mongodb config variable
       ansible.builtin.set_fact:
         mongodb_enabled: true

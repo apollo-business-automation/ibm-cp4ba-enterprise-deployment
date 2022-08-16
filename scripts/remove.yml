@@ -76,6 +76,7 @@
 - name: Remove openldap
   ansible.builtin.include_role:
     name: openldap
+  when: openldap_enabled
 
 - name: Remove DB2MC
   ansible.builtin.include_role:

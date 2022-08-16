@@ -73,6 +73,7 @@
 - name: Install openldap
   ansible.builtin.include_role:
     name: openldap
+  when: openldap_enabled
 
 - name: Install gitea
   ansible.builtin.include_role:
