@@ -1,3 +1,6 @@
+- name: Load internal variables
+  ansible.builtin.include_vars: internal-variables.yml
+
 - name: Set ldap configuration TDS
   ansible.builtin.set_fact:
     lc_tds_user_filter: "{{ lc_tds_user_filter  | default('(&('+lc_ldap_user_id_attribute+'=%v)(objectclass='+lc_ldap_user_object_class+'))') }}"
