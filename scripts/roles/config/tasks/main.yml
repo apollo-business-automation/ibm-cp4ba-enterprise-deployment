@@ -10,14 +10,6 @@
     lc_ad_group_filter: "{{ lc_ad_group_filter | default('(&('+lc_ldap_group_id_attribute+'=%v)(objectcategory='+lc_ldap_group_object_class+'))') }}"
   when: ('Microsoft Active Directory' in lc_selected_ldap_type)
 
-- name: Print test values
-  debug:
-    msg: "{{ lc_tds_user_filter }}"
-
-- name: fail
-  ansible.builtin.fail:
-    msg: "planned fail"
-
 - name: CP4BA config variables
   ansible.builtin.set_fact:
     cp4ba_config:
