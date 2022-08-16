@@ -1,3 +1,12 @@
+- name: Prepare internal variables
+  ansible.builtin.template:
+    src: internal-variables.yaml.j2
+    dest: /tmp/internal-variables.yaml
+    mode: u+rwx
+  
+- name: Include internal variables
+  include_vars: /tmp/internal-variables.yaml   
+
 - name: CP4BA config variables
   ansible.builtin.set_fact:
     cp4ba_config:
