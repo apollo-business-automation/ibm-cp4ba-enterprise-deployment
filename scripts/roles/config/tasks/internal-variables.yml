@@ -57,9 +57,9 @@ principal_admin_user: cpadmin
 
 lc_custom_config_secret: "{{ lc_custom_config_secret | default('') }}"
 lc_bind_admin_user: "{{ lc_bind_admin_user | default(principal_admin_user) }}"
-lc_bind_admin_password: "{{  | default(universal_password) }}"
-lc_principal_admin_user: "{{  | default(principal_admin_user) }}"
-lc_principal_admin_password: "{{  | default(universal_password) }}"
+lc_bind_admin_password: "{{ lc_bind_admin_password | default(universal_password) }}"
+lc_principal_admin_user: "{{ lc_principal_admin_user | default(principal_admin_user) }}"
+lc_principal_admin_password: "{{ lc_principal_admin_password | default(universal_password) }}"
 lc_principal_admin_group: "{{ lc_principal_admin_group | default(['cpadmins']) }}"
 lc_admin_groups: "{{ lc_admin_groups | default(['cpadmins']) }}"
 lc_admin_users: "{{ lc_admin_users | default(['cpadmin']) }}"
