@@ -84,15 +84,6 @@ ldap_configuration:
  lc_ldap_group_display_name_attr: "{{ ldap_configuration.lc_ldap_group_display_name_attr | default('cn') }}"
  lc_ldap_group_membership_search_filter: "{{ ldap_configuration.lc_ldap_group_membership_search_filter | default('(|(&(objectclass='+ldap_configuration.lc_ldap_group_object_class+')(member={0}))(&(objectclass=groupofuniquenames)(uniquemember={0})))') }}"
  lc_ldap_group_member_id_map: "{{ ldap_configuration.lc_ldap_group_member_id_map | default(ldap_configuration.lc_ldap_group_object_class + ':member') }}"
- {% if 'IBM Security Directory Server' in ldap_configuration.lc_selected_ldap_type %}
- tds:
-   lc_user_filter: "{{ ldap_configuration.tds.lc_user_filter  | default('(&('+ldap_configuration.lc_ldap_user_id_attribute+'=%v)(objectclass='+ldap_configuration.lc_ldap_user_object_class+'))') }}"
-   lc_group_filter: "{{ ldap_configuration.tds.lc_group_filter  | default('(&('+ldap_configuration.lc_ldap_group_id_attribute+'=%v)(|(objectclass='+ldap_configuration.lc_ldap_group_object_class+')(objectclass=groupofuniquenames)(objectclass=groupofurls)))') }}"
- {% elif 'Microsoft Active Directory' in ldap_configuration.lc_selected_ldap_type %}
- ad:
-   lc_user_filter: "{{ ldap_configuration.ads.lc_user_filter | default('(&('+ldap_configuration.lc_ldap_user_id_attribute+'=%v)(objectcategory='+ldap_configuration.lc_ldap_user_object_class+'))') }}"
-   lc_group_filter: "{{ ldap_configuration.ads.lc_group_filter | default('(&('+ldap_configuration.lc_ldap_group_id_attribute+'=%v)(objectcategory='+ldap_configuration.lc_ldap_group_object_class+'))') }}"
- {% endif %}
 
 ca_key_path: /tmp/global-ca/global-ca.key
 ca_crt_path: /tmp/global-ca/global-ca.crt

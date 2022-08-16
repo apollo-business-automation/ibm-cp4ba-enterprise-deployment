@@ -1,11 +1,23 @@
-- name: Prepare internal variables
-  ansible.builtin.template:
-    src: internal-variables.yaml.j2
-    dest: /tmp/internal-variables.yaml
-    mode: u+rwx
-  
 - name: Include internal variables
-  include_vars: /tmp/internal-variables.yaml   
+  include_vars: internal-variables.yaml   
+
+- name: Set ldap configuration tds
+  ansible.builtin.set_fact:
+    ldap_configuration.tds:
+      lc_user_filter: "{{ ldap_configuration.tds.lc_user_filter  | default('(&('+ldap_configuration.lc_ldap_user_id_attribute+'=%v)(objectclass='+ldap_configuration.lc_ldap_user_object_class+'))') }}"
+      lc_group_filter: "{{ ldap_configuration.tds.lc_group_filter  | default('(&('+ldap_configuration.lc_ldap_group_id_attribute+'=%v)(|(objectclass='+ldap_configuration.lc_ldap_group_object_class+')(objectclass=groupofuniquenames)(objectclass=groupofurls)))') }}"
+  when: ('IBM Security Directory Server' in ldap_configuration.lc_selected_ldap_type)
+
+- name: Set ldap configuration ad
+  ansible.builtin.set_fact:
+    ldap_configuration.ad:
+      lc_user_filter: "{{ ldap_configuration.ads.lc_user_filter | default('(&('+ldap_configuration.lc_ldap_user_id_attribute+'=%v)(objectcategory='+ldap_configuration.lc_ldap_user_object_class+'))') }}"
+      lc_group_filter: "{{ ldap_configuration.ads.lc_group_filter | default('(&('+ldap_configuration.lc_ldap_group_id_attribute+'=%v)(objectcategory='+ldap_configuration.lc_ldap_group_object_class+'))') }}"
+  when: ('Microsoft Active Directory' in ldap_configuration.lc_selected_ldap_type)
+
+- name: Print test values
+  debug:
+    msg: "{{ ldap_configuration }}"
 
 - name: CP4BA config variables
   ansible.builtin.set_fact:
