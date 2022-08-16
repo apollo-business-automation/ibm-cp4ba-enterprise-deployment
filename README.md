@@ -298,16 +298,23 @@ data:
     ## Password must be alphanumeric (upper and lower case; no special characters allowed).
     universal_password: Passw0rd
 
+    ## Set to false if you provide your own LDAP, madatory to set the ldap_configuration
+    openldap_enabled: true
+
     # apollo-one-shot deployment installs its own OpenLdap server. 
     # If you do not want to use it and have an external LDAP server you prefer, then uncomment the ldap_configuration and fill the values.
     # Example values are provided bellow.
+    # Documented in: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=parameters-ldap-configuration
+    #
     # IMPORTANT: The provided LDAP will be used for all the components you are going to install.
-    # 
-    # ToDo: how to correctly handle the username and password in the config? (it is a plain)
+    # IMPORTANT: Also set openldap_enabled on false if you do not want to install it
+    # IMPORTANT: Also create the external ldap secret that is bellow and put its name into ldap_configuration.lc_custom_config_secret
     # 
     #ldap_configuration:
-    #  lc_ldap_username: cn=admin, dc=cp
-    #  lc_ldap_password: Passw0rd
+    #  lc_custom_config_secret: external-ldap-secret
+    #  lc_admin_groups: ['cpadmins'] 
+    #  lc_admin_users: ['cpadmin']
+    #  lc_general_groups: ['cpusers','cpusers1']
     #  lc_selected_ldap_type: IBM Security Directory Server
     #  lc_ldap_server: "external_ldap_hostname"
     #  lc_ldap_port: "389"
@@ -364,9 +371,6 @@ data:
         document_processing_runtime: false
         baw_authoring: true
         application: true
-
-    ## Set to false if you provide your own LDAP, madatory to set the ldap_configuration
-    openldap_enabled: true
 
     ## Set to false if you don't want to install (or remove) Process Mining
     pm_enabled: true
@@ -432,6 +436,25 @@ stringData:
 ```
 
 ![assets/secret.png](assets/secret.png)
+
+Optionally you can add your custom External LDAP Bind Secret to provide credentials for when you want to use your own LDAP and not the OpenLdap which is installed by default by the apollo-one-shot. This should be used together with the setting `openldap_enabled: false` and also `ldap_configuration`. Bellow you can find an example of the bind secret:
+
+IMPORTANT: based on this secret, new bind secret will be created in the CP4BA namespace for the CP4BA use.
+
+```yaml
+apiVersion: v1
+kind: Secret
+  name: external-ldap-secret
+  namespace: apollo-one-shot  
+type: Opaque
+stringData:
+  # used for the ldap binding in components needing to interact with LDAP 
+  ldapUsername: cn=admin,dc=cp
+  ldapPassword: anAdminPassword
+  # used as the main admin for the installed platform, cp4ba.
+  principalAdminUsername: cpadmin
+  principalAdminPassword: aCPadminPassword
+```
 
 ### 4. Run the Job
 

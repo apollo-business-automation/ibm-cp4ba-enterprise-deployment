@@ -56,30 +56,42 @@ external_share_google: false
 principal_admin_user: cpadmin
 
 ldap_configuration:
- lc_ldap_username: "{{ ldap_configuration.lc_selected_ldap_type  | default('cp=admin, dc=cp') }}"
- lc_ldap_password: "{{ ldap_configuration.lc_selected_ldap_type  | default(universal_password) }}"
- lc_selected_ldap_type: "{{ ldap_configuration.lc_selected_ldap_type  | default('IBM Security Directory Server') }}"
- lc_ldap_server: "{{ ldap_configuration.lc_selected_ldap_type  | default('external_ldap_hostname') }}"
- lc_ldap_port: "{{ ldap_configuration.lc_selected_ldap_type  | default('389') }}"
- lc_bind_secret: "{{ ldap_configuration.lc_selected_ldap_type  | default('ldap-bind-secret') }}"
- lc_ldap_base_dn: "{{ ldap_configuration.lc_selected_ldap_type  | default('dc=cp') }}"
- lc_ldap_ssl_enabled: "{{ ldap_configuration.lc_selected_ldap_type  | default(false) }}"
- lc_ldap_user_name_attribute: "{{ ldap_configuration.lc_selected_ldap_type  | default('*:cn') }}"
- lc_ldap_user_display_name_attr: "{{ ldap_configuration.lc_selected_ldap_type  | default('cn') }}"
- lc_ldap_group_base_dn: "{{ ldap_configuration.lc_selected_ldap_type  | default('ou=Groups,dc=cp') }}"
- lc_ldap_group_name_attribute: "{{ ldap_configuration.lc_selected_ldap_type  | default('*:cn') }}"
- lc_ldap_group_display_name_attr: "{{ ldap_configuration.lc_selected_ldap_type  | default('cn') }}"
- lc_ldap_group_membership_search_filter: "{{ ldap_configuration.lc_selected_ldap_type  | default('(|(&(objectclass=groupofnames)(member={0}))(&(objectclass=groupofuniquenames)(uniquemember={0})))') }}"
- lc_ldap_group_member_id_map: "{{ ldap_configuration.lc_selected_ldap_type  | default('groupofnames:member') }}"
+ lc_custom_config_secret: "{{ ldap_configuration.lc_custom_config_secret | default('')}}"
+ lc_admin_user: "{{ principal_admin_user }}"
+ lc_admin_password: "{{ universal_password }}"
+ lc_principal_admin_user: "{{ principal_admin_user }}"
+ lc_principal_admin_password: "{{ universal_password }}"
+ lc_admin_groups: "{{ ldap_configuration.lc_admin_groups | default(['cpadmins']) }}" 
+ lc_admin_users: "{{ ldap_configuration.lc_admin_users | default(['cpadmin']) }}"
+ lc_general_groups: "{{ ldap_configuration.lc_general_groups | default(['cpusers','cpusers1']) }}"
+ lc_selected_ldap_type: "{{ ldap_configuration.lc_selected_ldap_type | default('IBM Security Directory Server') }}"
+ lc_ldap_server: "{{ ldap_configuration.lc_ldap_server | default('openldap-openldap-stack-ha.openldap.svc.cluster.local') }}"
+ lc_ldap_port: "{{ ldap_configuration.lc_ldap_port | default('389') }}"
+ lc_bind_secret: "{{ ldap_configuration.lc_bind_secret | default('ldap-bind-secret') }}"
+ lc_ldap_base_dn: "{{ ldap_configuration.lc_ldap_base_dn | default('dc=cp') }}"
+ lc_ldap_ssl_enabled: "{{ ldap_configuration.lc_ldap_ssl_enabled | default(false) }}"
+ lc_ldap_user_name_attribute: "{{ ldap_configuration.lc_ldap_user_name_attribute | default('*:cn') }}"
+ lc_ldap_user_display_name_attr: "{{ ldap_configuration.lc_ldap_user_display_name_attr | default('cn') }}"
+ lc_ldap_group_base_dn: "{{ ldap_configuration.lc_ldap_group_base_dn | default('ou=Groups,dc=cp') }}"
+ lc_ldap_group_name_attribute: "{{ ldap_configuration.lc_ldap_group_name_attribute | default('*:cn') }}"
+ lc_ldap_group_display_name_attr: "{{ ldap_configuration.lc_ldap_group_display_name_attr | default('cn') }}"
+ lc_ldap_group_membership_search_filter: "{{ ldap_configuration.lc_ldap_group_membership_search_filter | default('(|(&(objectclass=groupofnames)(member={0}))(&(objectclass=groupofuniquenames)(uniquemember={0})))') }}"
+ lc_ldap_group_member_id_map: "{{ ldap_configuration.lc_ldap_group_member_id_map | default('groupofnames:member') }}"
+ {% if 'IBM Security Directory Server' in ldap_configuration.lc_selected_ldap_type %}
  tds:
-   lc_user_filter: "{{ ldap_configuration.lc_selected_ldap_type  | default('(&(cn=%v)(objectclass=inetOrgPerson))') }}"
-   lc_group_filter: "{{ ldap_configuration.lc_selected_ldap_type  | default('(&(cn=%v)(|(objectclass=groupofnames)(objectclass=groupofuniquenames)(objectclass=groupofurls)))') }}"
+   lc_user_filter: "{{ ldap_configuration.tds.lc_user_filter  | default('(&(cn=%v)(objectclass=inetOrgPerson))') }}"
+   lc_group_filter: "{{ ldap_configuration.tds.lc_group_filter  | default('(&(cn=%v)(|(objectclass=groupofnames)(objectclass=groupofuniquenames)(objectclass=groupofurls)))') }}"
+ {% elif 'Microsoft Active Directory' in ldap_configuration.lc_selected_ldap_type %}
+ ad:
+   lc_user_filter: "{{ ldap_configuration.ads.lc_user_filter | default('(&(sAMAccountName=%v)(objectcategory=user))') }}"
+   lc_group_filter: "{{ ldap_configuration.ads.lc_group_filter | default('(&(cn=%v)(objectcategory=group))') }}"
+ {% endif %}
 
 ca_key_path: /tmp/global-ca/global-ca.key
 ca_crt_path: /tmp/global-ca/global-ca.crt
 wildcard_key_path: /tmp/global-ca/wildcard.key
 wildcard_crt_path: /tmp/global-ca/wildcard.crt
-ldap_hostname: openldap-openldap-stack-ha.openldap.svc.cluster.local
+ldap_hostname: "{{ ldap_configuration.lc_ldap_server }}"
 db2_hostname: c-db2ucluster-db2u.db2.svc.cluster.local
 mongodb_hostname: mongodb.mongodb.svc.cluster.local
 mail_hostname: mailserver.mail.svc.cluster.local
