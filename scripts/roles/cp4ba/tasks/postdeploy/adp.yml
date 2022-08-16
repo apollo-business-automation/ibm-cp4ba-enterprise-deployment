@@ -65,7 +65,8 @@
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_file_folder_path: "{{ cp4ba_output_directory }}"
     common_file_name: imports.tar.xz
-    common_universal_password: "{{ cp4ba_universal_password }}"
+    common_user: "{{ ldap_configuration.lc_principal_admin_user }}"
+    common_password: "{{ ldap_configuration.lc_principal_admin_password }}"
 
 - name: Download Init Tenants scripts to DB2
   kubernetes.core.k8s_exec:

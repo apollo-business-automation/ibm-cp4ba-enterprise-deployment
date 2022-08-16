@@ -9,7 +9,8 @@
     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_db2_db_name: CP4BA
-    common_universal_password: "{{ cp4ba_universal_password }}"
+    common_user: "{{ cp4ba_db2mc_admin_user }}"
+    common_password: "{{ cp4ba_db2mc_universal_password }}"
     common_output_directory: "{{ cp4ba_output_directory }}"
     common_db2_hostname: "{{ cp4ba_db2_hostname }}"
   when: db2mc_enabled

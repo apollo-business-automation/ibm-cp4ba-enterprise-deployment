@@ -198,7 +198,7 @@
     method: POST
     body_format: json
     body:
-      userid: cpadmin
+      userid: "{{ db2mc_admin_user }}"
       password: "{{ db2mc_universal_password }}"
     validate_certs: false
     status_code: 200
@@ -239,6 +239,7 @@
     common_k8s_api_key: "{{ db2mc_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ db2mc_k8s_host | default(omit) }}"
     common_db2_db_name: DB2MC
-    common_universal_password: "{{ db2mc_universal_password }}"
+    common_user: "{{ db2mc_admin_user }}"
+    common_password: "{{ db2mc_universal_password }}"
     common_output_directory: "{{ db2mc_output_directory }}"
     common_db2_hostname: "{{ db2mc_db2_hostname }}"

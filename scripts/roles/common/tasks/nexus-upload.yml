@@ -9,7 +9,8 @@
 #     common_k8s_host: "{{ prefix_k8s_host | default(omit) }}"
 #     common_file_folder_path: _file_folder_path
 #     common_file_name: _file_name
-#     common_universal_password: "{{ prefix_universal_password }}"
+#     common_password: "{{ prefix_universal_password }}"
+#     common_user: "{{ admin_user }}"
 
 - name: Get OCP Apps domain
   ansible.builtin.include_role:
@@ -33,8 +34,8 @@
 #     validate_certs: false
 #     status_code:
 #       - 204
-#     user: cpadmin
-#     password: "{{ cp4ba_universal_password }}"
+#     user: "{{ ldap_configuration.lc_principal_admin_user }}"
+#     password: "{{ ldap_configuration.lc_principal_admin_password }}"
 #     force_basic_auth: true
 #   register: nexus_upload_result
 #   ignore_errors: true
@@ -48,7 +49,7 @@
     -F 'raw.directory=cp4ba' \
     -F 'raw.asset1=@{{ common_file_folder_path }}/{{ common_file_name }}' \
     -F 'raw.asset1.filename={{ common_file_name }}' \
-    --user "cpadmin:{{ common_universal_password }}" \
+    --user "{{ common_user }}:{{ common_password }}" \
     -s -o /dev/null -w "%{http_code}"
   register: import_curl_result
   changed_when: true
@@ -95,8 +96,8 @@
     #       raw.asset1.filename: "{{ common_file_name }}"
     #     validate_certs: false
     #     status_code: 204
-    #     user: cpadmin
-    #     password: "{{ cp4ba_universal_password }}"
+    #     user: "{{ ldap_configuration.lc_principal_admin_user }}"
+    #     password: "{{ ldap_configuration.lc_principal_admin_password }}"
     #     force_basic_auth: true
 
     - name: Upload to Nexus
@@ -108,7 +109,7 @@
         -F 'raw.directory=cp4ba' \
         -F 'raw.asset1=@{{ common_file_folder_path }}/{{ common_file_name }}' \
         -F 'raw.asset1.filename={{ common_file_name }}' \
-        --user "cpadmin:{{ common_universal_password }}" \
+        --user "{{ common_user }}:{{ common_password }}" \
         -s -o /dev/null -w "%{http_code}"
       register: import_curl_result
       failed_when: import_curl_result.stdout != "204"

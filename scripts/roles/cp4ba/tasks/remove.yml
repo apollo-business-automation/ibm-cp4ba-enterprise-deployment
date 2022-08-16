@@ -187,7 +187,7 @@
     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_db2_db_name: "{{ item }}"
-    common_universal_password: "{{ cp4ba_universal_password }}"
+    common_password: "{{ cp4ba_universal_password }}"
     common_output_directory: "{{ cp4ba_output_directory }}"
     common_db2_hostname: "{{ cp4ba_db2_hostname }}"
   with_items:

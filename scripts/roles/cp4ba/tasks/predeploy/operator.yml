@@ -121,7 +121,8 @@
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_file_folder_path: "{{ cp4ba_output_directory }}"
     common_file_name: db2jcc_license_cu.jar
-    common_universal_password: "{{ cp4ba_universal_password }}"
+    common_user: "{{ ldap_configuration.lc_principal_admin_user }}"
+    common_password: "{{ ldap_configuration.lc_principal_admin_password }}"
 
 - name: Download DB2 JDBC driver
   kubernetes.core.k8s_cp:
@@ -143,7 +144,8 @@
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_file_folder_path: "{{ cp4ba_output_directory }}"
     common_file_name: db2jcc4.jar
-    common_universal_password: "{{ cp4ba_universal_password }}"
+    common_user: "{{ ldap_configuration.lc_principal_admin_user }}"
+    common_password: "{{ ldap_configuration.lc_principal_admin_password }}"
 
 - name: Get CP4BA operator pod
   kubernetes.core.k8s_info:
