@@ -1,5 +1,5 @@
 - name: Include internal variables
-  include_vars: internal-variables.yaml   
+  include_vars: internal-variables.yml   
 
 - name: Set ldap configuration tds
   ansible.builtin.set_fact:
