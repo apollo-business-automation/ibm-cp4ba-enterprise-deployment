@@ -59,3 +59,7 @@
   ansible.builtin.set_fact:
     gitea_enabled: true
   when: gitea_enabled is not defined
+
+- name: Config External LDAP
+  include_tasks: external-ldap.yml
+  when: ldap_configuration.lc_custom_config_secret | length > 0
