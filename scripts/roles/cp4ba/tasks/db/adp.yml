@@ -219,8 +219,8 @@
       TENANT1\n
       No\n
       db2inst1\n
-      {{ cp4ba_universal_password }}\n
-      {{ cp4ba_universal_password }}\n
+      {{ cp4ba_db2_universal_password }}\n
+      {{ cp4ba_db2_universal_password }}\n
       default\n
       CP4BA\n
       base\n
@@ -242,8 +242,8 @@
       TENANT2\n
       No\n
       db2inst1\n
-      {{ cp4ba_universal_password }}\n
-      {{ cp4ba_universal_password }}\n
+      {{ cp4ba_db2_universal_password }}\n
+      {{ cp4ba_db2_universal_password }}\n
       default\n
       CP4BA\n
       base\n

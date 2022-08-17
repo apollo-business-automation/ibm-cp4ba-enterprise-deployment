@@ -86,7 +86,7 @@ Pre-configured for IAF elastic search.
 
 #### Credentials
 
-- elasticsearch-admin / {{ universal_password }}
+- {{ cerebro_elasticsearch_admin_user }} / {{ cerebro_elasticsearch_universal_password }}
 
 {% endif %}
 {% if akhq_enabled == true %}
@@ -111,7 +111,7 @@ As elastic search content browser and for BAI dashboards.
 
 #### Credentials
 
-- elasticsearch-admin / {{ universal_password }}
+- {{ kibana_admin_user }} / {{ kibana_universal_password }}
 
 ### Mail
 
@@ -387,7 +387,7 @@ For external share you need to use ingress prefixed set of endpoints.
 
 #### Credentials
 
-- elasticsearch-admin / {{ universal_password }}
+- {{ elasticsearch_admin_user }} / {{ elasticsearch_universal_password }}
 
 ### Kafka & Apicurio
 

@@ -28,7 +28,7 @@
     definition:
       data:
         fposDBUsername: "{{ 'fpos' | b64encode }}"
-        fposDBPassword: "{{ cp4ba_universal_password | b64encode }}"
+        fposDBPassword: "{{ cp4ba_db2_universal_password | b64encode }}"
 
 - name: Add ROS OS to FNCM Secret
   kubernetes.core.k8s:
@@ -42,4 +42,4 @@
     definition:
       data:
         rosDBUsername: "{{ 'ros' | b64encode }}"
-        rosDBPassword: "{{ cp4ba_universal_password | b64encode }}"
+        rosDBPassword: "{{ cp4ba_db2_universal_password | b64encode }}"

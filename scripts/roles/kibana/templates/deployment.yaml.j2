@@ -33,7 +33,7 @@ spec:
               scheme: HTTP
               httpHeaders:
                 - name: Authorization
-                  value: "Basic {{ ('elasticsearch-admin:' + kibana_universal_password) | b64encode }}"
+                  value: "Basic {{ (kibana_admin_user + ':' + kibana_universal_password) | b64encode }}"
             initialDelaySeconds: 120
             timeoutSeconds: 1
             periodSeconds: 10
@@ -46,7 +46,7 @@ spec:
               scheme: HTTP
               httpHeaders:
                 - name: Authorization
-                  value: "Basic {{ ('elasticsearch-admin:' + kibana_universal_password) | b64encode }}"
+                  value: "Basic {{ (kibana_admin_user + ':' + kibana_universal_password) | b64encode }}"
             initialDelaySeconds: 125
             timeoutSeconds: 1
             periodSeconds: 10
@@ -56,9 +56,9 @@ spec:
             - name: ELASTICSEARCH_HOSTS
               value: 'https://iaf-system-elasticsearch-es.{{ kibana_cp4ba_project_name }}.svc.cluster.local:9200'
             - name: ELASTICSEARCH_USERNAME
-              value: 'elasticsearch-admin'
+              value: '{{ kibana_elasticsearch_admin_user }}'
             - name: ELASTICSEARCH_PASSWORD
-              value: '{{ universal_password }}'
+              value: '{{ kibana_elasticsearch_universal_password }}'
             - name: ELASTICSEARCH_SSL_VERIFICATIONMODE
               value: 'none'
             - name: LOGGING_VERBOSE
