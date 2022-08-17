@@ -40,9 +40,6 @@ data:
   SSL_CERT_PATH: "/tmp/ssl/tls.crt"
   SSL_KEY_PATH: "/tmp/ssl/tls.key"
   ENABLE_LDAP: "1"
-  {% if lc_ldap_use_ssl %}
-  LDAP_START_TLS: yes
-  {% endif %}
   LDAP_SERVER_HOST: "{{ lc_ldap_server }}" 
   LDAP_SEARCH_BASE: "{{ lc_ldap_base_dn }}"
   LDAP_BIND_DN: "{{ lc_bind_admin_user }}"
@@ -50,3 +47,6 @@ data:
   LDAP_QUERY_FILTER_USER: "(&(objectclass={{ lc_ldap_user_object_class }})(mail=%s))"
   LDAP_QUERY_FILTER_GROUP: "(&(objectclass={{ lc_ldap_group_object_class }})(mail=%s))"
   LDAP_QUERY_FILTER_DOMAIN: "(mail=*@%s)"
+{% if lc_ldap_use_ssl %}
+  LDAP_START_TLS: yes
+{% endif %}
