@@ -211,7 +211,7 @@ kibana_cp4ba_project_name: "{{ cp4ba_project_name }}"
 kibana_ca_crt_path: "{{ ca_crt_path }}"
 kibana_wildcard_key_path: "{{ wildcard_key_path }}"
 kibana_wildcard_crt_path: "{{ wildcard_crt_path }}"
-kibana_elasticsearch_admin_user: "{{ elastic_search_admin }}"
+kibana_elasticsearch_admin_user: "{{ elasticsearch_admin_user }}"
 kibana_admin_user: "{{ kibana_elasticsearch_admin_user }}"
 
 mongodb_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"

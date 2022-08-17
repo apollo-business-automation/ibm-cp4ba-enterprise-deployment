@@ -43,7 +43,7 @@ data:
   {% if lc_ldap_use_ssl %}
   LDAP_START_TLS: yes
   {% endif %}
-  LDAP_SERVER_HOST: "{{ lc_ldap_server }}" # your ldap container/IP/ServerName
+  LDAP_SERVER_HOST: "{{ lc_ldap_server }}" 
   LDAP_SEARCH_BASE: "{{ lc_ldap_base_dn }}"
   LDAP_BIND_DN: "{{ lc_bind_admin_user }}"
   LDAP_BIND_PW: "{{ lc_bind_admin_password }}"
