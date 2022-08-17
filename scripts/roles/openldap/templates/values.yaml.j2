@@ -9,11 +9,11 @@ customLdifFiles:
     # Units
     dn: {{ lc_ldap_base_dn }}
     objectClass: organizationalUnit
-    ou: {{ lc_ldap_base_dn | regex_replace('^([Oo][Uu]=.+?)(,[Dd][Cc]=.*)$', '\\1') }}
+    ou: {{ lc_ldap_base_dn | regex_replace('^([Oo][Uu]=)(.+?)(,[Dd][Cc]=.*)$', '\\2') }}
 
     dn: {{ lc_ldap_group_base_dn }}
     objectClass: organizationalUnit
-    ou: {{ lc_ldap_group_base_dn | regex_replace('^([Oo][Uu]=.+?)(,[Dd][Cc]=.*)$', '\\1') }}
+    ou: {{ lc_ldap_group_base_dn | regex_replace('^([Oo][Uu]=)(.+?)(,[Dd][Cc]=.*)$', '\\2') }}
 
     # Users
     dn: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_base_dn }}
