@@ -7,12 +7,12 @@ metadata:
     app: mailserver
 data:
   postfix-accounts.cf: |
-    cpadmin@cp.local|{PLAIN}{{mail_universal_password}}
-    cpuser@cp.local|{PLAIN}{{mail_universal_password}}
+    {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}|{PLAIN}{{lc_principal_admin_password}}
+    cpuser@{{ lc_ldap_domain }}|{PLAIN}{{mail_universal_password}}
 
   postfix-virtual.cf: |
-    cpuser@cp.local cpuser@cp.local
-    @cp.local cpadmin@cp.local
+    cpuser@{{ lc_ldap_domain }} cpuser@{{ lc_ldap_domain }}
+    @{{ lc_ldap_domain }} {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}
 
   postfix-main.cf: |
     smtpd_recipient_restrictions = permit_sasl_authenticated,permit_mynetworks
