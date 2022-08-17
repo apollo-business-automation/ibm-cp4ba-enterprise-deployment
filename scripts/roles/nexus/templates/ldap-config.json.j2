@@ -5,7 +5,6 @@
   "port": "{{ lc_ldap_port }}",
   "searchBase": "{{ lc_ldap_base_dn | regex_replace('^(.+?)([Dd][Cc]=.*)$', '\\2') }}",
   "authScheme": "SIMPLE",
-  # ToDo what should be the right authRealm here?
   "authRealm": "{{ lc_ldap_domain }}",
   "authUsername": "{{ lc_bind_admin_user }}",
   "authPassword": "{{ lc_bind_admin_password }}"
@@ -14,7 +13,6 @@
   "maxIncidentsCount": 3,
   "userBaseDn": "{{ lc_ldap_base_dn }}",
   "userSubtree": false,
-  # ToDo add configuration
   "userObjectClass": "{{ lc_ldap_user_object_class }}",
   "userLdapFilter": "",
   "userIdAttribute": "{{ lc_ldap_user_id_attribute }}",
@@ -25,10 +23,8 @@
   "groupType": "static",
   "groupBaseDn": "{{ lc_ldap_group_base_dn }}",
   "groupSubtree": false,
-  # ToDo add configuration
   "groupObjectClass": "{{ lc_ldap_group_object_class }}",
   "groupIdAttribute": "{{ lc_ldap_group_id_attribute }}",
-  # ToDo add configuration
   "groupMemberAttribute": "member",
   "groupMemberFormat": "{{ lc_ldap_user_id_attribute }}=${username},{{ lc_ldap_base_dn }}",
 }
