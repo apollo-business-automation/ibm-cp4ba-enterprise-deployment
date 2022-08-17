@@ -538,9 +538,6 @@ LDAP contains the following groups in {{ lc_ldap_group_base_dn }}:
 - {{ lc_principal_admin_group }} - members: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpadmin1,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpadmin2,{{ lc_ldap_base_dn }}
 - cpusers - members: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpadmin1,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpadmin2,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser1,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser2,{{ lc_ldap_base_dn }}
 - cpusers1 - members: {{ lc_ldap_user_id_attribute }}=cpuser,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser1,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser2,{{ lc_ldap_base_dn }}
-- TaskAdmins - for FNCM TM - members: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_base_dn }};
-- TaskAuditors - for FNCM TM - members: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_base_dn }};
-- TaskUsers - for FNCM TM - members: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser,{{ lc_ldap_base_dn }}
 
 {% endif %}
 
