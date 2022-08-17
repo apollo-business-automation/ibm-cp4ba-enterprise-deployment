@@ -459,7 +459,7 @@ kind: Secret
 type: Opaque
 stringData:
   # used for the ldap binding in components needing to interact with LDAP 
-  ldapUsername: cn=admin,dc=cp
+  ldapUsername: cn=admin,dc=cp,dc=local
   ldapPassword: anAdminPassword
   # used as the main admin for the installed platform, cp4ba.
   principalAdminUsername: cpadmin

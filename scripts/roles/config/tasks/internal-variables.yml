@@ -56,8 +56,6 @@ external_share_google: false
 principal_admin_user: cpadmin
 
 lc_custom_config_secret: "{{ ldap_configuration.lc_custom_config_secret | default('') }}"
-lc_bind_admin_user: "{{ ldap_configuration.lc_bind_admin_user | default(principal_admin_user) }}"
-lc_bind_admin_password: "{{ ldap_configuration.lc_bind_admin_password | default(universal_password) }}"
 lc_principal_admin_user: "{{ ldap_configuration.lc_principal_admin_user | default(principal_admin_user) }}"
 lc_principal_admin_password: "{{ ldap_configuration.lc_principal_admin_password | default(universal_password) }}"
 lc_principal_admin_group: "{{ ldap_configuration.lc_principal_admin_group | default('cpadmins') }}"
@@ -83,6 +81,9 @@ lc_ldap_group_name_attribute: "{{ ldap_configuration.lc_ldap_group_name_attribut
 lc_ldap_group_display_name_attr: "{{ ldap_configuration.lc_ldap_group_display_name_attr | default('cn') }}"
 lc_ldap_group_membership_search_filter: "{{ ldap_configuration.lc_ldap_group_membership_search_filter | default('(|(&(objectclass='+lc_ldap_group_object_class+')(member={0}))(&(objectclass=groupofuniquenames)(uniquemember={0})))') }}"
 lc_ldap_group_member_id_map: "{{ ldap_configuration.lc_ldap_group_member_id_map | default(lc_ldap_group_object_class + ':member') }}"
+
+lc_bind_admin_user: "{{ ldap_configuration.lc_bind_admin_user | default(lc_ldap_user_id_attribute+'='+principal_admin_user+','+lc_ldap_base_dn) }}"
+lc_bind_admin_password: "{{ ldap_configuration.lc_bind_admin_password | default(universal_password) }}"
 
 ca_key_path: /tmp/global-ca/global-ca.key
 ca_crt_path: /tmp/global-ca/global-ca.crt
