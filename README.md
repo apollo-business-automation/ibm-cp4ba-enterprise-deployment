@@ -320,7 +320,6 @@ data:
     #  lc_general_groups: ['cpusers','cpusers1']
     #  lc_selected_ldap_type: IBM Security Directory Server
     #  lc_ldap_server: "external_ldap_hostname"
-    #  lc_ldap_use_ssl: false
     #  lc_bind_secret: ldap-bind-secret
     #  lc_ldap_domain: cp.local
     #  lc_ldap_base_dn: ou=Users,dc=cp,dc=local

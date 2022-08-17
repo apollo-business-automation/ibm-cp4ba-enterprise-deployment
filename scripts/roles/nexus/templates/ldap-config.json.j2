@@ -1,6 +1,6 @@
 {
   "name": "LDAP",
-  "protocol": "{{ 'ldap' if not lc_ldap_use_ssl else 'ldaps' }}",
+  "protocol": "{{ 'ldap' if not lc_ldap_ssl_enabled else 'ldaps' }}",
   "host": "{{ lc_ldap_server }}",
   "port": "{{ lc_ldap_port }}",
   "searchBase": "{{ lc_ldap_base_dn | regex_replace('^(.+?)([Dd][Cc]=.*)$', '\\2') }}",
