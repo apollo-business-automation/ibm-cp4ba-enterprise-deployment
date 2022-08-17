@@ -325,7 +325,7 @@ data:
     #  lc_ldap_use_ssl: false
     #  lc_bind_secret: ldap-bind-secret
     #  lc_ldap_domain: cp.local
-    #  lc_ldap_base_dn: ou=Users,dc=cp
+    #  lc_ldap_base_dn: ou=Users,dc=cp,dc=local
     #  lc_ldap_ssl_enabled: false
     #  lc_ldap_user_object_class: inetOrgPerson
     #  lc_ldap_user_id_attribute: uid
@@ -333,7 +333,7 @@ data:
     #  lc_ldap_user_display_name_attr: cn
     #  lc_ldap_group_object_class: groupOfNames
     #  lc_ldap_group_id_attribute: cn
-    #  lc_ldap_group_base_dn: ou=Groups,dc=cp
+    #  lc_ldap_group_base_dn: ou=Groups,dc=cp,dc=local
     #  lc_ldap_group_name_attribute: "*:cn"
     #  lc_ldap_group_display_name_attr: cn
     #  lc_ldap_group_membership_search_filter: "(|(&(objectclass=groupofnames)(member={0}))(&(objectclass=groupofuniquenames)(uniquemember={0})))"
