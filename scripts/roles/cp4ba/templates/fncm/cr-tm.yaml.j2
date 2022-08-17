@@ -7,8 +7,8 @@ spec:
         tm_job_url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ier/EnterpriseRecordsPlugin/IERApplicationPlugin.jar"
         security_roles_to_group_mapping:
           task_admins:
-            groups: [cpadmins]
+            groups: "{{ lc_admin_groups }}"
           task_users:
-            groups: [cpusers]
+            groups: "{{ lc_admin_users }}"
           task_auditors:
-            groups: [cpadmins]      
+            groups: "{{ lc_admin_groups }}"      

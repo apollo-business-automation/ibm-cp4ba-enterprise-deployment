@@ -27,7 +27,7 @@ As DB2 database management UI.
 
 #### Credentials
 
-- cpadmin / {{ universal_password }}
+- {{ principal_admin_user }} / {{ universal_password }}
 
 {% endif %}
 ### Gitea
@@ -41,7 +41,7 @@ OAS: https://gitea.{{ apps_endpoint_domain }}/api/swagger#/
 
 ####  Credentials
 
-- Credentials you should use: cpadmin / {{ universal_password }}
+- Credentials you should use: {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 - Initial administrative user credentials: giteaadmin / {{ universal_password }}
 
 ### Nexus
@@ -55,7 +55,7 @@ OAS: https://nexus.{{ apps_endpoint_domain }}/swagger-ui/
 
 #### Credentials
 
-- Credentials you should use: cpadmin / {{ universal_password }}
+- Credentials you should use: {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 - Initial administrative user credentials: admin / {{ universal_password }}
 
 {% if roundcube_enabled == true %}
@@ -69,8 +69,8 @@ As mail client.
 
 #### Credentials
 
-- for cpadmin: cpadmin@cp.local / {{ universal_password }} (you can also use only *cpadmin* without domain as username to login)
-- for cpuser: cpuser@cp.local / {{ universal_password }} (you can also use only *cpuser* without domain as username to login)
+- for admin: {{ lc_principal_admin_user }}@{{ lc_ldap_domain }} / {{ universal_password }} (you can also use only *{{ lc_principal_admin_user }}* without domain as username to login)
+- for user: cpuser@{{ lc_ldap_domain }} / {{ universal_password }} (you can also use only *cpuser* without domain as username to login)
 
 {% endif %}
 {% if cerebro_enabled == true %}
@@ -86,7 +86,7 @@ Pre-configured for IAF elastic search.
 
 #### Credentials
 
-- elasticsearch-admin / {{ universal_password }}
+- {{ cerebro_elasticsearch_admin_user }} / {{ cerebro_elasticsearch_universal_password }}
 
 {% endif %}
 {% if akhq_enabled == true %}
@@ -94,7 +94,7 @@ Pre-configured for IAF elastic search.
 
 As kafka browser.
 
-Pre-configured for IAF Kafka with custom user (cpadmin / {{ universal_password }}). Admin credentials can be found in this doc in [IAF Kafka section](#ibm-automation-foundation-iaf---kafka--apicurio).
+Pre-configured for IAF Kafka with custom user ( {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }} ). Admin credentials can be found in this doc in [IAF Kafka section](#ibm-automation-foundation-iaf---kafka--apicurio).
 
 #### Endpoints
 
@@ -111,13 +111,13 @@ As elastic search content browser and for BAI dashboards.
 
 #### Credentials
 
-- elasticsearch-admin / {{ universal_password }}
+- {{ kibana_admin_user }} / {{ kibana_universal_password }}
 
 ### Mail
 
 As mail server.
 
-Any email received at *\*@cp.local* except *cpadmin@cp.local* and *cpuser@cp.local* will be delivered to *cpadmin@cp.local*.
+Any email received at *\*@{{ lc_ldap_domain }}* except *{{ lc_principal_admin_user }}@{{ lc_ldap_domain }}* and *cpuser@{{ lc_ldap_domain }}* will be delivered to *{{ lc_principal_admin_user }}*.
 
 #### Endpoints
 
@@ -125,8 +125,8 @@ Not exposed outside the cluster.
 
 #### Credentials
 
-- for cpadmin: cpadmin@cp.local / {{ universal_password }}
-- for cpuser: cpuser@cp.local / {{ universal_password }}
+- for admin: {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}/ {{ lc_principal_admin_password  }}
+- for user: cpuser@{{ lc_ldap_domain }} / {{ universal_password }}
 
 {% if mongo_express_enabled == true %}
 ### Mongo Express
@@ -139,7 +139,7 @@ As UI for MongoDB
 
 #### Credentials
 
-- cpadmin / {{ universal_password }}
+- {{ principal_admin_user }} / {{ universal_password }}
 
 {% endif %}
 ## CP4BA - CP4BA capabilities
@@ -196,7 +196,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 
 ####  Credentials
 
-- cpadmin / {{ universal_password }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 {% endif %}
 
 {% if cp4ba_config.optional_components.bai == true %}
@@ -208,7 +208,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 
 ####  Credentials
 
-- cpadmin / {{ universal_password }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 {% if cp4ba_config.optional_components.bai == true %}
@@ -223,7 +223,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 
 ####  Credentials
 
-- for BAI - cpadmin / {{ universal_password }}
+- for BAI - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 - for Flink - username: eventprocessing-admin (```oc get secret -n {{ cp4ba_project_name }} $(oc get InsightsEngine -n {{ cp4ba_project_name }} iaf-insights-engine -o jsonpath='{.status.components.flinkUi.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.username}' | base64 -d```) / password: ```oc get secret -n {{ cp4ba_project_name }} $(oc get InsightsEngine -n {{ cp4ba_project_name }} iaf-insights-engine -o jsonpath='{.status.components.flinkUi.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.password}' | base64 -d```
 
 #### Extracting generated templates from operator for debug
@@ -254,7 +254,7 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 
 ####  Credentials
 
-- cpadmin / {{ universal_password }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 - odmAdmin / {{ universal_password }} who can be used for ODM Basic Auth
 
 {% endif %}
@@ -270,7 +270,7 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 
 ####  Credentials
 
-- cpadmin / {{ universal_password }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 {% if cp4ba_config.deployment_patterns.content == true %}
@@ -304,7 +304,7 @@ For external share you need to use ingress prefixed set of endpoints.
 
 ####  Credentials
 
-- cpadmin / {{ universal_password }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 #### Other
 
@@ -329,7 +329,7 @@ If you want FDM to connect to CPE, you need to provide it with Zen certificate. 
 
 ####  Credentials
 
-- cpadmin / {{ universal_password }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 {% if cp4ba_config.deployment_patterns.document_processing == true %}
@@ -342,7 +342,7 @@ If you want FDM to connect to CPE, you need to provide it with Zen certificate. 
 
 ####  Credentials
 
-- cpadmin / {{ universal_password }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 {% if cp4ba_config.optional_components.baw_authoring == true %}
@@ -364,7 +364,7 @@ If you want FDM to connect to CPE, you need to provide it with Zen certificate. 
 
 ####  Credentials
 
-- cpadmin / {{ universal_password }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 ## CP4BA - IAF capabilities
@@ -379,7 +379,7 @@ If you want FDM to connect to CPE, you need to provide it with Zen certificate. 
 
 #### Credentials
 
-- cpadmin / {{ universal_password }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 ### Platform UI
 
@@ -389,7 +389,7 @@ If you want FDM to connect to CPE, you need to provide it with Zen certificate. 
 
 #### Credentials
 
-- cpadmin / {{ universal_password }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 ### Elastic Search
 
@@ -399,7 +399,7 @@ If you want FDM to connect to CPE, you need to provide it with Zen certificate. 
 
 #### Credentials
 
-- elasticsearch-admin / {{ universal_password }}
+- {{ elasticsearch_admin_user }} / {{ elasticsearch_universal_password }}
 
 ### Kafka & Apicurio
 
@@ -435,7 +435,7 @@ Alternative custom user: cpadmin / {{ universal_password }}
 
 ####  Credentials
 
-- cpadmin / {{ universal_password }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 #### Useful info
@@ -459,7 +459,7 @@ oc get pods -n {{ cp4ba_project_name }} -o name | grep processmining-operator-co
 
 ####  Credentials
 
-- cpadmin / {{ universal_password }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 {% if rpa_enabled == true %}
@@ -472,7 +472,7 @@ oc get pods -n {{ cp4ba_project_name }} -o name | grep processmining-operator-co
 
 ####  Credentials
 
-- cpadmin / {{ universal_password }}
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
 ## CPFS
@@ -487,7 +487,7 @@ As Cloud Pak Foundational Services.
 #### Credentials
 
 - for CPFS admin: cpfsadmin / {{ universal_password }} (IBM provided credentials (admin only))  
-- for CP4BA admin: cpadmin / {{ universal_password }} (Enterprise LDAP)  
+- for CP4BA admin: {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }} (Enterprise LDAP)  
 
 ### License Service
 
@@ -522,6 +522,8 @@ As DB2 database storage for the platform.
 
 - db2inst1 / {{ universal_password }}
 
+{% if openldap_enabled == true %}
+
 ### OpenLDAP + phpLDAPadmin
 
 As LDAP directory provider and management tool.
@@ -532,25 +534,24 @@ As LDAP directory provider and management tool.
 
 #### Credentials
 
-- cn=admin,dc=cp / {{ universal_password }}
+- {{ lc_bind_admin_user }} / {{ lc_bind_admin_password }}
 
 #### Users and Groups
 
-LDAP contains the following users in ou=Users,dc=cp. All have password {{ universal_password }}:  
-- cpadmin  
-- cpadmin1  
-- cpadmin2  
-- cpuser  
-- cpuser1  
-- cpuser2  
+LDAP contains the following users in {{ lc_ldap_base_dn }}.:  
+- {{ lc_principal_admin_user }}/{{ lc_principal_admin_password }}
+- cpadmin1/{{ universal_password }}  
+- cpadmin2/{{ universal_password }}  
+- cpuser/{{ universal_password }}  
+- cpuser1/{{ universal_password }}  
+- cpuser2/{{ universal_password }}  
 
-LDAP contains the following groups in ou=Groups,dc=cp:  
-- cpadmins - members: uid=cpadmin,ou=Users,dc=cp; uid=cpadmin1,ou=Users,dc=cp; uid=cpadmin2,ou=Users,dc=cp  
-- cpusers - members: uid=cpadmin,ou=Users,dc=cp; uid=cpadmin1,ou=Users,dc=cp; uid=cpadmin2,ou=Users,dc=cp; uid=cpuser,ou=Users,dc=cp; uid=cpuser1,ou=Users,dc=cp; uid=cpuser2,ou=Users,dc=cp  
-- cpusers1 - members: uid=cpuser,ou=Users,dc=cp; uid=cpuser1,ou=Users,dc=cp; uid=cpuser2,ou=Users,dc=cp  
-- TaskAdmins - for FNCM TM - members: uid=cpadmin,ou=Users,dc=cp;  
-- TaskAuditors - for FNCM TM - members: uid=cpadmin,ou=Users,dc=cp;
-- TaskUsers - for FNCM TM - members: uid=cpadmin,ou=Users,dc=cp; uid=cpuser,ou=Users,dc=cp  
+LDAP contains the following groups in {{ lc_ldap_group_base_dn }}:  
+- {{ lc_principal_admin_group }} - members: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpadmin1,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpadmin2,{{ lc_ldap_base_dn }}
+- cpusers - members: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpadmin1,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpadmin2,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser1,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser2,{{ lc_ldap_base_dn }}
+- cpusers1 - members: {{ lc_ldap_user_id_attribute }}=cpuser,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser1,{{ lc_ldap_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser2,{{ lc_ldap_base_dn }}
+
+{% endif %}
 
 ### MSSQL
 

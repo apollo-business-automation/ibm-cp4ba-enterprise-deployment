@@ -22,8 +22,8 @@
       username: adp
       visibility: private
       website: ""
-    user: cpadmin
-    password: "{{ cp4ba_universal_password }}"
+    user: "{{ lc_principal_admin_user }}"
+    password: "{{ lc_principal_admin_password }}"
     force_basic_auth: true
     validate_certs: false
     status_code:
@@ -65,7 +65,8 @@
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_file_folder_path: "{{ cp4ba_output_directory }}"
     common_file_name: imports.tar.xz
-    common_universal_password: "{{ cp4ba_universal_password }}"
+    common_user: "{{ lc_principal_admin_user }}"
+    common_password: "{{ lc_principal_admin_password }}"
 
 - name: Download Init Tenants scripts to DB2
   kubernetes.core.k8s_exec:
@@ -74,7 +75,8 @@
     namespace: db2
     pod: c-db2ucluster-db2u-0
     command: >
-      sudo curl -kv --user "cpadmin:{{ cp4ba_universal_password }}" http://{{ nexus_hostname }}:8081/repository/raw-hosted/cp4ba/imports.tar.xz
+      sudo curl -kv --user "{{ lc_principal_admin_user }}:{{ lc_principal_admin_password }}" 
+      http://{{ nexus_hostname }}:8081/repository/raw-hosted/cp4ba/imports.tar.xz
       --output /mnt/blumeta0/home/db2inst1/sqllib/_adp_tmp/DB2/imports.tar.xz
   register: command_status
 

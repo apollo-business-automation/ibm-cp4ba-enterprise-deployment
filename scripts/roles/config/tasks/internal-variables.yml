@@ -52,18 +52,53 @@ generic_directory: /tmp
     # google_client_secret: TODO_GOOGLE_CLIENT_SECRET
 external_share_google: false
 
+# main platform admin user
+principal_admin_user: cpadmin
+
+lc_custom_config_secret: "{{ ldap_configuration.lc_custom_config_secret | default('') }}"
+lc_principal_admin_user: "{{ ldap_configuration.lc_principal_admin_user | default(principal_admin_user) }}"
+lc_principal_admin_password: "{{ ldap_configuration.lc_principal_admin_password | default(universal_password) }}"
+lc_principal_admin_group: "{{ ldap_configuration.lc_principal_admin_group | default('cpadmins') }}"
+lc_admin_groups: "{{ ldap_configuration.lc_admin_groups | default(['cpadmins']) }}"
+lc_admin_users: "{{ ldap_configuration.lc_admin_users | default(['cpadmin']) }}"
+lc_general_groups: "{{ ldap_configuration.lc_general_groups | default(['cpusers', 'cpusers1']) }}"
+lc_selected_ldap_type: "{{ ldap_configuration.lc_selected_ldap_type | default('IBM Security Directory Server') }}"
+lc_ldap_server: "{{ ldap_configuration.lc_ldap_server | default('openldap-openldap-stack-ha.openldap.svc.cluster.local') }}"
+lc_ldap_use_ssl: "{{ ldap_configuration.lc_ldap_use_ssl | default(false) }}"
+lc_ldap_port: "{{ ldap_configuration.lc_ldap_port | default('389' if not lc_ldap_use_ssl else '636') }}"
+lc_bind_secret: "{{ ldap_configuration.lc_bind_secret | default('ldap-bind-secret') }}"
+lc_ldap_base_dn: "{{ ldap_configuration.lc_ldap_base_dn | default('ou=Users,dc=cp,dc=local') }}"
+lc_ldap_domain: "{{ ldap_configuration.lc_ldap_domain | default('cp.local') }}"
+lc_ldap_ssl_enabled: "{{ ldap_configuration.lc_ldap_ssl_enabled | default(false) }}"
+lc_ldap_user_object_class: "{{ ldap_configuration.lc_ldap_user_object_class | default('inetOrgPerson') }}"
+lc_ldap_user_id_attribute: "{{ ldap_configuration.lc_ldap_user_id_attribute | default('uid') }}"
+lc_ldap_user_name_attribute: "{{ ldap_configuration.lc_ldap_user_name_attribute | default('*:cn') }}"
+lc_ldap_user_display_name_attr: "{{ ldap_configuration.lc_ldap_user_display_name_attr | default('cn') }}"
+lc_ldap_group_object_class: "{{ ldap_configuration.lc_ldap_group_object_class | default('groupOfNames') }}"
+lc_ldap_group_base_dn: "{{ ldap_configuration.lc_ldap_group_base_dn | default('ou=Groups,dc=cp,dc=local') }}"
+lc_ldap_group_id_attribute: "{{ ldap_configuration.lc_ldap_group_id_attribute | default('cn') }}"
+lc_ldap_group_name_attribute: "{{ ldap_configuration.lc_ldap_group_name_attribute | default('*:cn') }}"
+lc_ldap_group_display_name_attr: "{{ ldap_configuration.lc_ldap_group_display_name_attr | default('cn') }}"
+lc_ldap_group_membership_search_filter: "{{ ldap_configuration.lc_ldap_group_membership_search_filter | default('(|(&(objectclass='+lc_ldap_group_object_class+')(member={0}))(&(objectclass=groupofuniquenames)(uniquemember={0})))') }}"
+lc_ldap_group_member_id_map: "{{ ldap_configuration.lc_ldap_group_member_id_map | default(lc_ldap_group_object_class + ':member') }}"
+
+lc_bind_admin_user: "{{ ldap_configuration.lc_bind_admin_user | default('cn=admin,'+(lc_ldap_base_dn | regex_replace('^(.+?)([Dd][Cc]=.*)$', '\\2'))) }}"
+lc_bind_admin_password: "{{ ldap_configuration.lc_bind_admin_password | default(universal_password) }}"
 
 ca_key_path: /tmp/global-ca/global-ca.key
 ca_crt_path: /tmp/global-ca/global-ca.crt
+ldap_hostname: "{{ lc_ldap_server }}"
 wildcard_key_path: /tmp/global-ca/wildcard.key
 wildcard_crt_path: /tmp/global-ca/wildcard.crt
-ldap_hostname: openldap-openldap-stack-ha.openldap.svc.cluster.local
 db2_hostname: c-db2ucluster-db2u.db2.svc.cluster.local
 mongodb_hostname: mongodb.mongodb.svc.cluster.local
 mail_hostname: mailserver.mail.svc.cluster.local
 mssql_hostname: mssql.mssql.svc.cluster.local
 nexus_hostname: nexusrepo-sonatype-nexus-service.nexus.svc.cluster.local
 kibana_url: http://kibana.kibana.svc.cluster.local:5601
+
+elasticsearch_universal_password: "{{ universal_password }}"
+elasticsearch_admin_user: elasticsearch-admin
 
 apps_endpoint_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 apps_endpoint_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
@@ -87,12 +122,14 @@ db2_deployment_platform: "{{ deployment_platform }}"
 db2mc_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 db2mc_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
 db2mc_action: "{{ global_action }}"
+db2mc_admin_user: "{{ principal_admin_user }}"
 db2mc_universal_password: "{{ universal_password }}"
 db2mc_storage_class_name: "{{ storage_class_name }}"
 db2mc_ca_crt_path: "{{ ca_crt_path }}"
 db2mc_wildcard_key_path: "{{ wildcard_key_path }}"
 db2mc_wildcard_crt_path: "{{ wildcard_crt_path }}"
 db2mc_db2_hostname: "{{ db2_hostname }}"
+db2mc_db2_password: "{{ db2_universal_password }}"
 
 openldap_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 openldap_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
@@ -150,11 +187,14 @@ cerebro_wildcard_crt_path: "{{ wildcard_crt_path }}"
 cerebro_universal_password: "{{ universal_password }}"
 cerebro_mail_hostname: "{{ mail_hostname }}"
 cerebro_cp4ba_project_name: "{{ cp4ba_project_name }}"
+cerebro_elasticsearch_universal_password: "{{ elasticsearch_universal_password }}"
+cerebro_elasticsearch_admin_user: "{{ elasticsearch_admin_user }}"
 
 akhq_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 akhq_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
 akhq_action: "{{ global_action }}"
 akhq_universal_password: "{{ universal_password }}"
+akhq_admin_user: "{{ principal_admin_user }}"
 akhq_storage_class_name: "{{ storage_class_name }}"
 akhq_ca_key_path: "{{ ca_key_path }}"
 akhq_ca_crt_path: "{{ ca_crt_path }}"
@@ -164,12 +204,15 @@ akhq_wildcard_crt_path: "{{ wildcard_crt_path }}"
 kibana_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 kibana_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
 kibana_action: "{{ global_action }}"
-kibana_universal_password: "{{ universal_password }}"
+kibana_elasticsearch_universal_password: "{{ elasticsearch_universal_password }}"
+kibana_universal_password: "{{ kibana_elasticsearch_universal_password }}"
 kibana_storage_class_name: "{{ storage_class_name }}"
 kibana_cp4ba_project_name: "{{ cp4ba_project_name }}"
 kibana_ca_crt_path: "{{ ca_crt_path }}"
 kibana_wildcard_key_path: "{{ wildcard_key_path }}"
 kibana_wildcard_crt_path: "{{ wildcard_crt_path }}"
+kibana_elasticsearch_admin_user: "{{ elasticsearch_admin_user }}"
+kibana_admin_user: "{{ kibana_elasticsearch_admin_user }}"
 
 mongodb_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 mongodb_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
@@ -185,6 +228,7 @@ mongo_express_wildcard_key_path: "{{ wildcard_key_path }}"
 mongo_express_wildcard_crt_path: "{{ wildcard_crt_path }}"
 mongo_express_universal_password: "{{ universal_password }}"
 mongo_express_mongodb_hostname: "{{ mongodb_hostname }}"
+mongo_express_admin_user: "{{ principal_admin_user }}"
 
 cpfs_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 cpfs_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
@@ -201,10 +245,13 @@ cp4ba_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 cp4ba_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
 cp4ba_action: "{{ global_action }}"
 cp4ba_universal_password: "{{ universal_password }}"
+cp4ba_db2mc_admin_user: "{{ db2mc_admin_user }}"
+cp4ba_db2mc_universal_password: "{{ db2mc_universal_password }}"
 cp4ba_storage_class_name: "{{ storage_class_name }}"
 cp4ba_icr_password: "{{ icr_password }}"
 cp4ba_ldap_hostname: "{{ ldap_hostname }}"
 cp4ba_db2_hostname: "{{ db2_hostname }}"
+cp4ba_db2_password: "{{ db2_universal_password }}"
 cp4ba_mongodb_hostname: "{{ mongodb_hostname }}"
 cp4ba_mail_hostname: "{{ mail_hostname }}"
 cp4ba_kibana_url: "{{ kibana_url }}"
@@ -217,6 +264,10 @@ cp4ba_external_share_google: "{{ external_share_google }}"
 cp4ba_google_client_id: "{{ google_client_id }}"
 cp4ba_google_client_secret: "{{ google_client_secret }}"
 cp4ba_deployment_platform: "{{ deployment_platform }}"
+cp4ba_kibana_universal_password: "{{ kibana_universal_password }}"
+cp4ba_kibana_admin_user: "{{ kibana_admin_user }}"
+cp4ba_elasticsearch_universal_password: "{{ elasticsearch_universal_password }}"
+cp4ba_elasticsearch_admin_user: "{{ elasticsearch_admin_user }}"
 
 asset_repo_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 asset_repo_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
@@ -251,3 +302,4 @@ pm_mongodb_hostname: "{{ mongodb_hostname }}"
 pm_ca_crt_path: "{{ ca_crt_path }}"
 pm_wildcard_key_path: "{{ wildcard_key_path }}"
 pm_wildcard_crt_path: "{{ wildcard_crt_path }}"
+pm_db2_password: "{{ db2_universal_password }}"

@@ -6,13 +6,9 @@ metadata:
   labels:
     app: mailserver
 data:
-  postfix-accounts.cf: |
-    cpadmin@cp.local|{PLAIN}{{mail_universal_password}}
-    cpuser@cp.local|{PLAIN}{{mail_universal_password}}
-
   postfix-virtual.cf: |
-    cpuser@cp.local cpuser@cp.local
-    @cp.local cpadmin@cp.local
+    cpuser@{{ lc_ldap_domain }} cpuser@{{ lc_ldap_domain }}
+    @{{ lc_ldap_domain }} {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}
 
   postfix-main.cf: |
     smtpd_recipient_restrictions = permit_sasl_authenticated,permit_mynetworks
@@ -43,3 +39,11 @@ data:
   SSL_TYPE: "manual"
   SSL_CERT_PATH: "/tmp/ssl/tls.crt"
   SSL_KEY_PATH: "/tmp/ssl/tls.key"
+  ENABLE_LDAP: "1"
+  LDAP_SERVER_HOST: "{{ 'ldap://'+lc_ldap_server+':'+lc_ldap_port if not lc_ldap_use_ssl else 'ldaps://'+lc_ldap_server+':'+lc_ldap_port }}" 
+  LDAP_SEARCH_BASE: "{{ lc_ldap_base_dn }}"
+  LDAP_BIND_DN: "{{ lc_bind_admin_user }}"
+  LDAP_BIND_PW: "{{ lc_bind_admin_password }}"
+  LDAP_QUERY_FILTER_USER: "(&(objectclass={{ lc_ldap_user_object_class }})(mail=%s))"
+  LDAP_QUERY_FILTER_GROUP: "(&(objectclass={{ lc_ldap_group_object_class }})(mail=%s))"
+  LDAP_QUERY_FILTER_DOMAIN: "(mail=*@%s)"

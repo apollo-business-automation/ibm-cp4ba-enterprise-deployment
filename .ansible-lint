@@ -29,4 +29,5 @@ skip_list:
   - new-line-at-end-of-file
   - trailing-spaces
   - empty-lines
+  - line-length
   - indentation

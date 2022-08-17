@@ -1,0 +1,19 @@
+- name: Load External LDAP Secret
+  kubernetes.core.k8s_info:
+    api_key: "{{ ocp_cluster_token | default(omit) }}"
+    host: "{{ ocp_api_endpoint | default(omit) }}"
+    api_version: v1
+    kind: Secret
+    namespace: apollo-one-shot
+    name: "{{ lc_custom_config_secret }}"
+  register: external_ldap_secret
+  retries: 40
+  delay: 15
+
+- name: Store External LDAP binds
+  set_fact:
+    lc_bind_admin_user: "{{ external_ldap_secret.respirces[0].data.ldapUsername | b64decode }}"
+    lc_bind_admin_password: "{{ external_ldap_secret.respirces[0].data.ldapPassword | b64decode }}"
+    lc_principal_admin_user: "{{ external_ldap_secret.respirces[0].data.principalAdminUsername | b64decode }}"
+    lc_principal_admin_password: "{{ external_ldap_secret.respirces[0].data.principalAdminPassword | b64decode }}"
+  no_log: true

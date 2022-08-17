@@ -296,6 +296,49 @@ data:
     ## Password must be alphanumeric (upper and lower case; no special characters allowed).
     universal_password: Passw0rd
 
+    ## Set to false if you provide your own LDAP, madatory to set the ldap_configuration
+    openldap_enabled: true
+
+    # apollo-one-shot deployment installs its own OpenLdap server. 
+    # If you do not want to use it and have an external LDAP server you prefer, then uncomment the ldap_configuration and fill the values.
+    # Example values are provided bellow.
+    # Documented in: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=parameters-ldap-configuration
+    #
+    # IMPORTANT: The provided LDAP will be used for all the components you are going to install.
+    # IMPORTANT: Also set openldap_enabled on false if you do not want to install it
+    # IMPORTANT: Also create the external ldap secret that is bellow and put its name into ldap_configuration.lc_custom_config_secret
+    # 
+    #ldap_configuration:
+    #  lc_custom_config_secret: external-ldap-secret
+    ## the main ldap group used for workflow and other purposes where single group of admins is required. 
+    #  lc_principal_admin_group: cpadmins
+    ## list of all admin groups you want to set to be admins in the platform components 
+    #  lc_admin_groups: ['cpadmins'] 
+    ## explicit list of users to be admins of the platform componets
+    #  lc_admin_users: ['cpadmin']
+    ## list of general user groups
+    #  lc_general_groups: ['cpusers','cpusers1']
+    #  lc_selected_ldap_type: IBM Security Directory Server
+    #  lc_ldap_server: "external_ldap_hostname"
+    #  lc_ldap_use_ssl: false
+    #  lc_bind_secret: ldap-bind-secret
+    #  lc_ldap_domain: cp.local
+    #  lc_ldap_base_dn: ou=Users,dc=cp,dc=local
+    #  lc_ldap_ssl_enabled: false
+    #  lc_ldap_user_object_class: inetOrgPerson
+    #  lc_ldap_user_id_attribute: uid
+    #  lc_ldap_user_name_attribute: "*:cn"
+    #  lc_ldap_user_display_name_attr: cn
+    #  lc_ldap_group_object_class: groupOfNames
+    #  lc_ldap_group_id_attribute: cn
+    #  lc_ldap_group_base_dn: ou=Groups,dc=cp,dc=local
+    #  lc_ldap_group_name_attribute: "*:cn"
+    #  lc_ldap_group_display_name_attr: cn
+    #  lc_ldap_group_membership_search_filter: "(|(&(objectclass=groupofnames)(member={0}))(&(objectclass=groupofuniquenames)(uniquemember={0})))"
+    #  lc_ldap_group_member_id_map: "groupofnames:member"
+    #  tds:
+    #    lc_user_filter: "(&(cn=%v)(objectclass=inetOrgPerson))"
+    #    lc_group_filter: "(&(cn=%v)(|(objectclass=groupofnames)(objectclass=groupofuniquenames)(objectclass=groupofurls)))"
 
     # Always review these parameters for changes
 
@@ -401,6 +444,25 @@ stringData:
 ```
 
 ![assets/secret.png](assets/secret.png)
+
+Optionally you can add your custom External LDAP Bind Secret to provide credentials for when you want to use your own LDAP and not the OpenLdap which is installed by default by the apollo-one-shot. This should be used together with the setting `openldap_enabled: false` and also `ldap_configuration`. Bellow you can find an example of the bind secret:
+
+IMPORTANT: based on this secret, new bind secret will be created in the CP4BA namespace for the CP4BA use.
+
+```yaml
+apiVersion: v1
+kind: Secret
+  name: external-ldap-secret
+  namespace: apollo-one-shot  
+type: Opaque
+stringData:
+  # used for the ldap binding in components needing to interact with LDAP 
+  ldapUsername: cn=admin,dc=cp,dc=local
+  ldapPassword: anAdminPassword
+  # used as the main admin for the installed platform, cp4ba.
+  principalAdminUsername: cpadmin
+  principalAdminPassword: aCPadminPassword
+```
 
 ### 4. Run the Job
 

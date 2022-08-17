@@ -6,7 +6,7 @@
     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_db2_user: "{{ item }}"
-    common_universal_password: "{{ cp4ba_universal_password }}"
+    common_db2_password: "{{ cp4ba_db2_password }}"
   with_items:
     - batos
     - bados

@@ -23,8 +23,8 @@
       username: ads
       visibility: private
       website: ""
-    user: cpadmin
-    password: "{{ cp4ba_universal_password }}"
+    user: "{{ lc_principal_admin_user }}"
+    password: "{{ lc_principal_admin_password }}"
     force_basic_auth: true
     validate_certs: false
     status_code:
@@ -91,38 +91,42 @@
 
   when: ads_admin_role_id | length == 0
 
-- name: Get groups
-  ansible.builtin.uri:
-    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
-    method: GET
-    headers:
-      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
-    validate_certs: false
-    status_code: 200
-  register: groups_response
+- block:
 
-- name: Get cpadmins group id
-  ansible.builtin.set_fact:
-    cpadmins_group_id: "{{ groups_response.json | json_query(condition_query) | first }}"
-  vars:
-    condition_query: "results[?name == 'cpadmins'].group_id"
+    - name: Get groups
+      ansible.builtin.uri:
+        url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+        validate_certs: false
+        status_code: 200
+      register: groups_response
 
-- name: Add ADS Admin role to cpadmins group
-  ansible.builtin.uri:
-    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ cpadmins_group_id }}"
-    method: PATCH
-    headers:
-      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
-    body_format: json
-    body:
-      add_role_identifiers:
-        - "{{ ads_admin_role_id }}"
-    validate_certs: false
-    status_code:
-      - 200
-      - 500
-  register: group_response
-  failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')
+    - name: Get {{ item }} group id
+      ansible.builtin.set_fact:
+        admin_group_id: "{{ groups_response.json | json_query(condition_query) | first }}"
+      vars:
+        condition_query: "results[?name == '{{ item }}'].group_id"
+
+    - name: Add ADS Admin role to {{ item }} group
+      ansible.builtin.uri:
+        url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ admin_group_id }}"
+        method: PATCH
+        headers:
+          Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+        body_format: json
+        body:
+          add_role_identifiers:
+            - "{{ ads_admin_role_id }}"
+        validate_certs: false
+        status_code:
+          - 200
+          - 500
+      register: group_response
+      failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')
+      
+  with_items: "{{ lc_admin_groups }}"
 
 - name: Add ADS Admin role to default admin user
   ansible.builtin.uri:
@@ -132,7 +136,7 @@
       Authorization: "Bearer {{ token_response.json | json_query('token') }}"
     body_format: json
     body:
-      username: cpadmin
+      username: "{{ lc_principal_admin_user }}"
       user_roles:
         - "{{ ads_admin_role_id }}"
     validate_certs: false
@@ -152,7 +156,7 @@
         "credentialsType": "USERNAME",
         "credentialsUsage": "MAVEN",
         "discriminator": "https://nexus.{{ apps_endpoint_domain }}/repository/maven-releases/",
-        "credentials": "cpadmin:{{ cp4ba_universal_password }}"
+        "credentials": "{{ lc_principal_admin_user }}:{{ lc_principal_admin_password }}"
       }
     validate_certs: false
     status_code: 200
