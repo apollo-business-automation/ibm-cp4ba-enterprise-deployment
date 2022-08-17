@@ -60,7 +60,7 @@ lc_bind_admin_user: "{{ ldap_configuration.lc_bind_admin_user | default(principa
 lc_bind_admin_password: "{{ ldap_configuration.lc_bind_admin_password | default(universal_password) }}"
 lc_principal_admin_user: "{{ ldap_configuration.lc_principal_admin_user | default(principal_admin_user) }}"
 lc_principal_admin_password: "{{ ldap_configuration.lc_principal_admin_password | default(universal_password) }}"
-lc_principal_admin_group: "{{ ldap_configuration.lc_principal_admin_group | default(['cpadmins']) }}"
+lc_principal_admin_group: "{{ ldap_configuration.lc_principal_admin_group | default('cpadmins') }}"
 lc_admin_groups: "{{ ldap_configuration.lc_admin_groups | default(['cpadmins']) }}"
 lc_admin_users: "{{ ldap_configuration.lc_admin_users | default(['cpadmin']) }}"
 lc_general_groups: "{{ ldap_configuration.lc_general_groups | default(['cpusers', 'cpusers1']) }}"
