@@ -24,7 +24,7 @@ customLdifFiles:
     {{ lc_ldap_user_id_attribute }}: {{ lc_principal_admin_user }}
     # ToDo set some domain
     mail: {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}
-    userpassword: {{ lc_principal_admin_password | b64encode }}
+    userpassword:: {{ lc_principal_admin_password | b64encode }}
     employeeType: admin
 
     dn: {{ lc_ldap_user_id_attribute }}=cpadmin1,{{ lc_ldap_base_dn }}
