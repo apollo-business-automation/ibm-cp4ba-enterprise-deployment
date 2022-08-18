@@ -43,7 +43,7 @@ spec:
     lc_ldap_port: "{{ lc_ldap_port }}"
     lc_bind_secret: "{{ lc_bind_secret }}"
     lc_ldap_base_dn: "{{ lc_ldap_base_dn }}"
-    lc_ldap_ssl_enabled: "{{ lc_ldap_ssl_enabled }}"
+    lc_ldap_ssl_enabled: "{{ lc_ldap_ssl_enabled | bool }}"
     lc_ldap_user_name_attribute: "{{ lc_ldap_user_name_attribute }}"
     lc_ldap_user_display_name_attr: "{{ lc_ldap_user_display_name_attr }}"
     lc_ldap_group_base_dn: "{{ lc_ldap_group_base_dn }}"
