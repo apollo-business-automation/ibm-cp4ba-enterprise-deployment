@@ -96,7 +96,7 @@ spec:
             name: BADOCS_dbconnection
             dc_os_datasource_name: BADOCS
             dc_os_xa_datasource_name: BADOCSXA
-          oc_cpe_obj_store_admin_user_groups: "{{ lc_admin_groups + lc_admin_users }}" 
+          oc_cpe_obj_store_admin_user_groups: [{% for item in (lc_admin_groups+lc_admin_users) %}'{{ item }}'{{ "," if not loop.last else "" }}{% endfor %}]
           oc_cpe_obj_store_asa_name: badocs_asa
           oc_cpe_obj_store_asa_file_systems_storage_device_name: badocs_file_system_storage
           oc_cpe_obj_store_asa_root_dir_path: /opt/ibm/asa/badocs_storagearea1
@@ -106,7 +106,7 @@ spec:
             name: BADOS_dbconnection
             dc_os_datasource_name: BADOS
             dc_os_xa_datasource_name: BADOSXA
-          oc_cpe_obj_store_admin_user_groups: "{{ lc_admin_groups + lc_admin_users }}"
+          oc_cpe_obj_store_admin_user_groups: [{% for item in (lc_admin_groups+lc_admin_users) %}'{{ item }}'{{ "," if not loop.last else "" }}{% endfor %}]
           oc_cpe_obj_store_asa_name: bados_asa
           oc_cpe_obj_store_asa_file_systems_storage_device_name: bados_file_system_storage
           oc_cpe_obj_store_asa_root_dir_path: /opt/ibm/asa/bados_storagearea1
@@ -116,7 +116,7 @@ spec:
             name: BATOS_dbconnection
             dc_os_datasource_name: BATOS
             dc_os_xa_datasource_name: BATOSXA
-          oc_cpe_obj_store_admin_user_groups: "{{ lc_admin_groups + lc_admin_users }}" 
+          oc_cpe_obj_store_admin_user_groups: [{% for item in (lc_admin_groups+lc_admin_users) %}'{{ item }}'{{ "," if not loop.last else "" }}{% endfor %}]
           oc_cpe_obj_store_asa_name: batos_asa
           oc_cpe_obj_store_asa_file_systems_storage_device_name: batos_file_system_storage
           oc_cpe_obj_store_asa_root_dir_path: /opt/ibm/asa/batos_storagearea1            
