@@ -57,12 +57,12 @@ spec:
     lc_ldap_group_member_id_map: "{{ lc_ldap_group_member_id_map }}"
 {% if 'IBM Security Directory Server' in lc_selected_ldap_type %}
     tds:
-      lc_user_filter: "{{ lc_tds_user_filter }}"
-      lc_group_filter: "{{ lc_tds_group_filter }}"
+      lc_user_filter: "{{ lc_tds_user_filter | lower }}"
+      lc_group_filter: "{{ lc_tds_group_filter | lower }}"
 {% elif 'Microsoft Active Directory' in lc_selected_ldap_type %}
     ad:
-      lc_user_filter: "{{ lc_ad_user_filter }}"
-      lc_group_filter: "{{ lc_ad_group_filter }}"
+      lc_user_filter: "{{ lc_ad_user_filter | lower }}"
+      lc_group_filter: "{{ lc_ad_group_filter | lower }}"
 {% endif %}
   datasource_configuration:
     dc_ssl_enabled: false
