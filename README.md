@@ -412,11 +412,17 @@ data:
 
 Optionally you can add your custom Global CA Secret which is then used to generate all certificates for the whole platform. If you don't provide it, a new Global CA will be automatically generated for you.
 
+To generate your own, you can use the following command which generated Global CA with 10 years validity.
+```bash
+openssl req -new -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes -out global-ca.crt -keyout global-ca.key -subj "/CN=Global CA"
+```
+
 Copy the contents of the following yaml to OpenShift console *Import YAML* dialog (as seen in the picture below - point 1 and 2).
 
 Add certificate of your Global CA to *tls.crt* and key to *tls.key*.
 
-Make sure the contents of CA files are properly indented to the same level like example contents. (as seen in the picture below point 3)
+Make sure the contents of CA files are properly indented to the same level like example contents. (as seen in the picture below point 3)  
+Private key can also have different header and footer than *-----BEGIN RSA PRIVATE KEY-----* and *-----END RSA PRIVATE KEY-----*
 
 Apply the updated contents to your cluster (as seen in the picture below point 4).    
 
