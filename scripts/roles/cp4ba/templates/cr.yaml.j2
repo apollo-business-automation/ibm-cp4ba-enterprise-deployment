@@ -42,7 +42,7 @@ spec:
     lc_ldap_server: "{{ lc_ldap_server }}"
     lc_ldap_port: "{{ lc_ldap_port }}"
     lc_bind_secret: "{{ lc_bind_secret }}"
-    lc_ldap_base_dn: "{{ lc_ldap_base_dn }}"
+    lc_ldap_base_dn: "{{ lc_ldap_base_dn | regex_replace('^(.+?)([Dd][Cc]=.*)$', '\\2') }}"
 {% if lc_ldap_ssl_enabled %}
     lc_ldap_ssl_enabled: true
 {% else %}
@@ -57,12 +57,12 @@ spec:
     lc_ldap_group_member_id_map: "{{ lc_ldap_group_member_id_map }}"
 {% if 'IBM Security Directory Server' in lc_selected_ldap_type %}
     tds:
-      lc_user_filter: "{{ lc_tds_user_filter | lower }}"
-      lc_group_filter: "{{ lc_tds_group_filter | lower }}"
+      lc_user_filter: "{{ lc_tds_user_filter }}"
+      lc_group_filter: "{{ lc_tds_group_filter }}"
 {% elif 'Microsoft Active Directory' in lc_selected_ldap_type %}
     ad:
-      lc_user_filter: "{{ lc_ad_user_filter | lower }}"
-      lc_group_filter: "{{ lc_ad_group_filter | lower }}"
+      lc_user_filter: "{{ lc_ad_user_filter }}"
+      lc_group_filter: "{{ lc_ad_group_filter }}"
 {% endif %}
   datasource_configuration:
     dc_ssl_enabled: false
