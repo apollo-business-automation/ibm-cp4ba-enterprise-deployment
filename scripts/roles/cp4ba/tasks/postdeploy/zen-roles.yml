@@ -116,7 +116,7 @@
         (register_group_response.status != 200) and
         ('duplicate_rule_for_group_id' not in register_group_response.content)
 
-  when: group_response.status == 409
+  when: (409 in group_response | json_query('results[*].status'))
 
 # Groups endpoint found based on the network dev tools in the browser
 - name: Add All Roles to cpusers groups
