@@ -206,6 +206,7 @@
     common_password: "{{ cp4ba_db2mc_universal_password }}"
     common_output_directory: "{{ cp4ba_output_directory }}"
     common_db2_hostname: "{{ cp4ba_db2_hostname }}"
+    common_user: "{{ cp4ba_db2mc_admin_user }}"
   with_items:
     - CP4BA
     - TENANT1
