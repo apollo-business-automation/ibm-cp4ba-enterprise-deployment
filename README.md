@@ -458,6 +458,7 @@ IMPORTANT: based on this secret, new bind secret will be created in the CP4BA na
 ```yaml
 apiVersion: v1
 kind: Secret
+metadata:
   name: external-ldap-secret
   namespace: apollo-one-shot  
 type: Opaque
