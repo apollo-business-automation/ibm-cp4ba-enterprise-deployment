@@ -322,7 +322,8 @@ data:
     #  lc_ldap_server: "external_ldap_hostname"
     #  lc_bind_secret: ldap-bind-secret
     #  lc_ldap_domain: cp.local
-    #  lc_ldap_base_dn: ou=Users,dc=cp,dc=local
+    #  lc_ldap_base_dn: dc=cp,dc=local
+    #  lc_ldap_user_base_dn: ou=Users,dc=cp,dc=local
     #  lc_ldap_ssl_enabled: false
     #  lc_ldap_user_object_class: inetOrgPerson
     #  lc_ldap_user_id_attribute: uid

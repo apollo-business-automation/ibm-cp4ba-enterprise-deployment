@@ -1,7 +1,7 @@
 {
   "LDAP_ID": "LDAP",
   "LDAP_URL": "{{ 'ldap' if not lc_ldap_ssl_enabled else 'ldaps' }}://{{ lc_ldap_server }}:{{ lc_ldap_port }}",
-  "LDAP_BASEDN": "{{ lc_ldap_base_dn | regex_replace('^(.+?)([Dd][Cc]=.*)$', '\\2') }}",
+  "LDAP_BASEDN": "{{ lc_ldap_base_dn }}",
   "LDAP_BINDDN": "{{ lc_bind_admin_user }}",
   "LDAP_BINDPASSWORD": "{{ lc_bind_admin_password | b64encode }}",
   "LDAP_TYPE": "Custom",
