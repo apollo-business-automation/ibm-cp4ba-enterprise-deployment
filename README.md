@@ -4,8 +4,8 @@ Goal of this repository is to almost automagically install CP4BA Enterprise patt
 
 Last installation was performed on 2022-08-04 with CP4BA version 22.0.1-IF001 (also called 22.0.1.1 or 21.1.1)
 
-- [Documentation base](#documentation-base)
 - [Disclaimer ✋](#disclaimer-)
+- [Documentation base](#documentation-base)
 - [Benefits 🚀](#benefits-)
 - [General information 📢](#general-information-)
 - [What is in the package 📦](#what-is-in-the-package-)
@@ -18,18 +18,6 @@ Last installation was performed on 2022-08-04 with CP4BA version 22.0.1-IF001 (a
 - [Post removal steps ➡️](#post-removal-steps-️)
 - [Contacts](#contacts)
 - [Notice](#notice)
-
-## Documentation base
-
-Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=overview-what-is-cloud-pak-business-automation.
-
-Deployment of other parts is also based on respective official documentations.
-
-- IBM Robotic Process Automation (RPA) https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-planning-rpa-openshift
-- IBM Automation Assets https://www.ibm.com/docs/en/cloud-paks/1.0?topic=foundation-automation-assets
-- IBM Process Mining https://www.ibm.com/docs/en/cloud-paks/1.0?topic=pm-installation-setup-guide-process-mining-openshift-container-platform
-- IBM Automation Foundation (IAF) https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-foundation
-- IBM Cloud Pak Foundational Services (CPFS) https://www.ibm.com/docs/en/cpfs?topic=operator-installing-foundational-services-online
 
 ## Disclaimer ✋
 
@@ -45,6 +33,18 @@ Not for production use. Suitable for Demo and PoC environments - but with enterp
 **!Important** - Keep in mind that the platform contains DB2 which is licensed with Standard Edition license available from CP4BA and it must adhere to the *Additional IBM DB2 Standard Edition Detail* in official license information at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument (or its newer revision).
 
 **!Important** - Keep in mind that this deployment contains capabilities (the ones which are not bundled with CP4BA) which are not eligible to run on Worker Nodes covered by CP4BA OCP Restricted licenses. More info on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=clusters-restricted-openshift-entitlement.
+
+## Documentation base
+
+Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1.
+
+Deployment of other parts is also based on respective official documentations.
+
+- IBM Robotic Process Automation (RPA) https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-planning-rpa-openshift
+- IBM Automation Assets https://www.ibm.com/docs/en/cloud-paks/1.0?topic=foundation-automation-assets
+- IBM Process Mining https://www.ibm.com/docs/en/cloud-paks/1.0?topic=pm-installation-setup-guide-process-mining-openshift-container-platform
+- IBM Automation Foundation (IAF) https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-foundation
+- IBM Cloud Pak Foundational Services (CPFS) https://www.ibm.com/docs/en/cpfs?topic=operator-installing-foundational-services-online
 
 ## Benefits 🚀
 
