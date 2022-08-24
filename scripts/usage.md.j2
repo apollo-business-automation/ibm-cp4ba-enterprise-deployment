@@ -69,7 +69,7 @@ As mail client.
 
 #### Credentials
 
-- for admin: {{ lc_principal_admin_user }}@{{ lc_ldap_domain }} / {{ universal_password }} (you can also use only *{{ lc_principal_admin_user }}* without domain as username to login)
+- for admin: {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}/ {{ universal_password }} (you can also use only *{{ lc_principal_admin_user }}* without domain as username to login)
 - for user: cpuser@{{ lc_ldap_domain }} / {{ universal_password }} (you can also use only *cpuser* without domain as username to login)
 
 {% endif %}
@@ -117,7 +117,7 @@ As elastic search content browser and for BAI dashboards.
 
 As mail server.
 
-Any email received at *\*@{{ lc_ldap_domain }}* except *{{ lc_principal_admin_user }}@{{ lc_ldap_domain }}* and *cpuser@{{ lc_ldap_domain }}* will be delivered to *{{ lc_principal_admin_user }}*.
+Any email received at *\*@{{ lc_ldap_domain }} except *{{ lc_principal_admin_user }}@{{ lc_ldap_domain }}* and *cpuser@{{ lc_ldap_domain }}* will be delivered to *{{ lc_principal_admin_user }}*.
 
 #### Endpoints
 
@@ -125,8 +125,8 @@ Not exposed outside the cluster.
 
 #### Credentials
 
-- for admin: {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}/ {{ lc_principal_admin_password  }}
-- for user: cpuser@{{ lc_ldap_domain }} / {{ universal_password }}
+- for admin: {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}/ {{ mail_universal_password  }}
+- for user: cpuser@{{ lc_ldap_domain }} / {{ mail_universal_password }}
 
 {% if mongo_express_enabled == true %}
 ### Mongo Express

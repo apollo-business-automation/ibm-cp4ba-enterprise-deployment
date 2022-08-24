@@ -7,7 +7,7 @@ metadata:
     app: mailserver
 data:
   postfix-accounts.cf: |
-    {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}|{PLAIN}{{lc_principal_admin_password}}
+    {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}|{PLAIN}{{mail_universal_password}}
     cpuser@{{ lc_ldap_domain }}|{PLAIN}{{mail_universal_password}}
 
   postfix-virtual.cf: |
