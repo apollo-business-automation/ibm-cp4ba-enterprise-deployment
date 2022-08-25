@@ -45,6 +45,7 @@ spec:
     lc_ldap_base_dn: "{{ lc_ldap_base_dn }}"
 {% if lc_ldap_ssl_enabled %}
     lc_ldap_ssl_enabled: true
+    lc_ldap_ssl_secret_name: "{{ lc_ldap_ssl_secret_name }}"
 {% else %}
     lc_ldap_ssl_enabled: false
 {% endif %}

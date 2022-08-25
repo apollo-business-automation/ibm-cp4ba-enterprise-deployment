@@ -69,6 +69,7 @@ lc_ldap_base_dn: "{{ ldap_configuration.lc_ldap_base_dn | default('dc=cp,dc=loca
 lc_ldap_user_base_dn: "{{ ldap_configuration.lc_ldap_user_base_dn | default('ou=Users,dc=cp,dc=local') }}"
 lc_ldap_domain: "{{ ldap_configuration.lc_ldap_domain | default('cp.local') }}"
 lc_ldap_ssl_enabled: "{{ ldap_configuration.lc_ldap_ssl_enabled | default(false) }}"
+lc_ldap_ssl_secret_name: "{{ ldap_configuration.lc_ldap_ssl_secret_name | default('') }}"
 lc_ldap_port: "{{ ldap_configuration.lc_ldap_port | default('389' if not lc_ldap_ssl_enabled else '636') }}"
 lc_ldap_user_object_class: "{{ ldap_configuration.lc_ldap_user_object_class | default('inetOrgPerson') }}"
 lc_ldap_user_id_attribute: "{{ ldap_configuration.lc_ldap_user_id_attribute | default('uid') }}"

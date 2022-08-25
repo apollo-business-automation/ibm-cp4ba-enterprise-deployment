@@ -324,7 +324,10 @@ data:
     #  lc_ldap_domain: cp.local
     #  lc_ldap_base_dn: dc=cp,dc=local
     #  lc_ldap_user_base_dn: ou=Users,dc=cp,dc=local
+    ## If you decide to use ssl with ldap, be sure to provide lc_ldap_ssl_secret_name as well
+    ## documentation: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-ssl-enabled-ldap
     #  lc_ldap_ssl_enabled: false
+    #  lc_ldap_ssl_secret_name: "external_ldap_ssl_secret_name"
     #  lc_ldap_user_object_class: inetOrgPerson
     #  lc_ldap_user_id_attribute: uid
     #  lc_ldap_user_name_attribute: "*:cn"
