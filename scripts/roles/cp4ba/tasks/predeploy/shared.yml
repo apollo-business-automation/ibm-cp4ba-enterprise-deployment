@@ -29,4 +29,37 @@
     state: present
     force: false
     merge_type: merge
-    src: "{{ cp4ba_output_directory }}/ldap-secret.yaml"
+    src: "{{ cp4ba_output_directory }}/ldap-secret.yaml" 
+
+- block:
+
+    - name: Load LDAP SSL Certificate Secret
+      kubernetes.core.k8s_info:
+        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+        host: "{{ cp4ba_k8s_host | default(omit) }}"
+        kind: Secret
+        api: v1
+        name: "{{ lc_ldap_ssl_secret_name }}"
+        namespace: apollo-one-shot
+      register: _ldap_ssl_crt
+
+    - name: Get the LDAP SSL Certificate
+      ansible.builtin.set_fact:
+        _ldap_ssl_crt: "{{ _ldap_ssl_crt.resources[0].data['tls.crt'] | b64decode }}"
+        
+    - name: Prepare yaml file for LDAP SSL Certificate Secret
+      ansible.builtin.template:
+        src: shared/ldap-ssl-secret.yaml.j2
+        dest: "{{ cp4ba_output_directory }}/ldap-ssl-secret.yaml"
+        mode: u+rwx
+
+    - name: Add LDAP SSL Certificate Secret to the {{ cp4ba_project_name }} namespace
+      kubernetes.core.k8s:
+        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+        host: "{{ cp4ba_k8s_host | default(omit) }}"
+        state: present
+        force: false
+        merge_type: merge
+        src: "{{ cp4ba_output_directory }}/ldap-ssl-secret.yaml" 
+
+  when: lc_ldap_ssl_secret_name | length > 0
