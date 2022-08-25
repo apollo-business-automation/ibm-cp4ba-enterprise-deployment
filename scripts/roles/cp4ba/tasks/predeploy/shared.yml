@@ -45,7 +45,7 @@
 
     - name: Get the LDAP SSL Certificate
       ansible.builtin.set_fact:
-        _ldap_ssl_crt: "{{ _ldap_ssl_crt.resources[0].data['tls.crt'] | b64decode }}"
+        _ldap_ssl_crt: "{{ _ldap_ssl_crt.resources[0].data['tls.crt'] }}"
         
     - name: Prepare yaml file for LDAP SSL Certificate Secret
       ansible.builtin.template:
