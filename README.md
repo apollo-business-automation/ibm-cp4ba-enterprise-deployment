@@ -458,7 +458,7 @@ Optionally you can add your custom External LDAP Bind Secret to provide credenti
 
 IMPORTANT: based on this secret, new bind secret will be created in the CP4BA namespace for the CP4BA use.
 
-IMPORTANT: When using External LDAP, when user name attribute and id attribute is different and their value as well, it is known to cause issue with setup of FileNet domain. Be sure to provide admin user who has the same name as id for now (e.g. same cn as uid for example). Alternatively configure the ldap_configuration approprietly to avoid the issue.
+IMPORTANT: When using External LDAP, for the **principal admin user**, when user name attribute and id attribute is different and their value as well, it is known to cause issue with setup of FileNet domain. Be sure to provide admin user who has the same name as id for now (e.g. same cn as uid for example). Alternatively configure the ldap_configuration approprietly to avoid the issue.
 
 ```yaml
 apiVersion: v1

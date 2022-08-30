@@ -37,7 +37,8 @@ gitea:
     email: "giteaadmin@{{ lc_ldap_domain }}"
   ldap:
     - name: LDAP
-      securityProtocol: unencrypted
+      securityProtocol: "{{ 'unencrypted' if not lc_ldap_ssl_enabled else 'ldaps' }}"
+      skipTlsVerify: "{{ lc_ldap_ssl_enabled }}"
       host: "{{ lc_ldap_server }}"
       port: "{{ lc_ldap_port }}"
       userSearchBase: "{{ lc_ldap_user_base_dn }}"
