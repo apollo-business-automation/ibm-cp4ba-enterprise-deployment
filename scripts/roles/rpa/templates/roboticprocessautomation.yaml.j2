@@ -53,6 +53,15 @@ spec:
     replicas: 1
   antivirus:
     replicas: 1
+    template:
+      pod:
+        spec:
+          containers:
+            - name: clam-av-api
+              readinessProbe:
+                initialDelaySeconds: 300
+              livenessProbe:
+                initialDelaySeconds: 300
   audit:
     forwardingEnabled: false
   nlp:
