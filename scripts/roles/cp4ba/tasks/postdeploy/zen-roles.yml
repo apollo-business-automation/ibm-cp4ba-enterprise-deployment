@@ -51,7 +51,7 @@
     status_code:
       - 201
       - 409
-  with_items: "{{ lc_admin_groups }}" 
+  with_items: "{{ lc_admin_groups }}"
   register: group_response
   vars:
     user_roles:
@@ -140,7 +140,7 @@
       - iaf-automation-developer
       - iaf-automation-operator
       - zen_user_role
-  with_items: "{{ lc_general_groups }}" 
+  with_items: "{{ lc_general_groups }}"
   register: group_response
 
 - name: Register ldap groups with the zen groups
@@ -198,3 +198,22 @@
         ('duplicate_rule_for_group_id' not in register_group_response.content)
 
   when: (409 in group_response | json_query('results[*].status'))
+
+# Needs to be added manually, otherwise WFPS doesn't work when CPFS admin username is customized
+- name: Add cpfsadmin to zen
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user"
+    method: POST
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+    body_format: json
+    body:
+      username: cpfsadmin
+      displayName: cpfsadmin
+      user_roles: [zen_administrator_role]
+    validate_certs: false
+    status_code:
+      - 201
+      - 409
+  register: cpfsadmin_response
