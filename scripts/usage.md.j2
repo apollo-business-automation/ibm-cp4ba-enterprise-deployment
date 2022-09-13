@@ -254,8 +254,9 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 
 ####  Credentials
 
-- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
-- odmAdmin / {{ universal_password }} who can be used for ODM Basic Auth
+- {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }} for access through web UIs
+- odmAdmin / {{ universal_password }} who can be used for ODM REST Basic Auth
+- For ODM REST auth with {{ lc_principal_admin_user }} user or other LDAP users, follow guide on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=access-using-zen-api-key-authentication with REST Authoziation header with ZenApiKey type
 
 {% endif %}
 {% if cp4ba_config.deployment_patterns.decisions_ads == true %}
