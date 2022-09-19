@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+### Added
+
+- Option to use custom LDAP.
+
+### Changed
+
+- Updated CP4BA to 22.0.1.2.
+- Updated RPA to 21.0.4.
+
 ## [2022-08-10]
 
 ### Changed
