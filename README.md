@@ -65,7 +65,7 @@ Result of this Enterprise deployment is not fully supported:
 
 What is not included:
 - ICCs - not covered.
-- Caution! FNCM External share - Currently not supported with ZEN & IAM as per limitation on [FNCM limitations](https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=notes-known-limitations-issues#concept_gmf_x1h_1fb__ecm)
+- Caution! FNCM External share - Currently not supported with ZEN & IAM as per limitation on [FNCM limitations](https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=notes-known-limitations-issues#concept_gmf_x1h_1fb__ecm)
 - Caution! Asset Repository is now omitted due to a bug in IAF - waiting for fixes. And the latest version only support OCP 4.10+.
 - Workflow Server and Workstream Services - this is a dev deployment. BAW Authoring and (BAW + IAWS) are mutually exclusive in single project.
 
@@ -98,9 +98,9 @@ Contains extra software which makes working with the platform even easier.
 
 Purple color is used for CP4BA capabilities.
 
-More info for these capabilities is available in official docs at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3.
+More info for these capabilities is available in official docs at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1.
 
-More specifically in overview of patterns at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=deployment-capabilities-production-deployments.
+More specifically in overview of patterns at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments.
 
 #### IAF (IBM Automation Foundation) capabilities
 
@@ -196,7 +196,7 @@ node/10.163.57.254
 ## Pre-requisites ⬅️
 
 - OpenShift cluster sized according with the system requirements
-  - Cloud Pak: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=ppd-system-requirements
+  - Cloud Pak: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=pcmppd-system-requirements
   - RPA: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=openshift-pre-installation-requirements
   - Process Mining: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=platform-pre-installation-requirements
   - IAF : https://www.ibm.com/docs/en/cloud-paks/1.0?topic=p-system-requirements
