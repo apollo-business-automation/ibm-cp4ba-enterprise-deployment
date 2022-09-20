@@ -4,3 +4,4 @@ nohup*
 scripts/variables.yml
 .vscode
 scripts/ansible-lint-rules/__pycache__
+.DS_Store

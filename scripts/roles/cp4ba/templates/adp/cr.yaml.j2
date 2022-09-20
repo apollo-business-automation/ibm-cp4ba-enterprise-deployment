@@ -74,17 +74,15 @@ spec:
             name: DEVOS1_dbconnection
             dc_os_datasource_name: DEVOS1
             dc_os_xa_datasource_name: DEVOS1XA
-          oc_cpe_obj_store_admin_user_groups:
-            - cpadmin
-            - cpadmins
+          oc_cpe_obj_store_admin_user_groups: [{% for item in (lc_admin_groups+lc_admin_users) %}'{{ item }}'{{ "," if not loop.last else "" }}{% endfor %}]
           oc_cpe_obj_store_asa_name: devos1_asa
           oc_cpe_obj_store_asa_file_systems_storage_device_name: devos1_file_system_storage
           oc_cpe_obj_store_asa_root_dir_path: /opt/ibm/asa/devos1_storagearea1
           oc_cpe_obj_store_enable_workflow: true
           oc_cpe_obj_store_workflow_region_name: devos1_region_name
           oc_cpe_obj_store_workflow_data_tbl_space: DEVOS1_TS
-          oc_cpe_obj_store_workflow_admin_group: cpadmins
-          oc_cpe_obj_store_workflow_config_group: cpadmins
+          oc_cpe_obj_store_workflow_admin_group: "{{ lc_principal_admin_group }}"
+          oc_cpe_obj_store_workflow_config_group: "{{ lc_principal_admin_group }}"
           oc_cpe_obj_store_workflow_pe_conn_point_name: pe_conn_devos1
     ic_icn_init_info:
       icn_repos:

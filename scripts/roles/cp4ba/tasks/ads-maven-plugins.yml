@@ -3,8 +3,8 @@
     url: "https://nexus.{{ apps_endpoint_domain }}/repository/maven-releases/{{ item.value.maven_coordinates.groupId | replace('.', '/') }}/\
       {{ item.value.maven_coordinates.artifactId }}/{{ item.value.maven_coordinates.version }}/{{ item.value.path | replace('_', '-') }}"
     method: GET
-    user: cpadmin
-    password: "{{ cp4ba_universal_password }}"
+    user: "{{ lc_principal_admin_user }}"
+    password: "{{ lc_principal_admin_password }}"
     force_basic_auth: true
     validate_certs: false
     status_code:
@@ -40,8 +40,8 @@
     #       maven2.asset1.extension: "{{ item.value.maven_coordinates.packaging }}"
     #     validate_certs: false
     #     status_code: 200
-    #     user: cpadmin
-    #     password: "{{ cp4ba_universal_password }}"
+    #     user: "{{ lc_principal_admin_user }}"
+    #     password: "{{ lc_principal_admin_password }}"
     #     force_basic_auth: true
     #   register: token_response
     #   vars:
@@ -58,7 +58,7 @@
         -F 'maven2.version={{ item.value.maven_coordinates.version }}' \
         -F 'maven2.asset1=@{{ cp4ba_output_directory }}/{{ item.value.path }}' \
         -F 'maven2.asset1.extension={{ item.value.maven_coordinates.packaging }}' \
-        --user "cpadmin:{{ cp4ba_universal_password }}" \
+        --user "{{ lc_principal_admin_user }}:{{ lc_principal_admin_password }}" \
         -s -o /dev/null -w "%{http_code}"
       register: ads_curl_result
       changed_when: true

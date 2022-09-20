@@ -12,7 +12,7 @@
     common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
     common_db2_user: pm
-    common_universal_password: "{{ pm_universal_password }}"
+    common_db2_password: "{{ pm_db2_password }}"
 
 # This counts on CP4BA database created during CP4BA deployment making this part not standalone
 - name: Create & configure PM Schema
@@ -224,3 +224,38 @@
     common_condition_name: Ready
     common_retries: 30
     common_delay: 120
+
+- name: Create Project
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
+    common_namespace_name: "{{ pm_output_namespace }}"
+    common_output_directory: "{{ pm_output_directory }}"
+    common_project_output_name: "pm-output-project.yaml"
+
+- name: Prepare post-deploy.md
+  ansible.builtin.template:
+    src: postdeploy.md.j2
+    dest: "{{ pm_output_directory }}/postdeploy.md"
+    mode: u+rwx
+
+- name: Prepare post-deploy.md Config Map
+  ansible.builtin.template:
+    src: postdeploy-configmap.yaml.j2
+    dest: "{{ pm_output_directory }}/postdeploy-configmap.yaml"
+    mode: u+rwx
+
+- name: Add post-deploy.md Config Map
+  kubernetes.core.k8s:
+    api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    host: "{{ pm_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ pm_output_directory }}/postdeploy-configmap.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15

@@ -1,4 +1,4 @@
-# case 4.0.1 / csv 22.1.0
+# case 4.0.2 / csv 22.1.2 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cp-automation
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -8,12 +8,12 @@ spec:
   displayName: ibm-cp4a-operator
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-cp-automation-catalog@sha256:e595868ec426bfba2409878b86fa3398a0680b5c725cff212469068ce8824202
+  image: icr.io/cpopen/ibm-cp-automation-catalog@sha256:986420416b2426c008aeaf42a6506c7a41f6492476b31d9b890aaa96698b7e45
   updateStrategy:
     registryPoll:
       interval: 45m
 ---
-# case 1.3.7 / csv 1.3.7
+# case 1.3.9 / csv 1.3.9 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cp-automation-foundation
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -23,12 +23,12 @@ spec:
   displayName: IBM Automation Foundation Operators
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-cp-automation-foundation-catalog@sha256:267bbc17bad1966be259bb9a6951c520c6fb824bfa42bbec22570ba49883d4ae
+  image: icr.io/cpopen/ibm-cp-automation-foundation-catalog@sha256:bb480738a3cf687917b2735b43e5729a276b02f6960d973064093069bfd6114e
   updateStrategy:
     registryPoll:
       interval: 45m
 ---
-# case 1.3.7 / csv 1.3.7
+# case 1.3.9 / csv 1.3.9 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-automation-foundation-core
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -38,7 +38,7 @@ spec:
   displayName: IBM Automation Foundation Core Operators
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-automation-foundation-core-catalog@sha256:5502c003afe7a0590ce123c3bbbd76e46374af641b3a210e3c25cfe2381e4647
+  image: icr.io/cpopen/ibm-automation-foundation-core-catalog@sha256:a1e8d449e5249530c6ae71f9fb5857ac852cf090343636b314873bbf93ba7d3f
   updateStrategy:
     registryPoll:
       interval: 45m

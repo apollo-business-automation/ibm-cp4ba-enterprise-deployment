@@ -79,8 +79,8 @@ data:
         host = "https://iaf-system-elasticsearch-es.{{ cerebro_cp4ba_project_name }}:9200"
         name = "IAF Elastic"
         auth = {
-          username = "elasticsearch-admin"
-          password = "{{ cerebro_universal_password }}"
+          username = "{{ cerebro_elasticsearch_admin_user }}"
+          password = "{{ cerebro_elasticsearch_universal_password }}"
         }
       }
     ]

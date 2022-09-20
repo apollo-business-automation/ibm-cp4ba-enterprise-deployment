@@ -1,0 +1,37 @@
+# PM post-deploy
+
+The following list specifies when you need to perform particular post-deployment steps
+- [Setup Task Mining](#setup-task-mining) - When you want to use Task Mining feature
+- [Permissions](#permissions) - When you want to use Task Mining feature
+- [Task Mining Client](#task-mining-client) - When you want to use Task Mining feature
+
+## Setup Task Mining
+
+Based on https://www.ibm.com/docs/en/process-mining/1.13.0.x?topic=manual-how-integrate-process-mining-task-mining  
+Topic: How to Integrate Process Mining and Task Mining
+
+Go to task mining https://cpd-{{ pm_project_name }}.{{ apps_endpoint_domain }}/taskmining/index.html#/  
+Click settings  
+Master username: {{ lc_principal_admin_user }}  
+API Key: get from https://cpd-{{ pm_project_name }}.{{ apps_endpoint_domain }}/processmining/api/account/profile apiKey  
+Click Save  
+Green notification is displayed  
+
+## Permissions
+
+To be able to use Task mining, add Taskminer Authorizations to cpadmin.  
+To be able to login to Task mining client, edit cpadmin User and check "Agent enabled".
+
+## Task Mining Client
+
+Based on https://www.ibm.com/docs/en/process-mining/1.13.0.x?topic=downloading-packages  
+Based on https://www.ibm.com/docs/en/process-mining/1.13.0.x?topic=guide-task-mining-agent
+
+You need to download IBM Process Mining Client (part number M0726ML but make sure you install the corresponding one for the PM version deployed) as IPM_Client_Installer.zip from PPA  
+Unzip IPM_Client_Installer.zip  
+Execute PM Client install script with the following command.  
+Name of the msi file is version specific so you need to customize the following command.  
+Run as Administrator.  
+```cmd
+msiexec /i TaskMining.Agent.UI.Installer.msi /log log.txt /quiet SILENT_TM_ENDPOINT=https://processmining-tm-{{ pm_project_name }}.{{ apps_endpoint_domain }}/ SILENT_ALLOW_UNSECURE_HTTPS=true
+```

@@ -9,11 +9,13 @@ The following list specifies when you need to perform particular post-deployment
 
 Based on https://www.ibm.com/docs/en/rpa/21.0?topic=SSTHBP_21.0/installation/on_premises/client/client_installation.html
 
-You need to download IBM Robotic Process Automation Client Installer (G00PWZX) as IRPA_Client_Installer.zip from PPA  
+You need to download IBM Robotic Process Automation Client Installer (part number M07KKML but make sure you install the corresponding one for the RPA version deployed) as IRPA_Client_Installer.zip from PPA  
 Unzip IRPA_Client_Installer.zip  
 Execute RPA Client install script with the following command. It also installs Studio.  
+Name of the exe file is version specific so you need to customize the following command.  
+Run as Administrator.  
 ```cmd
-"IBM RPA Client Install.exe" /exenoui /qn installlevel=4 tenantcode=5000 licenseapiaddress=https://rpa-apiserver-{{ rpa_project_name }}.{{ apps_endpoint_domain }}/
+"IBM RPA Client Install.exe" /exenoui /qn installlevel=4 tenantcode=5000 licenseapiaddress=https://cpd-{{ rpa_project_name }}.{{ apps_endpoint_domain }}/rpa/api/
 ```
 Wait until the installation is completed. You can use provided *client-install-wait.cmd* from *rpa-postdeploy* Config Map to wait for install process to finish.  
 

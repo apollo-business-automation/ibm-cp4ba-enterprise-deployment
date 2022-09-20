@@ -4,8 +4,8 @@ Goal of this repository is to almost automagically install CP4BA Enterprise patt
 
 Last installation was performed on 2022-08-04 with CP4BA version 22.0.1-IF001 (also called 22.0.1.1 or 21.1.1)
 
-- [Documentation base](#documentation-base)
 - [Disclaimer ✋](#disclaimer-)
+- [Documentation base](#documentation-base)
 - [Benefits 🚀](#benefits-)
 - [General information 📢](#general-information-)
 - [What is in the package 📦](#what-is-in-the-package-)
@@ -18,18 +18,6 @@ Last installation was performed on 2022-08-04 with CP4BA version 22.0.1-IF001 (a
 - [Post removal steps ➡️](#post-removal-steps-️)
 - [Contacts](#contacts)
 - [Notice](#notice)
-
-## Documentation base
-
-Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=overview-what-is-cloud-pak-business-automation.
-
-Deployment of other parts is also based on respective official documentations.
-
-- IBM Robotic Process Automation (RPA) https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-planning-rpa-openshift
-- IBM Automation Assets https://www.ibm.com/docs/en/cloud-paks/1.0?topic=foundation-automation-assets
-- IBM Process Mining https://www.ibm.com/docs/en/cloud-paks/1.0?topic=pm-installation-setup-guide-process-mining-openshift-container-platform
-- IBM Automation Foundation (IAF) https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-foundation
-- IBM Cloud Pak Foundational Services (CPFS) https://www.ibm.com/docs/en/cpfs?topic=operator-installing-foundational-services-online
 
 ## Disclaimer ✋
 
@@ -45,6 +33,18 @@ Not for production use. Suitable for Demo and PoC environments - but with enterp
 **!Important** - Keep in mind that the platform contains DB2 which is licensed with Standard Edition license available from CP4BA and it must adhere to the *Additional IBM DB2 Standard Edition Detail* in official license information at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument (or its newer revision).
 
 **!Important** - Keep in mind that this deployment contains capabilities (the ones which are not bundled with CP4BA) which are not eligible to run on Worker Nodes covered by CP4BA OCP Restricted licenses. More info on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=clusters-restricted-openshift-entitlement.
+
+## Documentation base
+
+Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1.
+
+Deployment of other parts is also based on respective official documentations.
+
+- IBM Robotic Process Automation (RPA) https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-planning-rpa-openshift
+- IBM Automation Assets https://www.ibm.com/docs/en/cloud-paks/1.0?topic=foundation-automation-assets
+- IBM Process Mining https://www.ibm.com/docs/en/cloud-paks/1.0?topic=pm-installation-setup-guide-process-mining-openshift-container-platform
+- IBM Automation Foundation (IAF) https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-foundation
+- IBM Cloud Pak Foundational Services (CPFS) https://www.ibm.com/docs/en/cpfs?topic=operator-installing-foundational-services-online
 
 ## Benefits 🚀
 
@@ -65,7 +65,7 @@ Result of this Enterprise deployment is not fully supported:
 
 What is not included:
 - ICCs - not covered.
-- Caution! FNCM External share - Currently not supported with ZEN & IAM as per limitation on [FNCM limitations](https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=notes-known-limitations-issues#concept_gmf_x1h_1fb__ecm)
+- Caution! FNCM External share - Currently not supported with ZEN & IAM as per limitation on [FNCM limitations](https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=notes-known-limitations-issues#concept_gmf_x1h_1fb__ecm)
 - Caution! Asset Repository is now omitted due to a bug in IAF - waiting for fixes. And the latest version only support OCP 4.10+.
 - Workflow Server and Workstream Services - this is a dev deployment. BAW Authoring and (BAW + IAWS) are mutually exclusive in single project.
 
@@ -98,9 +98,9 @@ Contains extra software which makes working with the platform even easier.
 
 Purple color is used for CP4BA capabilities.
 
-More info for these capabilities is available in official docs at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3.
+More info for these capabilities is available in official docs at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1.
 
-More specifically in overview of patterns at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=deployment-capabilities-production-deployments.
+More specifically in overview of patterns at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments.
 
 #### IAF (IBM Automation Foundation) capabilities
 
@@ -196,7 +196,7 @@ node/10.163.57.254
 ## Pre-requisites ⬅️
 
 - OpenShift cluster sized according with the system requirements
-  - Cloud Pak: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/21.0.3?topic=ppd-system-requirements
+  - Cloud Pak: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=pcmppd-system-requirements
   - RPA: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=openshift-pre-installation-requirements
   - Process Mining: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=platform-pre-installation-requirements
   - IAF : https://www.ibm.com/docs/en/cloud-paks/1.0?topic=p-system-requirements
@@ -296,8 +296,55 @@ data:
     ## Password must be alphanumeric (upper and lower case; no special characters allowed).
     universal_password: Passw0rd
 
+    # The rest of the following parameters can be used to further customize the deployment.
+    # You don't need to configure them in any way if you want to just install the whole platform with prerequisites and extras.
 
-    # Always review these parameters for changes
+    ## Set to false if you provide your own LDAP, madatory to set the ldap_configuration
+    openldap_enabled: true
+
+    # apollo-one-shot deployment installs its own OpenLdap server. 
+    # If you do not want to use it and have an external LDAP server you prefer, then uncomment the ldap_configuration and fill the values.
+    # Example values are provided bellow.
+    # Documented in: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=parameters-ldap-configuration
+    #
+    # IMPORTANT: The provided LDAP will be used for all the components you are going to install.
+    # IMPORTANT: Also set openldap_enabled on false if you do not want to install it
+    # IMPORTANT: Also create the external ldap secret that is bellow and put its name into ldap_configuration.lc_custom_config_secret
+    # 
+    #ldap_configuration:
+    #  lc_custom_config_secret: external-ldap-secret
+    ## the main ldap group used for workflow and other purposes where single group of admins is required. 
+    #  lc_principal_admin_group: cpadmins
+    ## list of all admin groups you want to set to be admins in the platform components 
+    #  lc_admin_groups: ['cpadmins'] 
+    ## explicit list of users to be admins of the platform componets
+    #  lc_admin_users: ['cpadmin']
+    ## list of general user groups
+    #  lc_general_groups: ['cpusers','cpusers1']
+    #  lc_selected_ldap_type: IBM Security Directory Server
+    #  lc_ldap_server: "external_ldap_hostname"
+    #  lc_bind_secret: ldap-bind-secret
+    #  lc_ldap_domain: cp.local
+    #  lc_ldap_base_dn: dc=cp,dc=local
+    #  lc_ldap_user_base_dn: ou=Users,dc=cp,dc=local
+    ## If you decide to use ssl with ldap, be sure to provide lc_ldap_ssl_secret_name as well
+    ## documentation: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-ssl-enabled-ldap
+    #  lc_ldap_ssl_enabled: false
+    #  lc_ldap_ssl_secret_name: "external_ldap_ssl_secret_name"
+    #  lc_ldap_user_object_class: inetOrgPerson
+    #  lc_ldap_user_id_attribute: uid
+    #  lc_ldap_user_name_attribute: "*:cn"
+    #  lc_ldap_user_display_name_attr: cn
+    #  lc_ldap_group_object_class: groupOfNames
+    #  lc_ldap_group_id_attribute: cn
+    #  lc_ldap_group_base_dn: ou=Groups,dc=cp,dc=local
+    #  lc_ldap_group_name_attribute: "*:cn"
+    #  lc_ldap_group_display_name_attr: cn
+    #  lc_ldap_group_membership_search_filter: "(|(&(objectclass=groupofnames)(member={0}))(&(objectclass=groupofuniquenames)(uniquemember={0})))"
+    #  lc_ldap_group_member_id_map: "groupofnames:member"
+    #  tds:
+    #    lc_user_filter: "(&(cn=%v)(objectclass=inetOrgPerson))"
+    #    lc_group_filter: "(&(cn=%v)(|(objectclass=groupofnames)(objectclass=groupofuniquenames)(objectclass=groupofurls)))"
 
     # Configuration of cp4ba components to be installed. Please be sure you select all that is needed both from the 
     # deployment patterns as well as from the optional components.
@@ -370,11 +417,17 @@ data:
 
 Optionally you can add your custom Global CA Secret which is then used to generate all certificates for the whole platform. If you don't provide it, a new Global CA will be automatically generated for you.
 
+To generate your own, you can use the following command which generated Global CA with 10 years validity.
+```bash
+openssl req -new -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes -out global-ca.crt -keyout global-ca.key -subj "/CN=Global CA"
+```
+
 Copy the contents of the following yaml to OpenShift console *Import YAML* dialog (as seen in the picture below - point 1 and 2).
 
 Add certificate of your Global CA to *tls.crt* and key to *tls.key*.
 
-Make sure the contents of CA files are properly indented to the same level like example contents. (as seen in the picture below point 3)
+Make sure the contents of CA files are properly indented to the same level like example contents. (as seen in the picture below point 3)  
+Private key can also have different header and footer than *-----BEGIN RSA PRIVATE KEY-----* and *-----END RSA PRIVATE KEY-----*
 
 Apply the updated contents to your cluster (as seen in the picture below point 4).    
 
@@ -401,6 +454,28 @@ stringData:
 ```
 
 ![assets/secret.png](assets/secret.png)
+
+Optionally you can add your custom External LDAP Bind Secret to provide credentials for when you want to use your own LDAP and not the OpenLdap which is installed by default by the apollo-one-shot. This should be used together with the setting `openldap_enabled: false` and also `ldap_configuration`. Bellow you can find an example of the bind secret:
+
+IMPORTANT: based on this secret, new bind secret will be created in the CP4BA namespace for the CP4BA use.
+
+IMPORTANT: When using External LDAP, for the **principal admin user**, when user name attribute and id attribute is different and their value as well, it is known to cause issue with setup of FileNet domain. Be sure to provide admin user who has the same name as id for now (e.g. same cn as uid for example). Alternatively configure the ldap_configuration approprietly to avoid the issue.
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: external-ldap-secret
+  namespace: apollo-one-shot  
+type: Opaque
+stringData:
+  # used for the ldap binding in components needing to interact with LDAP 
+  ldapUsername: cn=admin,dc=cp,dc=local
+  ldapPassword: anAdminPassword
+  # used as the main admin for the installed platform, cp4ba.
+  principalAdminUsername: cpadmin
+  principalAdminPassword: aCPadminPassword
+```
 
 ### 4. Run the Job
 

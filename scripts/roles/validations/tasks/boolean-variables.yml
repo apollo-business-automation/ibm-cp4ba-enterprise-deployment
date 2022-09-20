@@ -3,6 +3,8 @@
     msg: "The {{ item.name }} variable has to be boolean"
   when: "item.value  | type_debug != 'bool'"
   with_items:
+    - name: openldap_enabled
+      value: "{{ openldap_enabled }}"
     - name: pm_enabled
       value: "{{ pm_enabled }}"
     - name: asset_repo_enabled

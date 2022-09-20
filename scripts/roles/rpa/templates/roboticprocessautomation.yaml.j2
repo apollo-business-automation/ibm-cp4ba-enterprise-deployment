@@ -23,8 +23,8 @@ spec:
     firstTenant:
       name: ibm
       owner:
-        email: cpadmin@cp.local
-        name: cpadmin
+        email: "{{ lc_principal_admin_user }}@{{ lc_ldap_domain }}"
+        name: "{{ lc_principal_admin_user }}"
     replicas: 1
     smtp:
       port: 587
@@ -53,6 +53,15 @@ spec:
     replicas: 1
   antivirus:
     replicas: 1
+    template:
+      pod:
+        spec:
+          containers:
+            - name: clam-av-api
+              readinessProbe:
+                initialDelaySeconds: 300
+              livenessProbe:
+                initialDelaySeconds: 300
   audit:
     forwardingEnabled: false
   nlp:

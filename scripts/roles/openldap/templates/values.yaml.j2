@@ -1,105 +1,106 @@
 replicaCount: 1
 env:
-  LDAP_ORGANISATION: "CP"
-  LDAP_DOMAIN: "cp"
-adminPassword: '{{ universal_password }}'
-configPassword: '{{ universal_password }}'
+  LDAP_ORGANISATION: "{{ lc_ldap_domain }}"
+  LDAP_DOMAIN: "{{ lc_ldap_domain }}"
+adminPassword: '{{ lc_bind_admin_password }}'
+configPassword: '{{ lc_bind_admin_password }}'
 customLdifFiles:
   01-default-users.ldif: |-
     # Units
-    dn: ou=Users,dc=cp
+    dn: {{ lc_ldap_user_base_dn }}
     objectClass: organizationalUnit
-    ou: Users
+    ou: {{ lc_ldap_user_base_dn | regex_replace('^([Oo][Uu]=)(.+?)(,([Oo]|[Dd][Cc])=.*)$', '\\2') }}
 
-    dn: ou=Groups,dc=cp
+    dn: {{ lc_ldap_group_base_dn }}
     objectClass: organizationalUnit
-    ou: Groups
+    ou: {{ lc_ldap_group_base_dn | regex_replace('^([Oo][Uu]=)(.+?)(,([Oo]|[Dd][Cc])=.*)$', '\\2') }}
 
     # Users
-    dn: uid=cpadmin,ou=Users,dc=cp
-    objectClass: inetOrgPerson
+    dn: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_user_base_dn }}
+    objectClass: {{ lc_ldap_user_object_class }}
     objectClass: top
-    cn: cpadmin
-    sn: cpadmin
-    uid: cpadmin
-    mail: cpadmin@cp.local
-    userpassword:: {{ universal_password | b64encode }}
+    cn: {{ lc_principal_admin_user }}
+    sn: {{ lc_principal_admin_user }}
+    {{ lc_ldap_user_id_attribute }}: {{ lc_principal_admin_user }}
+    # ToDo set some domain
+    mail: {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}
+    userpassword:: {{ lc_principal_admin_password | b64encode }}
     employeeType: admin
 
-    dn: uid=cpadmin1,ou=Users,dc=cp
-    objectClass: inetOrgPerson
+    dn: {{ lc_ldap_user_id_attribute }}=cpadmin1,{{ lc_ldap_user_base_dn }}
+    objectClass: {{ lc_ldap_user_object_class }}
     objectClass: top
     cn: cpadmin1
     sn: cpadmin1
-    uid: cpadmin1
-    mail: cpadmin1@cp.local
+    {{ lc_ldap_user_id_attribute }}: cpadmin1
+    mail: cpadmin1@{{ lc_ldap_domain }}
     userpassword:: {{ universal_password | b64encode }}
     employeeType: admin
 
-    dn: uid=cpadmin2,ou=Users,dc=cp
+    dn: {{ lc_ldap_user_id_attribute }}=cpadmin2,{{ lc_ldap_user_base_dn }}
     objectClass: inetOrgPerson
     objectClass: top
     cn: cpadmin2
     sn: cpadmin2
     uid: cpadmin2
-    mail: cpadmin2@cp.local
+    mail: cpadmin2@{{ lc_ldap_domain }}
     userpassword:: {{ universal_password | b64encode }}
     employeeType: admin
 
-    dn: uid=cpuser,ou=Users,dc=cp
-    objectClass: inetOrgPerson
+    dn: {{ lc_ldap_user_id_attribute }}=cpuser,{{ lc_ldap_user_base_dn }}
+    objectClass: {{ lc_ldap_user_object_class }}
     objectClass: top
     cn: cpuser
     sn: cpuser
-    uid: cpuser
-    mail: cpuser@cp.local
+    {{ lc_ldap_user_id_attribute }}: cpuser
+    mail: cpuser@{{ lc_ldap_domain }}
     userpassword:: {{ universal_password | b64encode }}
 
-    dn: uid=cpuser1,ou=Users,dc=cp
-    objectClass: inetOrgPerson
+    dn: {{ lc_ldap_user_id_attribute }}=cpuser1,{{ lc_ldap_user_base_dn }}
+    objectClass: {{ lc_ldap_user_object_class }}
     objectClass: top
     cn: cpuser1
     sn: cpuser1
-    uid: cpuser1
-    mail: cpuser1@cp.local
+    {{ lc_ldap_user_id_attribute }}: cpuser1
+    mail: cpuser1@{{ lc_ldap_domain }}
     userpassword:: {{ universal_password | b64encode }}
 
-    dn: uid=cpuser2,ou=Users,dc=cp
-    objectClass: inetOrgPerson
+    dn: {{ lc_ldap_user_id_attribute }}=cpuser2,{{ lc_ldap_user_base_dn }}
+    objectClass: {{ lc_ldap_user_object_class }}
     objectClass: top
     cn: cpuser2
     sn: cpuser2
-    uid: cpuser2
-    mail: cpuser2@cp.local
+    {{ lc_ldap_user_id_attribute }}: cpuser2
+    mail: cpuser2@{{ lc_ldap_domain }}
     userpassword:: {{ universal_password | b64encode }}
 
     # Groups
-    dn: cn=cpadmins,ou=Groups,dc=cp
-    objectClass: groupOfNames
+    dn: {{ lc_ldap_group_id_attribute }}={{ lc_principal_admin_group }},{{ lc_ldap_group_base_dn }}
+    objectClass: {{ lc_ldap_group_object_class }}
     objectClass: top
-    cn: cpadmins
-    member: uid=cpadmin,ou=Users,dc=cp
-    member: uid=cpadmin1,ou=Users,dc=cp
-    member: uid=cpadmin2,ou=Users,dc=cp
+    cn: {{ lc_principal_admin_group }}
+    member: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_user_base_dn }}
+    member: {{ lc_ldap_user_id_attribute }}=cpadmin1,{{ lc_ldap_user_base_dn }}
+    member: {{ lc_ldap_user_id_attribute }}=cpadmin2,{{ lc_ldap_user_base_dn }}
 
-    dn: cn=cpusers,ou=Groups,dc=cp
-    objectClass: groupOfNames
+    dn: {{ lc_ldap_group_id_attribute }}=cpusers,{{ lc_ldap_group_base_dn }}
+    objectClass: {{ lc_ldap_group_object_class }}
     objectClass: top
     cn: cpusers
-    member: uid=cpadmin,ou=Users,dc=cp
-    member: uid=cpadmin1,ou=Users,dc=cp
-    member: uid=cpadmin2,ou=Users,dc=cp
-    member: uid=cpuser,ou=Users,dc=cp
-    member: uid=cpuser1,ou=Users,dc=cp
-    member: uid=cpuser2,ou=Users,dc=cp
+    member: {{ lc_ldap_user_id_attribute }}=cpadmin,{{ lc_ldap_user_base_dn }}
+    member: {{ lc_ldap_user_id_attribute }}=cpadmin1,{{ lc_ldap_user_base_dn }}
+    member: {{ lc_ldap_user_id_attribute }}=cpadmin2,{{ lc_ldap_user_base_dn }}
+    member: {{ lc_ldap_user_id_attribute }}=cpuser,{{ lc_ldap_user_base_dn }}
+    member: {{ lc_ldap_user_id_attribute }}=cpuser1,{{ lc_ldap_user_base_dn }}
+    member: {{ lc_ldap_user_id_attribute }}=cpuser2,{{ lc_ldap_user_base_dn }}
 
-    dn: cn=cpusers1,ou=Groups,dc=cp
-    objectClass: groupOfNames
+    dn: {{ lc_ldap_group_id_attribute }}=cpusers1,{{ lc_ldap_group_base_dn }}
+    objectClass: {{ lc_ldap_group_object_class }}
     objectClass: top
     cn: cpusers1
-    member: uid=cpuser,ou=Users,dc=cp
-    member: uid=cpuser1,ou=Users,dc=cp
-    member: uid=cpuser2,ou=Users,dc=cp
+    member: {{ lc_ldap_user_id_attribute }}=cpuser,{{ lc_ldap_user_base_dn }}
+    member: {{ lc_ldap_user_id_attribute }}=cpuser1,{{ lc_ldap_user_base_dn }}
+    member: {{ lc_ldap_user_id_attribute }}=cpuser2,{{ lc_ldap_user_base_dn }}
 replication:
   enabled: false
 persistence:
