@@ -77,8 +77,9 @@ After you have some rule project ready, configure it to emit BAI events using ht
 
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=manager-installing-rule-designer
 
-Download Eclipse 2020-06 from https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2020-06/R/eclipse-jee-2020-06-R-win32-x86_64.zip
+Download Eclipse IDE 2020-06 R (4.16) Modeling Tools Packages from https://archive.eclipse.org/technology/epp/downloads/release/2020-06/R/eclipse-modeling-2020-06-R-win32-x86_64.zip
 In the following URL you may want to use different rule designer version, replace 81100 with the appropriate version you need.  
+Also for specific iFixes of Rule Designer you may need to follow this topic https://github.com/DecisionsDev/ruledesigner/tree/8.11.0.x-ifix#installation in GitHub instead, as latest iFixes are not present in Eclipse Marketplace.  
 Go to https://marketplace.eclipse.org/content/ibm-operational-decision-manager-developers-v-811x-rule-designer
 Drag and drop Install button in your eclipse.  
 Confirm > Accept license > Finish  
@@ -103,6 +104,9 @@ Add the following to eclipse.ini
 ```text
 -Djavax.net.ssl.trustStore=truststore.jks
 ```
+
+Please note that after using this trust store, eclipse marketplace and updates will stop to work. To overcome this, you can to extract Global CA certificate from downloaded truststore.jks, make a copy of java cacerts, import GLobal CA into it and use the newly created cacerts.
+
 
 When configuring RES connection in Deployment use  
 URL: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/res  
