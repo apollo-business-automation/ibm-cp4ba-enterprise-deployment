@@ -694,7 +694,7 @@
   retries: 40
   delay: 30
 
-- name: Update cpfs admin username
+- name: Update cpfs admin password
   block:
 
     # Based on https://www.ibm.com/docs/en/cpfs?topic=configurations-changing-cluster-administrator-access-credentials#pwd
