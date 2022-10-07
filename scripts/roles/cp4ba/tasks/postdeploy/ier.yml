@@ -6,7 +6,7 @@
     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_output_to_var: "apps_endpoint_domain"
-    
+
 # Create Route for IER CPE configuration
 - name: Prepare yaml file for ierconfig Route
   ansible.builtin.template:
@@ -78,34 +78,28 @@
     dest: "{{ cp4ba_output_directory }}/ierconfig/configure/profiles/environmentObjectStoreConfiguration.xml"
     mode: u+rwx
 
-# Based on https://www.ibm.com/docs/en/cpfs?topic=apis-oidc-registration#get2 (Get access token by using username and password)
-- name: Get IAM access token
-  ansible.builtin.uri:
-    url: "https://cp-console.{{ apps_endpoint_domain }}/idprovider/v1/auth/identitytoken"
-    method: POST
-    headers:
-      Content-Type: application/x-www-form-urlencoded;charset=UTF-8
-    body_format: form-urlencoded
-    body:
-      grant_type: password
-      username: "{{ lc_principal_admin_user }}"
-      password: "{{ lc_principal_admin_password }}"
-      scope: openid
-    validate_certs: false
-    status_code: 200
-  register: admin_token_response
+- name: Get IAM token
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: iam-token-user
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_user: "{{ lc_principal_admin_user }}"
+    common_password: "{{ lc_principal_admin_password }}"
+    common_output_to_var: "iam_token"
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-data/4.0?topic=resources-generating-authorization-token
-- name: Exchange IAM access token for Zen token
-  ansible.builtin.uri:
-    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/v1/preauth/validateAuth"
-    method: GET
-    headers:
-      iam-token: "{{ admin_token_response | json_query('json.access_token') }}"
-      username: "{{ lc_principal_admin_user }}"
-    validate_certs: false
-    status_code: 200
-  register: admin_token_response
+- name: Get Zen token
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: zen-token
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    comon_iam_token: "{{ iam_token }}"
+    common_user: "{{ lc_principal_admin_user }}"
+    common_namespace_name: "{{ cp4ba_project_name }}"
+    common_output_to_var: "zen_token"
 
 - name: Create CodeModules folder
   ansible.builtin.uri:
@@ -113,7 +107,7 @@
     method: POST
     headers:
       Content-Type: application/json
-      Authorization: "Bearer {{ admin_token_response.json | json_query('accessToken') }}"
+      Authorization: "Bearer {{ zen_token }}"
     body_format: json
     body:
       query: |
@@ -172,7 +166,7 @@
     force_basic_auth: true
     status_code: 200
     headers:
-      Authorization: "Bearer {{ admin_token_response.json | json_query('accessToken') }}"
+      Authorization: "Bearer {{ zen_token }}"
       auth-token-realm: InternalIamRealm
       Content-Type: "application/x-www-form-urlencoded"
     validate_certs: false
@@ -201,7 +195,7 @@
 #       Connection: "keep-alive"
 #       Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
 #       security_token: "{{ content.security_token }}"
-#       Authorization: "Bearer {{ admin_token_response.json | json_query('accessToken') }}"
+#       Authorization: "Bearer {{ zen_token }}"
 #       auth-token-realm: "InternalIamRealm"
 #     timeout: 60
 #   register: plugins_response
@@ -237,7 +231,7 @@
 #       Connection: "keep-alive"
 #       Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
 #       security_token: "{{ content.security_token }}"
-#       Authorization: "Bearer {{ admin_token_response.json | json_query('accessToken') }}"
+#       Authorization: "Bearer {{ zen_token }}"
 #       auth-token-realm: "InternalIamRealm"
 #     timeout: 60
 #   register: plugin_load_response
@@ -271,7 +265,7 @@
 #       Connection: "keep-alive"
 #       Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
 #       security_token: "{{ content.security_token }}"
-#       Authorization: "Bearer {{ admin_token_response.json | json_query('accessToken') }}"
+#       Authorization: "Bearer {{ zen_token }}"
 #       auth-token-realm: "InternalIamRealm"
 #     timeout: 60
 #   register: plugin_add_response
@@ -295,7 +289,7 @@
 #       Connection: "keep-alive"
 #       Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
 #       security_token: "{{ content.security_token }}"
-#       Authorization: "Bearer {{ admin_token_response.json | json_query('accessToken') }}"
+#       Authorization: "Bearer {{ zen_token }}"
 #       auth-token-realm: "InternalIamRealm"
 #     timeout: 60
 #   register: plugin_register_response
@@ -320,7 +314,7 @@
 #       Connection: "keep-alive"
 #       Cookie: "{{ cookie_jsessionid_name }}={{ login_jsession }}"
 #       security_token: "{{ content.security_token }}"
-#       Authorization: "Bearer {{ admin_token_response.json | json_query('accessToken') }}"
+#       Authorization: "Bearer {{ zen_token }}"
 #       auth-token-realm: "InternalIamRealm"
 #     timeout: 60
 #   register: plugin_configure_response

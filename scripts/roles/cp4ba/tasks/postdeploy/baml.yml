@@ -7,33 +7,28 @@
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_output_to_var: "apps_endpoint_domain"
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=tasks-business-automation-studio
-# Get access token for ZEN administrative initial user
-- name: Get Zen Initial Admin User Secret
-  kubernetes.core.k8s_info:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    api_version: v1
-    kind: Secret
-    namespace: "{{ cp4ba_project_name }}"
-    name: admin-user-details
-  register: secret
-  retries: 40
-  delay: 15
+- name: Get IAM token
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: iam-token-user
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_user: "{{ lc_principal_admin_user }}"
+    common_password: "{{ lc_principal_admin_password }}"
+    common_output_to_var: "iam_token"
 
-# Based on introspection of Zen NGINX configs in Deployment ibm-nginx in /user-home/_global_/nginx-conf.d/icp4d-open-api-configmap.conf
-# Based on CP4BA Operator code ansible\roles\AS-ID\tasks\iam-verify-and-add.yml@69+
-- name: Get Zen Initial Admin User Acccess Token
-  ansible.builtin.uri:
-    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icp4d-api/v1/authorize"
-    method: POST
-    body_format: json
-    body:
-      username: admin
-      password: "{{ secret.resources[0].data.initial_admin_password | b64decode }}"
-    validate_certs: false
-    status_code: 200
-  register: token_response
+- name: Get Zen token
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: zen-token
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    comon_iam_token: "{{ iam_token }}"
+    common_user: "{{ lc_principal_admin_user }}"
+    common_namespace_name: "{{ cp4ba_project_name }}"
+    common_output_to_var: "zen_token"
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=secrets-creating-custom-bpc-workforce-secret
 - name: Get BPM Systems Federated Response
@@ -41,7 +36,7 @@
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/pfs/rest/bpm/federated/v1/systems"
     method: GET
     headers:
-      Authorization: "Bearer {{ token_response.json | json_query('token') }}"
+      Authorization: "Bearer {{ zen_token }}"
     validate_certs: false
     status_code:
       - 200

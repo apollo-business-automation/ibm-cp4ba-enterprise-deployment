@@ -1,5 +1,5 @@
-- name: Manage Zen roles
-  include_tasks: postdeploy/zen-roles.yml
+- name: Manage Zen
+  include_tasks: postdeploy/zen.yml
 
 - name: Manage BAML
   include_tasks: postdeploy/baml.yml
