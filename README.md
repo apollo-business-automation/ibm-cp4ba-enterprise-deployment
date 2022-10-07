@@ -500,7 +500,7 @@ spec:
           image: ubi9/ubi:9.0.0
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; yum install git -y && git clone --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
+            ["-c","cd /usr; yum install git -y && git clone --progress --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
