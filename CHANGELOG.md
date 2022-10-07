@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+### Added
+
+- Update procedure description.
+- Post deployment steps for IPM.
+
+### Changed
+
+- Updated CP4BA to 22.0.1.3.
+- Updated RPA to 21.0.5.
+- Updated IPM to 1.13.1.
+- Updated extras.
+- Moved repository and branch settings from Jobs to ConfigMap.
+
 ## [2022-09-20]
 
 ### Added

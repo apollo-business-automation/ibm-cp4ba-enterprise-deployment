@@ -14,6 +14,7 @@ Last installation was performed on 2022-09-20 with CP4BA version 22.0.1-IF002 (a
 - [Installation steps ⚡](#installation-steps-)
 - [Post installation steps ➡️](#post-installation-steps-️)
 - [Usage & operations 😊](#usage--operations-)
+- [Update steps ↗️](#update-steps-)
 - [Removal steps 🗑️](#removal-steps-️)
 - [Post removal steps ➡️](#post-removal-steps-️)
 - [Contacts](#contacts)
@@ -272,6 +273,14 @@ metadata:
   name: apollo-one-shot
   namespace: apollo-one-shot
 data:
+  # Repository url can be changed to you own forked repository with your customizations
+  git_repository: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment.git
+
+  # This parameter cotains a specific tag name of the repository. This allows you to run Install and Remove from the same version.
+  # In situation where you want to clean and install newver version you leave the original tag you had, run through remove and then change this tag to lastest and run install.
+  git_branch: main
+
+  # Variables
   variables.yml: |
     # Always set these parameters to your values #
 
@@ -506,8 +515,15 @@ spec:
             - name: ACTION
               value: install
             - name: GIT_REPOSITORY
-              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment.git
+              valueFrom:
+                configMapKeyRef:
+                  name: apollo-one-shot
+                  key: git_repository
             - name: GIT_BRANCH
+              valueFrom:
+                configMapKeyRef:
+                  name: apollo-one-shot
+                  key: git_branch
               value: main
             - name: CONTAINER_RUN_MODE
               value: "true"
@@ -577,6 +593,12 @@ Review and perform post deploy manual steps for RPA as specified in ConfigMap *r
 
 ![assets/rpa-postdeploy-md.png](assets/rpa-postdeploy-md.png)
 
+Review and perform post deploy manual steps for IPM as specified in ConfigMap *pm-postdeploy.md* in *postdeploy.md* file. See below images to find this file. It is best to copy the contents and open it in nice MarkDown editor like VSCode.
+
+![assets/pm-postdeploy-cm.png](assets/pm-postdeploy-cm.png)
+
+![assets/pm-postdeploy-md.png](assets/pm-postdeploy-md.png)
+
 ## Usage & operations 😊
 
 Endpoints, access info and other useful information is available in Project *apollo-one-shot* in ConfigMap named *usage* in *usage.md* file after installation. It is best to copy the contents and open it in nice MarkDown editor like VSCode.
@@ -586,6 +608,17 @@ Specifically, if you haven't provided your own Global CA, review the section *Gl
 ![assets/usage-cm.png](assets/usage-cm.png)
 
 ![assets/usage-md.png](assets/usage-md.png)
+
+## Update steps ↗️
+
+Useful when you want to install new version.
+
+If you want to upgrade some parts of deployment you need to follow official documentations.
+
+Otherwise the procedure consists of removing the deployment and installing its new version.
+
+The key here is the **git_branch** attribute in **apollo-one-shot** ConfigMap. It determines which version is used for both installation and removal of the deployment.
+To get new version on the already installed cluster, you would leave the value to the original one and go through the [Removal steps 🗑️](#removal-steps-️). Then you would change the value to newer git tag and go through [Installation steps ⚡](#installation-steps-) reviewing if something has changed in the ConfigMap or Secrets from your previous deployment.
 
 ## Removal steps 🗑️
 
@@ -616,15 +649,21 @@ spec:
           image: ubi9/ubi:9.0.0
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; yum install git -y && git clone --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
+            ["-c","cd /usr; yum install git -y && git clone --progress --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
               value: remove
             - name: GIT_REPOSITORY
-              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment.git
+              valueFrom:
+                configMapKeyRef:
+                  name: apollo-one-shot
+                  key: git_repository
             - name: GIT_BRANCH
-              value: main
+              valueFrom:
+                configMapKeyRef:
+                  name: apollo-one-shot
+                  key: git_branch
             - name: CONTAINER_RUN_MODE
               value: "true"
           volumeMounts:
