@@ -18,7 +18,7 @@
     common_output_to_var: "apps_endpoint_domain"
 
 - name: Get git repo revision
-  git: 
+  ansible.builtin.git: 
     repo: .
     dest: .
     update: no
