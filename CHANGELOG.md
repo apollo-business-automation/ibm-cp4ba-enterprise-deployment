@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Update procedure description.
 - Post deployment steps for IPM.
+- All OpenLdap users now have separate mailboxes.
+- Enabled ODM Decision warehouse schemas.
 
 ### Changed
 
