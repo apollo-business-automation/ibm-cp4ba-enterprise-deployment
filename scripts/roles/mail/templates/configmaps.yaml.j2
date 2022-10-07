@@ -8,10 +8,18 @@ metadata:
 data:
   postfix-accounts.cf: |
     {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}|{PLAIN}{{mail_universal_password}}
+    cpadmin1@{{ lc_ldap_domain }}|{PLAIN}{{mail_universal_password}}
+    cpadmin2@{{ lc_ldap_domain }}|{PLAIN}{{mail_universal_password}}
     cpuser@{{ lc_ldap_domain }}|{PLAIN}{{mail_universal_password}}
+    cpuser1@{{ lc_ldap_domain }}|{PLAIN}{{mail_universal_password}}
+    cpuser2@{{ lc_ldap_domain }}|{PLAIN}{{mail_universal_password}}
 
   postfix-virtual.cf: |
     cpuser@{{ lc_ldap_domain }} cpuser@{{ lc_ldap_domain }}
+    cpuser1@{{ lc_ldap_domain }} cpuser1@{{ lc_ldap_domain }}
+    cpuser2@{{ lc_ldap_domain }} cpuser2@{{ lc_ldap_domain }}
+    cpadmin1@{{ lc_ldap_domain }} cpadmin1@{{ lc_ldap_domain }}
+    cpadmin2@{{ lc_ldap_domain }} cpadmin2@{{ lc_ldap_domain }}
     @{{ lc_ldap_domain }} {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}
 
   postfix-main.cf: |
