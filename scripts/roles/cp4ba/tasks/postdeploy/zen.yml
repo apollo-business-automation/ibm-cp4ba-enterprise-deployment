@@ -356,4 +356,11 @@
     status_code: 200
   register: zen_api_key_response
 
-# TODO add to usage zen_api_key_response
+- name: Get zen api key
+  ansible.builtin.set_fact:
+    zen_api_key: "{{ zen_api_key_response.json.apiKey }}"
+
+# Regenerate usage with zen_api_key
+- name: Generate usage
+  ansible.builtin.include_role:
+    name: usage

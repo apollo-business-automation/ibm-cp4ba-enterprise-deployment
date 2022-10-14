@@ -144,6 +144,13 @@ As UI for MongoDB
 {% endif %}
 ## CP4BA - CP4BA capabilities
 
+{% if zen_api_key is defined %}
+### Zen service account credentials
+
+Based on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=users-generating-api-keys-authentication  
+If you need to call CP4BA endpoints with ZenApiKey (e. g. for ODM) a service account with username *cpadminservice* has been prepared for you with the generated api key *{{}}*
+
+{% endif %}
 ### Useful info
 
 If you want to investigate the actual ansible code that is running in the operator, you can get it from running operator pod from /opt/ansible/roles directory.
@@ -603,6 +610,6 @@ You can import *tls.crt* to you operating system or browser to automatically tru
 
 ## Version
 
-For the reference and to know which version of the Apollo one-shot deployment was used, bellow you can find the sha hash of the last commit.
+For the reference and to know which version of the Apollo one-shot deployment was used, bellow you can find the sha hash of the used commit.
 
 - Apollo one-shot used commit sha hash: {{ git_repo_information.before  if git_repo_information.before else git_repo_information.after }}

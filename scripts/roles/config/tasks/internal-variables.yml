@@ -104,6 +104,8 @@ elasticsearch_admin_user: elasticsearch-admin
 apps_endpoint_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 apps_endpoint_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
 
+usage_action: "{{ global_action }}"
+
 catalog_source_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
 catalog_source_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
 catalog_source_action: "{{ global_action }}"

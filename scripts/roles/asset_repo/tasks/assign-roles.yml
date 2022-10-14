@@ -91,3 +91,23 @@
       failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')
 
   with_items: "{{ lc_admin_groups }}"
+
+- name: Add role to default admin user and service user
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user/admin?add_roles=true"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ zen_token }}"
+    body_format: json
+    body:
+      username: "{{ item }}"
+      user_roles:
+        - automation-assets-administrator-role
+        - automation-assets-editor-role
+        - automation-assets-viewer-role
+    validate_certs: false
+    status_code:
+      - 200
+    with_items:
+      - "{{ lc_principal_admin_user }}"
+      - "cpadminservice"
