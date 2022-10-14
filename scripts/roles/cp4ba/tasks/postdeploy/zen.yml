@@ -120,7 +120,7 @@
         status_code: 200
       register: get_groups_response
 
-    - name: Register ldap group with the zen group cpusers
+    - name: Register ldap group with the zen group for admin groups
       ansible.builtin.uri:
         url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ group_id }}/members"
         method: POST
@@ -146,7 +146,7 @@
   when: (409 in group_response | json_query('results[*].status'))
 
 # Groups endpoint found based on the network dev tools in the browser
-- name: Add All Roles to cpusers groups
+- name: Add All Roles to general groups
   ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
     method: POST
@@ -201,7 +201,7 @@
         status_code: 200
       register: get_groups_response
 
-    - name: Register ldap group with the zen group cpusers
+    - name: Register ldap group with the zen group for general groups
       ansible.builtin.uri:
         url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ group_id }}/members"
         method: POST
