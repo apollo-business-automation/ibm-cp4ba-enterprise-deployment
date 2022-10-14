@@ -252,3 +252,17 @@
     - TENANT1
     - TENANT2
     - CP4BA
+
+- name: Remove post-deploy.md Config Map
+  kubernetes.core.k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: absent
+    api_version: v1
+    kind: ConfigMap
+    name: cp4ba-postdeploy
+    namespace: "{{ cp4ba_output_namespace }}"
+    force: false
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
