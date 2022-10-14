@@ -138,10 +138,11 @@ Multiple command line tools are installed inside a container to make the install
 
 ## Environments used for installation 💻
 
-With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift 4.10, however it was historically executed on the following once.
+With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift 4.10 with 8 Worker Nodes (16 CPU, 32GB Memory each), however it was historically executed on the following once.  
+OpenShift 4.8 will not work with asset repository enabled.
 
 - ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
-OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
+OpenShift 4.8.x & 4.10.x - 8 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
 Successfully installed
 
 - Traditional OpenShift cluster created from scratch on top of virtualization platform  

@@ -21,6 +21,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Updated extras.
 - Moved repository and branch settings from Jobs to ConfigMap.
 
+### Removed
+
+- Ability to install on OpenShift 4.8.
+
 ## [2022-09-20]
 
 ### Added
