@@ -90,7 +90,3 @@
 - name: Remove Global CA
   ansible.builtin.include_role:
     name: global_ca
-
-- name: Remove Catalog Source
-  ansible.builtin.include_role:
-    name: catalog_source
