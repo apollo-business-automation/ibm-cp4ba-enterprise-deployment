@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - All OpenLdap users now have separate mailboxes.
 - Enabled ODM Decision warehouse schemas.
 - Workflow system enabled on OS1.
+- Configuration for ADP GPU node.
 
 ### Changed
 

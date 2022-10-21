@@ -64,6 +64,9 @@ spec:
     naturallanguageextractor:
       replica_count: 1
     deeplearning:
+      gpu_enabled: "{{ cp4ba_config.adp_config.gpu.gpu_enabled }}"
+      nodelabel_key: "{{ cp4ba_config.adp_config.gpu.nodelabel_key }}"
+      nodelabel_value: "{{ cp4ba_config.adp_config.gpu.nodelabel_value }}"
       replica_count: 1
   initialize_configuration:
     ic_obj_store_creation:

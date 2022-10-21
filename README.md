@@ -393,6 +393,13 @@ data:
         document_processing_runtime: false
         baw_authoring: true
         application: true
+      # Additional configuration for Automation Document Processing
+      adp_config:
+        # GPU config as described on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-document-processing
+        gpu:
+          gpu_enabled: false
+          nodelabel_key: nvidia.com/gpu.present
+          nodelabel_value: true
 
     ## Set to false if you don't want to install (or remove) Process Mining
     pm_enabled: true
