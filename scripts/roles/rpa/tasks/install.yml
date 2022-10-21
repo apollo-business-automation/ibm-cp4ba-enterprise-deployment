@@ -133,9 +133,18 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Prepare yaml file for RoboticProcessAutomation instance
-  ansible.builtin.template:
-    src: roboticprocessautomation.yaml.j2
+- name: Load RPA CR to variable
+  ansible.builtin.set_fact:
+    cr: "{{ lookup('template', 'roboticprocessautomation.yaml.j2') | from_yaml }}"
+
+- name: Merge customizations
+  ansible.builtin.set_fact:
+    cr: "{{ cr | combine(rpa_cr_custom) | from_yaml, recursive=true) }}"
+  when: rpa_cr_custom is defined
+
+- name: Write CR to file
+  ansible.builtin.copy:
+    content: '{{ cr | to_nice_yaml(indent=2, width=1337) }}'
     dest: "{{ rpa_output_directory }}/roboticprocessautomation.yaml"
     mode: u+rwx
 

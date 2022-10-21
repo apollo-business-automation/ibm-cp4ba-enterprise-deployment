@@ -312,6 +312,11 @@
       ansible.builtin.set_fact:
         cr: "{{ cr | combine(lookup('template', 'adp/cr.yaml.j2') | from_yaml, recursive=true) }}"
 
+    - name: Merge ADP customizations
+      ansible.builtin.set_fact:
+        cr: "{{ cr | combine(adp_cr_custom) | from_yaml, recursive=true) }}"
+      when: adp_cr_custom is defined
+
     - name: Combine lists back to CR
       ansible.builtin.set_fact:
         cr: "{{ cr | combine(list_overwrites, recursive=true) }}"

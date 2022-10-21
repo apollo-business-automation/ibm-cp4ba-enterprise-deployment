@@ -393,13 +393,25 @@ data:
         document_processing_runtime: false
         baw_authoring: true
         application: true
-      # Additional configuration for Automation Document Processing
-      adp_config:
-        # GPU config as described on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-document-processing
-        gpu:
-          gpu_enabled: false
-          nodelabel_key: nvidia.com/gpu.present
-          nodelabel_value: true
+    
+    # Additional customization for Automation Document Processing
+    # Contents of the following will be merged into ADP part of CP4BA CR yaml file. Arrays are overwriten.
+    adp_cr_custom:
+      spec:
+        ca_configuration:
+          # GPU config as described on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-document-processing
+          deeplearning:
+            gpu_enabled: false
+            nodelabel_key: nvidia.com/gpu.present
+            nodelabel_value: true
+    
+    # Additional customization for Robotic Process Automation
+    # Contents of the following will be merged into RPA CR yaml file. Arrays are overwriten.
+    rpa_cr_custom:
+      spec:
+        # Configures the NLP provider component of IBM RPA. Set atleast to 1 to enable it. https://www.ibm.com/docs/en/rpa/21.0?topic=platform-configuring-rpa-custom-resources#basic-setup
+        nlp:
+          replicas: 0
 
     ## Set to false if you don't want to install (or remove) Process Mining
     pm_enabled: true

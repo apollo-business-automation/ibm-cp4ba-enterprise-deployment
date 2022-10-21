@@ -22,9 +22,7 @@ spec:
       secretName: rpa-db
     firstTenant:
       name: ibm
-      owner:
-        email: "{{ lc_principal_admin_user }}@{{ lc_ldap_domain }}"
-        name: "{{ lc_principal_admin_user }}"
+      ownerSecret: rpa-first-tenant-owner
     replicas: 1
     smtp:
       port: 587

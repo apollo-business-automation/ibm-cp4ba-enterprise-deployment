@@ -14,11 +14,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Enabled ODM Decision warehouse schemas.
 - Workflow system enabled on OS1.
 - Configuration for ADP GPU node.
+- Configuration for RPA NLP replicas.
 
 ### Changed
 
 - Updated CP4BA to 22.0.1.3.
-- Updated RPA to 21.0.5.
+- Updated RPA to 21.0.6.
 - Updated IPM to 1.13.1.
 - Updated extras.
 - Moved repository and branch settings from Jobs to ConfigMap.
