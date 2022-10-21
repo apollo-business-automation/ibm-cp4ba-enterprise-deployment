@@ -62,6 +62,12 @@ spec:
             - "{CE552ADD-0000-0000-0000-00000000001C}" # 5.5.2 Core Collaboration Extensions
             - "{CE551ADD-0000-0000-0000-000000000011}" # 5.5.1 Social Collaboration Base Extensions
             - "{CE554ADD-0000-0000-0000-000000000021}" # 5.5.4 Event-Driven External Service Invocation Extensions
+          oc_cpe_obj_store_enable_workflow: true
+          oc_cpe_obj_store_workflow_region_name: os1_region_name
+          oc_cpe_obj_store_workflow_data_tbl_space: OS1_TS
+          oc_cpe_obj_store_workflow_admin_group: "{{ lc_principal_admin_group }}"
+          oc_cpe_obj_store_workflow_config_group: "{{ lc_principal_admin_group }}"
+          oc_cpe_obj_store_workflow_pe_conn_point_name: pe_conn_os1
     ic_icn_init_info:
       icn_repos:
         - add_repo_id: OS1
