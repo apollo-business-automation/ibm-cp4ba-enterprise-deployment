@@ -55,13 +55,13 @@ spec:
           class: "{{ cp4ba_storage_class_name }}"
           size: 10Gi
         # ToDo: Hotfix for elasticsearch and PFS certificates issues.
-    tls:
-      issuerRef:
-        name: iaf-issuer
-        kind: Issuer
-      caSecret:
-        secretName: global-ca
-        key: ca.crt
+    # tls:
+    #   issuerRef:
+    #     name: iaf-issuer
+    #     kind: Issuer
+    #   caSecret:
+    #     secretName: global-ca
+    #     key: ca.crt
   kafka:
     kafka:
       config:
