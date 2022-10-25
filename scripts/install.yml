@@ -25,9 +25,9 @@
     clone: no
   register: git_repo_information
 
-- name: Git repo revision to fact
+- name: Git commit id 
   ansible.builtin.set_fact: 
-    git_repo_information: "{{ git_repo_information }}"
+    git_commit_id: "{{ git_repo_information.before  if git_repo_information.before else git_repo_information.after }}"
 
 - name: Generate usage
   ansible.builtin.include_role:
