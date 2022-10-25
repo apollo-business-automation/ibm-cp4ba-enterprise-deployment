@@ -307,7 +307,7 @@ data:
     universal_password: Passw0rd
 
     # Optional - The rest of the following parameters can be used to further customize the deployment.
-    
+
     # You don't need to configure them in any way if you want to just install the whole platform with prerequisites and extras.
 
     ## Set to false if you provide your own LDAP, madatory to set the ldap_configuration
@@ -541,7 +541,6 @@ spec:
                 configMapKeyRef:
                   name: apollo-one-shot
                   key: git_branch
-              value: main
             - name: CONTAINER_RUN_MODE
               value: "true"
           volumeMounts:

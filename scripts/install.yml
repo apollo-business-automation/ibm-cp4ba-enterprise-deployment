@@ -25,6 +25,10 @@
     clone: no
   register: git_repo_information
 
+- name: Git repo revision to fact
+  ansible.builtin.set_fact: 
+    git_repo_information: {{ git_repo_information }}
+
 - name: Generate usage
   ansible.builtin.include_role:
     name: usage
