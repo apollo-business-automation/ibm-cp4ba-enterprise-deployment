@@ -495,7 +495,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: external-ldap-secret
-  namespace: apollo-one-shot  
+  namespace: apollo-one-shot
 type: Opaque
 stringData:
   # used for the ldap binding in components needing to interact with LDAP 
@@ -508,23 +508,38 @@ stringData:
 
 TODO  common secret
 
+Optionally you can create a secret as described below to add your own Global CA or to add external LDAP.
+
 ```yaml
 apiVersion: v1
 kind: Secret
 metadata:
   name: apollo-one-shot
-  namespace: apollo-one-shot  
+  namespace: apollo-one-shot
 type: Opaque
 stringData:
 
-  # Custom wildcard certificate
-  router_wildcard_tls.crt: |
+  # Global CA
+  ## Optionally you can add your custom Global CA which is then used to generate all certificates for the whole platform.
+  ## If you don't provide it, a new Global CA will be automatically generated for you.
+  ## To generate your own, you can use the following command which generated Global CA with 10 years validity.
+  ## openssl req -new -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes -out global-ca.crt -keyout global-ca.key -subj "/CN=Global CA"
+
+  ## Add certificate of your Global CA to *global_ca_tls.crt* and key to *global_ca_tls.key*.
+
+  ## Make sure the contents of CA files are properly indented to the same level like example contents.
+  ## Private key can also have different header and footer than *-----BEGIN RSA PRIVATE KEY-----* and *-----END RSA PRIVATE KEY-----*
+
+  ## Global CA certificate
+  global_ca_tls.crt: |
     -----BEGIN CERTIFICATE-----
     MIIFCzCCAvOgAwIBAgIUXwA5bTQNXox7K5johiEi9MjqOK8wDQYJKoZIhvcNAQEL
     ...
     P3ACf/xtBm9/8Q3qaFRERnVj8RiXLK641aBaLsDD1rCtvD4UloSfZ95ZOyipDTg=
     -----END CERTIFICATE-----
-  router_wildcard_tls.key: |
+
+  ## Global CA key
+  global_ca_tls.key: |
     -----BEGIN RSA PRIVATE KEY-----
     MIIJKwIBAAKCAgEA18utJwF6y7sDEkItvwQ5LlspVF/p1fYAN2XTpHuYzocU7FRY
     ...
@@ -532,10 +547,23 @@ stringData:
     -----END RSA PRIVATE KEY-----
 
   # External LDAP 
-  ## used for the ldap binding in components needing to interact with LDAP 
+  ## Optionally you can add your custom External LDAP Bind Secret to provide credentials for when you want to use your own LDAP
+  ## and not the OpenLdap which is installed by default by the apollo-one-shot.
+  ## This should be used together with the setting `openldap_enabled: false` and also `ldap_configuration`.
+  ## Bellow you can find an example of the bind secret:
+
+  ## IMPORTANT: based on the following values, new bind secret will be created in the CP4BA namespace for the CP4BA use.
+
+  ## IMPORTANT: When using External LDAP, for the **principal admin user**,
+  ## when user name attribute and id attribute is different and their value as well,
+  ## it is known to cause issue with setup of FileNet domain.
+  ## Be sure to provide admin user who has the same name as id for now (e.g. same cn as uid for example).
+  ## Alternatively configure the ldap_configuration approprietly to avoid the issue.
+
+  ## Used for the ldap binding in components needing to interact with LDAP 
   ldapUsername: cn=admin,dc=cp,dc=local
   ldapPassword: anAdminPassword
-  ## used as the main admin for the installed platform, cp4ba.
+  ## Used as the main admin for the installed platform, cp4ba.
   principalAdminUsername: cpadmin
   principalAdminPassword: aCPadminPassword
 ```
