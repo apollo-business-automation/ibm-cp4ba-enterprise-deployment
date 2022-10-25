@@ -55,7 +55,6 @@ external_share_google: false
 # main platform admin user
 principal_admin_user: cpadmin
 
-lc_custom_config_secret: "{{ ldap_configuration.lc_custom_config_secret | default('') }}"
 lc_principal_admin_user: "{{ ldap_configuration.lc_principal_admin_user | default(principal_admin_user) }}"
 lc_principal_admin_password: "{{ ldap_configuration.lc_principal_admin_password | default(universal_password) }}"
 lc_principal_admin_group: "{{ ldap_configuration.lc_principal_admin_group | default('cpadmins') }}"

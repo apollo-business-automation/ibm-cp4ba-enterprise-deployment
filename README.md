@@ -320,10 +320,9 @@ data:
     #
     # IMPORTANT: The provided LDAP will be used for all the components you are going to install.
     # IMPORTANT: Also set openldap_enabled on false if you do not want to install it
-    # IMPORTANT: Also create the external ldap secret that is bellow and put its name into ldap_configuration.lc_custom_config_secret
+    # IMPORTANT: Also fill the values in apollo-one-shot secret that is bellow
     # 
     #ldap_configuration:
-    #  lc_custom_config_secret: external-ldap-secret
     ## the main ldap group used for workflow and other purposes where single group of admins is required. 
     #  lc_principal_admin_group: cpadmins
     ## list of all admin groups you want to set to be admins in the platform components 
@@ -443,71 +442,6 @@ data:
 ![assets/config-map-variables.png](assets/config-map-variables.png)
 
 ![assets/config-map-add.png](assets/config-map-add.png)
-
-
-Optionally you can add your custom Global CA Secret which is then used to generate all certificates for the whole platform. If you don't provide it, a new Global CA will be automatically generated for you.
-
-To generate your own, you can use the following command which generated Global CA with 10 years validity.
-```bash
-openssl req -new -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes -out global-ca.crt -keyout global-ca.key -subj "/CN=Global CA"
-```
-
-Copy the contents of the following yaml to OpenShift console *Import YAML* dialog (as seen in the picture below - point 1 and 2).
-
-Add certificate of your Global CA to *tls.crt* and key to *tls.key*.
-
-Make sure the contents of CA files are properly indented to the same level like example contents. (as seen in the picture below point 3)  
-Private key can also have different header and footer than *-----BEGIN RSA PRIVATE KEY-----* and *-----END RSA PRIVATE KEY-----*
-
-Apply the updated contents to your cluster (as seen in the picture below point 4).    
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: global-ca
-  namespace: apollo-one-shot  
-type: kubernetes.io/tls
-stringData:
-  tls.crt: |
-    -----BEGIN CERTIFICATE-----
-    MIIFCzCCAvOgAwIBAgIUXwA5bTQNXox7K5johiEi9MjqOK8wDQYJKoZIhvcNAQEL
-    ...
-    P3ACf/xtBm9/8Q3qaFRERnVj8RiXLK641aBaLsDD1rCtvD4UloSfZ95ZOyipDTg=
-    -----END CERTIFICATE-----
-  tls.key: |
-    -----BEGIN RSA PRIVATE KEY-----
-    MIIJKwIBAAKCAgEA18utJwF6y7sDEkItvwQ5LlspVF/p1fYAN2XTpHuYzocU7FRY
-    ...
-    Xv/NTjv7sM8aAmYOpR5JZ+nAwa7Y1hkrAybdbh3a4qES1LbrNVEMCLjwnHpkfOs=
-    -----END RSA PRIVATE KEY-----
-```
-
-![assets/secret.png](assets/secret.png)
-
-Optionally you can add your custom External LDAP Bind Secret to provide credentials for when you want to use your own LDAP and not the OpenLdap which is installed by default by the apollo-one-shot. This should be used together with the setting `openldap_enabled: false` and also `ldap_configuration`. Bellow you can find an example of the bind secret:
-
-IMPORTANT: based on this secret, new bind secret will be created in the CP4BA namespace for the CP4BA use.
-
-IMPORTANT: When using External LDAP, for the **principal admin user**, when user name attribute and id attribute is different and their value as well, it is known to cause issue with setup of FileNet domain. Be sure to provide admin user who has the same name as id for now (e.g. same cn as uid for example). Alternatively configure the ldap_configuration approprietly to avoid the issue.
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: external-ldap-secret
-  namespace: apollo-one-shot
-type: Opaque
-stringData:
-  # used for the ldap binding in components needing to interact with LDAP 
-  ldapUsername: cn=admin,dc=cp,dc=local
-  ldapPassword: anAdminPassword
-  # used as the main admin for the installed platform, cp4ba.
-  principalAdminUsername: cpadmin
-  principalAdminPassword: aCPadminPassword
-```
-
-TODO  common secret
 
 Optionally you can create a secret as described below to add your own Global CA or to add external LDAP.
 

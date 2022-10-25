@@ -77,4 +77,4 @@
 
 - name: Config External LDAP
   include_tasks: external-ldap.yml
-  when: lc_custom_config_secret | length > 0
+  when: not openldap_enabled

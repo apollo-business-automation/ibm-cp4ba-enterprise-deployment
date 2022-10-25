@@ -5,7 +5,7 @@
     api_version: v1
     kind: Secret
     namespace: apollo-one-shot
-    name: "{{ lc_custom_config_secret }}"
+    name: apollo-one-shot
   register: external_ldap_secret
   retries: 40
   delay: 15
