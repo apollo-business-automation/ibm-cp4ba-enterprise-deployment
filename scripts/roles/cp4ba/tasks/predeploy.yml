@@ -42,7 +42,7 @@
     - ibm-cp4a-operator-catalog
     - ibm-cp-automation-foundation-catalog
     - ibm-automation-foundation-core-catalog
-    - opencloud-operators 
+    - opencloud-operators
 
 - name: Manage Operator
   include_tasks: predeploy/operator.yml

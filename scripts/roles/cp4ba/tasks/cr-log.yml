@@ -44,7 +44,8 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- block:
+- name: Log
+  block:
 
     - name: Get log of CP4BA Operator
       kubernetes.core.k8s_log:
