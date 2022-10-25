@@ -506,6 +506,40 @@ stringData:
   principalAdminPassword: aCPadminPassword
 ```
 
+TODO  common secret
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: apollo-one-shot
+  namespace: apollo-one-shot  
+type: Opaque
+stringData:
+
+  # Custom wildcard certificate
+  router_wildcard_tls.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIFCzCCAvOgAwIBAgIUXwA5bTQNXox7K5johiEi9MjqOK8wDQYJKoZIhvcNAQEL
+    ...
+    P3ACf/xtBm9/8Q3qaFRERnVj8RiXLK641aBaLsDD1rCtvD4UloSfZ95ZOyipDTg=
+    -----END CERTIFICATE-----
+  router_wildcard_tls.key: |
+    -----BEGIN RSA PRIVATE KEY-----
+    MIIJKwIBAAKCAgEA18utJwF6y7sDEkItvwQ5LlspVF/p1fYAN2XTpHuYzocU7FRY
+    ...
+    Xv/NTjv7sM8aAmYOpR5JZ+nAwa7Y1hkrAybdbh3a4qES1LbrNVEMCLjwnHpkfOs=
+    -----END RSA PRIVATE KEY-----
+
+  # External LDAP 
+  ## used for the ldap binding in components needing to interact with LDAP 
+  ldapUsername: cn=admin,dc=cp,dc=local
+  ldapPassword: anAdminPassword
+  ## used as the main admin for the installed platform, cp4ba.
+  principalAdminUsername: cpadmin
+  principalAdminPassword: aCPadminPassword
+```
+
 ### 4. Run the Job
 
 Trigger the installation by applying the following YAML (also see the picture below the YAML).
