@@ -22,7 +22,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Updated RPA to 21.0.6.
 - Updated IPM to 1.13.1.
 - Updated extras.
-- Moved repository and branch settings from Jobs to ConfigMap.
+- Moved repository and branch settings from Jobs to ConfigMap - breaking change.
+- Merged separate Secrets into one config Secret - breaking change.
 
 ### Removed
 
