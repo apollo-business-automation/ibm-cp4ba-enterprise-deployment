@@ -283,7 +283,7 @@ data:
 
   # Variables
   variables.yml: |
-    # Always set these parameters to your values #
+    # Mandatory - Always set these parameters to your values #
 
     ## Entitlement key from the IBM Container software library. 
     ## (https://myibm.ibm.com/products-services/containerlibrary)  
@@ -306,7 +306,8 @@ data:
     ## Password must be alphanumeric (upper and lower case; no special characters allowed).
     universal_password: Passw0rd
 
-    # The rest of the following parameters can be used to further customize the deployment.
+    # Optional - The rest of the following parameters can be used to further customize the deployment.
+    
     # You don't need to configure them in any way if you want to just install the whole platform with prerequisites and extras.
 
     ## Set to false if you provide your own LDAP, madatory to set the ldap_configuration
