@@ -11,7 +11,7 @@
   delay: 15
 
 - name: Store External LDAP binds
-  set_fact:
+  ansible.builtin.set_fact:
     lc_bind_admin_user: "{{ external_ldap_secret.resources[0].data.ldapUsername | b64decode }}"
     lc_bind_admin_password: "{{ external_ldap_secret.resources[0].data.ldapPassword | b64decode }}"
     lc_principal_admin_user: "{{ external_ldap_secret.resources[0].data.principalAdminUsername | b64decode }}"
