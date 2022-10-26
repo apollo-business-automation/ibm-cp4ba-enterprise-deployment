@@ -56,7 +56,7 @@
 
 - name: Openldap config variable
   ansible.builtin.set_fact:
-    openldap_enabled: true'
+    openldap_enabled: true
   when: openldap_enabled is not defined
 
 - name: Mongodb config variable
