@@ -29,7 +29,7 @@
         content: "{{ global_ca_secret.resources[0].data['global_ca_tls.crt'] | b64decode }}"
         mode: u+rwx
 
-  when: global_ca_secret.resources | length != 0
+  when: global_ca_secret.resources | length != 0 and (global_ca_secret.resources[0].data['global_ca_tls.crt'] is defined)
 
 - name: Generate & save Global CA if not provided
   block:
@@ -73,6 +73,10 @@
       ansible.builtin.set_fact:
         _global_ca_crt: "{{ slurped_crt_data.content }}"
 
+  when: global_ca_secret.resources | length == 0 or (global_ca_secret.resources[0].data['global_ca_tls.crt'] is not defined)
+
+- name: Creat secret
+  block:
     - name: Create Project
       ansible.builtin.include_role:
         name: common
@@ -82,7 +86,6 @@
         common_k8s_host: "{{ global_ca_k8s_host | default(omit) }}"
         common_namespace_name: "{{ global_ca_output_namespace }}"
         common_output_directory: "{{ global_ca_output_directory }}"
-
     - name: Prepare yaml file for Secret
       ansible.builtin.template:
         src: secret.yaml.j2
@@ -95,12 +98,59 @@
         host: "{{ global_ca_k8s_host | default(omit) }}"
         state: present
         force: true
-        merge_type: merge
+        merge_type: strategic-merge
         src: "{{ global_ca_output_directory }}/secret.yaml"
         wait: true
         wait_sleep: 15
         wait_timeout: 15
 
+  when: global_ca_secret.resources | length == 0
+
+- name: Add global CA to secret
+  kubernetes.core.k8s_json_patch:
+    api_key: "{{ global_ca_k8s_api_key | default(omit) }}"
+    host: "{{ global_ca_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Secret
+    name: apollo-one-shot
+    namespace: "{{ global_ca_output_namespace }}"
+    patch:
+      - op: add
+        path: "/data/global_ca_tls.crt"
+        value: "{{ _global_ca_crt }}"
+      - op: add
+        path: "/data/global_ca_tls.key"
+        value: "{{ _global_ca_key }}"
+  when: global_ca_secret.resources | length != 0 and (global_ca_secret.resources[0].data['global_ca_tls.crt'] is not defined)
+
+- name: Creat secret
+  block:
+    - name: Create Project
+      ansible.builtin.include_role:
+        name: common
+        tasks_from: create-project
+      vars:
+        common_k8s_api_key: "{{ global_ca_k8s_api_key | default(omit) }}"
+        common_k8s_host: "{{ global_ca_k8s_host | default(omit) }}"
+        common_namespace_name: "{{ global_ca_output_namespace }}"
+        common_output_directory: "{{ global_ca_output_directory }}"
+    - name: Prepare yaml file for Secret
+      ansible.builtin.template:
+        src: secret.yaml.j2
+        dest: "{{ global_ca_output_directory }}/secret.yaml"
+        mode: u+rwx
+
+    - name: Add Secret
+      kubernetes.core.k8s:
+        api_key: "{{ global_ca_k8s_api_key | default(omit) }}"
+        host: "{{ global_ca_k8s_host | default(omit) }}"
+        state: present
+        force: true
+        merge_type: strategic-merge
+        src: "{{ global_ca_output_directory }}/secret.yaml"
+        wait: true
+        wait_sleep: 15
+        wait_timeout: 15
   when: global_ca_secret.resources | length == 0
 
 - name: Get OCP Apps domain
