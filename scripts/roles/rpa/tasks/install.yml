@@ -253,30 +253,87 @@
 
 - name: Set rpa_token
   ansible.builtin.set_fact:
-    rpa_token: "{{ token_response.json.accessToken }}"
+    rpa_token: "{{ token_response.json.access_token }}"
 
-# TODO get all roles and fetch bot developer to team
+- name: Get roles
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/rpa/api/v1.0/en-US/role?offset=0&limit=100&search=&orderBy=name&asc=true"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ rpa_token }}"
+    validate_certs: false
+    status_code: 200
+  register: roles_response
 
-#- name: Create new RPA team for Bot Developers
-#  ansible.builtin.uri:
-#    url: "https://cpd-{{ rpa_project_name }}.{{ apps_endpoint_domain }}/rpa/api/v1.0/en-US/team"
-#    method: POST
-#    headers:
-#      Authorization: "Bearer {{ rpa_token }}"
-#    body_format: json
-#    body:
-#      {
-#        "description":"",
-#        "name":"Team Bot Developer",
-#        "roles": ["df7f882d-661a-434c-9f33-5044c0e55eed"]
-#      }
-#    validate_certs: false
-#    status_code: 200
-#  register: team_response
+- name: Get Bot Developer Role ID
+  ansible.builtin.set_fact:
+    bot_dev_role_id: "{{ roles_response.json | json_query(condition_query) }}"
+  vars:
+    condition_query: "results[?name == 'Bot Developer'].id"
 
-# TODO Get all teams and add them to variables
+- name: Create new RPA team for Bot Developers
+  ansible.builtin.uri:
+    url: "https://cpd-{{ rpa_project_name }}.{{ apps_endpoint_domain }}/rpa/api/v1.0/en-US/team"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ rpa_token }}"
+    body_format: json
+    body:
+      {
+        "description":"",
+        "name":"Team Bot Developer",
+        "roles": ["{{ bot_dev_role_id }}"]
+      }
+    validate_certs: false
+    status_code:
+      - 200
+      - 400
+  register: team_response
+  failed_when: team_response.status != 200 and team_response.content is not search('already exists in tenant')
 
-# TODO Sync users with team permissions
+- name: Get teams
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/rpa/api/v1.0/en-US/team?offset=0&limit=100&search=&orderBy=name&asc=true"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ rpa_token }}"
+    validate_certs: false
+    status_code: 200
+  register: teams_response
+
+- name: Get Bot Developer team ID
+  ansible.builtin.set_fact:
+    bot_dev_team_id: "{{ teams_response.json | json_query(condition_query) }}"
+  vars:
+    condition_query: "results[?name == 'Team Bot Developer'].id"
+
+- name: Add lc_principal_admin_user to bot developer team
+  ansible.builtin.uri:
+    url: "https://cpd-{{ rpa_project_name }}.{{ apps_endpoint_domain }}/rpa/api/v1.0/en-US/user/import"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ rpa_token }}"
+    body_format: json
+    body:
+      {
+        "roles": [],
+        "teams": [
+          "{{ bot_dev_team_id }}"
+        ],
+        "users": [
+          {
+            "name": "{{ lc_principal_admin_user }}",
+            "email": "{{ lc_principal_admin_user }} }}@{{ lc_ldap_domain }}",
+            "distinguishedName": "{{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_user_base_dn }}"
+          }
+        ]
+      }
+    validate_certs: false
+    status_code:
+      - 200
+      - 500
+  register: import_response
+  failed_when: team_response.status != 200 and import_response.content is not search('Cannot insert duplicate key row in object')
 
 - name: Create Project
   ansible.builtin.include_role:
