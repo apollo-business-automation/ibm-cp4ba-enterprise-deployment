@@ -80,7 +80,7 @@
     common_apps_endpoint_domain: "{{ apps_endpoint_domain }}"
     common_output_directory: "{{ openldap_output_directory }}"
 
-- name: Wait for openldap-phpldapadmin Deployment to be Available
+- name: Wait for openldap-openldap-stack-ha-phpldapadmin Deployment to be Available
   ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
@@ -89,7 +89,7 @@
     common_k8s_host: "{{ openldap_k8s_host | default(omit) }}"
     common_api_version: apps/v1
     common_resource_kind: Deployment
-    common_resource_name: openldap-phpldapadmin
+    common_resource_name: openldap-openldap-stack-ha-phpldapadmin
     common_resource_namespace: openldap
     common_condition_name: Available
     common_retries: 60
