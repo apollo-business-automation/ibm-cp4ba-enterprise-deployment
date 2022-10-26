@@ -73,7 +73,7 @@
     common_k8s_host: "{{ openldap_k8s_host | default(omit) }}"
     common_namespace_name: openldap
     common_route_name: openldap-phpldapadmin
-    common_service_name: openldap-openldap-stack-ha
+    common_service_name: openldap-openldap-stack-ha-phpldapadmin
     common_wildcard_crt_path: "{{ openldap_wildcard_crt_path }}"
     common_wildcard_key_path: "{{ openldap_wildcard_key_path }}"
     common_ca_crt_path: "{{ openldap_ca_crt_path }}"
