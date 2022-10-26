@@ -55,7 +55,7 @@
         CONSTRAINT ET_PK PRIMARY KEY (ID),
         CONSTRAINT EID_UNQ UNIQUE (EXECUTION_ID)
       ) IN RESDWTS;';
-
+      echo 'This is fixing the shell premature exist - do not remove';
       db2 CONNECT RESET;
       "
   register: command_status
