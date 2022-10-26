@@ -47,7 +47,7 @@
   kubernetes.core.helm:
     api_key: "{{ openldap_k8s_api_key | default(omit) }}"
     host: "{{ openldap_k8s_host | default(omit) }}"
-    name: openldap
+    name: openldap-openldap-stack-ha
     chart_ref: helm-openldap/openldap-stack-ha
     chart_version: "{{ openldap_chart_version }}"
     release_namespace: openldap
