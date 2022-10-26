@@ -1,12 +1,12 @@
-- name: Prepare Usage md
-  ansible.builtin.template:
-    src: usage.md.j2
-    dest: "{{ generic_directory }}/usage.md"
-    mode: u+rwx
-
 - name: Set path to usage.md
   ansible.builtin.set_fact:
     usage_path: "{{ generic_directory }}/usage.md"
+
+- name: Prepare Usage md
+  ansible.builtin.template:
+    src: usage.md.j2
+    dest: "{{ usage_path }}"
+    mode: u+rwx
 
 - name: Prepare usage Config Map
   ansible.builtin.template:

@@ -32,8 +32,6 @@
 - name: Generate usage
   ansible.builtin.include_role:
     name: usage
-  vars:
-    git_commit_id: "{{ git_commit_id }}"
 
 - name: Install Global CA
   ansible.builtin.include_role:
