@@ -140,7 +140,6 @@ Multiple command line tools are installed inside a container to make the install
 ## Environments used for installation 💻
 
 With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift 4.10 with 8 Worker Nodes (16 CPU, 32GB Memory each), however it was historically executed on the following once.  
-OpenShift 4.8 will not work with asset repository enabled.
 
 - ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
 OpenShift 4.8.x & 4.10.x - 8 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
@@ -207,6 +206,7 @@ For your convenience the following post-deplyment setup tasks have been automate
 - ADS - Nexus connection setup and all ADS plugins loaded.
 - ADS - Organization in Git created. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=gst-task-2-connecting-git-repository-sharing-decision-service
 - ADS - Automatic Git project connection https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=services-connecting-remote-repository-automatically
+- ODM - Service user credentials automatically assigned to servers.
 - ADP - Organization in Git created. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-setting-up-remote-git-organization
 - ADP - Default project data loaded. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-loading-default-sample-data
 - IER - Initial setup through configmgr performed.
