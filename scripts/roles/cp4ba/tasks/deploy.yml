@@ -301,7 +301,7 @@
     components: "{{ components + ['document_processing_runtime'] }}"
   when: cp4ba_config.optional_components.document_processing_runtime
 
-- name: Add AAE persistence to CR
+- name: Add ADP to CR
   block:
 
     - name: Backup CR
@@ -314,7 +314,7 @@
 
     - name: Merge ADP customizations
       ansible.builtin.set_fact:
-        cr: "{{ cr | combine(adp_cr_custom | from_yaml, recursive=true) }}"
+        cr: "{{ cr | combine(adp_cr_custom , recursive=true) }}"
       when: adp_cr_custom is defined
 
     - name: Combine lists back to CR
@@ -404,6 +404,9 @@
     content: '{{ cr | to_nice_yaml(indent=2, width=1337) }}'
     dest: "{{ cp4ba_output_directory }}/cr.yaml"
     mode: u+rwx
+
+- meta: end_play
+
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-deploying-custom-resource-you-created-script
 - name: Add CP4BA CR

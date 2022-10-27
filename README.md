@@ -403,7 +403,7 @@ data:
           deeplearning:
             gpu_enabled: false
             nodelabel_key: nvidia.com/gpu.present
-            nodelabel_value: true
+            nodelabel_value: "true"
     
     # Additional customization for Robotic Process Automation
     # Contents of the following will be merged into RPA CR yaml file. Arrays are overwriten.

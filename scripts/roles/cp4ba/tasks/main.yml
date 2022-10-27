@@ -16,11 +16,11 @@
 - name: Install CP4BA
   include_tasks: install.yml
   vars:
-    _cp4ba_run_repository: true
-    _cp4ba_run_dbs: true
-    _cp4ba_run_predeploy: true
-    _cp4ba_run_deploy: true
-    _cp4ba_run_postdeploy: true
+    _cp4ba_run_repository: "{{ _cp4ba_run_repository_override if _cp4ba_run_repository_override is defined else true }}"
+    _cp4ba_run_dbs: "{{ _cp4ba_run_dbs_override if _cp4ba_run_dbs_override is defined else true }}"
+    _cp4ba_run_predeploy: "{{ _cp4ba_run_predeploy_override if _cp4ba_run_predeploy_override is defined else true }}"
+    _cp4ba_run_deploy: "{{ _cp4ba_run_deploy_override if _cp4ba_run_deploy_override is defined else true }}"
+    _cp4ba_run_postdeploy: "{{ _cp4ba_run_postdeploy_override if _cp4ba_run_postdeploy_override is defined else true }}"
   when: "cp4ba_action == 'install'"
 
 - name: Remove CP4BA
