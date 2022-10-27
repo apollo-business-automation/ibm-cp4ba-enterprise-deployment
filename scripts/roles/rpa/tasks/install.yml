@@ -139,7 +139,7 @@
 
 - name: Merge customizations
   ansible.builtin.set_fact:
-    cr: "{{ cr | combine(rpa_cr_custom) | from_yaml, recursive=true) }}"
+    cr: "{{ cr | combine(rpa_cr_custom | from_yaml, recursive=true) }}"
   when: rpa_cr_custom is defined
 
 - name: Write CR to file
