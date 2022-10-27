@@ -146,7 +146,7 @@
   when: (409 in group_response | json_query('results[*].status'))
 
 # Groups endpoint found based on the network dev tools in the browser
-- name: Add All Roles to general groups
+- name: Add Roles to general groups
   ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
     method: POST

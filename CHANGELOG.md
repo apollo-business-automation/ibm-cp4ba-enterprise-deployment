@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Configuration for ADP GPU node.
 - Configuration for RPA NLP replicas.
 - Main admin automatically permitted to develop RPA bots.
+- Automatic git project creation for ADS.
 
 ### Changed
 
