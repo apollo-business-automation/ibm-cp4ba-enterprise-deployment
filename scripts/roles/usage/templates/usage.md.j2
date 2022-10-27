@@ -144,13 +144,11 @@ As UI for MongoDB
 {% endif %}
 ## CP4BA - CP4BA capabilities
 
-{% if zen_api_key is defined %}
 ### Zen service account credentials
 
 Based on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=users-generating-api-keys-authentication  
-If you need to call CP4BA endpoints with ZenApiKey (e. g. for ODM) a service account with username *cpadminservice* has been prepared for you with the generated api key *{{ zen_api_key }}*
+If you need to call CP4BA endpoints with ZenApiKey (e. g. for ODM) a service account with username *cpadminservice* has been prepared for you with the generated api key which can be found in *apollo-one-shot* ConfigMap in *zen-api-key* key.
 
-{% endif %}
 ### Useful info
 
 If you want to investigate the actual ansible code that is running in the operator, you can get it from running operator pod from /opt/ansible/roles directory.
@@ -607,11 +605,3 @@ As MongoDB database storage for Process Mining.
 If you haven't provided your own key and crt pair in configuration Secret, new one was generated in Project *apollo-one-shot* in Secret *apollo-one-shot* in *global_ca_tls.crt* and *global_ca_tls.key* keys.
 
 You can import *global_ca_tls.crt* to you operating system or browser to automatically trust all the certificates used in the platform.
-
-{% if git_commit_id %}
-## Version
-
-For the reference and to know which version of the Apollo one-shot deployment was used, bellow you can find the sha hash of the used commit.
-
-- Apollo one-shot used commit sha hash: {{ git_commit_id }}
-{% endif %}

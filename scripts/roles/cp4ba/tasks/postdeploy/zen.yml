@@ -279,45 +279,65 @@
       - 409
   register: cpadminservice_response
 
-- name: Get IAM token
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: iam-token-client
-  vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_client_id: "cpadminservice"
-    common_client_secret: "{{ cp4ba_universal_password }}"
-    common_output_to_var: "iam_token"
-
-- name: Get Zen token
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: zen-token
-  vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    comon_iam_token: "{{ iam_token }}"
-    common_user: "cpadminservice"
-    common_namespace_name: "{{ cp4ba_project_name }}"
-    common_output_to_var: "zen_token"
-
-# Based on network traffic
-- name: Generate Zen API key for cpadminservice
-  ansible.builtin.uri:
-    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user/apiKey"
-    method: GET
-    headers:
-      Authorization: Bearer {{ zen_token }}
-    validate_certs: false
-    status_code: 200
-  register: zen_api_key_response
-
-- name: Get zen api key
-  ansible.builtin.set_fact:
-    zen_api_key: "{{ zen_api_key_response.json.apiKey }}"
-
-# Regenerate usage with zen_api_key
-- name: Generate usage
-  ansible.builtin.include_role:
+- name: Get Usage configmap
+  kubernetes.core.k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: ConfigMap
+    namespace: "{{ cp4ba_output_namespace }}"
     name: usage
+  register: usage
+  retries: 40
+  delay: 15
+
+- name: Find zen api key
+  ansible.builtin.set_fact:
+    zen_api_key_present: "{{ usage.resources[0].data['zen-api-key'] if usage.resources | length != 0 and usage.resources[0].data['zen-api-key'] is defined }}"
+
+- name: Generate new Zen Api key
+  block:
+    - name: Get IAM token
+      ansible.builtin.include_role:
+        name: common
+        tasks_from: iam-token-client
+      vars:
+        common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+        common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+        common_client_id: "cpadminservice"
+        common_client_secret: "{{ cp4ba_universal_password }}"
+        common_output_to_var: "iam_token"
+
+    - name: Get Zen token
+      ansible.builtin.include_role:
+        name: common
+        tasks_from: zen-token
+      vars:
+        common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+        common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+        comon_iam_token: "{{ iam_token }}"
+        common_user: "cpadminservice"
+        common_namespace_name: "{{ cp4ba_project_name }}"
+        common_output_to_var: "zen_token"
+
+    # Based on network traffic
+    - name: Generate Zen API key for cpadminservice
+      ansible.builtin.uri:
+        url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user/apiKey"
+        method: GET
+        headers:
+          Authorization: Bearer {{ zen_token }}
+        validate_certs: false
+        status_code: 200
+      register: zen_api_key_response
+
+    - name: Get zen api key
+      ansible.builtin.set_fact:
+        zen_api_key: "{{ zen_api_key_response.json.apiKey }}"
+
+    # Regenerate usage with zen_api_key
+    - name: Generate usage
+      ansible.builtin.include_role:
+        name: usage
+
+  when: zen_api_key_present | length == 0

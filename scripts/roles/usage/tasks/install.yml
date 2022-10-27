@@ -1,3 +1,12 @@
+- name: Get OCP Apps domain
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: apps-endpoint
+  vars:
+    common_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+    common_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+    common_output_to_var: "apps_endpoint_domain"
+
 - name: Set path to usage.md
   ansible.builtin.set_fact:
     usage_path: "{{ generic_directory }}/usage.md"
@@ -20,7 +29,7 @@
     host: "{{ ocp_api_endpoint | default(omit) }}"
     state: present
     force: false
-    merge_type: merge
+    merge_type: strategic-merge
     src: "{{ generic_directory }}/usage-configmap.yaml"
     wait: true
     wait_sleep: 15
