@@ -10,6 +10,7 @@ Last installation was performed on 2022-09-20 with CP4BA version 22.0.1-IF002 (a
 - [General information 📢](#general-information-)
 - [What is in the package 📦](#what-is-in-the-package-)
 - [Environments used for installation 💻](#environments-used-for-installation-)
+- [Automated post-deployment tasks ✅](#automated-post-deployment-tasks-)
 - [Pre-requisites ⬅️](#pre-requisites-️)
 - [Installation steps ⚡](#installation-steps-)
 - [Post installation steps ➡️](#post-installation-steps-️)
@@ -67,7 +68,7 @@ Result of this Enterprise deployment is not fully supported:
 What is not included:
 - ICCs - not covered.
 - Caution! FNCM External share - Currently not supported with ZEN & IAM as per limitation on [FNCM limitations](https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=notes-known-limitations-issues#concept_gmf_x1h_1fb__ecm)
-- Caution! Asset Repository is now omitted due to a bug in IAF - waiting for fixes. And the latest version only support OCP 4.10+.
+- Caution! Asset Repository is now omitted due to a bug in IAF - waiting for fixes. And the latest version only support OCP 4.10+. TODO
 - Workflow Server and Workstream Services - this is a dev deployment. BAW Authoring and (BAW + IAWS) are mutually exclusive in single project.
 
 ## What is in the package 📦
@@ -194,6 +195,26 @@ node/10.163.57.254
   cpu                9741m (61%)       38750m (244%)
   memory             22034011Ki (76%)  52342048Ki (180%)
 ```
+
+## Automated post-deployment tasks ✅
+
+For your convenience the following post-deplyment setup tasks have been automated:
+- Zen - Users and Groups added.
+- Zen - Adminsitrative group is given all available privileges from all pillars.
+- Zen - Regular groups are given developer privileges from all pillars.
+- Zen - Service acount created in CPFS IAM and Zen and Zen API key is generated for convenient and stable usage.
+- Workforce Insights - Connection setup. You just need to create WFI dashboard. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=secrets-creating-custom-bpc-workforce-secret
+- ADS - Nexus connection setup and all ADS plugins loaded.
+- ADS - Organization in Git created. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=gst-task-2-connecting-git-repository-sharing-decision-service
+- ADS - Automatic Git project connection https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=services-connecting-remote-repository-automatically
+- ADP - Organization in Git created. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-setting-up-remote-git-organization
+- ADP - Default project data loaded. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-loading-default-sample-data
+- IER - Initial setup through configmgr performed.
+- Task manager - Set up with JARs required by IER.
+- Task manager - Enabled in Navigator.
+- BAW - tw_admins enhanced with LDAP admin groups.
+- BAW - tw_authors enhanced with LDAP user and admin groups.
+- RPA - Bot Devloper permission added to administrative user.
 
 ## Pre-requisites ⬅️
 
