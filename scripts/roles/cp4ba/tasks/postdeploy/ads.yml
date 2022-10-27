@@ -146,7 +146,7 @@
 
 - name: Add ADS Admin role to default admin user
   ansible.builtin.uri:
-    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user/admin?add_roles=true"
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user/{{ lc_principal_admin_user }}?add_roles=true"
     method: PUT
     headers:
       Authorization: "Bearer {{ zen_token }}"
@@ -203,4 +203,5 @@
       - 200
       - 500
   register: git_provider_response
-  failed_when: git_provider_response.status != 200 and git_provider_response.content is not search('It is not allowed to create more than one git provider.')
+  failed_when: git_provider_response.status != 200 and
+    git_provider_response.json.message is not search('It is not allowed to create more than one git provider.')
