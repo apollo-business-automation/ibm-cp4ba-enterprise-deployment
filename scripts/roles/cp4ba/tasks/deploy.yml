@@ -465,91 +465,21 @@
   vars:
     condition_query: "resources[*].status.conditions[?type == 'Ready'].status"
 
-- name: Manage BTS
-  block:
-
-    # TODO remove when BTS startup probe implemented START - still needed in 22.0.1.1
-    # - name: Wait for BTS Deployment to appear
-    #   kubernetes.core.k8s_info:
-    #     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    #     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    #     api_version: apps/v1
-    #     kind: Deployment
-    #     namespace: "{{ cp4ba_project_name }}"
-    #     label_selectors:
-    #       - app.kubernetes.io/component=ibm-bts
-    #   register: bts_deployment
-    #   retries: 15
-    #   delay: 120
-    #   until: (bts_deployment.resources | length > 0)
-
-    # - name: Get BTS Deployment
-    #   kubernetes.core.k8s_info:
-    #     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    #     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    #     api_version: apps/v1
-    #     kind: Deployment
-    #     label_selectors:
-    #       - app.kubernetes.io/component=ibm-bts
-    #     namespace: "{{ cp4ba_project_name }}"
-    #   register: bts_deployment
-    #   retries: 10
-    #   delay: 1
-
-    # - name: Switch BTS deployment to manual
-    #   kubernetes.core.k8s:
-    #     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    #     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    #     state: present
-    #     api_version: apps/v1
-    #     kind: Deployment
-    #     name: "{{ bts_deployment.resources[0].metadata.name }}"
-    #     namespace: "{{ cp4ba_project_name }}"
-    #     definition:
-    #       metadata:
-    #         annotations:
-    #           ibm-bts/skip-updates: "true"
-
-    # - name: Patch BTS Deployment startupProbe
-    #   kubernetes.core.k8s_json_patch:
-    #     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    #     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    #     api_version: apps/v1
-    #     kind: Deployment
-    #     name: "{{ bts_deployment.resources[0].metadata.name }}"
-    #     namespace: "{{ cp4ba_project_name }}"
-    #     patch:
-    #       - op: add
-    #         path: "/spec/template/spec/containers/0/startupProbe"
-    #         value: {
-    #           "httpGet": {
-    #             "path": "/umshealth/rest/health/alive",
-    #             "port": 9443,
-    #             "scheme": HTTPS,
-    #             "httpHeaders":[{"name": "Host", "value": "localhost"}]},
-    #           "periodSeconds": 30,
-    #           "failureThreshold": 30,
-    #           "timeoutSeconds": 5,
-    #           "initialDelaySeconds": 30
-    #         }
-    # TODO remove when BTS startup probe implemented STOP
-
-    - name: Wait for BTS Ready state
-      ansible.builtin.include_role:
-        name: common
-        tasks_from: wait-resource-condition-generic
-      vars:
-        common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-        common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-        common_api_version: operator.ibm.com/v1alpha1
-        common_resource_kind: BusinessTeamsService
-        common_resource_name: cp4ba-bts
-        common_resource_namespace: "{{ cp4ba_project_name }}"
-        common_condition_query: resources[*].status.serviceStatus
-        common_condition_value: ready
-        common_retries: 30
-        common_delay: 120
-
+- name: Wait for BTS Ready state
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: wait-resource-condition-generic
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: operator.ibm.com/v1alpha1
+    common_resource_kind: BusinessTeamsService
+    common_resource_name: cp4ba-bts
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_query: resources[*].status.serviceStatus
+    common_condition_value: ready
+    common_retries: 30
+    common_delay: 120
   when: cp4ba_config.optional_components.bas or cp4ba_config.optional_components.ads_designer or
     cp4ba_config.optional_components.document_processing_designer or cp4ba_config.deployment_patterns.workflow or
     cp4ba_config.deployment_patterns.workflow_workstreams
