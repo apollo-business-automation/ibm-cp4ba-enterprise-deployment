@@ -107,7 +107,7 @@
 
 - name: Add role to service user
   ansible.builtin.uri:
-    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user/admin?add_roles=true"
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user/cpadminservice?add_roles=true"
     method: PUT
     headers:
       Authorization: "Bearer {{ zen_token }}"
