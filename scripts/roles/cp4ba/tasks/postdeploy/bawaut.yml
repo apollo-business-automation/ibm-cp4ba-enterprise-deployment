@@ -39,7 +39,7 @@
     validate_certs: false
     status_code:
       - 200
-    with_items: "{{ lc_admin_groups }}"
+  with_items: "{{ lc_admin_groups }}"
 
 - name: Add admin groups and general groups to tw_authors
   ansible.builtin.uri:
@@ -50,4 +50,4 @@
     validate_certs: false
     status_code:
       - 200
-    with_items: "{{ lc_general_groups + lc_admin_groups }}"
+  with_items: "{{ lc_general_groups + lc_admin_groups }}"
