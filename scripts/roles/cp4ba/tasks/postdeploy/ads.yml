@@ -177,3 +177,30 @@
     validate_certs: false
     status_code: 200
   register: ads_credential_response
+
+# https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=services-connecting-remote-repository-automatically
+- name: Automate git project setup
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/rest-api/api/admin/git-providers"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ zen_token }}"
+    body_format: json
+    body: |
+      {
+        "name": "git-provider",
+        "uri": "https://gitea.{{ apps_endpoint_domain }}/api/v1",
+        "type": "GITEA",
+        "usePrivateFlag": true,
+        "apiCredentialsType": "USERNAME_PASSWORD",
+        "apiCredentials": "{{ lc_principal_admin_user }}:{{ lc_principal_admin_password }}",
+        "gitCredentialsType": "USERNAME_PASSWORD",
+        "gitCredentials": "{{ lc_principal_admin_user }}:{{ lc_principal_admin_password }}",
+        "remoteOrg": "ads"
+      }
+    validate_certs: false
+    status_code:
+      - 200
+      - 500
+  register: git_provider_response
+  failed_when: git_provider_response.status != 200 and git_provider_response.content is not search('It is not allowed to create more than one git provider.')
