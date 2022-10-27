@@ -21,27 +21,30 @@
   retries: 10
   delay: 1
 
-- name: Set current CP4BA CR contents
-  ansible.builtin.set_fact:
-    cp4ba_cr_content: "{{ cp4ba_cr.resources[0] }}"
+- name: Save cr contents
+  block:
+    - name: Set current CP4BA CR contents
+      ansible.builtin.set_fact:
+        cp4ba_cr_content: "{{ cp4ba_cr.resources[0] }}"
 
-- name: Prepare current CP4BA CR Config Map
-  ansible.builtin.template:
-    src: cp4ba-cr-configmap.yaml.j2
-    dest: "{{ cp4ba_output_directory }}/cp4ba-cr-configmap.yaml"
-    mode: u+rwx
+    - name: Prepare current CP4BA CR Config Map
+      ansible.builtin.template:
+        src: cp4ba-cr-configmap.yaml.j2
+        dest: "{{ cp4ba_output_directory }}/cp4ba-cr-configmap.yaml"
+        mode: u+rwx
 
-- name: Add the current CP4BA CR Config Map
-  kubernetes.core.k8s:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    state: present
-    force: false
-    merge_type: merge
-    src: "{{ cp4ba_output_directory }}/cp4ba-cr-configmap.yaml"
-    wait: true
-    wait_sleep: 15
-    wait_timeout: 15
+    - name: Add the current CP4BA CR Config Map
+      kubernetes.core.k8s:
+        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+        host: "{{ cp4ba_k8s_host | default(omit) }}"
+        state: present
+        force: false
+        merge_type: merge
+        src: "{{ cp4ba_output_directory }}/cp4ba-cr-configmap.yaml"
+        wait: true
+        wait_sleep: 15
+        wait_timeout: 15
+  when: cp4ba_cr.resources | length != 0
 
 - name: Log
   block:
