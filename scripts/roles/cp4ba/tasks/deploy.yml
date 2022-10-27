@@ -661,7 +661,7 @@
     - "{{ cp4ba_cr_meta_name }}-ier-deploy"
   when: cp4ba_config.optional_components.ier
 
-- name: Wait for ADP NL extractor Deployment Available state
+- name: Wait for ADP Deployments Available state
   ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
@@ -670,11 +670,22 @@
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_api_version: v1
     common_resource_kind: Deployment
-    common_resource_name: "{{ cp4ba_cr_meta_name }}-natural-language-extractor"
+    common_resource_name: "{{ item }}"
     common_resource_namespace: "{{ cp4ba_project_name }}"
     common_condition_name: Available
     common_retries: 36
     common_delay: 300
+  with_items:
+    - "{{ cp4ba_cr_meta_name }}-callerapi"
+    - "{{ cp4ba_cr_meta_name }}-classifyprocess-classify"
+    - "{{ cp4ba_cr_meta_name }}-deep-learning"
+    - "{{ cp4ba_cr_meta_name }}-natural-language-extractor"
+    - "{{ cp4ba_cr_meta_name }}-ocr-extraction"
+    - "{{ cp4ba_cr_meta_name }}-postprocessing"
+    - "{{ cp4ba_cr_meta_name }}-processing-extraction"
+    - "{{ cp4ba_cr_meta_name }}-setup"
+    - "{{ cp4ba_cr_meta_name }}-spbackend"
+    - "{{ cp4ba_cr_meta_name }}-updatefiledetail"
   when: cp4ba_config.deployment_patterns.document_processing
 
 - name: Wait for BAI InsightsEngine Ready state
