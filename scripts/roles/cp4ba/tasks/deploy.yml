@@ -405,9 +405,6 @@
     dest: "{{ cp4ba_output_directory }}/cr.yaml"
     mode: u+rwx
 
-- meta: end_play
-
-
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-deploying-custom-resource-you-created-script
 - name: Add CP4BA CR
   kubernetes.core.k8s:
