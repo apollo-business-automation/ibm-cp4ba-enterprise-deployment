@@ -14,7 +14,6 @@ data:
 
     - Apollo one-shot used commit sha hash: {{ git_commit_id }}
 {% endif %}
-{% if zen_api_key is defined %}
-  zen-api-key: |
-    ZenApiKey: {{ zen_api_key }}
+{% if zen_api_key_new is defined %}
+  zen-api-key: {{ zen_api_key_new }}
 {% endif %}

@@ -293,7 +293,7 @@
 
 - name: Find zen api key
   ansible.builtin.set_fact:
-    zen_api_key_present: "{{ usage.resources[0].data['zen-api-key'] if usage.resources | length != 0 and usage.resources[0].data['zen-api-key'] is defined }}"
+    zen_api_key: "{{ usage.resources[0].data['zen-api-key'] if usage.resources | length != 0 and usage.resources[0].data['zen-api-key'] is defined }}"
 
 - name: Generate new Zen Api key
   block:
@@ -333,11 +333,15 @@
 
     - name: Get zen api key
       ansible.builtin.set_fact:
-        zen_api_key: "{{ zen_api_key_response.json.apiKey }}"
+        zen_api_key_new: "{{ zen_api_key_response.json.apiKey }}"
 
     # Regenerate usage with zen_api_key
     - name: Generate usage
       ansible.builtin.include_role:
         name: usage
 
-  when: zen_api_key_present | length == 0
+    - name: Assign zen api key for further post deploy task
+      ansible.builtin.set_fact:
+        zen_api_key: "{{ zen_api_key_new }}"
+
+  when: zen_api_key | length == 0
