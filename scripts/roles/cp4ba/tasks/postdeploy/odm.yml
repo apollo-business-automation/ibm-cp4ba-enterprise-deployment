@@ -86,7 +86,7 @@
 
 - name: Add ODM Admin role to service user
   ansible.builtin.uri:
-    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user/admin?add_roles=true"
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user/cpadminservice?add_roles=true"
     method: PUT
     headers:
       Authorization: "Bearer {{ zen_token }}"
@@ -101,3 +101,73 @@
     validate_certs: false
     status_code:
       - 200
+
+- name: Regenerate Zen token for new permissions
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: zen-token
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    comon_iam_token: "{{ iam_token }}"
+    common_user: "{{ lc_principal_admin_user }}"
+    common_namespace_name: "{{ cp4ba_project_name }}"
+    common_output_to_var: "zen_token"
+
+- name: Get Servers
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter-api/v1/servers"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ zen_token }}"
+    validate_certs: false
+    status_code: 200
+  register: servers_response
+
+- name: Get Decision Service server ID
+  ansible.builtin.set_fact:
+    decision_service_server_id: "{{ servers_response.json | json_query(condition_query) | first }}"
+  vars:
+    condition_query: "elements[?name == 'Decision Service Execution'].id"
+
+- name: Update credentials for server
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter-api/v1/servers/{{ decision_service_server_id }}"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ zen_token }}"
+    body_format: json
+    body:
+      {
+        "authenticationKind": "OAUTH",
+        "loginServer": "cpadminservice",
+        "loginPassword": "{{ zen_api_key }}"
+      }
+    validate_certs: false
+    status_code:
+      - 200
+  register: server_update_response
+
+- name: Get Test and Simulation server ID
+  ansible.builtin.set_fact:
+    test_simulation_server_id: "{{ servers_response.json | json_query(condition_query) | first }}"
+  vars:
+    condition_query: "elements[?name == 'Test and Simulation Execution'].id"
+
+- name: Update credentials for server
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter-api/v1/servers/{{ test_simulation_server_id }}"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ zen_token }}"
+    body_format: json
+    body:
+      {
+        "authenticationKind": "OAUTH",
+        "loginServer": "cpadminservice",
+        "loginPassword": "{{ zen_api_key }}"
+      }
+    validate_certs: false
+    status_code:
+      - 200
+  register: server_update_response
