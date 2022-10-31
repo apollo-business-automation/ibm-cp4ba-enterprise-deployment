@@ -88,6 +88,14 @@
 - name: Create ADS admin role
   block:
 
+    - name: ADS permissions
+      ansible.builtin.set_fact:
+        ads_perms_list:
+          - "{{ cp4ba_config.optional_components.ads_designer | ternary('administer_ads_platform','') }}"
+          - "{{ cp4ba_config.optional_components.ads_runtime | ternary('execute_ads_decision','') }}"
+          - "{{ cp4ba_config.optional_components.ads_runtime | ternary('manage_ads_decision','') }}"
+          - "{{ cp4ba_config.optional_components.ads_runtime | ternary('monitor_ads_runtime','') }}"
+
     # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=services-managing-user-permissions
     - name: Create ADS admin role
       ansible.builtin.uri:
@@ -99,11 +107,7 @@
         body:
           role_name: ADS Admin
           description: ""
-          permissions:
-            - administer_ads_platform
-            - execute_ads_decision
-            - manage_ads_decision
-            - monitor_ads_runtime
+          permissions: "{{ ads_perms_list | select | list }}"
         validate_certs: false
         status_code: 201
       register: admin_role_response

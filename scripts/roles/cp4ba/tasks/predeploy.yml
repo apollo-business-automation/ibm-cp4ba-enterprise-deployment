@@ -81,7 +81,7 @@
 
 - name: Manage FNCM ES Google ID
   include_tasks: predeploy/bai.yml
-  when: cp4ba_config.optional_components.es
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.es
 
 - name: Manage FNCM
   include_tasks: predeploy/fncm.yml
@@ -89,7 +89,7 @@
 
 - name: Manage IER
   include_tasks: predeploy/ier.yml
-  when: cp4ba_config.optional_components.ier
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.ier
 
 - name: Manage AAE
   include_tasks: predeploy/aae.yml
@@ -97,7 +97,7 @@
 
 - name: Manage AAE
   include_tasks: predeploy/aae-data-persistence.yml
-  when: cp4ba_config.optional_components.ae_data_persistence
+  when: cp4ba_config.deployment_patterns.application and cp4ba_config.optional_components.ae_data_persistence
 
 - name: Manage ADP
   include_tasks: predeploy/adp.yml

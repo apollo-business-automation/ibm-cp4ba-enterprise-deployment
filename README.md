@@ -380,6 +380,7 @@ data:
     # Configuration of cp4ba components to be installed. Please be sure you select all that is needed both from the 
     # deployment patterns as well as from the optional components.
     # Dependencies can be determined from documentation at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments
+    # 
     # Only some combinations were tested.
     cp4ba_config:
       deployment_patterns:
@@ -392,7 +393,9 @@ data:
         workflow: true
         workflow_workstreams: false
       optional_components:
+        # bas = Business Automation Studio
         bas: true
+        # bai = Business Automation Insight
         bai: true
         decision_center: true
         decision_runner: true
@@ -413,7 +416,6 @@ data:
         document_processing_designer: true
         document_processing_runtime: false
         baw_authoring: true
-        application: true
     
     # Additional customization for Automation Document Processing
     # Contents of the following will be merged into ADP part of CP4BA CR yaml file. Arrays are overwriten.

@@ -351,7 +351,7 @@ If you want FDM to connect to CPE, you need to provide it with Zen certificate. 
 - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
 {% endif %}
-{% if cp4ba_config.optional_components.baw_authoring == true %}
+{% if cp4ba_config.deployment_patterns.workflow and cp4ba_config.optional_components.baw_authoring == true %}
 ### Business Automation Workflow Authoring (BAWAUT)
 
 #### Endpoints
