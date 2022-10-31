@@ -103,11 +103,11 @@
   ansible.builtin.include_role:
     name: cp4ba
 
-
-- name: Install Asset Repo
-  ansible.builtin.include_role:
-    name: asset_repo
-  when: asset_repo_enabled
+# TODO requires different version of CPFS then CP4BA  - last in 22.0.1.4 and 1.5.2
+#- name: Install Asset Repo
+#  ansible.builtin.include_role:
+#    name: asset_repo
+#  when: asset_repo_enabled
 
 - name: RPA group
   block:

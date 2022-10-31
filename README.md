@@ -68,7 +68,7 @@ Result of this Enterprise deployment is not fully supported:
 What is not included:
 - ICCs - not covered.
 - Caution! FNCM External share - Currently not supported with ZEN & IAM as per limitation on [FNCM limitations](https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=notes-known-limitations-issues#concept_gmf_x1h_1fb__ecm)
-- Caution! Asset Repository is now omitted due to a bug in IAF - waiting for fixes. And the latest version only support OCP 4.10+. TODO
+- Caution! Asset Repository is now omitted due to requesting different CPFS version than CPFS.
 - Workflow Server and Workstream Services - this is a dev deployment. BAW Authoring and (BAW + IAWS) are mutually exclusive in single project.
 
 ## What is in the package 📦
