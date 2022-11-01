@@ -415,7 +415,6 @@
     apply: true
     src: "{{ cp4ba_output_directory }}/cr.yaml"
 
-- meta: end_play
 - name: Wait for icp4ba Cartridge to be Ready
   ansible.builtin.include_role:
     name: common
