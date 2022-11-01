@@ -22,7 +22,9 @@ spec:
       secretName: rpa-db
     firstTenant:
       name: ibm
-      ownerSecret: rpa-first-tenant-owner
+      owner:
+        ownerSecret:
+          secretName: rpa-first-tenant-owner
     replicas: 1
     smtp:
       port: 587
