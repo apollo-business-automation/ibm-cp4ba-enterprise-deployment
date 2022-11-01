@@ -384,37 +384,56 @@ data:
     # Only some combinations were tested.
     cp4ba_config:
       deployment_patterns:
+        # Foundation pattern, always true - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__foundation
         foundation: true
+        # Operational Decision Manager (ODM) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__odm
         decisions: true
+        # Automation Decision Services (ADS) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__ads
         decisions_ads: true
+        # FileNet Content Manager (FNCM) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__ecm
         content: true
+        # Business Automation Application (BAA) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__baa
         application: true
+        # Automation Document Processing (ADP) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__adp
         document_processing: true
+        # Business Automation Workflow (BAW) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__baw
         workflow: true
+        # Always false in this tool
         workflow_workstreams: false
       optional_components:
-        # bas = Business Automation Studio
+        # Business Automation Studio (BAS) (foundation pattern)
         bas: true
-        # bai = Business Automation Insight
+        # Business Automation Insights (BAI) (foundation pattern)
         bai: true
+        # Decison Center (ODM) (decisions pattern)
         decision_center: true
+        # Decison Runner (ODM) (decisions pattern)
         decision_runner: true
+        # Decison Server (ODM) (decisions pattern)
         decision_server_runtime: true
+        # Designer (ADS) (decisions_ads pattern)
         ads_designer: true
+        # Runtime (ADS) (decisions_ads pattern)
         ads_runtime: true
+        # Content Management Interoperability Services (FNCM - CMIS) (content pattern)
         cmis: true
-        # css: Content Search Services
+        # Content Search Services (FNCM - CSS) (content pattern)
         css: true
-        # es = External Share
+        # External Share (FNCM - ES) (content pattern)
         es: true
-        # tm = Task Management
+        # Task Manager (FNCM - TM) (content pattern)
         tm: true
-        # ier = IBM Enterprise Records
+        # IBM Enterprise Records (FNCM - IER) (content pattern)
         ier: true
+        # App Designer (BAA) (application pattern)
         app_designer: true
+        # App Engine data persistence (BAA) (application pattern)
         ae_data_persistence: true
+        # Designer (ADP) (document_processing pattern)
         document_processing_designer: true
+        # Runtime (ADP) (document_processing pattern)
         document_processing_runtime: false
+        # Workflow Authoring (BAW) (workflow pattern)
         baw_authoring: true
     
     # Additional customization for Automation Document Processing
