@@ -336,6 +336,18 @@
             verify_configuration:
               vc_icn_verification: "{{ cr_bck.spec.verify_configuration.vc_icn_verification + cr.spec.verify_configuration.vc_icn_verification }}"
 
+    - name: Combine lists back to CR with CSS
+      ansible.builtin.set_fact:
+        cr: "{{ cr | combine(list_overwrites, recursive=true) }}"
+      vars:
+        list_overwrites:
+          spec:
+            initialize_configuration:
+              ic_css_index_area: "{{ cr_bck.spec.initialize_configuration.ic_css_index_area +
+                  cr.spec.initialize_configuration.ic_css_index_area }}"
+              ic_enable_cbr: "{{ cr_bck.spec.initialize_configuration.ic_enable_cbr + cr.spec.initialize_configuration.ic_enable_cbr }}"
+      when: cp4ba_config.optional_components.css
+
   when: cp4ba_config.deployment_patterns.document_processing
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-business-automation-workflow-authoring

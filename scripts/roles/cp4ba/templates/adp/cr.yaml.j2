@@ -94,6 +94,13 @@ spec:
           add_desktop_name: DEVOS1
           add_desktop_description: DEVOS1
           add_desktop_repo_id: DEVOS1
+{% if cp4ba_config.optional_components.css == true %}
+    ic_css_index_area:
+      - object_store_name: DEVOS1
+        index_area_name: devos1_index_area
+    ic_enable_cbr:
+      - object_store_name: DEVOS1       
+{% endif %}
   verify_configuration:
     vc_icn_verification:
       - vc_icn_repository: DEVOS1
