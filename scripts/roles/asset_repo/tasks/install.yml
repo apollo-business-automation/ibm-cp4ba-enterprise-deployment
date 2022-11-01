@@ -83,8 +83,8 @@
     api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
     host: "{{ asset_repo_k8s_host | default(omit) }}"
     state: present
-    force: false
-    merge_type: merge
+    force: true
+    apply: true
     src: "{{ asset_repo_output_directory }}/assetrepository.yaml"
     wait: true
     wait_sleep: 15
