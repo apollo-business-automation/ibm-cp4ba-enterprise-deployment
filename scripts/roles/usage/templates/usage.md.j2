@@ -574,6 +574,12 @@ As DB server for RPA.
 
 - sa / {{ universal_password }}
 
+#### CLI in container
+
+```bash
+/opt/mssql-tools/bin/sqlcmd -S 127.0.0.1 -U sa -P {{ universal_password }}
+```
+
 ### MongoDB
 
 As MongoDB database storage for the platform.
