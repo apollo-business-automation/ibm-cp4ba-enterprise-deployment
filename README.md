@@ -214,7 +214,7 @@ For your convenience the following post-deplyment setup tasks have been automate
 - Task manager - Enabled in Navigator.
 - BAW - tw_admins enhanced with LDAP admin groups.
 - BAW - tw_authors enhanced with LDAP user and admin groups.
-- RPA - Bot Devloper permission added to administrative user.
+- RPA - Bot Developer permission added to administrative user.
 
 ## Pre-requisites ⬅️
 
