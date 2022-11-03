@@ -28,12 +28,13 @@
     msg: "Incorrect url provided as the OCP API Endpoint"
   when:
     validate_ocp_namespaces is not defined or
-    ("msg" in validate_ocp_namespaces and "Error" in validate_ocp_namespaces.msg ) or
-    ("exception" in validate_ocp_namespaces and "NewConnectionError" in validate_ocp_namespaces.exception)
+    ("msg" in validate_ocp_namespaces and ("Error" in validate_ocp_namespaces.msg or
+    (validate_ocp_namespaces.msg is search('.*Exception.*') and validate_ocp_namespaces.msg is search('.*NewConnectionError.*'))))
 
 - name: OCP Cluster Token has to be valid
   ansible.builtin.fail:
-    msg: "Incorrect token provided as the OCP Cluster Token"
+    msg: "Incorrect or outdated token provided as the OCP Cluster Token"
   when:
     validate_ocp_namespaces is not defined or
-    ("exception" in validate_ocp_namespaces) and ("Unauthorized" in validate_ocp_namespaces.exception)
+    "msg" in validate_ocp_namespaces and
+    (validate_ocp_namespaces.msg is search('.*Exception.*') and validate_ocp_namespaces.msg is search('.*Unauthorized.*'))
