@@ -43,7 +43,9 @@ spec:
           oc_cpe_obj_store_asa_name: os1_asa
           oc_cpe_obj_store_asa_file_systems_storage_device_name: os1_file_system_storage
           oc_cpe_obj_store_asa_root_dir_path: /opt/ibm/asa/os1_storagearea1
+{% if cp4ba_config.optional_components.bai %}
           oc_cpe_obj_store_enable_content_event_emitter: true
+{% endif %}
           oc_cpe_obj_store_addons_list:
             - "{CE460ADD-0000-0000-0000-000000000004}" # 5.2.1 Base Application Extensions (default)
             - "{CE460ADD-0000-0000-0000-000000000001}" # 5.2.1 Base Content Engine Extensions (default)
