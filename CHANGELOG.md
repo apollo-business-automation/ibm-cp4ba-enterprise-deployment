@@ -31,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Removed
 
 - Ability to install on OpenShift 4.8.
+- CPFS grafana operator as custom grafanas are deprecated in OCP 4.10 and removed in 4.11.
 
 ## [2022-09-20]
 

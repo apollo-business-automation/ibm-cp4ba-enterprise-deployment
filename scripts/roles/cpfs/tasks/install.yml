@@ -4,41 +4,6 @@
     state: directory
     mode: u+rwx
 
-- name: Get Cluster Monitoring ConfigMap
-  kubernetes.core.k8s_info:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    kind: ConfigMap
-    name: cluster-monitoring-config
-    namespace: openshift-monitoring
-  register: configmap
-  retries: 10
-  delay: 1
-
-- name: Manage Config Map
-  block:
-    - name: Prepare yaml file for Cluster Monitoring ConfigMap
-      ansible.builtin.template:
-        src: cluster-monitoring-config.yaml.j2
-        dest: "{{ cpfs_output_directory }}/cluster-monitoring-config.yaml"
-        mode: u+rwx
-
-    - name: Add Cluster Monitoring ConfigMap
-      kubernetes.core.k8s:
-        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-        host: "{{ cpfs_k8s_host | default(omit) }}"
-        state: present
-        force: false
-        merge_type: merge
-        namespace: openshift-monitoring
-        src: "{{ cpfs_output_directory }}/cluster-monitoring-config.yaml"
-        wait: true
-        wait_sleep: 15
-        wait_timeout: 15
-  when: configmap | length > 0
-
-# TODO add better configmap handling in case it exists and doesn't contain user worload enabled?
-
 - name: Create Project common-service
   ansible.builtin.include_role:
     name: common
