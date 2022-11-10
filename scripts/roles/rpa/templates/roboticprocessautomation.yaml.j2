@@ -23,8 +23,11 @@ spec:
     firstTenant:
       name: ibm
       owner:
-        ownersecret:
-          secretName: rpa-first-tenant-owner
+        email: "{{ lc_principal_admin_user }}@{{ lc_ldap_domain }}"
+        name: "{{ lc_principal_admin_user }}"
+        # TODO enable when db init job fiexed - last not working 21.0.6 - 1.6.0
+        # ownersecret:
+          # secretName: rpa-first-tenant-owner
     replicas: 1
     smtp:
       port: 587
