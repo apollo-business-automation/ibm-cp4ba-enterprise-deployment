@@ -19,7 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Automatic git project creation for ADS.
 - Enabled CSS on DEVOS1 for ADP.
 - Task mining master key set automatically.
-
+- Task mining related permissions given to admin user automatically.
 ### Changed
 
 - Updated CP4BA to 22.0.1.4.

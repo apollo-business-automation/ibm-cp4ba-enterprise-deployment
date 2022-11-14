@@ -216,6 +216,7 @@ For your convenience the following post-deplyment setup tasks have been automate
 - BAW - tw_authors enhanced with LDAP user and admin groups.
 - RPA - Bot Developer permission added to administrative user.
 - IPM - Task mining master key set. https://www.ibm.com/docs/en/process-mining/1.13.1?topic=manual-how-integrate-process-mining-task-mining
+- IPM - Task mining related permissions added to admin user.
 
 ## Pre-requisites ⬅️
 
