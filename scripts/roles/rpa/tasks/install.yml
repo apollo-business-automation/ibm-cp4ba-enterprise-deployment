@@ -274,7 +274,7 @@
 
 - name: Get roles
   ansible.builtin.uri:
-    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/rpa/api/v1.0/en-US/role?offset=0&limit=100&search=&orderBy=name&asc=true"
+    url: "https://cpd-{{ rpa_project_name }}.{{ apps_endpoint_domain }}/rpa/api/v1.0/en-US/role?offset=0&limit=100&search=&orderBy=name&asc=true"
     method: GET
     headers:
       Authorization: "Bearer {{ rpa_token }}"
@@ -311,7 +311,7 @@
 
 - name: Get teams
   ansible.builtin.uri:
-    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/rpa/api/v1.0/en-US/team?offset=0&limit=100&search=&orderBy=name&asc=true"
+    url: "https://cpd-{{ rpa_project_name }}.{{ apps_endpoint_domain }}/rpa/api/v1.0/en-US/team?offset=0&limit=100&search=&orderBy=name&asc=true"
     method: GET
     headers:
       Authorization: "Bearer {{ rpa_token }}"
@@ -327,7 +327,7 @@
 
 - name: Get users
   ansible.builtin.uri:
-    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/rpa/api/v1.0/en-US/user?offset=0&limit=100&search=&orderBy=name&asc=true"
+    url: "https://cpd-{{ rpa_project_name }}.{{ apps_endpoint_domain }}/rpa/api/v1.0/en-US/user?offset=0&limit=100&search=&orderBy=name&asc=true"
     method: GET
     headers:
       Authorization: "Bearer {{ rpa_token }}"
