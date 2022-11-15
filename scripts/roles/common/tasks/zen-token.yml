@@ -31,6 +31,6 @@
     status_code: 200
   register: token_response
 
-- name: Set apps endpoint
+- name: Set zen token
   ansible.builtin.set_fact:
     "{{ common_output_to_var }}": "{{ token_response.json | json_query('accessToken') }}"
