@@ -234,6 +234,7 @@
   ansible.builtin.set_fact:
     rpa_tenant_id: "{{ token_response.json.tenants[0].id }}"
 
+# ansible.builtin.uri not working
 - name: Get RPA token
   ansible.builtin.command: |
     curl -kX 'POST' \
@@ -245,23 +246,6 @@
     --data-urlencode 'grant_type=password'
   register: rpa_token_response
   changed_when: false
-
-# TODO not working
-# - name: Get RPA token
-#   ansible.builtin.uri:
-#     url: "https://cpd-{{ rpa_project_name }}.{{ apps_endpoint_domain }}/rpa/api/v1.0/token"
-#     method: POST
-#     headers:
-#       oidc-access-token: "{{ rpa_oidc_token }}"
-#       Cookie: "ibm-private-cloud-session={{ zen_token }}"
-#       tenantId: "{{ rpa_tenant_id }}"
-#     body_format: form-urlencoded
-#     body:
-#       grant_type: password
-#     validate_certs: false
-#     status_code: 200
-#   register: token_response
-#   failed_when: false
 
 - name: Set rpa_token
   ansible.builtin.set_fact:
