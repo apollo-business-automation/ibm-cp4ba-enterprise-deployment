@@ -103,7 +103,7 @@
   ansible.builtin.include_role:
     name: cp4ba
 
-# TODO requires different version of CPFS then CP4BA  - last in 22.0.1.4 and 1.5.2
+# TODO requires some CP4I resources and fails
 #- name: Install Asset Repo
 #  ansible.builtin.include_role:
 #    name: asset_repo
