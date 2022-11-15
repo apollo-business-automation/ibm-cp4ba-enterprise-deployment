@@ -88,6 +88,10 @@
   ansible.builtin.include_role:
     name: db2
 
+- name: Remove usage
+  ansible.builtin.include_role:
+    name: usage
+
 - name: Remove Global CA
   ansible.builtin.include_role:
     name: global_ca
