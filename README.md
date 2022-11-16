@@ -161,7 +161,7 @@ The following picture shows real idle utilization of Nodes with deployed platfor
 
 ![assets/utilization.png](assets/utilization.png)
 
-The following output shows CPU and Memory requests and limits on Nodes on above mentioned ROKS as an example.
+The following output shows CPU and Memory requests and limits on Nodes on sample OpenShift with 8 Worker Nodes (16 CPU, 32GB Memory each).
 
 ```text
 node/ocp01-8mdd5-worker-2d7kb
