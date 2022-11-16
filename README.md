@@ -164,35 +164,45 @@ The following picture shows real idle utilization of Nodes with deployed platfor
 The following output shows CPU and Memory requests and limits on Nodes on above mentioned ROKS as an example.
 
 ```text
-node/10.162.243.84
-  Resource           Requests          Limits
-  cpu                10486m (66%)      34610m (217%)
-  memory             22192659Ki (76%)  51245344Ki (176%)
+node/ocp01-8mdd5-worker-2d7kb
+  Resource           Requests       Limits
+  cpu                11700m (75%)   115210m (743%)
+  memory             25060Mi (80%)  122136Mi (393%)
 
-node/10.162.243.97
-  Resource           Requests          Limits
-  cpu                13010m (81%)      37770m (237%)
-  memory             24835603Ki (85%)  48728352Ki (168%)
+node/ocp01-8mdd5-worker-6z8f2
+  Resource           Requests       Limits
+  cpu                12098m (78%)   28190m (181%)
+  memory             24848Mi (80%)  47372Mi (152%)
 
-node/10.163.57.153
-  Resource           Requests          Limits
-  cpu                11240m (70%)      102585m (646%)
-  memory             22581779Ki (77%)  120447264Ki (415%)
+node/ocp01-8mdd5-worker-dmv4w
+  Resource           Requests       Limits
+  cpu                5414m (34%)    5500m (35%)
+  memory             27884Mi (89%)  25344Mi (81%)
 
-node/10.163.57.158
+node/ocp01-8mdd5-worker-lq6lb
   Resource           Requests          Limits
-  cpu                11391m (71%)      41210m (259%)
-  memory             23807507Ki (82%)  54913312Ki (189%)
+  cpu                14 (90%)          25100m (161%)
+  memory             22270024Ki (70%)  31217Mi (100%)
 
-node/10.163.57.252
-  Resource           Requests          Limits
-  cpu                10498m (66%)      53400m (336%)
-  memory             22762003Ki (78%)  69994784Ki (241%)
+node/ocp01-8mdd5-worker-n4jsq
+  Resource           Requests       Limits
+  cpu                12184m (78%)   39725m (256%)
+  memory             17444Mi (56%)  45562Mi (146%)
 
-node/10.163.57.254
-  Resource           Requests          Limits
-  cpu                9741m (61%)       38750m (244%)
-  memory             22034011Ki (76%)  52342048Ki (180%)
+node/ocp01-8mdd5-worker-qxgtf
+  Resource           Requests       Limits
+  cpu                11694m (75%)   72160m (465%)
+  memory             24260Mi (78%)  83588Mi (269%)
+
+node/ocp01-8mdd5-worker-tppg6
+  Resource           Requests       Limits
+  cpu                12431m (80%)   86780m (559%)
+  memory             26032Mi (83%)  98525Mi (317%)
+
+node/ocp01-8mdd5-worker-zqzbd
+  Resource           Requests       Limits
+  cpu                14307m (92%)   29100m (187%)
+  memory             24286Mi (78%)  39198Mi (126%)
 ```
 
 ## Automated post-deployment tasks ✅
