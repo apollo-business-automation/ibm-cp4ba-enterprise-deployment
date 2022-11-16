@@ -666,7 +666,7 @@
         cp4ba_config.optional_components.decision_server_runtime | ternary(cp4ba_cr_meta_name+'-odm-decisionserverconsole','') }}"
       - "{{ cp4ba_config.deployment_patterns.decisions and
         cp4ba_config.optional_components.decision_runner | ternary(cp4ba_cr_meta_name+'-odm-decisionrunner','') }}"
-      - "{{ cp4ba_config.optional_components.application | ternary(cp4ba_cr_meta_name+'-instance1-aae-ae-deployment','') }}"
+      - "{{ cp4ba_config.deployment_patterns.application | ternary(cp4ba_cr_meta_name+'-instance1-aae-ae-deployment','') }}"
 
 - name: Wait for Deployments to be Available
   ansible.builtin.include_role:
