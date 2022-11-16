@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [2022-11-16]
+
 ### Added
 
 - Update procedure description.
@@ -20,10 +22,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Enabled CSS on DEVOS1 for ADP.
 - Task mining master key set automatically.
 - Task mining related permissions given to admin user automatically.
+
 ### Changed
 
 - Updated CP4BA to 22.0.1.4.
-- Updated RPA to 21.0.6.
+- Updated RPA to 21.0.7.
 - Updated IPM to 1.13.1.
 - Updated extras.
 - Moved repository and branch settings from Jobs to ConfigMap - breaking change.
