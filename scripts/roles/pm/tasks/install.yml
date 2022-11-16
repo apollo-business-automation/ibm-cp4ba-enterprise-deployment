@@ -510,7 +510,63 @@
     "subject":{"id":"{{ tm_admins_group_id }}","type":"group"},"TargetResource":"allTenantResource","permissions":[{"id":"READ"},{"id":"WRITE"}]}'
   changed_when: false
   when: perms_response.json | json_query("data.authorizations[?subject.id == '" + tm_admins_group_id + "']") | length == 0
-  
+
+- name: Get all users
+  ansible.builtin.uri:
+    url: "https://cpd-{{ pm_project_name }}.{{ apps_endpoint_domain }}/processmining/user-management/api/user-accounts"
+    method: GET
+    headers:
+      Cookie: ibm-private-cloud-session={{ zen_token }}
+    validate_certs: false
+    return_content: true
+    status_code:
+      - 200
+  register: users_response
+
+- name: Get admin user
+  ansible.builtin.set_fact:
+    admin_user: "{{ users_response.json | json_query(condition_query) }}"
+  vars:
+    condition_query: "[?username == '{{ lc_principal_admin_user }}']"
+
+- name: Get admin user ID
+  ansible.builtin.set_fact:
+    admin_user_id: "{{ admin_user | first | json_query('id') }}"
+
+- name: Get admin user
+  ansible.builtin.uri:
+    url: "https://cpd-{{ pm_project_name }}.{{ apps_endpoint_domain }}/processmining/user-management/api/user-accounts/{{ admin_user_id }}"
+    method: GET
+    headers:
+      Cookie: ibm-private-cloud-session={{ zen_token }}
+    validate_certs: false
+    return_content: true
+    status_code:
+      - 200
+  register: user_response
+
+- name: Retrieve admin user
+  ansible.builtin.set_fact:
+    admin_user: "{{ user_response.json }}"
+
+- name: Enable agent for admin user
+  ansible.builtin.set_fact:
+    admin_user: "{{ admin_user | combine({ 'agentEnabled': true }) }}"
+
+- name: Update admin user
+  ansible.builtin.uri:
+    url: "https://cpd-{{ pm_project_name }}.{{ apps_endpoint_domain }}/processmining/user-management/api/user-accounts/update/{{ admin_user_id }}"
+    method: PUT
+    headers:
+      Cookie: ibm-private-cloud-session={{ zen_token }}
+    body_format: json
+    body: "{{ admin_user }}"
+    validate_certs: false
+    return_content: true
+    status_code:
+      - 200
+  register: update_response
+
 - name: Create Project
   ansible.builtin.include_role:
     name: common

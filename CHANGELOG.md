@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Enabled CSS on DEVOS1 for ADP.
 - Task mining master key set automatically.
 - Task mining related permissions given to admin user automatically.
+- Task mining admin user enabled for TM agent.
 
 ### Changed
 
