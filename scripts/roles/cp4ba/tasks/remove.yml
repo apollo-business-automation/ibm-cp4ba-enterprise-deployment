@@ -170,8 +170,8 @@
 - name: Remove Catalog Sources
   kubernetes.core.k8s:
     state: absent
-    api_key: "{{ catalog_source_k8s_api_key | default(omit) }}"
-    host: "{{ catalog_source_k8s_host | default(omit) }}"
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
     api_version: v1alpha1
     kind: CatalogSource
     name: "{{ item }}"
@@ -252,3 +252,45 @@
     - TENANT1
     - TENANT2
     - CP4BA
+
+- name: Remove post-deploy.md Config Map
+  kubernetes.core.k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: absent
+    api_version: v1
+    kind: ConfigMap
+    name: cp4ba-postdeploy
+    namespace: "{{ cp4ba_output_namespace }}"
+    force: false
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Remove cp4ba-cr Config Map
+  kubernetes.core.k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: absent
+    api_version: v1
+    kind: ConfigMap
+    name: cp4ba-cr
+    namespace: "{{ cp4ba_output_namespace }}"
+    force: false
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Remove cp4ba-opertor-log Config Map
+  kubernetes.core.k8s:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    state: absent
+    api_version: v1
+    kind: ConfigMap
+    name: cp4ba-opertor-log
+    namespace: "{{ cp4ba_output_namespace }}"
+    force: false
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15

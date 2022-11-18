@@ -4,41 +4,6 @@
     state: directory
     mode: u+rwx
 
-- name: Get Cluster Monitoring ConfigMap
-  kubernetes.core.k8s_info:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    kind: ConfigMap
-    name: cluster-monitoring-config
-    namespace: openshift-monitoring
-  register: configmap
-  retries: 10
-  delay: 1
-
-- name: Manage Config Map
-  block:
-    - name: Prepare yaml file for Cluster Monitoring ConfigMap
-      ansible.builtin.template:
-        src: cluster-monitoring-config.yaml.j2
-        dest: "{{ cpfs_output_directory }}/cluster-monitoring-config.yaml"
-        mode: u+rwx
-
-    - name: Add Cluster Monitoring ConfigMap
-      kubernetes.core.k8s:
-        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-        host: "{{ cpfs_k8s_host | default(omit) }}"
-        state: present
-        force: false
-        merge_type: merge
-        namespace: openshift-monitoring
-        src: "{{ cpfs_output_directory }}/cluster-monitoring-config.yaml"
-        wait: true
-        wait_sleep: 15
-        wait_timeout: 15
-  when: configmap | length > 0
-
-# TODO add better configmap handling in case it exists and doesn't contain user worload enabled?
-
 - name: Create Project common-service
   ansible.builtin.include_role:
     name: common
@@ -694,7 +659,7 @@
   retries: 40
   delay: 30
 
-- name: Update cpfs admin username
+- name: Update cpfs admin password
   block:
 
     # Based on https://www.ibm.com/docs/en/cpfs?topic=configurations-changing-cluster-administrator-access-credentials#pwd
@@ -765,23 +730,16 @@
     common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
     common_output_to_var: "apps_endpoint_domain"
 
-- name: Get access token for administrative user
-  ansible.builtin.uri:
-    url: "https://cp-console.{{ apps_endpoint_domain }}/idprovider/v1/auth/identitytoken"
-    method: POST
-    body_format: form-urlencoded
-    body:
-      grant_type: password
-      username: cpfsadmin
-      password: "{{ cpfs_universal_password }}"
-      scope: openid
-    status_code: 200
-    validate_certs: false
-  register: auth_token_response
-
-- name: Set access token for administrative user
-  ansible.builtin.set_fact:
-    access_token: "{{ auth_token_response.json | json_query('access_token') }}"
+- name: Get IAM token
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: iam-token-user
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_user: "cpfsadmin"
+    common_password: "{{ cpfs_universal_password }}"
+    common_output_to_var: "iam_token"
 
 - name: Prepare JSON file for LDAP connection
   ansible.builtin.template:
@@ -794,7 +752,7 @@
     url: "https://cp-console.{{ apps_endpoint_domain }}/idmgmt/identity/api/v1/directory/ldap/onboardDirectory"
     method: POST
     headers:
-      Authorization: Bearer {{ access_token }}
+      Authorization: Bearer {{ iam_token }}
     body_format: json
     src: "{{ cpfs_output_directory }}/ldap-connection.json"
     status_code: [200, 422]

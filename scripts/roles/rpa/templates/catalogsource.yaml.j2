@@ -1,4 +1,4 @@
-# case 1.4.0 / csv 1.4.0 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-robotic-process-automation
+# case 1.7.0 / csv 1.7.0 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-robotic-process-automation
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -8,12 +8,12 @@ spec:
   displayName: IBM Robotic Process Automation Catalog
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-rpa-operator-catalog@sha256:d8e81a488afd1a7f68f02f9e223f5f5b4bb520b079c9a84d065ec0409a6eb696
+  image: icr.io/cpopen/ibm-rpa-operator-catalog@sha256:68be31d824b2d40d542bd62ea1735d9d0ce1dd9ce9b3e61a9e22c3b8215e939c
   updateStrategy:
     registryPoll:
       interval: 45m
 ---
-# case 1.5.3 / csv 1.5.3 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cloud-databases-redis
+# case 1.6.0 / csv 1.6.0 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cloud-databases-redis
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -23,12 +23,12 @@ spec:
   displayName: ibm-cloud-databases-redis-operator-catalog
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-cloud-databases-redis-catalog@sha256:a787e47b2c86acad65060c565ed513b623dd016d743ccf62b98dbb5b96f8e860
+  image: icr.io/cpopen/ibm-cloud-databases-redis-catalog@sha256:f339dd593991e1127ac42b96e39e538fa83237defb9dc9267de28f298b4bf427
   updateStrategy:
     registryPoll:
       interval: 45m
 ---
-# case 1.6.0 / csv 1.6.0 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-mq
+# case 1.8.2 / csv 1.8.2 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-mq
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -38,7 +38,7 @@ spec:
   displayName: IBM MQ
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-mq-operator-catalog@sha256:94642ded53b9fa318dbb5700f3ae647799d47e4c361067afb36430c587691b02
+  image: icr.io/cpopen/ibm-mq-operator-catalog@sha256:8775212f7d592a7971f8baf20898551dce6e9e5a984abad8658e18cf8bc76cb1
   updateStrategy:
     registryPoll:
       interval: 45m

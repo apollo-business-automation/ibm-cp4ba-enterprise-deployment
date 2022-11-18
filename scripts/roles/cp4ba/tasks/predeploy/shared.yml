@@ -29,9 +29,10 @@
     state: present
     force: false
     merge_type: merge
-    src: "{{ cp4ba_output_directory }}/ldap-secret.yaml" 
+    src: "{{ cp4ba_output_directory }}/ldap-secret.yaml"
 
-- block:
+- name: Manage LDAP SSL
+  block:
 
     - name: Load LDAP SSL Certificate Secret
       kubernetes.core.k8s_info:
@@ -46,7 +47,7 @@
     - name: Get the LDAP SSL Certificate
       ansible.builtin.set_fact:
         _ldap_ssl_crt: "{{ _ldap_ssl_crt.resources[0].data['tls.crt'] }}"
-        
+
     - name: Prepare yaml file for LDAP SSL Certificate Secret
       ansible.builtin.template:
         src: shared/ldap-ssl-secret.yaml.j2
@@ -60,6 +61,6 @@
         state: present
         force: false
         merge_type: merge
-        src: "{{ cp4ba_output_directory }}/ldap-ssl-secret.yaml" 
+        src: "{{ cp4ba_output_directory }}/ldap-ssl-secret.yaml"
 
   when: lc_ldap_ssl_secret_name | length > 0

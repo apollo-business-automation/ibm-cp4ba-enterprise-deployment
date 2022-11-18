@@ -1,5 +1,5 @@
-- name: Manage Zen roles
-  include_tasks: postdeploy/zen-roles.yml
+- name: Manage Zen
+  include_tasks: postdeploy/zen.yml
 
 - name: Manage BAML
   include_tasks: postdeploy/baml.yml
@@ -19,15 +19,20 @@
 
 - name: Manage IER
   include_tasks: postdeploy/ier.yml
-  when: cp4ba_config.optional_components.ier
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.ier
 
 - name: Manage IER TM
   include_tasks: postdeploy/ier-tm.yml
-  when: cp4ba_config.optional_components.ier and cp4ba_config.optional_components.tm
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.ier
+    and cp4ba_config.optional_components.tm
 
 - name: Manage TM
   include_tasks: postdeploy/tm.yml
-  when: cp4ba_config.optional_components.tm
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.tm
+
+- name: Manage BAWAUT
+  include_tasks: postdeploy/bawaut.yml
+  when: cp4ba_config.deployment_patterns.workflow and cp4ba_config.optional_components.baw_authoring
 
 - name: Create Project
   ansible.builtin.include_role:

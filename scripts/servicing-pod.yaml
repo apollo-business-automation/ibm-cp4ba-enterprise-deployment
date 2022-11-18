@@ -15,9 +15,15 @@ spec:
       imagePullPolicy: IfNotPresent
       env:
         - name: GIT_REPOSITORY
-          value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment.git
+          valueFrom:
+            configMapKeyRef:
+              name: apollo-one-shot
+              key: git_repository
         - name: GIT_BRANCH
-          value: main
+          valueFrom:
+            configMapKeyRef:
+              name: apollo-one-shot
+              key: git_branch
         - name: CONTAINER_RUN_MODE
           value: "true"
       volumeMounts:

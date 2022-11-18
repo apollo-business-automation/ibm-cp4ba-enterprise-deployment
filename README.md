@@ -2,7 +2,7 @@
 
 Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components with all kinds of prerequisites and extras on OpenShift.
 
-Last installation was performed on 2022-09-20 with CP4BA version 22.0.1-IF002 (also called 22.0.1.2 or 21.1.2)
+Last installation was performed on 2022-11-18 with CP4BA version 22.0.1-IF004.
 
 - [Disclaimer ✋](#disclaimer-)
 - [Documentation base](#documentation-base)
@@ -10,10 +10,12 @@ Last installation was performed on 2022-09-20 with CP4BA version 22.0.1-IF002 (a
 - [General information 📢](#general-information-)
 - [What is in the package 📦](#what-is-in-the-package-)
 - [Environments used for installation 💻](#environments-used-for-installation-)
+- [Automated post-deployment tasks ✅](#automated-post-deployment-tasks-)
 - [Pre-requisites ⬅️](#pre-requisites-️)
 - [Installation steps ⚡](#installation-steps-)
 - [Post installation steps ➡️](#post-installation-steps-️)
 - [Usage & operations 😊](#usage--operations-)
+- [Update steps ↗️](#update-steps-)
 - [Removal steps 🗑️](#removal-steps-️)
 - [Post removal steps ➡️](#post-removal-steps-️)
 - [Contacts](#contacts)
@@ -66,7 +68,7 @@ Result of this Enterprise deployment is not fully supported:
 What is not included:
 - ICCs - not covered.
 - Caution! FNCM External share - Currently not supported with ZEN & IAM as per limitation on [FNCM limitations](https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=notes-known-limitations-issues#concept_gmf_x1h_1fb__ecm)
-- Caution! Asset Repository is now omitted due to a bug in IAF - waiting for fixes. And the latest version only support OCP 4.10+.
+- Caution! Asset Repository is now omitted due to requesting different CPFS version than CPFS.
 - Workflow Server and Workstream Services - this is a dev deployment. BAW Authoring and (BAW + IAWS) are mutually exclusive in single project.
 
 ## What is in the package 📦
@@ -137,10 +139,10 @@ Multiple command line tools are installed inside a container to make the install
 
 ## Environments used for installation 💻
 
-With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift 4.10, however it was historically executed on the following once.
+With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift 4.10 with 8 Worker Nodes (16 CPU, 32GB Memory each), however it was historically executed on the following once.  
 
 - ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
-OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
+OpenShift 4.8.x & 4.10.x - 8 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
 Successfully installed
 
 - Traditional OpenShift cluster created from scratch on top of virtualization platform  
@@ -159,39 +161,73 @@ The following picture shows real idle utilization of Nodes with deployed platfor
 
 ![assets/utilization.png](assets/utilization.png)
 
-The following output shows CPU and Memory requests and limits on Nodes on above mentioned ROKS as an example.
+The following output shows CPU and Memory requests and limits on Nodes on sample OpenShift with 8 Worker Nodes (16 CPU, 32GB Memory each).
 
 ```text
-node/10.162.243.84
-  Resource           Requests          Limits
-  cpu                10486m (66%)      34610m (217%)
-  memory             22192659Ki (76%)  51245344Ki (176%)
+node/ocp01-8mdd5-worker-2d7kb
+  Resource           Requests       Limits
+  cpu                11700m (75%)   115210m (743%)
+  memory             25060Mi (80%)  122136Mi (393%)
 
-node/10.162.243.97
-  Resource           Requests          Limits
-  cpu                13010m (81%)      37770m (237%)
-  memory             24835603Ki (85%)  48728352Ki (168%)
+node/ocp01-8mdd5-worker-6z8f2
+  Resource           Requests       Limits
+  cpu                12098m (78%)   28190m (181%)
+  memory             24848Mi (80%)  47372Mi (152%)
 
-node/10.163.57.153
-  Resource           Requests          Limits
-  cpu                11240m (70%)      102585m (646%)
-  memory             22581779Ki (77%)  120447264Ki (415%)
+node/ocp01-8mdd5-worker-dmv4w
+  Resource           Requests       Limits
+  cpu                5414m (34%)    5500m (35%)
+  memory             27884Mi (89%)  25344Mi (81%)
 
-node/10.163.57.158
+node/ocp01-8mdd5-worker-lq6lb
   Resource           Requests          Limits
-  cpu                11391m (71%)      41210m (259%)
-  memory             23807507Ki (82%)  54913312Ki (189%)
+  cpu                14 (90%)          25100m (161%)
+  memory             22270024Ki (70%)  31217Mi (100%)
 
-node/10.163.57.252
-  Resource           Requests          Limits
-  cpu                10498m (66%)      53400m (336%)
-  memory             22762003Ki (78%)  69994784Ki (241%)
+node/ocp01-8mdd5-worker-n4jsq
+  Resource           Requests       Limits
+  cpu                12184m (78%)   39725m (256%)
+  memory             17444Mi (56%)  45562Mi (146%)
 
-node/10.163.57.254
-  Resource           Requests          Limits
-  cpu                9741m (61%)       38750m (244%)
-  memory             22034011Ki (76%)  52342048Ki (180%)
+node/ocp01-8mdd5-worker-qxgtf
+  Resource           Requests       Limits
+  cpu                11694m (75%)   72160m (465%)
+  memory             24260Mi (78%)  83588Mi (269%)
+
+node/ocp01-8mdd5-worker-tppg6
+  Resource           Requests       Limits
+  cpu                12431m (80%)   86780m (559%)
+  memory             26032Mi (83%)  98525Mi (317%)
+
+node/ocp01-8mdd5-worker-zqzbd
+  Resource           Requests       Limits
+  cpu                14307m (92%)   29100m (187%)
+  memory             24286Mi (78%)  39198Mi (126%)
 ```
+
+## Automated post-deployment tasks ✅
+
+For your convenience the following post-deplyment setup tasks have been automated:
+- Zen - Users and Groups added.
+- Zen - Adminsitrative group is given all available privileges from all pillars.
+- Zen - Regular groups are given developer privileges from all pillars.
+- Zen - Service acount created in CPFS IAM and Zen and Zen API key is generated for convenient and stable usage.
+- Workforce Insights - Connection setup. You just need to create WFI dashboard. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=secrets-creating-custom-bpc-workforce-secret
+- ADS - Nexus connection setup and all ADS plugins loaded.
+- ADS - Organization in Git created. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=gst-task-2-connecting-git-repository-sharing-decision-service
+- ADS - Automatic Git project connection https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=services-connecting-remote-repository-automatically
+- ODM - Service user credentials automatically assigned to servers.
+- ADP - Organization in Git created. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-setting-up-remote-git-organization
+- ADP - Default project data loaded. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-loading-default-sample-data
+- IER - Initial setup through configmgr performed.
+- Task manager - Set up with JARs required by IER.
+- Task manager - Enabled in Navigator.
+- BAW - tw_admins enhanced with LDAP admin groups.
+- BAW - tw_authors enhanced with LDAP user and admin groups.
+- RPA - Bot Developer permission added to administrative user.
+- IPM - Task mining master key set. https://www.ibm.com/docs/en/process-mining/1.13.1?topic=manual-how-integrate-process-mining-task-mining
+- IPM - Task mining related permissions added to admin user.
+- IPM - Task mining admin user enabled for TM agent usage.
 
 ## Pre-requisites ⬅️
 
@@ -272,8 +308,16 @@ metadata:
   name: apollo-one-shot
   namespace: apollo-one-shot
 data:
+  # Repository url can be changed to you own forked repository with your customizations
+  git_repository: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment.git
+
+  # This parameter cotains a specific tag name of the repository. This allows you to run Install and Remove from the same version.
+  # In situation where you want to clean and install newver version you leave the original tag you had, run through remove and then change this tag to lastest and run install.
+  git_branch: "2022-11-18"
+
+  # Variables
   variables.yml: |
-    # Always set these parameters to your values #
+    # Mandatory - Always set these parameters to your values #
 
     ## Entitlement key from the IBM Container software library. 
     ## (https://myibm.ibm.com/products-services/containerlibrary)  
@@ -296,7 +340,8 @@ data:
     ## Password must be alphanumeric (upper and lower case; no special characters allowed).
     universal_password: Passw0rd
 
-    # The rest of the following parameters can be used to further customize the deployment.
+    # Optional - The rest of the following parameters can be used to further customize the deployment.
+
     # You don't need to configure them in any way if you want to just install the whole platform with prerequisites and extras.
 
     ## Set to false if you provide your own LDAP, madatory to set the ldap_configuration
@@ -309,10 +354,9 @@ data:
     #
     # IMPORTANT: The provided LDAP will be used for all the components you are going to install.
     # IMPORTANT: Also set openldap_enabled on false if you do not want to install it
-    # IMPORTANT: Also create the external ldap secret that is bellow and put its name into ldap_configuration.lc_custom_config_secret
+    # IMPORTANT: Also fill the values in apollo-one-shot secret that is bellow
     # 
     #ldap_configuration:
-    #  lc_custom_config_secret: external-ldap-secret
     ## the main ldap group used for workflow and other purposes where single group of admins is required. 
     #  lc_principal_admin_group: cpadmins
     ## list of all admin groups you want to set to be admins in the platform components 
@@ -349,40 +393,80 @@ data:
     # Configuration of cp4ba components to be installed. Please be sure you select all that is needed both from the 
     # deployment patterns as well as from the optional components.
     # Dependencies can be determined from documentation at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments
+    # 
     # Only some combinations were tested.
     cp4ba_config:
       deployment_patterns:
+        # Foundation pattern, always true - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__foundation
         foundation: true
+        # Operational Decision Manager (ODM) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__odm
         decisions: true
+        # Automation Decision Services (ADS) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__ads
         decisions_ads: true
+        # FileNet Content Manager (FNCM) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__ecm
         content: true
+        # Business Automation Application (BAA) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__baa
         application: true
+        # Automation Document Processing (ADP) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__adp
         document_processing: true
+        # Business Automation Workflow (BAW) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__baw
         workflow: true
+        # Always false in this tool
         workflow_workstreams: false
       optional_components:
+        # Business Automation Studio (BAS) (foundation pattern)
         bas: true
+        # Business Automation Insights (BAI) (foundation pattern)
         bai: true
+        # Decison Center (ODM) (decisions pattern)
         decision_center: true
+        # Decison Runner (ODM) (decisions pattern)
         decision_runner: true
+        # Decison Server (ODM) (decisions pattern)
         decision_server_runtime: true
+        # Designer (ADS) (decisions_ads pattern)
         ads_designer: true
+        # Runtime (ADS) (decisions_ads pattern)
         ads_runtime: true
+        # Content Management Interoperability Services (FNCM - CMIS) (content pattern)
         cmis: true
-        # css: Content Search Services
+        # Content Search Services (FNCM - CSS) (content pattern)
         css: true
-        # es = External Share
+        # External Share (FNCM - ES) (content pattern)
         es: true
-        # tm = Task Management
+        # Task Manager (FNCM - TM) (content pattern)
         tm: true
-        # ier = IBM Enterprise Records
+        # IBM Enterprise Records (FNCM - IER) (content pattern)
         ier: true
+        # App Designer (BAA) (application pattern)
         app_designer: true
+        # App Engine data persistence (BAA) (application pattern)
         ae_data_persistence: true
+        # Designer (ADP) (document_processing pattern)
         document_processing_designer: true
+        # Runtime (ADP) (document_processing pattern)
         document_processing_runtime: false
+        # Workflow Authoring (BAW) (workflow pattern)
         baw_authoring: true
-        application: true
+    
+    # Additional customization for Automation Document Processing
+    # Contents of the following will be merged into ADP part of CP4BA CR yaml file. Arrays are overwriten.
+    adp_cr_custom:
+      spec:
+        ca_configuration:
+          # GPU config as described on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-document-processing
+          deeplearning:
+            gpu_enabled: false
+            nodelabel_key: nvidia.com/gpu.present
+            nodelabel_value: "true"
+    
+    # Additional customization for Robotic Process Automation
+    # Contents of the following will be merged into RPA CR yaml file. Arrays are overwriten.
+    rpa_cr_custom:
+      spec:
+        # Configures the NLP provider component of IBM RPA. Set atleast to 1 to enable it. https://www.ibm.com/docs/en/rpa/21.0?topic=platform-configuring-rpa-custom-resources#basic-setup
+        nlp:
+          replicas: 0
 
     ## Set to false if you don't want to install (or remove) Process Mining
     pm_enabled: true
@@ -414,65 +498,62 @@ data:
 
 ![assets/config-map-add.png](assets/config-map-add.png)
 
-
-Optionally you can add your custom Global CA Secret which is then used to generate all certificates for the whole platform. If you don't provide it, a new Global CA will be automatically generated for you.
-
-To generate your own, you can use the following command which generated Global CA with 10 years validity.
-```bash
-openssl req -new -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes -out global-ca.crt -keyout global-ca.key -subj "/CN=Global CA"
-```
-
-Copy the contents of the following yaml to OpenShift console *Import YAML* dialog (as seen in the picture below - point 1 and 2).
-
-Add certificate of your Global CA to *tls.crt* and key to *tls.key*.
-
-Make sure the contents of CA files are properly indented to the same level like example contents. (as seen in the picture below point 3)  
-Private key can also have different header and footer than *-----BEGIN RSA PRIVATE KEY-----* and *-----END RSA PRIVATE KEY-----*
-
-Apply the updated contents to your cluster (as seen in the picture below point 4).    
+Optionally you can create a secret as described below to add your own Global CA or to add external LDAP.
 
 ```yaml
 apiVersion: v1
 kind: Secret
 metadata:
-  name: global-ca
-  namespace: apollo-one-shot  
-type: kubernetes.io/tls
+  name: apollo-one-shot
+  namespace: apollo-one-shot
+type: Opaque
 stringData:
-  tls.crt: |
+
+  # Global CA
+  ## Optionally you can add your custom Global CA which is then used to generate all certificates for the whole platform.
+  ## If you don't provide it, a new Global CA will be automatically generated for you.
+  ## To generate your own, you can use the following command which generated Global CA with 10 years validity.
+  ## openssl req -new -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes -out global-ca.crt -keyout global-ca.key -subj "/CN=Global CA"
+
+  ## Add certificate of your Global CA to *global_ca_tls.crt* and key to *global_ca_tls.key*.
+
+  ## Make sure the contents of CA files are properly indented to the same level like example contents.
+  ## Private key can also have different header and footer than *-----BEGIN RSA PRIVATE KEY-----* and *-----END RSA PRIVATE KEY-----*
+
+  ## Global CA certificate
+  global_ca_tls.crt: |
     -----BEGIN CERTIFICATE-----
     MIIFCzCCAvOgAwIBAgIUXwA5bTQNXox7K5johiEi9MjqOK8wDQYJKoZIhvcNAQEL
     ...
     P3ACf/xtBm9/8Q3qaFRERnVj8RiXLK641aBaLsDD1rCtvD4UloSfZ95ZOyipDTg=
     -----END CERTIFICATE-----
-  tls.key: |
+
+  ## Global CA key
+  global_ca_tls.key: |
     -----BEGIN RSA PRIVATE KEY-----
     MIIJKwIBAAKCAgEA18utJwF6y7sDEkItvwQ5LlspVF/p1fYAN2XTpHuYzocU7FRY
     ...
     Xv/NTjv7sM8aAmYOpR5JZ+nAwa7Y1hkrAybdbh3a4qES1LbrNVEMCLjwnHpkfOs=
     -----END RSA PRIVATE KEY-----
-```
 
-![assets/secret.png](assets/secret.png)
+  # External LDAP 
+  ## Optionally you can add your custom External LDAP Bind Secret to provide credentials for when you want to use your own LDAP
+  ## and not the OpenLdap which is installed by default by the apollo-one-shot.
+  ## This should be used together with the setting `openldap_enabled: false` and also `ldap_configuration`.
+  ## Bellow you can find an example of the bind secret:
 
-Optionally you can add your custom External LDAP Bind Secret to provide credentials for when you want to use your own LDAP and not the OpenLdap which is installed by default by the apollo-one-shot. This should be used together with the setting `openldap_enabled: false` and also `ldap_configuration`. Bellow you can find an example of the bind secret:
+  ## IMPORTANT: based on the following values, new bind secret will be created in the CP4BA namespace for the CP4BA use.
 
-IMPORTANT: based on this secret, new bind secret will be created in the CP4BA namespace for the CP4BA use.
+  ## IMPORTANT: When using External LDAP, for the **principal admin user**,
+  ## when user name attribute and id attribute is different and their value as well,
+  ## it is known to cause issue with setup of FileNet domain.
+  ## Be sure to provide admin user who has the same name as id for now (e.g. same cn as uid for example).
+  ## Alternatively configure the ldap_configuration approprietly to avoid the issue.
 
-IMPORTANT: When using External LDAP, for the **principal admin user**, when user name attribute and id attribute is different and their value as well, it is known to cause issue with setup of FileNet domain. Be sure to provide admin user who has the same name as id for now (e.g. same cn as uid for example). Alternatively configure the ldap_configuration approprietly to avoid the issue.
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: external-ldap-secret
-  namespace: apollo-one-shot  
-type: Opaque
-stringData:
-  # used for the ldap binding in components needing to interact with LDAP 
+  ## Used for the ldap binding in components needing to interact with LDAP 
   ldapUsername: cn=admin,dc=cp,dc=local
   ldapPassword: anAdminPassword
-  # used as the main admin for the installed platform, cp4ba.
+  ## Used as the main admin for the installed platform, cp4ba.
   principalAdminUsername: cpadmin
   principalAdminPassword: aCPadminPassword
 ```
@@ -500,15 +581,21 @@ spec:
           image: ubi9/ubi:9.0.0
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; yum install git -y && git clone --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
+            ["-c","cd /usr; yum install git -y && git clone --progress --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
               value: install
             - name: GIT_REPOSITORY
-              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment.git
+              valueFrom:
+                configMapKeyRef:
+                  name: apollo-one-shot
+                  key: git_repository
             - name: GIT_BRANCH
-              value: main
+              valueFrom:
+                configMapKeyRef:
+                  name: apollo-one-shot
+                  key: git_branch
             - name: CONTAINER_RUN_MODE
               value: "true"
           volumeMounts:
@@ -577,6 +664,12 @@ Review and perform post deploy manual steps for RPA as specified in ConfigMap *r
 
 ![assets/rpa-postdeploy-md.png](assets/rpa-postdeploy-md.png)
 
+Review and perform post deploy manual steps for IPM as specified in ConfigMap *pm-postdeploy.md* in *postdeploy.md* file. See below images to find this file. It is best to copy the contents and open it in nice MarkDown editor like VSCode.
+
+![assets/pm-postdeploy-cm.png](assets/pm-postdeploy-cm.png)
+
+![assets/pm-postdeploy-md.png](assets/pm-postdeploy-md.png)
+
 ## Usage & operations 😊
 
 Endpoints, access info and other useful information is available in Project *apollo-one-shot* in ConfigMap named *usage* in *usage.md* file after installation. It is best to copy the contents and open it in nice MarkDown editor like VSCode.
@@ -586,6 +679,17 @@ Specifically, if you haven't provided your own Global CA, review the section *Gl
 ![assets/usage-cm.png](assets/usage-cm.png)
 
 ![assets/usage-md.png](assets/usage-md.png)
+
+## Update steps ↗️
+
+Useful when you want to install new version.
+
+If you want to upgrade some parts of deployment you need to follow official documentations.
+
+Otherwise the procedure consists of removing the deployment and installing its new version.
+
+The key here is the **git_branch** attribute in **apollo-one-shot** ConfigMap. It determines which version is used for both installation and removal of the deployment.
+To get new version on the already installed cluster, you would leave the value to the original one and go through the [Removal steps 🗑️](#removal-steps-️). Then you would change the value to newer git tag and go through [Installation steps ⚡](#installation-steps-) reviewing if something has changed in the ConfigMap or Secrets from your previous deployment.
 
 ## Removal steps 🗑️
 
@@ -616,15 +720,21 @@ spec:
           image: ubi9/ubi:9.0.0
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; yum install git -y && git clone --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
+            ["-c","cd /usr; yum install git -y && git clone --progress --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
               value: remove
             - name: GIT_REPOSITORY
-              value: https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment.git
+              valueFrom:
+                configMapKeyRef:
+                  name: apollo-one-shot
+                  key: git_repository
             - name: GIT_BRANCH
-              value: main
+              valueFrom:
+                configMapKeyRef:
+                  name: apollo-one-shot
+                  key: git_branch
             - name: CONTAINER_RUN_MODE
               value: "true"
           volumeMounts:

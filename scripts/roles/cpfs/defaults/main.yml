@@ -3,7 +3,7 @@ cpfs_base_dir: /tmp
 cpfs_dir_name: cpfs
 cpfs_k8s_api_key: ""
 cpfs_k8s_host: ""
-cpfs_operator_channel: v3.20
+cpfs_operator_channel: v3.21
 cpfs_storage_class_name: ""
 cpfs_wildcard_key_path: ""
 cpfs_wildcard_crt_path: ""

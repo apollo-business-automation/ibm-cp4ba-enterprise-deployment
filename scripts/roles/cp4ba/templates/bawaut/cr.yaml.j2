@@ -51,6 +51,7 @@ spec:
       connection_point_name_tos: pe_conn_batos
       datasource_name_tos: BATOS
       target_environment_name: target_env
+{% if cp4ba_config.optional_components.bai %}
       event_emitter:
         date_sql: 20220401T000000Z
         logical_unique_id: bawaut
@@ -59,6 +60,7 @@ spec:
         enable: true
         case_history_store_schema_name: CH
         dc_common_cpe_datasource_name: CH
+{% endif %}
     environment_config:
       show_task_prioritization_service_toggle: true
     federation_config:

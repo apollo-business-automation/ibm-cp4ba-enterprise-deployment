@@ -47,7 +47,7 @@
   kubernetes.core.helm:
     api_key: "{{ openldap_k8s_api_key | default(omit) }}"
     host: "{{ openldap_k8s_host | default(omit) }}"
-    name: openldap
+    name: openldap-openldap-stack-ha
     chart_ref: helm-openldap/openldap-stack-ha
     chart_version: "{{ openldap_chart_version }}"
     release_namespace: openldap
@@ -73,14 +73,14 @@
     common_k8s_host: "{{ openldap_k8s_host | default(omit) }}"
     common_namespace_name: openldap
     common_route_name: openldap-phpldapadmin
-    common_service_name: openldap-phpldapadmin
+    common_service_name: openldap-openldap-stack-ha-phpldapadmin
     common_wildcard_crt_path: "{{ openldap_wildcard_crt_path }}"
     common_wildcard_key_path: "{{ openldap_wildcard_key_path }}"
     common_ca_crt_path: "{{ openldap_ca_crt_path }}"
     common_apps_endpoint_domain: "{{ apps_endpoint_domain }}"
     common_output_directory: "{{ openldap_output_directory }}"
 
-- name: Wait for openldap-phpldapadmin Deployment to be Available
+- name: Wait for openldap-openldap-stack-ha-phpldapadmin Deployment to be Available
   ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
@@ -89,7 +89,7 @@
     common_k8s_host: "{{ openldap_k8s_host | default(omit) }}"
     common_api_version: apps/v1
     common_resource_kind: Deployment
-    common_resource_name: openldap-phpldapadmin
+    common_resource_name: openldap-openldap-stack-ha-phpldapadmin
     common_resource_namespace: openldap
     common_condition_name: Available
     common_retries: 60

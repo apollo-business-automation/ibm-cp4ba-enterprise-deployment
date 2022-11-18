@@ -71,17 +71,17 @@
 - name: Add ODM components
   ansible.builtin.set_fact:
     components: "{{ components + ['decisionCenter'] }}"
-  when: cp4ba_config.optional_components.decision_center
+  when: cp4ba_config.deployment_patterns.decisions and cp4ba_config.optional_components.decision_center
 
 - name: Add ODM components
   ansible.builtin.set_fact:
     components: "{{ components + ['decisionRunner'] }}"
-  when: cp4ba_config.optional_components.decision_runner
+  when: cp4ba_config.deployment_patterns.decisions and cp4ba_config.optional_components.decision_runner
 
 - name: Add ODM components
   ansible.builtin.set_fact:
     components: "{{ components + ['decisionServerRuntime'] }}"
-  when: cp4ba_config.optional_components.decision_server_runtime
+  when: cp4ba_config.deployment_patterns.decisions and cp4ba_config.optional_components.decision_server_runtime
 
 - name: Add ODM to CR
   ansible.builtin.set_fact:
@@ -97,22 +97,22 @@
 - name: Add ADS components
   ansible.builtin.set_fact:
     components: "{{ components + ['ads_designer'] }}"
-  when: cp4ba_config.optional_components.ads_designer
+  when: cp4ba_config.deployment_patterns.decisions_ads and cp4ba_config.optional_components.ads_designer
 
 - name: Add ADS components
   ansible.builtin.set_fact:
     components: "{{ components + ['ads_runtime'] }}"
-  when: cp4ba_config.optional_components.ads_runtime
+  when: cp4ba_config.deployment_patterns.decisions_ads and cp4ba_config.optional_components.ads_runtime
 
 - name: Add ADS to CR
   ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'ads/cr-designer.yaml.j2') | from_yaml, recursive=true) }}"
-  when: cp4ba_config.optional_components.ads_designer
+  when: cp4ba_config.deployment_patterns.decisions_ads and cp4ba_config.optional_components.ads_designer
 
 - name: Add ADS to CR
   ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'ads/cr-runtime.yaml.j2') | from_yaml, recursive=true) }}"
-  when: cp4ba_config.optional_components.ads_runtime
+  when: cp4ba_config.deployment_patterns.decisions_ads and cp4ba_config.optional_components.ads_runtime
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-filenet-content-manager
 - name: Add FNCM pattern
@@ -123,27 +123,27 @@
 - name: Add FNCM components
   ansible.builtin.set_fact:
     components: "{{ components + ['cmis'] }}"
-  when: cp4ba_config.optional_components.cmis
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.cmis
 
 - name: Add FNCM components
   ansible.builtin.set_fact:
     components: "{{ components + ['css'] }}"
-  when: cp4ba_config.optional_components.css
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.css
 
 - name: Add FNCM components
   ansible.builtin.set_fact:
     components: "{{ components + ['es'] }}"
-  when: cp4ba_config.optional_components.es
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.es
 
 - name: Add FNCM components
   ansible.builtin.set_fact:
     components: "{{ components + ['tm'] }}"
-  when: cp4ba_config.optional_components.tm
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.tm
 
 - name: Add FNCM components
   ansible.builtin.set_fact:
     components: "{{ components + ['ier'] }}"
-  when: cp4ba_config.optional_components.ier
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.ier
 
 - name: Add FNCM to CR
   ansible.builtin.set_fact:
@@ -153,27 +153,27 @@
 - name: Add FNCM to CR
   ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'fncm/cr-graphql.yaml.j2') | from_yaml, recursive=true) }}"
-  when: cp4ba_config.deployment_patterns.content
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.deployment_patterns.content
 
 - name: Add FNCM to CR
   ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'fncm/cr-cmis.yaml.j2') | from_yaml, recursive=true) }}"
-  when: cp4ba_config.optional_components.cmis
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.cmis
 
 - name: Add FNCM to CR
   ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'fncm/cr-css.yaml.j2') | from_yaml, recursive=true) }}"
-  when: cp4ba_config.optional_components.css
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.css
 
 - name: Add FNCM to CR
   ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'fncm/cr-es.yaml.j2') | from_yaml, recursive=true) }}"
-  when: cp4ba_config.optional_components.es
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.es
 
 - name: Add FNCM to CR
   ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'fncm/cr-tm.yaml.j2') | from_yaml, recursive=true) }}"
-  when: cp4ba_config.optional_components.tm
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.tm
 
 
 - name: Add IER
@@ -206,7 +206,7 @@
             verify_configuration:
               vc_icn_verification: "{{ cr_bck.spec.verify_configuration.vc_icn_verification + cr.spec.verify_configuration.vc_icn_verification }}"
 
-  when: cp4ba_config.optional_components.ier
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.ier
 
 - name: Google and IDP for External Share
   block:
@@ -236,17 +236,17 @@
 - name: Add AAE components
   ansible.builtin.set_fact:
     components: "{{ components + ['app_designer'] }}"
-  when: cp4ba_config.optional_components.app_designer
+  when: cp4ba_config.deployment_patterns.application and cp4ba_config.optional_components.app_designer
 
 - name: Add AAE components
   ansible.builtin.set_fact:
     components: "{{ components + ['ae_data_persistence'] }}"
-  when: cp4ba_config.optional_components.ae_data_persistence
+  when: cp4ba_config.deployment_patterns.application and cp4ba_config.optional_components.ae_data_persistence
 
 - name: Set AAE data persistence to true in CR
   ansible.builtin.set_fact:
     aae_data_persistence: true
-  when: cp4ba_config.optional_components.ae_data_persistence
+  when: cp4ba_config.deployment_patterns.application and cp4ba_config.optional_components.ae_data_persistence
 
 - name: Add AAE to CR
   ansible.builtin.set_fact:
@@ -283,7 +283,7 @@
             verify_configuration:
               vc_icn_verification: "{{ cr_bck.spec.verify_configuration.vc_icn_verification + cr.spec.verify_configuration.vc_icn_verification }}"
 
-  when: cp4ba_config.optional_components.ae_data_persistence
+  when: cp4ba_config.deployment_patterns.application and cp4ba_config.optional_components.ae_data_persistence
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-document-processing
 - name: Add ADP pattern
@@ -294,14 +294,14 @@
 - name: Add ADP component
   ansible.builtin.set_fact:
     components: "{{ components + ['document_processing_designer'] }}"
-  when: cp4ba_config.optional_components.document_processing_designer
+  when: cp4ba_config.deployment_patterns.document_processing and cp4ba_config.optional_components.document_processing_designer
 
 - name: Add ADP component
   ansible.builtin.set_fact:
     components: "{{ components + ['document_processing_runtime'] }}"
-  when: cp4ba_config.optional_components.document_processing_runtime
+  when: cp4ba_config.deployment_patterns.document_processing and cp4ba_config.optional_components.document_processing_runtime
 
-- name: Add AAE persistence to CR
+- name: Add ADP to CR
   block:
 
     - name: Backup CR
@@ -311,6 +311,11 @@
     - name: Add ADP to CR
       ansible.builtin.set_fact:
         cr: "{{ cr | combine(lookup('template', 'adp/cr.yaml.j2') | from_yaml, recursive=true) }}"
+
+    - name: Merge ADP customizations
+      ansible.builtin.set_fact:
+        cr: "{{ cr | combine(adp_cr_custom , recursive=true) }}"
+      when: adp_cr_custom is defined
 
     - name: Combine lists back to CR
       ansible.builtin.set_fact:
@@ -331,6 +336,18 @@
             verify_configuration:
               vc_icn_verification: "{{ cr_bck.spec.verify_configuration.vc_icn_verification + cr.spec.verify_configuration.vc_icn_verification }}"
 
+    - name: Combine lists back to CR with CSS
+      ansible.builtin.set_fact:
+        cr: "{{ cr | combine(list_overwrites, recursive=true) }}"
+      vars:
+        list_overwrites:
+          spec:
+            initialize_configuration:
+              ic_css_index_area: "{{ cr_bck.spec.initialize_configuration.ic_css_index_area +
+                  cr.spec.initialize_configuration.ic_css_index_area }}"
+              ic_enable_cbr: "{{ cr_bck.spec.initialize_configuration.ic_enable_cbr + cr.spec.initialize_configuration.ic_enable_cbr }}"
+      when: cp4ba_config.optional_components.css
+
   when: cp4ba_config.deployment_patterns.document_processing
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-business-automation-workflow-authoring
@@ -342,7 +359,7 @@
 - name: Add BAWAUT component
   ansible.builtin.set_fact:
     components: "{{ components + ['baw_authoring'] }}"
-  when: cp4ba_config.optional_components.baw_authoring
+  when: cp4ba_config.deployment_patterns.workflow and cp4ba_config.optional_components.baw_authoring
 
 - name: Add AAE persistence to CR
   block:
@@ -406,8 +423,8 @@
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     state: present
-    force: false
-    merge_type: merge
+    force: true
+    apply: true
     src: "{{ cp4ba_output_directory }}/cr.yaml"
 
 - name: Wait for icp4ba Cartridge to be Ready
@@ -460,104 +477,41 @@
   vars:
     condition_query: "resources[*].status.conditions[?type == 'Ready'].status"
 
-- name: Manage BTS
-  block:
-
-    # TODO remove when BTS startup probe implemented START - still needed in 22.0.1.1
-    - name: Wait for BTS Deployment to appear
-      kubernetes.core.k8s_info:
-        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-        host: "{{ cp4ba_k8s_host | default(omit) }}"
-        api_version: apps/v1
-        kind: Deployment
-        namespace: "{{ cp4ba_project_name }}"
-        label_selectors:
-          - app.kubernetes.io/component=ibm-bts
-      register: bts_deployment
-      retries: 15
-      delay: 120
-      until: (bts_deployment.resources | length > 0)
-
-    - name: Get BTS Deployment
-      kubernetes.core.k8s_info:
-        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-        host: "{{ cp4ba_k8s_host | default(omit) }}"
-        api_version: apps/v1
-        kind: Deployment
-        label_selectors:
-          - app.kubernetes.io/component=ibm-bts
-        namespace: "{{ cp4ba_project_name }}"
-      register: bts_deployment
-      retries: 10
-      delay: 1
-
-    - name: Switch BTS deployment to manual
-      kubernetes.core.k8s:
-        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-        host: "{{ cp4ba_k8s_host | default(omit) }}"
-        state: present
-        api_version: apps/v1
-        kind: Deployment
-        name: "{{ bts_deployment.resources[0].metadata.name }}"
-        namespace: "{{ cp4ba_project_name }}"
-        definition:
-          metadata:
-            annotations:
-              ibm-bts/skip-updates: "true"
-
-    - name: Patch BTS Deployment startupProbe
-      kubernetes.core.k8s_json_patch:
-        api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-        host: "{{ cp4ba_k8s_host | default(omit) }}"
-        api_version: apps/v1
-        kind: Deployment
-        name: "{{ bts_deployment.resources[0].metadata.name }}"
-        namespace: "{{ cp4ba_project_name }}"
-        patch:
-          - op: add
-            path: "/spec/template/spec/containers/0/startupProbe"
-            value: {
-              "httpGet": {
-                "path": "/umshealth/rest/health/alive",
-                "port": 9443,
-                "scheme": HTTPS,
-                "httpHeaders":[{"name": "Host", "value": "localhost"}]},
-              "periodSeconds": 30,
-              "failureThreshold": 30,
-              "timeoutSeconds": 5,
-              "initialDelaySeconds": 30
-            }
-    # TODO remove when BTS startup probe implemented STOP
-
-    - name: Wait for BTS Ready state
-      ansible.builtin.include_role:
-        name: common
-        tasks_from: wait-resource-condition-generic
-      vars:
-        common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-        common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-        common_api_version: operator.ibm.com/v1alpha1
-        common_resource_kind: BusinessTeamsService
-        common_resource_name: cp4ba-bts
-        common_resource_namespace: "{{ cp4ba_project_name }}"
-        common_condition_query: resources[*].status.serviceStatus
-        common_condition_value: ready
-        common_retries: 30
-        common_delay: 120
-
-  when: cp4ba_config.optional_components.bas or cp4ba_config.optional_components.ads_designer or
-    cp4ba_config.optional_components.document_processing_designer or cp4ba_config.deployment_patterns.workflow or
+- name: Wait for BTS Ready state
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: wait-resource-condition-generic
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_api_version: operator.ibm.com/v1alpha1
+    common_resource_kind: BusinessTeamsService
+    common_resource_name: cp4ba-bts
+    common_resource_namespace: "{{ cp4ba_project_name }}"
+    common_condition_query: resources[*].status.serviceStatus
+    common_condition_value: ready
+    common_retries: 30
+    common_delay: 120
+  when: cp4ba_config.optional_components.bas or
+    (cp4ba_config.deployment_patterns.decisions_ads and cp4ba_config.optional_components.ads_designer) or
+    (cp4ba_config.deployment_patterns.document_processing and cp4ba_config.optional_components.document_processing_designer)
+    or cp4ba_config.deployment_patterns.workflow or
     cp4ba_config.deployment_patterns.workflow_workstreams
 
 - name: Deployments wait list
   ansible.builtin.set_fact:
     wait_list:
       - "{{ cp4ba_config.deployment_patterns.content | ternary(cp4ba_cr_meta_name+'-cpe-deploy','') }}"
-      - "{{ cp4ba_config.optional_components.css | ternary(cp4ba_cr_meta_name+'-css-deploy-1','') }}"
-      - "{{ cp4ba_config.optional_components.cmis | ternary(cp4ba_cr_meta_name+'-cmis-deploy','') }}"
-      - "{{ cp4ba_config.deployment_patterns.content | ternary(cp4ba_cr_meta_name+'-graphql-deploy','') }}"
-      - "{{ cp4ba_config.optional_components.es | ternary(cp4ba_cr_meta_name+'-es-deploy','') }}"
-      - "{{ cp4ba_config.optional_components.tm | ternary(cp4ba_cr_meta_name+'-tm-deploy','') }}"
+      - "{{ cp4ba_config.deployment_patterns.content and
+        cp4ba_config.optional_components.css | ternary(cp4ba_cr_meta_name+'-css-deploy-1','') }}"
+      - "{{ cp4ba_config.deployment_patterns.content and
+        cp4ba_config.optional_components.cmis | ternary(cp4ba_cr_meta_name+'-cmis-deploy','') }}"
+      - "{{ cp4ba_config.deployment_patterns.content and
+        cp4ba_config.deployment_patterns.content | ternary(cp4ba_cr_meta_name+'-graphql-deploy','') }}"
+      - "{{ cp4ba_config.deployment_patterns.content and
+        cp4ba_config.optional_components.es | ternary(cp4ba_cr_meta_name+'-es-deploy','') }}"
+      - "{{ cp4ba_config.deployment_patterns.content and
+        cp4ba_config.optional_components.tm | ternary(cp4ba_cr_meta_name+'-tm-deploy','') }}"
       - "{{ cp4ba_config.deployment_patterns.document_processing | ternary(cp4ba_cr_meta_name+'-mongo-deploy','') }}"
       - "{{ cp4ba_config.deployment_patterns.document_processing | ternary(cp4ba_cr_meta_name+'-gitgateway-deploy','') }}"
       - "{{ cp4ba_config.deployment_patterns.document_processing | ternary(cp4ba_cr_meta_name+'-viewone-deploy','') }}"
@@ -654,9 +608,9 @@
     common_delay: 120
   with_items:
     - "{{ cp4ba_cr_meta_name }}-ier-deploy"
-  when: cp4ba_config.optional_components.ier
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.ier
 
-- name: Wait for ADP NL extractor Deployment Available state
+- name: Wait for ADP Deployments Available state
   ansible.builtin.include_role:
     name: common
     tasks_from: wait-resource-condition
@@ -665,11 +619,22 @@
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_api_version: v1
     common_resource_kind: Deployment
-    common_resource_name: "{{ cp4ba_cr_meta_name }}-natural-language-extractor"
+    common_resource_name: "{{ item }}"
     common_resource_namespace: "{{ cp4ba_project_name }}"
     common_condition_name: Available
     common_retries: 36
     common_delay: 300
+  with_items:
+    - "{{ cp4ba_cr_meta_name }}-callerapi"
+    - "{{ cp4ba_cr_meta_name }}-classifyprocess-classify"
+    - "{{ cp4ba_cr_meta_name }}-deep-learning"
+    - "{{ cp4ba_cr_meta_name }}-natural-language-extractor"
+    - "{{ cp4ba_cr_meta_name }}-ocr-extraction"
+    - "{{ cp4ba_cr_meta_name }}-postprocessing"
+    - "{{ cp4ba_cr_meta_name }}-processing-extraction"
+    - "{{ cp4ba_cr_meta_name }}-setup"
+    - "{{ cp4ba_cr_meta_name }}-spbackend"
+    - "{{ cp4ba_cr_meta_name }}-updatefiledetail"
   when: cp4ba_config.deployment_patterns.document_processing
 
 - name: Wait for BAI InsightsEngine Ready state
@@ -693,11 +658,15 @@
     wait_list:
       - "{{ cp4ba_config.deployment_patterns.workflow and cp4ba_config.optional_components.bai | ternary(cp4ba_cr_meta_name+'-mls-itp','') }}"
       - "{{ cp4ba_config.deployment_patterns.workflow and cp4ba_config.optional_components.bai | ternary(cp4ba_cr_meta_name+'-mls-wfi','') }}"
-      - "{{ cp4ba_config.optional_components.decision_center | ternary(cp4ba_cr_meta_name+'-odm-decisioncenter','') }}"
-      - "{{ cp4ba_config.optional_components.decision_server_runtime | ternary(cp4ba_cr_meta_name+'-odm-decisionserverruntime','') }}"
-      - "{{ cp4ba_config.optional_components.decision_server_runtime | ternary(cp4ba_cr_meta_name+'-odm-decisionserverconsole','') }}"
-      - "{{ cp4ba_config.optional_components.decision_runner | ternary(cp4ba_cr_meta_name+'-odm-decisionrunner','') }}"
-      - "{{ cp4ba_config.optional_components.application | ternary(cp4ba_cr_meta_name+'-instance1-aae-ae-deployment','') }}"
+      - "{{ cp4ba_config.deployment_patterns.decisions and
+        cp4ba_config.optional_components.decision_center | ternary(cp4ba_cr_meta_name+'-odm-decisioncenter','') }}"
+      - "{{ cp4ba_config.deployment_patterns.decisions and
+        cp4ba_config.optional_components.decision_server_runtime | ternary(cp4ba_cr_meta_name+'-odm-decisionserverruntime','') }}"
+      - "{{ cp4ba_config.deployment_patterns.decisions and
+        cp4ba_config.optional_components.decision_server_runtime | ternary(cp4ba_cr_meta_name+'-odm-decisionserverconsole','') }}"
+      - "{{ cp4ba_config.deployment_patterns.decisions and
+        cp4ba_config.optional_components.decision_runner | ternary(cp4ba_cr_meta_name+'-odm-decisionrunner','') }}"
+      - "{{ cp4ba_config.deployment_patterns.application | ternary(cp4ba_cr_meta_name+'-instance1-aae-ae-deployment','') }}"
 
 - name: Wait for Deployments to be Available
   ansible.builtin.include_role:
@@ -747,7 +716,7 @@
     common_condition_value: 1
     common_retries: 60
     common_delay: 120
-  when: cp4ba_config.optional_components.baw_authoring
+  when: cp4ba_config.deployment_patterns.workflow and cp4ba_config.optional_components.baw_authoring
 
 - name: Wait for {{ cp4ba_cr_meta_name }}-workflow-authoring-baw-server StatefulSet ready replicas
   ansible.builtin.include_role:
@@ -764,20 +733,29 @@
     common_condition_value: 1
     common_retries: 60
     common_delay: 120
-  when: cp4ba_config.optional_components.baw_authoring
+  when: cp4ba_config.deployment_patterns.workflow and cp4ba_config.optional_components.baw_authoring
 
 - name: Deployment wait list
   ansible.builtin.set_fact:
     wait_list:
-      - "{{ cp4ba_config.optional_components.ads_runtime | ternary(cp4ba_cr_meta_name+'-ads-run-service','') }}"
-      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-parsing-service','') }}"
-      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-git-service','') }}"
-      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-download-service','') }}"
-      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-rest-api','') }}"
-      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-front','') }}"
-      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-embedded-build-service','') }}"
-      - "{{ cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-credentials-service','') }}"
-      - "{{ cp4ba_config.optional_components.ads_runtime | ternary(cp4ba_cr_meta_name+'-ads-runtime-service','') }}"
+      - "{{ cp4ba_config.deployment_patterns.decisions_ads and
+        cp4ba_config.optional_components.ads_runtime | ternary(cp4ba_cr_meta_name+'-ads-run-service','') }}"
+      - "{{ cp4ba_config.deployment_patterns.decisions_ads and
+        cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-parsing-service','') }}"
+      - "{{ cp4ba_config.deployment_patterns.decisions_ads and
+        cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-git-service','') }}"
+      - "{{ cp4ba_config.deployment_patterns.decisions_ads and
+        cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-download-service','') }}"
+      - "{{ cp4ba_config.deployment_patterns.decisions_ads and
+        cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-rest-api','') }}"
+      - "{{ cp4ba_config.deployment_patterns.decisions_ads and
+        cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-front','') }}"
+      - "{{ cp4ba_config.deployment_patterns.decisions_ads and
+        cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-embedded-build-service','') }}"
+      - "{{ cp4ba_config.deployment_patterns.decisions_ads and
+        cp4ba_config.optional_components.ads_designer | ternary(cp4ba_cr_meta_name+'-ads-credentials-service','') }}"
+      - "{{ cp4ba_config.deployment_patterns.decisions_ads and
+        cp4ba_config.optional_components.ads_runtime | ternary(cp4ba_cr_meta_name+'-ads-runtime-service','') }}"
 
 - name: Wait for Deployments to be Available
   ansible.builtin.include_role:

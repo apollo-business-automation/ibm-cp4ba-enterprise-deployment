@@ -16,10 +16,11 @@
 
   when: rpa_enabled
 
-- name: Remove Asset Repo
-  ansible.builtin.include_role:
-    name: asset_repo
-  when: asset_repo_enabled
+# TODO # TODO requires different version of CPFS then CP4BA  - last in 22.0.1.4 and 1.5.2
+# - name: Remove Asset Repo
+#   ansible.builtin.include_role:
+#     name: asset_repo
+#   when: asset_repo_enabled
 
 - name: Remove CP4BA
   ansible.builtin.include_role:
@@ -87,10 +88,10 @@
   ansible.builtin.include_role:
     name: db2
 
+- name: Remove usage
+  ansible.builtin.include_role:
+    name: usage
+
 - name: Remove Global CA
   ansible.builtin.include_role:
     name: global_ca
-
-- name: Remove Catalog Source
-  ansible.builtin.include_role:
-    name: catalog_source

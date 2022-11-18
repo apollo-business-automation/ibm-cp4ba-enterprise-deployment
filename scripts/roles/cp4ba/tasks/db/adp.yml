@@ -136,8 +136,10 @@
     host: "{{ cp4ba_k8s_host | default(omit) }}"
     namespace: db2
     pod: c-db2ucluster-db2u-0
-    command: |
-      sudo rm -rf /mnt/blumeta0/home/db2inst1/sqllib/_adp_tmp/
+    command: >
+      su - db2inst1 -s /usr/bin/bash -c "
+      rm -rf sqllib/_adp_tmp
+      "
   register: command_status
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-preparing-db2-databases-document

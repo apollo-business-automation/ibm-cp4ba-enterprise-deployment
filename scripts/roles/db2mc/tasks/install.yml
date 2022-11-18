@@ -244,4 +244,3 @@
     common_output_directory: "{{ db2mc_output_directory }}"
     common_db2_hostname: "{{ db2mc_db2_hostname }}"
     common_db2_password: "{{ db2mc_db2_password }}"
-

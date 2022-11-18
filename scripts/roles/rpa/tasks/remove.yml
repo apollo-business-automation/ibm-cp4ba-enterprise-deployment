@@ -159,3 +159,17 @@
     - ibm-robotic-process-automation-catalog
     - ibm-cloud-databases-redis-operator-catalog
     - ibmmq-operator-catalogsource
+
+- name: Remove post-deploy.md Config Map
+  kubernetes.core.k8s:
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
+    state: absent
+    api_version: v1
+    kind: ConfigMap
+    name: rpa-postdeploy
+    namespace: "{{ rpa_output_namespace }}"
+    force: false
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15

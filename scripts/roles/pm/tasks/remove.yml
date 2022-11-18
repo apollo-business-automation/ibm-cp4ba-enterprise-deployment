@@ -171,3 +171,17 @@
     - db.dropUser("root")
     - db.dropDatabase()
   when: mongodb_pod.resources | length != 0
+
+- name: Remove post-deploy.md Config Map
+  kubernetes.core.k8s:
+    api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    host: "{{ pm_k8s_host | default(omit) }}"
+    state: absent
+    api_version: v1
+    kind: ConfigMap
+    name: pm-postdeploy
+    namespace: "{{ pm_output_namespace }}"
+    force: false
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15

@@ -12,12 +12,16 @@ persistence:
     - ReadWriteMany
   storageClass: "{{ gitea_storage_class_name }}"
 extraVolumes:
-- name: var-lib-gitea
-  emptyDir: {}
-extraVolumeMounts:
-- name: var-lib-gitea
-  readOnly: false
-  mountPath: "/var/lib/gitea"  
+  - name: var-lib-gitea
+    emptyDir: {}
+extraInitVolumeMounts:
+  - name: var-lib-gitea
+    readOnly: false
+    mountPath: "/var/lib/gitea"  
+extraContainerVolumeMounts:
+  - name: var-lib-gitea
+    readOnly: false
+    mountPath: "/var/lib/gitea"  
 image:
   tag: "{{ gitea_image_tag }}"
   rootless: true
@@ -35,6 +39,8 @@ gitea:
     username: "giteaadmin"
     password: '{{ gitea_universal_password }}'
     email: "giteaadmin@{{ lc_ldap_domain }}"
+  startupProbe:
+    enabled: true  
   ldap:
     - name: LDAP
       securityProtocol: "{{ 'unencrypted' if not lc_ldap_ssl_enabled else 'ldaps' }}"

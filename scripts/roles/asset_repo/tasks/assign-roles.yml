@@ -7,92 +7,117 @@
     common_k8s_host: "{{ asset_repo_k8s_host | default(omit) }}"
     common_output_to_var: "apps_endpoint_domain"
 
-# Based on https://www.ibm.com/docs/en/cpfs?topic=apis-oidc-registration#get2 (Get access token by using username and password)
-- name: Get IAM access token
-  ansible.builtin.uri:
-    url: "https://cp-console.{{ apps_endpoint_domain }}/idprovider/v1/auth/identitytoken"
-    method: POST
-    headers:
-      Content-Type: application/x-www-form-urlencoded;charset=UTF-8
-    body_format: form-urlencoded
-    body:
-      grant_type: password
-      username: "{{ lc_principal_admin_user }}"
-      password: "{{ lc_principal_admin_password }}"
-      scope: openid
-    validate_certs: false
-    status_code: 200
-  register: token_response
+- name: Get IAM token
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: iam-token-user
+  vars:
+    common_k8s_api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ asset_repo_k8s_host | default(omit) }}"
+    common_user: "{{ lc_principal_admin_user }}"
+    common_password: "{{ lc_principal_admin_password }}"
+    common_output_to_var: "iam_token"
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-data/4.0?topic=resources-generating-authorization-token
-- name: Exchange IAM access token for Zen token
+- name: Get Zen token
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: zen-token
+  vars:
+    common_k8s_api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ asset_repo_k8s_host | default(omit) }}"
+    comon_iam_token: "{{ iam_token }}"
+    common_user: "{{ lc_principal_admin_user }}"
+    common_namespace_name: "{{ asset_repo_project_name }}"
+    common_output_to_var: "zen_token"
+
+- name: Wait for Assetrepo roles
   ansible.builtin.uri:
-    url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/v1/preauth/validateAuth"
+    url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/roles"
     method: GET
     headers:
-      iam-token: "{{ token_response | json_query('json.access_token') }}"
-      username: "{{ lc_principal_admin_user }}"
+      Authorization: "Bearer {{ zen_token }}"
     validate_certs: false
     status_code: 200
-  register: token_response
+  register: roles_response
+  retries: 40
+  delay: 5
+  until: (roles_response.json | json_query(condition_query_admin) | length != 0) and
+    (roles_response.json | json_query(condition_query_edit) | length != 0) and
+    (roles_response.json | json_query(condition_query_view) | length != 0)
+  vars:
+    condition_query_admin:
+      "rows[?id == 'automation-assets-administrator-role']"
+    condition_query_edit:
+      "rows[?id == 'automation-assets-editor-role']"
+    condition_query_view:
+      "rows[?id == 'automation-assets-viewer-role']"
 
 - name: Get groups
   ansible.builtin.uri:
     url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups"
     method: GET
     headers:
-      Authorization: "Bearer {{ token_response.json | json_query('accessToken') }}"
+      Authorization: "Bearer {{ zen_token }}"
     validate_certs: false
     status_code: 200
   register: groups_response
 
-- block:
-
-    - name: Get {{ item }} group id
-      ansible.builtin.set_fact:
-        admin_group_id: "{{ groups_response.json | json_query(condition_query) | first }}"
-      vars:
-        condition_query: "results[?name == '{{ item }}'].group_id"
-
-    - name: Wait for Assetrepo roles
-      ansible.builtin.uri:
-        url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/roles"
-        method: GET
-        headers:
-          Authorization: "Bearer {{ token_response.json | json_query('accessToken') }}"
-        validate_certs: false
-        status_code: 200
-      register: roles_response
-      retries: 40
-      delay: 5
-      until: (roles_response.json | json_query(condition_query_admin) | length != 0) and
-        (roles_response.json | json_query(condition_query_edit) | length != 0) and
-        (roles_response.json | json_query(condition_query_view) | length != 0)
-      vars:
-        condition_query_admin:
-          "rows[?id == 'automation-assets-administrator-role']"
-        condition_query_edit:
-          "rows[?id == 'automation-assets-editor-role']"
-        condition_query_view:
-          "rows[?id == 'automation-assets-viewer-role']"
-
-    - name: Add Asset Repo roles to {{ item }} group
-      ansible.builtin.uri:
-        url: "https://cpd-{{ asset_repo_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ admin_group_id }}"
-        method: PATCH
-        headers:
-          Authorization: "Bearer {{ token_response.json | json_query('accessToken') }}"
-        body_format: json
-        body:
-          add_role_identifiers:
-            - automation-assets-administrator-role
-            - automation-assets-editor-role
-            - automation-assets-viewer-role
-        validate_certs: false
-        status_code:
-          - 200
-          - 500
-      register: group_response
-      failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')
-
+- name: Add all Asset Repo roles to {{ item }} group
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ groups_response.json | json_query(condition_query) | first }}"
+    method: PATCH
+    headers:
+      Authorization: "Bearer {{ zen_token }}"
+    body_format: json
+    body:
+      add_role_identifiers:
+        - automation-assets-administrator-role
+        - automation-assets-editor-role
+        - automation-assets-viewer-role
+    validate_certs: false
+    status_code:
+      - 200
+      - 500
+  vars:
+    condition_query: "results[?name == '{{ item }}'].group_id"
+  register: group_response
+  failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')
   with_items: "{{ lc_admin_groups }}"
+
+- name: Add Asset Repo regular roles to {{ item }} group
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v2/groups/{{ groups_response.json | json_query(condition_query) | first }}"
+    method: PATCH
+    headers:
+      Authorization: "Bearer {{ zen_token }}"
+    body_format: json
+    body:
+      add_role_identifiers:
+        - automation-assets-editor-role
+        - automation-assets-viewer-role
+    validate_certs: false
+    status_code:
+      - 200
+      - 500
+  vars:
+    condition_query: "results[?name == '{{ item }}'].group_id"
+  register: group_response
+  failed_when: group_response.status == 500 and group_response.json | json_query('exception') is not search('.*duplicate key value*')
+  with_items: "{{ lc_general_groups }}"
+
+- name: Add role to service user
+  ansible.builtin.uri:
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/user/cpadminservice?add_roles=true"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ zen_token }}"
+    body_format: json
+    body:
+      username: cpadminservice
+      user_roles:
+        - automation-assets-administrator-role
+        - automation-assets-editor-role
+        - automation-assets-viewer-role
+    validate_certs: false
+    status_code:
+      - 200

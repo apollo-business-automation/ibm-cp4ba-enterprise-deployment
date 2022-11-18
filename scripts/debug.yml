@@ -1,0 +1,34 @@
+---
+- name: CP4BA Enterprise
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - variables.yml
+  tasks:
+    - name: Prepare the Playbook Configuration
+      ansible.builtin.include_role:
+        name: config
+
+    - name: Input Validations
+      ansible.builtin.include_role:
+        name: validations
+        tasks_from: input-validations
+
+    - name: Create Project
+      ansible.builtin.include_role:
+        name: common
+        tasks_from: create-project
+      vars:
+        common_k8s_api_key: "{{ ocp_cluster_token | default(omit) }}"
+        common_k8s_host: "{{ ocp_api_endpoint | default(omit) }}"
+        common_namespace_name: apollo-one-shot
+        common_output_directory: "{{ generic_directory }}"
+
+    - name: Install Global CA
+      ansible.builtin.include_role:
+        name: global_ca
+
+    - name: Run role
+      ansible.builtin.include_role:
+        name: "{{ role_name }}"

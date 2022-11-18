@@ -3,14 +3,18 @@
 
 - name: Set ldap configuration TDS
   ansible.builtin.set_fact:
-    lc_tds_user_filter: "{{ ldap_configuration.tds.lc_user_filter | default('(&('+lc_ldap_user_id_attribute+'=%v)(objectclass='+lc_ldap_user_object_class+'))' ) }}"
-    lc_tds_group_filter: "{{ ldap_configuration.tds.lc_group_filter | default('(&('+lc_ldap_group_id_attribute+'=%v)(|(objectclass='+lc_ldap_group_object_class+')(objectclass=groupofuniquenames)(objectclass=groupofurls)))') }}"
+    lc_tds_user_filter: "{{ ldap_configuration.tds.lc_user_filter
+      | default('(&('+lc_ldap_user_id_attribute+'=%v)(objectclass='+lc_ldap_user_object_class+'))' ) }}"
+    lc_tds_group_filter: "{{ ldap_configuration.tds.lc_group_filter
+      | default('(&('+lc_ldap_group_id_attribute+'=%v)(|(objectclass='+lc_ldap_group_object_class+')(objectclass=groupofuniquenames)(objectclass=groupofurls)))') }}"
   when: ('IBM Security Directory Server' in lc_selected_ldap_type)
 
 - name: Set ldap configuration AD
   ansible.builtin.set_fact:
-    lc_ad_user_filter: "{{ ldap_configuration.ad.lc_user_filter | default('(&('+lc_ldap_user_id_attribute+'=%v)(objectcategory='+lc_ldap_user_object_class+'))') }}"
-    lc_ad_group_filter: "{{ ldap_configuration.ad.lc_group_filter | default('(&('+lc_ldap_group_id_attribute+'=%v)(objectcategory='+lc_ldap_group_object_class+'))') }}"
+    lc_ad_user_filter: "{{ ldap_configuration.ad.lc_user_filter
+      | default('(&('+lc_ldap_user_id_attribute+'=%v)(objectcategory='+lc_ldap_user_object_class+'))') }}"
+    lc_ad_group_filter: "{{ ldap_configuration.ad.lc_group_filter
+      | default('(&('+lc_ldap_group_id_attribute+'=%v)(objectcategory='+lc_ldap_group_object_class+'))') }}"
   when: ('Microsoft Active Directory' in lc_selected_ldap_type)
 
 - name: CP4BA config variables
@@ -52,7 +56,7 @@
 
 - name: Openldap config variable
   ansible.builtin.set_fact:
-    openldap_enabled: true'
+    openldap_enabled: true
   when: openldap_enabled is not defined
 
 - name: Mongodb config variable
@@ -77,4 +81,4 @@
 
 - name: Config External LDAP
   include_tasks: external-ldap.yml
-  when: lc_custom_config_secret | length > 0
+  when: not openldap_enabled

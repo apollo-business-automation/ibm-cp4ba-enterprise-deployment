@@ -85,8 +85,8 @@
 - name: Remove Catalog Sources
   kubernetes.core.k8s:
     state: absent
-    api_key: "{{ catalog_source_k8s_api_key | default(omit) }}"
-    host: "{{ catalog_source_k8s_host | default(omit) }}"
+    api_key: "{{ asset_repo_k8s_api_key | default(omit) }}"
+    host: "{{ asset_repo_k8s_host | default(omit) }}"
     api_version: v1alpha1
     kind: CatalogSource
     name: ibm-integration-asset-repository-catalog

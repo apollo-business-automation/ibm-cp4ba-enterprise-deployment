@@ -2,8 +2,9 @@ replicaCount: 1
 env:
   LDAP_ORGANISATION: "{{ lc_ldap_domain }}"
   LDAP_DOMAIN: "{{ lc_ldap_domain }}"
-adminPassword: '{{ lc_bind_admin_password }}'
-configPassword: '{{ lc_bind_admin_password }}'
+global:  
+  adminPassword: '{{ lc_bind_admin_password }}'
+  configPassword: '{{ lc_bind_admin_password }}'
 customLdifFiles:
   01-default-users.ldif: |-
     # Units

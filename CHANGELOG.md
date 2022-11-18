@@ -6,6 +6,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [2022-11-16]
+
+### Added
+
+- Update procedure description.
+- Post deployment steps for IPM.
+- All OpenLdap users now have separate mailboxes.
+- Enabled ODM Decision warehouse schemas.
+- Workflow system enabled on OS1.
+- Configuration for ADP GPU node.
+- Configuration for RPA NLP replicas.
+- Main admin automatically permitted to develop RPA bots.
+- Automatic git project creation for ADS.
+- Enabled CSS on DEVOS1 for ADP.
+- Task mining master key set automatically.
+- Task mining related permissions given to admin user automatically.
+- Task mining admin user enabled for TM agent.
+
+### Changed
+
+- Updated CP4BA to 22.0.1.4.
+- Updated RPA to 21.0.7.
+- Updated IPM to 1.13.1.
+- Updated extras.
+- Moved repository and branch settings from Jobs to ConfigMap - breaking change.
+- Merged separate Secrets into one config Secret - breaking change.
+
+### Removed
+
+- Ability to install on OpenShift 4.8.
+- CPFS grafana operator as custom grafanas are deprecated in OCP 4.10 and removed in 4.11.
+
 ## [2022-09-20]
 
 ### Added

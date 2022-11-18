@@ -15,7 +15,6 @@
     src: "{{ cp4ba_output_directory }}/odm-db-secret.yaml"
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=access-mapping-odm-roles-iam-groups-users
-# Adds cpadmin user to all roles and cpadmins to all groups.
 - name: Prepare yaml file for ODM web security Secret
   ansible.builtin.template:
     src: odm/odm-web-security-secret.yaml.j2

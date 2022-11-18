@@ -33,7 +33,7 @@
 
 - name: Manage schemas for IER
   include_tasks: db/ier.yml
-  when: cp4ba_config.optional_components.ier
+  when: cp4ba_config.deployment_patterns.content and cp4ba_config.optional_components.ier
 
 - name: Manage schemas for AAE
   include_tasks: db/aae.yml
@@ -41,7 +41,7 @@
 
 - name: Manage schemas for AAE Data persistence
   include_tasks: db/aae-data-persistence.yml
-  when: cp4ba_config.optional_components.ae_data_persistence
+  when: cp4ba_config.deployment_patterns.application and cp4ba_config.optional_components.ae_data_persistence
 
 - name: Manage schemas for ADP
   include_tasks: db/adp.yml

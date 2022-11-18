@@ -18,45 +18,20 @@
     common_output_to_var: "apps_endpoint_domain"
 
 - name: Get git repo revision
-  git: 
+  ansible.builtin.git: 
     repo: .
     dest: .
     update: no
     clone: no
   register: git_repo_information
 
-- name: Prepare Usage md
-  ansible.builtin.template:
-    src: usage.md.j2
-    dest: "{{ generic_directory }}/usage.md"
-    mode: u+rwx
-
-- name: Set path to usage.md
+- name: Git commit id 
   ansible.builtin.set_fact: 
-    usage_path: "{{ generic_directory }}/usage.md"
+    git_commit_id: "{{ git_repo_information.before  if git_repo_information.before else git_repo_information.after }}"
 
-- name: Prepare usage Config Map
-  ansible.builtin.template:
-    src: usage-configmap.yaml.j2
-    dest: "{{ generic_directory }}/usage-configmap.yaml"
-    mode: u+rwx
-
-- name: Add the usage config map
-  kubernetes.core.k8s:
-    api_key: "{{ ocp_cluster_token | default(omit) }}"
-    host: "{{ ocp_api_endpoint | default(omit) }}"
-    state: present
-    force: false
-    merge_type: merge
-    src: "{{ generic_directory }}/usage-configmap.yaml"
-    wait: true
-    wait_sleep: 15
-    wait_timeout: 15
-
-# TODO should not be needed
-# - name: Install Catalog Source
-#   ansible.builtin.include_role:
-#     name: catalog_source
+- name: Generate usage
+  ansible.builtin.include_role:
+    name: usage
 
 - name: Install Global CA
   ansible.builtin.include_role:
@@ -128,11 +103,11 @@
   ansible.builtin.include_role:
     name: cp4ba
 
-# TODO activate when fixed
-# - name: Install Asset Repo
-#   ansible.builtin.include_role:
-#     name: asset_repo
-#   when: asset_repo_enabled
+# TODO requires some CP4I resources and fails
+#- name: Install Asset Repo
+#  ansible.builtin.include_role:
+#    name: asset_repo
+#  when: asset_repo_enabled
 
 - name: RPA group
   block:
