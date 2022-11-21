@@ -209,9 +209,9 @@ node/ocp01-8mdd5-worker-zqzbd
 
 For your convenience the following post-deplyment setup tasks have been automated:
 - Zen - Users and Groups added.
-- Zen - Adminsitrative group is given all available privileges from all pillars.
+- Zen - Administrative group is given all available privileges from all pillars.
 - Zen - Regular groups are given developer privileges from all pillars.
-- Zen - Service acount created in CPFS IAM and Zen and Zen API key is generated for convenient and stable usage.
+- Zen - Service account created in CPFS IAM and Zen and Zen API key is generated for convenient and stable usage.
 - Workforce Insights - Connection setup. You just need to create WFI dashboard. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=secrets-creating-custom-bpc-workforce-secret
 - ADS - Nexus connection setup and all ADS plugins loaded.
 - ADS - Organization in Git created. https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=gst-task-2-connecting-git-repository-sharing-decision-service
