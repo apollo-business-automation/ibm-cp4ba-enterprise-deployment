@@ -587,23 +587,17 @@ As MongoDB database storage for the platform.
 
 #### Endpoints
 
-- Not exposed outside the cluster.
+- Exposed as NodePort as found in Project *mongodb* in Service *mongodb*.
 
 #### Credentials
 
-- root / {{ universal_password }}
+- root / {{ universal_password }} / authentication database is *admin*
 
-### MongoDB PM
+#### CLI in container
 
-As MongoDB database storage for Process Mining.
-
-#### Endpoints
-
-- Not exposed outside the cluster.
-
-#### Credentials
-
-- root / {{ universal_password }}
+```bash
+mongo --username root --password  {{ universal_password }} --authenticationDatabase admin
+```
 
 ## Deployment job
 
