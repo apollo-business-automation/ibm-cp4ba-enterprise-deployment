@@ -237,7 +237,7 @@
 # Based on https://www.ibm.com/docs/en/cpfs?topic=apis-oidc-registration#register
 - name: Add service client to IAM
   ansible.builtin.uri:
-    url: "https://cp-console.{{ apps_endpoint_domain }}/idprovider/v1/auth/registration"
+    url: "https://cp-console-ibm-common-services.{{ apps_endpoint_domain }}/idprovider/v1/auth/registration"
     method: POST
     headers:
       Authorization: Bearer {{ iam_token }}

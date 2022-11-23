@@ -4,15 +4,23 @@
     state: directory
     mode: u+rwx
 
-- name: Create Project common-service
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: create-project
-  vars:
-    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
-    common_namespace_name: common-service
-    common_output_directory: "{{ cpfs_output_directory }}"
+- name: Prepare yaml file for common-service-maps
+  ansible.builtin.template:
+    src: common-service-maps.yaml.j2
+    dest: "{{ cpfs_output_directory }}/common-service-maps.yaml"
+    mode: u+rwx
+
+- name: Add common-service-maps
+  kubernetes.core.k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ cpfs_output_directory }}/common-service-maps.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
 
 - name: Create Project ibm-common-services
   ansible.builtin.include_role:
@@ -148,7 +156,7 @@
     api_version: ibmcpcs.ibm.com/v1
     kind: SecretShare
     name: common-services
-    namespace: ibm-common-services
+    namespace: cs-control
   register: secret_share
   retries: 10
   delay: 15
@@ -162,7 +170,7 @@
     api_version: ibmcpcs.ibm.com/v1
     kind: SecretShare
     name: common-services
-    namespace: ibm-common-services
+    namespace: cs-control
     definition:
       spec:
         configmapshares: []
@@ -435,7 +443,7 @@
     api_version: operator.ibm.com/v1alpha1
     kind: IBMLicensing
     name: instance
-    namespace: ibm-common-services
+    namespace: cs-control
     definition:
       spec:
         httpsCertsSource: "custom"
@@ -496,7 +504,7 @@
     common_api_version: v1
     common_resource_kind: Deployment
     common_resource_name: ibm-license-service-reporter-instance
-    common_resource_namespace: ibm-common-services
+    common_resource_namespace: cs-control
     common_condition_name: Available
     common_retries: 80
     common_delay: 15
@@ -735,8 +743,8 @@
     name: common
     tasks_from: iam-token-user
   vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_k8s_api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cpfs_k8s_host | default(omit) }}"
     common_user: "cpfsadmin"
     common_password: "{{ cpfs_universal_password }}"
     common_output_to_var: "iam_token"
@@ -749,7 +757,7 @@
 
 - name: Add LDAP connection
   ansible.builtin.uri:
-    url: "https://cp-console.{{ apps_endpoint_domain }}/idmgmt/identity/api/v1/directory/ldap/onboardDirectory"
+    url: "https://cp-console-ibm-common-services.{{ apps_endpoint_domain }}/idmgmt/identity/api/v1/directory/ldap/onboardDirectory"
     method: POST
     headers:
       Authorization: Bearer {{ iam_token }}

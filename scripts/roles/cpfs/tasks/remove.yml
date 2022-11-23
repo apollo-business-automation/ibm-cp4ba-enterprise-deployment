@@ -10,18 +10,6 @@
     common_namespace_name: ibm-common-services
     common_label_selector_stub: ibm-common-service-operator
 
-- name: Remove common-service Project
-  kubernetes.core.k8s:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    state: absent
-    api_version: project.openshift.io/v1
-    kind: Project
-    name: common-service
-    wait: true
-    wait_sleep: 5
-    wait_timeout: 50
-
 - name: Get OperandRequest CRD
   kubernetes.core.k8s_info:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
@@ -161,6 +149,31 @@
         wait_timeout: 180
       with_items: "{{ namespace_scopes.resources }}"
 
+    - name: Get all NamespaceScope cs-control
+      kubernetes.core.k8s_info:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        api_version: operator.ibm.com/v1
+        kind: NamespaceScope
+        namespace: cs-control
+      register: namespace_scopes
+      retries: 10
+      delay: 1
+
+    - name: Delete All NamespaceScope cs-control
+      kubernetes.core.k8s:
+        api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+        host: "{{ cpfs_k8s_host | default(omit) }}"
+        state: absent
+        api_version: operator.ibm.com/v1
+        kind: NamespaceScope
+        name: "{{ item.metadata.name }}"
+        namespace: cs-control
+        wait: true
+        wait_sleep: 5
+        wait_timeout: 180
+      with_items: "{{ namespace_scopes.resources }}"
+
   when: namespacescope_crd.resources | length != 0
 
 - name: Remove Operand Deployment Lifecycle Manager Operator
@@ -186,17 +199,20 @@
     wait_sleep: 5
     wait_timeout: 50
 
-- name: Remove ibm-common-service-webhook-configuration MutatingWebhookConfiguration
+- name: Remove MutatingWebhookConfigurations
   kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
     host: "{{ cpfs_k8s_host | default(omit) }}"
     state: absent
     api_version: admissionregistration.k8s.io/v1
     kind: MutatingWebhookConfiguration
-    name: ibm-common-service-webhook-configuration
+    name: "{{ item }}"
     wait: true
     wait_sleep: 5
     wait_timeout: 50
+  with_items:
+    - ibm-common-service-webhook-configuration
+    - ibm-operandrequest-webhook-configuration
 
 - name: Remove ibm-cs-ns-mapping-webhook-configuration ValidatingWebhookConfiguration
   kubernetes.core.k8s:
@@ -261,6 +277,29 @@
     wait: true
     wait_sleep: 5
     wait_timeout: 90
+
+- name: Remove cs-control Project
+  kubernetes.core.k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: absent
+    api_version: project.openshift.io/v1
+    kind: Project
+    name: cs-control
+    wait: true
+    wait_sleep: 5
+    wait_timeout: 90
+
+- name: Remove common-service-maps
+  kubernetes.core.k8s:
+    state: absent
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: ConfigMap
+    name: common-service-maps
+    namespace: kube-public
+    wait: true
 
 - name: Get Cluster Monitoring ConfigMap
   kubernetes.core.k8s_info:
