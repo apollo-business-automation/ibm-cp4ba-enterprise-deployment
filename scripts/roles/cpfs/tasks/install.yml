@@ -317,7 +317,7 @@
     common_output_directory: "{{ cpfs_output_directory }}"
     common_icr_secret_name: ibm-entitlement-key
     common_icr_password: "{{ cpfs_icr_password }}"
-    common_namespace_name: db2
+    common_namespace_name: ibm-common-services
 
 - name: Prepare yaml file for the OperandRequest instance
   ansible.builtin.template:

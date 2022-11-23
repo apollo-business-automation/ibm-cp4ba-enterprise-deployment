@@ -198,6 +198,18 @@
     wait_sleep: 5
     wait_timeout: 50
 
+- name: Remove ibm-cs-ns-mapping-webhook-configuration ValidatingWebhookConfiguration
+  kubernetes.core.k8s:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    state: absent
+    api_version: admissionregistration.k8s.io/v1
+    kind: ValidatingWebhookConfiguration
+    name: ibm-cs-ns-mapping-webhook-configuration
+    wait: true
+    wait_sleep: 5
+    wait_timeout: 50
+
 - name: Remove services Project
   kubernetes.core.k8s:
     api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
