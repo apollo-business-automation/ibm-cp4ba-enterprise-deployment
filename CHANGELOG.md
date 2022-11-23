@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - MongoDB exposed as NodePort for debugging and CLI connection documented.
 
+### Changed
+
+- Switched CPFS from single instance mode to multiple instances mode.
+
 ## [2022-11-18]
 
 ### Added
