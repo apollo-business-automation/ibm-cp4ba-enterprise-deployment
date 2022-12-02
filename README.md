@@ -14,8 +14,8 @@ Last installation was performed on 2022-11-18 with CP4BA version 22.0.1-IF004.
 - [Pre-requisites ⬅️](#pre-requisites-️)
 - [Installation steps ⚡](#installation-steps-)
 - [Post installation steps ➡️](#post-installation-steps-️)
-- [Usage & operations 😊](#usage--operations-)
-- [Update steps ↗️](#update-steps-)
+- [Usage \& operations 😊](#usage--operations-)
+- [Update steps ↗️](#update-steps-️)
 - [Removal steps 🗑️](#removal-steps-️)
 - [Post removal steps ➡️](#post-removal-steps-️)
 - [Contacts](#contacts)
@@ -79,7 +79,7 @@ More details about each section from the picture follows below it.
 
 ![assets/cp4ba-installation.png](assets/cp4ba-installation.png)
 
-### Extras section
+### Extras section<!-- omit in toc -->
 
 Contains extra software which makes working with the platform even easier.
 
@@ -94,9 +94,9 @@ Contains extra software which makes working with the platform even easier.
 - Mail server - For various mail integrations e.g. from BAN, BAW and RPA.
 - Mongo Express - Web UI for Mongo DB databases for CP4BA and Process Mining to easier troubleshoot DB.
 
-### CP4BA (Cloud Pak for Business Automation) section
+### CP4BA (Cloud Pak for Business Automation) section<!-- omit in toc -->
 
-#### CP4BA capabilities
+#### CP4BA capabilities<!-- omit in toc -->
 
 Purple color is used for CP4BA capabilities.
 
@@ -104,13 +104,13 @@ More info for these capabilities is available in official docs at https://www.ib
 
 More specifically in overview of patterns at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments.
 
-#### IAF (IBM Automation Foundation) capabilities
+#### IAF (IBM Automation Foundation) capabilities<!-- omit in toc -->
 
 Pink color is used for IAF capabilities.
 
 More info for these capabilities is available in official docs at https://www.ibm.com/docs/en/cloud-paks/1.0?topic=automation-foundation.
 
-### CPFS (Cloud Pak Foundational Services) section
+### CPFS (Cloud Pak Foundational Services) section<!-- omit in toc -->
 
 Contains services which are reused by Cloud Paks.
 
@@ -121,7 +121,7 @@ More info available in official docs at https://www.ibm.com/docs/en/cpfs.
 - IAM - Provides Identity and Access management.
 - Health Checking - Enables you to generate MusthGather output which is useful for support.
 
-### Pre-requisites section
+### Pre-requisites section<!-- omit in toc -->
 
 Contains prerequisites for the whole platform.
 
@@ -130,7 +130,7 @@ Contains prerequisites for the whole platform.
 - MSSQL server - Database storage for RPA server.
 - MongoDB - Database storage for ADS and Process Mining.
 
-### Deployment job section
+### Deployment job section<!-- omit in toc -->
 
 Multiple command line tools are installed inside a container to make the installation possible.
 
@@ -249,7 +249,7 @@ You can apply them via OpenShift console (with the handy *plus* icon at the top 
 
 ![assets/installation-steps.png](assets/installation-steps.png)
 
-### 1. Create new Project
+### 1. Create new Project<!-- omit in toc -->
 
 At first, create new *apollo-one-shot* Project by applying the following yaml (also see the picture below the YAML).
 
@@ -264,7 +264,7 @@ metadata:
 
 ![assets/project.png](assets/project.png)
 
-### 2. Assign permissions
+### 2. Assign permissions<!-- omit in toc -->
 
 This requires the logged in OpenShift user to be cluster admin.
 
@@ -289,7 +289,7 @@ roleRef:
 
 ![assets/cluster-role-binding.png](assets/cluster-role-binding.png)
 
-### 3. Add configuration
+### 3. Add configuration<!-- omit in toc -->
 
 The installation process needs configuration information properly adjusted to your environment.
 
@@ -394,7 +394,7 @@ data:
     # deployment patterns as well as from the optional components.
     # Dependencies can be determined from documentation at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments
     # 
-    # Only some combinations were tested.
+    # Only some combinations were tested. The primary goal of this repo is to install everything and this feature selection is considered experimental.
     cp4ba_config:
       deployment_patterns:
         # Foundation pattern, always true - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__foundation
@@ -411,7 +411,7 @@ data:
         document_processing: true
         # Business Automation Workflow (BAW) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__baw
         workflow: true
-        # Always false in this tool
+        # Always false in this tool - this feature is not implemented
         workflow_workstreams: false
       optional_components:
         # Business Automation Studio (BAS) (foundation pattern)
@@ -446,7 +446,7 @@ data:
         document_processing_designer: true
         # Runtime (ADP) (document_processing pattern)
         document_processing_runtime: false
-        # Workflow Authoring (BAW) (workflow pattern)
+        # Workflow Authoring (BAW) (workflow pattern) - always keep true if workflow pattern is chosen. BAW Runtime is not implemented.
         baw_authoring: true
     
     # Additional customization for Automation Document Processing
@@ -558,7 +558,7 @@ stringData:
   principalAdminPassword: aCPadminPassword
 ```
 
-### 4. Run the Job
+### 4. Run the Job<!-- omit in toc -->
 
 Trigger the installation by applying the following YAML (also see the picture below the YAML).
 
@@ -623,7 +623,7 @@ Then open logs tab.
 
 ![assets/install-job-pod-log.png](assets/install-job-pod-log.png)
 
-#### Successful install
+#### Successful install<!-- omit in toc -->
 
 Successful completion is determined by seeing that the Job is *Complete* (in the below picture point 1) and the pod is also *Completed* (in the below picture point 3).
 
@@ -635,7 +635,7 @@ Also near the end of pod log there will be indication that zero tasks failed (in
 
 Now continue with the [Post installation steps](#post-installation-steps-%EF%B8%8F) and then review [Usage & Operations](#usage--operations-).
 
-#### Failed install
+#### Failed install<!-- omit in toc -->
 
 If something goes wrong, the Job is *Failed* (in the below picture point 1) and the pod has status *Error* (in the below picture point 3).
 
@@ -697,7 +697,7 @@ Useful when you want to clean up your environment.
 
 You can use it even if the deployment failed and everything was not deployed but expect to see some failures as script tries to remove things which doesn't exist. You can ignore such errors.
 
-### 1. Run the Job
+### 1. Run the Job<!-- omit in toc -->
 
 Trigger the removal by applying the following YAML (also see the picture below the YAML).
 
@@ -762,7 +762,7 @@ Then open logs tab.
 
 ![assets/remove-job-pod-log.png](assets/remove-job-pod-log.png)
 
-#### Successful removal
+#### Successful removal<!-- omit in toc -->
 
 Successful completion of removal is determined by seeing that the Job is *Complete* (in the below picture point 1) and the pod is also *Completed* (in the below picture point 3).
 
@@ -772,7 +772,7 @@ Also near the end of pod log there will be indication that zero tasks failed (in
 
 ![assets/success-remove-job-log.png](assets/success-remove-job-log.png)
 
-#### Failed removal
+#### Failed removal<!-- omit in toc -->
 
 If something goes wrong, the Job is *Failed* (in the below picture point 1) and the pod has status *Error* (in the below picture point 3).
 
@@ -784,7 +784,7 @@ Also near the end of pod log there will be a message containing the word "Failed
 
 Further execution is stopped - and you need to troubleshoot why the removal failed, fix your environment and retry removal from step [1. Run the Job](#1-run-the-job).
 
-### 2. Remove apollo-one-shot related resources
+### 2. Remove apollo-one-shot related resources<!-- omit in toc -->
 
 If you don't plan to repeat install or removal steps, you can remove whole *apollo-one-shot* Project following steps in the following picture.
 
