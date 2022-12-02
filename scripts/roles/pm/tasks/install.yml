@@ -112,7 +112,7 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Wait Operator ibm-cp4a-operator
+- name: Wait Operator ibm-automation-processmining
   ansible.builtin.include_role:
     name: common
     tasks_from: wait-operator
@@ -208,6 +208,86 @@
     wait: true
     wait_sleep: 15
     wait_timeout: 15
+
+# TODO hotfix for CPFS installed in multinamespace mode START last with IPM 1.13.1 at 2022-12-02
+- name: Wait for ProcessMining Operand Request to be Ready
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: wait-resource-condition
+  vars:
+    common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
+    common_api_version: operator.ibm.com/v1alpha1
+    common_resource_kind: OperandRequest
+    common_resource_name: cloudpak-required-common-service
+    common_resource_namespace: "{{ pm_project_name }}"
+    common_condition_name: Ready
+    common_retries: 30
+    common_delay: 120
+
+- name: Prepare yaml file for licensing ConfigMap
+  ansible.builtin.template:
+    src: licensing-configmap.yaml.j2
+    dest: "{{ pm_output_directory }}/licensing-configmap.yaml"
+    mode: u+rwx
+
+- name: Add licensing ConfigMap
+  kubernetes.core.k8s:
+    api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    host: "{{ pm_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ pm_output_directory }}/licensing-configmap.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Wait for licensing token upload secret to appear
+  kubernetes.core.k8s_info:
+    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
+    host: "{{ cpfs_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Secret
+    name: ibm-licensing-bindinfo-ibm-licensing-upload-token
+    namespace: cs-control
+  register: licensing_secret
+  retries: 10
+  delay: 30
+  until: licensing_secret.resources | length == 1
+
+- name: Get existing licensing secret
+  kubernetes.core.k8s_info:
+    api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    host: "{{ pm_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Secret
+    namespace: cs-control
+    name: ibm-licensing-bindinfo-ibm-licensing-upload-token
+  register: licensing_secret
+
+- name: Set token_upload
+  ansible.builtin.set_fact:
+    token_upload: "{{ licensing_secret.resources[0].data['token-upload'] }}"
+
+- name: Prepare yaml file for licensing Secret
+  ansible.builtin.template:
+    src: licensing-secret.yaml.j2
+    dest: "{{ pm_output_directory }}/licensing-secret.yaml"
+    mode: u+rwx
+
+- name: Add licensing Secret
+  kubernetes.core.k8s:
+    api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    host: "{{ pm_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ pm_output_directory }}/licensing-secret.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+# TODO hotfix for CPFS installed in multinamespace mode END
 
 # Based on validate successful deployment by following https://www.ibm.com/docs/en/cloud-paks/1.0?topic=platform-how-validate-successful-installation
 - name: Wait for ProcessMining to be Ready
