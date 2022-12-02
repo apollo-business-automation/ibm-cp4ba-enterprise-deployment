@@ -40,7 +40,7 @@
     api_version: v1alpha1
     kind: CatalogSource
     name: "{{ item }}"
-    namespace: "{{ rpa_project_name }}"
+    namespace: openshift-marketplace
   register: catalogsource
   retries: 40
   delay: 5
