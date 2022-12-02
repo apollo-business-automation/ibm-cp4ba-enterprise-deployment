@@ -153,7 +153,7 @@
     api_version: v1alpha1
     kind: CatalogSource
     name: "{{ item }}"
-    namespace: "{{ rpa_project_name }}"
+    namespace: openshift-marketplace
     wait: true
   with_items:
     - ibm-robotic-process-automation-catalog

@@ -3,7 +3,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
   name: ibm-robotic-process-automation-catalog
-  namespace: "{{ rpa_project_name }}"
+  namespace: openshift-marketplace
 spec:
   displayName: IBM Robotic Process Automation Catalog
   publisher: IBM
@@ -18,7 +18,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
   name: ibm-cloud-databases-redis-operator-catalog
-  namespace: "{{ rpa_project_name }}"
+  namespace: openshift-marketplace
 spec:
   displayName: ibm-cloud-databases-redis-operator-catalog
   publisher: IBM
@@ -33,7 +33,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
   name: ibmmq-operator-catalogsource
-  namespace: "{{ rpa_project_name }}"
+  namespace: openshift-marketplace
 spec:
   displayName: IBM MQ
   publisher: IBM
