@@ -1,3 +1,5 @@
+# Used Operator source at https://github.com/sonatype/operator-nxrm3
+
 - name: Create directory for generated files
   ansible.builtin.file:
     path: "{{ nexus_output_directory }}"
@@ -13,6 +15,24 @@
     common_k8s_host: "{{ nexus_k8s_host | default(omit) }}"
     common_namespace_name: nexus
     common_output_directory: "{{ nexus_output_directory }}"
+
+- name: Prepare yaml file for privileged ClusterRoleBinding
+  ansible.builtin.template:
+    src: privileged-scc-clusterrolebinding.yaml.j2
+    dest: "{{ nexus_output_directory }}/privileged-scc-clusterrolebinding.yaml"
+    mode: u+rwx
+
+- name: Add privileged ClusterRoleBinding
+  kubernetes.core.k8s:
+    api_key: "{{ nexus_k8s_api_key | default(omit) }}"
+    host: "{{ nexus_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ nexus_output_directory }}/privileged-scc-clusterrolebinding.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
 
 - name: Prepare yaml file for the Operator Group
   ansible.builtin.template:

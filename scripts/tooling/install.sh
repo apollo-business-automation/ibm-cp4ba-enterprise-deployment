@@ -72,6 +72,11 @@ yum install git -y
 exit_test $? "Install of Git Failed"
 
 echo
+echo ">>>>$(print_timestamp) Install Podman"
+yum install podman -y
+exit_test $? "Install of Podman Failed"
+
+echo
 echo ">>>>$(print_timestamp) Install helm"
 curl -O https://get.helm.sh/helm-v3.6.0-linux-amd64.tar.gz
 exit_test $? "Download helm Failed"

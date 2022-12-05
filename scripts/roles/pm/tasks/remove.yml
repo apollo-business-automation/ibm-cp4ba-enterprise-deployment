@@ -60,7 +60,7 @@
     api_version: v1alpha1
     kind: CatalogSource
     name: "{{ item }}"
-    namespace: "{{ pm_project_name }}"
+    namespace: openshift-marketplace
     wait: true
   with_items:
     - ibm-automation-processminings

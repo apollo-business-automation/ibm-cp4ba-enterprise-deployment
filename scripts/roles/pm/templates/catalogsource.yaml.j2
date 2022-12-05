@@ -3,7 +3,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
   name: ibm-automation-processminings
-  namespace: "{{ pm_project_name }}"
+  namespace: openshift-marketplace
 spec:
   displayName: IBM ProcessMining Operators
   publisher: IBM
@@ -18,7 +18,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
   name: ibm-cloud-databases-redis-operator-catalog
-  namespace: "{{ pm_project_name }}"
+  namespace: openshift-marketplace
 spec:
   displayName: ibm-cloud-databases-redis-operator-catalog
   publisher: IBM
@@ -33,7 +33,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
   name: ibm-db2uoperator-catalog
-  namespace: "{{ pm_project_name }}"
+  namespace: openshift-marketplace
 spec:
   sourceType: grpc
   image: icr.io/cpopen/ibm-db2uoperator-catalog@sha256:bb98c93a44172fd9709a4644c639639c2d5a3cf6692e269dd685d87ccaa191c0

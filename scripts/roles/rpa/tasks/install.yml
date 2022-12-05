@@ -40,7 +40,7 @@
     api_version: v1alpha1
     kind: CatalogSource
     name: "{{ item }}"
-    namespace: "{{ rpa_project_name }}"
+    namespace: openshift-marketplace
   register: catalogsource
   retries: 40
   delay: 5
@@ -68,7 +68,7 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Wait Operator ibm-cp4a-operator
+- name: Wait Operator ibm-automation-rpa
   ansible.builtin.include_role:
     name: common
     tasks_from: wait-operator

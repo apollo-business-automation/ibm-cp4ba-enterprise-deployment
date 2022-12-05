@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [2022-12-05]
+
+### Added
+
+- MongoDB exposed as NodePort for debugging and CLI connection documented.
+- Added privileged permission to Nexus as newly required by the Deployment.
+
+### Changed
+
+- Updated CP4BA to 22.0.1 IF005.
+- Updated CPFS to 3.22.
+- Switched CPFS from single instance mode to multiple instances mode.
+
 ## [2022-11-18]
 
 ### Added
