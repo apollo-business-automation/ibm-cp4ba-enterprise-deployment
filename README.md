@@ -1,8 +1,8 @@
-# Installation of Cloud Pak for Business Automation on containers - Apollo one-shot enterprise deployment 🔫 <!-- omit in toc -->
+# Installation of Cloud Pak for Business Automation on containers - Apollo one-shot deployment 🔫 <!-- omit in toc -->
 
-Goal of this repository is to almost automagically install CP4BA Enterprise patterns and also IAF components with all kinds of prerequisites and extras on OpenShift.
+Goal of this repository is to almost automagically install CP4BA Production (previously Enterprise) patterns and also IAF components with all kinds of prerequisites and extras on OpenShift. Read the [Disclaimer ✋](#disclaimer-) carefully.
 
-Last installation was performed on 2022-12-02 with CP4BA version 22.0.1 IF005.
+Last installation was performed on 2022-12-05 with CP4BA version 22.0.1 IF005.
 
 - [Disclaimer ✋](#disclaimer-)
 - [Documentation base](#documentation-base)
@@ -30,7 +30,7 @@ It is always your responsibility to make sure you are license compliant when usi
 
 Please do not hesitate to create an issue here if needed. Your feedback is appreciated.
 
-Not for production use. Suitable for Demo and PoC environments - but with enterprise deployment.  
+**Not for production use (neither dev nor test or prod environments). Suitable for Demo and PoC environments - but with Production deployment.**  
 
 **!Important** - Keep in mind that the platform contains DB2 which is licensed with Standard Edition license available from CP4BA and it must adhere to the *Additional IBM DB2 Standard Edition Detail* in official license information at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument (or its newer revision).
 
@@ -57,11 +57,11 @@ Deployment of other parts is also based on respective official documentations.
 - The whole platform is running on containers so you don't need to manually prepare anything on traditional VMs and take care of them including required prerequisites
 - Many otherwise manual post-deployment steps have been automated
 - Pre integrated and automatically connected extras are deployed in the platform for easier access/management/troubleshooting
-- You have a working starting Enterprise deployment which you can use as a reference for further custom deployments
+- You have a working starting Production deployment which you can use as a reference for further custom deployments
 
 ## General information 📢
 
-Result of this Enterprise deployment is not fully supported:
+Result of this Production deployment is not fully supported:
 - For convenience, it contains OpenLDAP as a directory provider which is not supported - in real deployments this needs to be replaced with a supported directory provider
 - For convenience and lower resource consumption, it uses one containerized DB2 database and schemas for majority of required DBs - in real deployments a supported DB option described on "[Compatibility matrix](https://www.ibm.com/software/reports/compatibility/clarity-reports/report/html/softwareReqsForProduct?deliverableId=71C22290D7DB11EBAA175CFD3E629A2A&osPlatforms=Linux%7CMac%20OS%7CWindows&duComponentIds=D010%7CD009%7CD011%7CS015%7CS014%7CS013%7CC027%7CC032%7CC017%7CC024%7CC023%7CC029%7CC018%7CC021%7CC022%7CC030%7CC028%7CC020%7CC025%7CC031%7CC016%7CC034%7CC019%7CC026&mandatoryCapIds=71%7C26&optionalCapIds=134%7C62%7C127%7C9%7C401%7C132%7C20%7C161) > Supported Software > Databases" would be used
 
@@ -313,7 +313,7 @@ data:
 
   # This parameter cotains a specific tag name of the repository. This allows you to run Install and Remove from the same version.
   # In situation where you want to clean and install newver version you leave the original tag you had, run through remove and then change this tag to lastest and run install.
-  git_branch: "2022-11-18"
+  git_branch: "2022-12-05"
 
   # Variables
   variables.yml: |
