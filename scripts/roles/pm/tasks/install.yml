@@ -210,21 +210,6 @@
     wait_timeout: 15
 
 # TODO hotfix for CPFS installed in multinamespace mode START last with IPM 1.13.1 at 2022-12-02
-- name: Wait for ProcessMining Operand Request to be Ready
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: wait-resource-condition
-  vars:
-    common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
-    common_api_version: operator.ibm.com/v1alpha1
-    common_resource_kind: OperandRequest
-    common_resource_name: cloudpak-required-common-service
-    common_resource_namespace: "{{ pm_project_name }}"
-    common_condition_name: Ready
-    common_retries: 30
-    common_delay: 120
-
 - name: Prepare yaml file for licensing ConfigMap
   ansible.builtin.template:
     src: licensing-configmap.yaml.j2
@@ -249,7 +234,7 @@
     host: "{{ cpfs_k8s_host | default(omit) }}"
     api_version: v1
     kind: Secret
-    name: ibm-licensing-bindinfo-ibm-licensing-upload-token
+    name: ibm-licensing-upload-token
     namespace: cs-control
   register: licensing_secret
   retries: 10
@@ -263,7 +248,7 @@
     api_version: v1
     kind: Secret
     namespace: cs-control
-    name: ibm-licensing-bindinfo-ibm-licensing-upload-token
+    name: ibm-licensing-upload-token
   register: licensing_secret
 
 - name: Set token_upload
