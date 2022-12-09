@@ -368,6 +368,13 @@ If you want FDM to connect to CPE, you need to provide it with Zen certificate. 
 - Case monitor: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=bawmonitor
 - Case Client: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=baw
 - Case administration: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=bawadmin
+- FNCM Server definition in BAW:
+  - Host name: cp4ba-cmis-svc.cp4ba.svc.cluster.local
+  - Port: 9443
+  - Context path: /cmis/openfncmis_wlp/services
+  - Secure server: true
+  - Repository: depends to which you want to connect in internal FNCM (e.g. BADOCS or OS1)
+  - Credentials as in Credentials section
 
 ####  Credentials
 
