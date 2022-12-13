@@ -34,13 +34,6 @@ spec:
   workflow_authoring_configuration:
     replicas: 1
     admin_user: "{{ lc_principal_admin_user }}"
-    database:
-      enable_ssl: false
-      type: db2
-      server_name: "{{ cp4ba_db2_hostname }}"
-      database_name: CP4BA
-      port: "50000"
-      secret_name: ibm-bawaut-server-db-secret
     content_integration:
       domain_name: P8DOMAIN
       object_store_name: BADOCS
