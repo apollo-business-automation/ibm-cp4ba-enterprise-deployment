@@ -1,4 +1,4 @@
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=engine-creating-secrets-protect-sensitive-configuration-data
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=engine-creating-secrets-protect-sensitive-configuration-data
 - name: Prepare yaml file for AAE Secret
   ansible.builtin.template:
     src: aae/aae-secret.yaml.j2

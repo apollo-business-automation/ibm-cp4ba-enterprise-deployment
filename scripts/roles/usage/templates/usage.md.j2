@@ -249,9 +249,9 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 
 - Decision Center UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter
 - Decision Center OAS: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter-api
-- Decision Center remote API jars: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/decision-center-client-api.zip (details on https://www.ibm.com/docs/en/odm/8.11.0?topic=8110-accessing-decision-center-remotely-from-java-client)
-- Decision Center build command API jars: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/buildcommand.zip (details on https://www.ibm.com/docs/en/odm/8.11.0?topic=8110-automating-project-builds-build-command)
-- Decision Center custom data providers API jars: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/decision-center-client-api.zip (details on https://www.ibm.com/docs/en/odm/8.11.0?topic=8110-setting-up-custom-data-providers)
+- Decision Center remote API jars: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/decision-center-client-api.zip (details on https://www.ibm.com/docs/en/odm/latest?topic=8110-accessing-decision-center-remotely-from-java-client)
+- Decision Center build command API jars: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/buildcommand.zip (details on https://www.ibm.com/docs/en/odm/latest?topic=8110-automating-project-builds-build-command)
+- Decision Center custom data providers API jars: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/decision-center-client-api.zip (details on https://www.ibm.com/docs/en/odm/latest?topic=8110-setting-up-custom-data-providers)
 - Decision Center truststore: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/truststore.jks
 - Decision Center OIDC providers: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/OdmOidcProvidersRD.json
 - Decision Runner UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/DecisionRunner
@@ -262,7 +262,7 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 
 - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }} for access through web UIs
 - odmAdmin / {{ universal_password }} who can be used for ODM REST Basic Auth
-- For ODM REST auth with {{ lc_principal_admin_user }} user or other LDAP users, follow guide on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=access-using-zen-api-key-authentication with REST Authoziation header with ZenApiKey type
+- For ODM REST auth with {{ lc_principal_admin_user }} user or other LDAP users, follow guide on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=access-using-zen-api-key-authentication with REST Authoziation header with ZenApiKey type
 
 {% endif %}
 {% if cp4ba_config.deployment_patterns.decisions_ads == true %}
@@ -273,7 +273,7 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 - Administration: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/admin-platform
 - Runtime OAS: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/runtime/api/swagger-ui
 - Runtime OAS JSON file: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/runtime/api/v1/openapi.json
-- Runtime service invocation template: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/runtime/api/v1/deploymentSpaces/embedded/decisions/{decisionId}/operations/{operation}/execute (using ZenApiKey Authentication with Zen token (https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=administering-authorizing-http-requests-by-using-zen-api-key))
+- Runtime service invocation template: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/runtime/api/v1/deploymentSpaces/embedded/decisions/{decisionId}/operations/{operation}/execute (using ZenApiKey Authentication with Zen token (https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=administering-authorizing-http-requests-by-using-zen-api-key))
 
 ####  Credentials
 

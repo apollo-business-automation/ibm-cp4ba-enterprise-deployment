@@ -1,5 +1,5 @@
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=secrets-creating-custom-bpc-workforce-secret
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=secrets-creating-custom-bai-secret
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=secrets-creating-custom-bpc-workforce-secret
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=secrets-creating-custom-bai-secret
 - name: Prepare yaml file for BAI Secret
   ansible.builtin.template:
     src: bai/bai-secret.yaml.j2

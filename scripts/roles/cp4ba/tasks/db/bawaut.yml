@@ -13,7 +13,7 @@
     - badocs
     - ch
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=authoring-creating-required-databases
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=authoring-creating-required-databases
 - name: Set BAW DB2_WORKLOAD
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -26,8 +26,8 @@
       "
   register: command_status
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=authoring-creating-required-databases
-# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=authoring-creating-required-databases
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/latest?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
 - name: BADOCS DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -48,8 +48,8 @@
       "
   register: command_status
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=authoring-creating-required-databases
-# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=authoring-creating-required-databases
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/latest?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
 - name: BATOS DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -70,8 +70,8 @@
       "
   register: command_status
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=authoring-creating-required-databases
-# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=authoring-creating-required-databases
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/latest?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
 - name: BADOS DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -94,7 +94,7 @@
 
 # Based on https://www.ibm.com/docs/en/baw/20.x?topic=system-preparing-database-case-history-store
 # Based on
-# https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=bawraws-optional-enabling-timeline-visualizer-widget-display-business-automation-workflow-process-activity-flow
+# https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=bawraws-optional-enabling-timeline-visualizer-widget-display-business-automation-workflow-process-activity-flow
 - name: CH (Case History) DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"

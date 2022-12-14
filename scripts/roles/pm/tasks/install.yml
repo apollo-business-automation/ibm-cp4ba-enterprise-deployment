@@ -336,7 +336,7 @@
   ansible.builtin.set_fact:
     api_key: "{{ user_profile_response.json.data.apiKey }}"
 
-# Based on https://www.ibm.com/docs/en/process-mining/1.13.1?topic=manual-how-integrate-process-mining-task-mining
+# Based on https://www.ibm.com/docs/en/process-mining/latest?topic=manual-how-integrate-process-mining-task-mining
 - name: Setup master key for task mining
   ansible.builtin.uri:
     url: "https://cpd-{{ pm_project_name }}.{{ apps_endpoint_domain }}/taskmining/api/pmMasterUser"

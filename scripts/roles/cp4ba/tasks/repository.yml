@@ -1,4 +1,4 @@
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=operator-preparing-log-file-storage
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=operator-preparing-log-file-storage
 
 - name: Download installation repository
   ansible.builtin.get_url:

@@ -1,5 +1,5 @@
 # Based on
-# https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=fcm-creating-secrets-protect-sensitive-filenet-content-manager-configuration-data
+# https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=fcm-creating-secrets-protect-sensitive-filenet-content-manager-configuration-data
 - name: Prepare yaml file for IER Secret
   ansible.builtin.template:
     src: ier/ier-secret.yaml.j2

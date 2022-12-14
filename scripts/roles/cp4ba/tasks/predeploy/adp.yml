@@ -1,4 +1,4 @@
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=dp-creating-secrets-protect-sensitive-document-processing-configuration-data
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=dp-creating-secrets-protect-sensitive-document-processing-configuration-data
 - name: Prepare yaml file for ADP Secret
   ansible.builtin.template:
     src: adp/adp-secret.yaml.j2

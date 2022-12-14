@@ -1,6 +1,6 @@
 # CP4BA post-deploy
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployments-completing-post-installation-tasks
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=deployments-completing-post-installation-tasks
 
 The following list specifies when you need to perform particular post-deployment steps
   - [Business Automation Studio (BAS) (foundation pattern)](#business-automation-studio-bas-foundation-pattern)
@@ -39,11 +39,11 @@ For logging in to CP4BA pillars use *Authentication type: Enterprise LDAP* and u
 
 ## Business Automation Studio (BAS) (foundation pattern)
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=tasks-business-automation-studio
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=tasks-business-automation-studio
 
 ### Deploy toolkits and configurators
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=reference-downloadable-toolkits
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=reference-downloadable-toolkits
 
 To your local system download the following
 - TWX file from https://github.com/icp4a/odm-toolkit/tree/master/contribution/1.2/Action%20Configurator
@@ -63,19 +63,19 @@ Some of them are used as Configurators, don't be confused that they don't appear
 
 Part of WFI configuration has already been done automatically.
 
-Set up WFI following https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=dashboards-enabling-workforce-insights
+Set up WFI following https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=dashboards-enabling-workforce-insights
 
 ## Operational Decision Manager (ODM) (decisions pattern)
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=tasks-operational-decision-manager
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=tasks-operational-decision-manager
 
 ### BAI event emitter
 
-After you have some rule project ready, configure it to emit BAI events using https://www.ibm.com/docs/en/odm/8.11.0?topic=properties-built-in-ruleset-odm-event-emitter
+After you have some rule project ready, configure it to emit BAI events using https://www.ibm.com/docs/en/odm/latest?topic=properties-built-in-ruleset-odm-event-emitter
 
 ### Rule designer in eclipse
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=manager-installing-rule-designer
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=manager-installing-rule-designer
 
 Download Eclipse IDE 2020-06 R (4.16) Modeling Tools Packages from https://archive.eclipse.org/technology/epp/downloads/release/2020-06/R/eclipse-modeling-2020-06-R-win32-x86_64.zip
 In the following URL you may want to use different rule designer version, replace 81100 with the appropriate version you need.  
@@ -96,10 +96,10 @@ In you eclise.ini before -vmargs the following
 
 ### Rule designer Zen connection
 
-Based on https://www.ibm.com/docs/en/odm/8.11.0?topic=parties-configuring-rule-designer  
+Based on https://www.ibm.com/docs/en/odm/latest?topic=parties-configuring-rule-designer  
 Download truststore.jks from https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/truststore.jks and copy the file to your eclipse directory.  
 
-Based on https://www.ibm.com/docs/en/odm/8.11.0?topic=designer-passing-parameters-rule
+Based on https://www.ibm.com/docs/en/odm/latest?topic=designer-passing-parameters-rule
 Add the following to eclipse.ini  
 ```text
 -Djavax.net.ssl.trustStore=truststore.jks
@@ -122,7 +122,7 @@ API Key: As generated following https://www.ibm.com/docs/en/cloud-paks/1.0?topic
 
 ## Automation Decision Services (ADS) (decisions_ads pattern)
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=tasks-automation-decision-services
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=tasks-automation-decision-services
 
 ### ADS project git repo & connection
 
@@ -160,7 +160,7 @@ Click Connect
 
 ### Develop custom libraries
 
-To find out how to create and add External libraries to ADS, follow https://github.com/icp4a/automation-decision-services-samples/tree/21.0.3/samples/ExternalLibraryStartTutorial
+To find out how to create and add External libraries to ADS, follow https://github.com/icp4a/automation-decision-services-samples/tree/22.0.2/samples/ExternalLibraryStartTutorial
 
 To be able to follow the above guide from my environment, I needed to perform the following.
 
@@ -180,12 +180,12 @@ Installed VSCode and added Java Extension Pack
 
 ## FileNet Content Manager (FNCM) (content pattern)
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=tasks-filenet-content-manager
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=tasks-filenet-content-manager
 
 ### Update Google OIDC redirect URIs
 
 If you plan to use Google ID for External Share  
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=manager-configuring-redirect-url-identity-provider and  
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=manager-configuring-redirect-url-identity-provider and  
 on https://developers.google.com/identity/protocols/oauth2/openid-connect#setredirecturi  
 Watch video and follow with your own google account and Client ID you used in the pre-deploy section  
 [Video fncm-es-google-oidc-post.mp4 download](https://github.com/apollo-business-automation/ibm-cp4ba-enterprise-deployment/blob/main/assets/fncm-es-google-oidc-post.mp4?raw=true) 
@@ -193,12 +193,12 @@ Watch video and follow with your own google account and Client ID you used in th
 
 ### External Share
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=manager-configuring-external-share-after-deployment
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=manager-configuring-external-share-after-deployment
 
 If you plan to use External Share  
 
 Configure SMTP  
-Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=users-configuring-content-platform-engine-external-sharing point 3
+Based on https://www.ibm.com/docs/en/filenet-p8-platform/latest?topic=users-configuring-content-platform-engine-external-sharing point 3
 
 Go to Acce console https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/acce/    
 Login with Enterprise LDAP with {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}  
@@ -215,7 +215,7 @@ Click Save
 
 Configure external LDAP in FNCM CPE  
 If you plan to use external LDAP for External Share  
-Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=users-configuring-content-platform-engine-external-sharing point 2
+Based on https://www.ibm.com/docs/en/filenet-p8-platform/latest?topic=users-configuring-content-platform-engine-external-sharing point 2
 
 Go to Acce console https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/acce/  
 On P8DOMAIN domain navigate to *Directory Configuration*  
@@ -227,7 +227,7 @@ click Close
 
 Document class access  
 If you plan to use external LDAP for External Share  
-Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=users-configuring-content-platform-engine-external-sharing point 4  
+Based on https://www.ibm.com/docs/en/filenet-p8-platform/latest?topic=users-configuring-content-platform-engine-external-sharing point 4  
 
 Go to Acce console https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/acce/  
 Navigate to OS1 object store > Data Design > Classes > Document > Security tab  
@@ -242,7 +242,7 @@ Click Save
 
 Folder class access  
 If you plan to use external LDAP for External Share  
-Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=users-configuring-content-platform-engine-external-sharing point 5
+Based on https://www.ibm.com/docs/en/filenet-p8-platform/latest?topic=users-configuring-content-platform-engine-external-sharing point 5
 
 Go to Acce console https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/acce/    
 Navigate to OS1 object store > Data Design > Classes > Folder > Security tab  
@@ -257,8 +257,8 @@ Click Save
 
 ### External Share capability in BAN
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=cesad-configuring-share-plug-in-in-business-automation-navigator  
-Based on https://www.ibm.com/docs/en/content-navigator/3.0.11?topic=components-configuring-external-share  
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=cesad-configuring-share-plug-in-in-business-automation-navigator  
+Based on https://www.ibm.com/docs/en/content-navigator/latest?topic=components-configuring-external-share  
 
 If you plan to use External Share  
 
@@ -287,7 +287,7 @@ Click OK
 This may take some time, and the request can time out. Click OK after a minute again and it should complete successfully. In the mean time External share container is configuring object store behind the scenes.  
 Click Save and Close  
 
-Based on https://www.ibm.com/docs/en/content-navigator/3.0.11?topic=share-configuring-menu-action  
+Based on https://www.ibm.com/docs/en/content-navigator/latest?topic=share-configuring-menu-action  
 
 Navigate to Menus  
 Filter for *Default document context menu*  
@@ -323,12 +323,12 @@ If you want to share content, use https://ingress-es-{{ cp4ba_project_name }}.{{
 
 ### IER configuration
 
-Follow official documentation at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=fcm-configuring-enterprise-records to finish IER configuration.  
+Follow official documentation at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=fcm-configuring-enterprise-records to finish IER configuration.  
 URLs are available in *apollo-one-shot* Project in *usage* ConfigMap (IER CPE HTTP URL and IER application plugin).
 
 Some steps were already automated:
 - FPOS and ROS were created
-- CPE Configuration URL was created (https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=records-creating-content-platform-engine-route-http-protocol)
+- CPE Configuration URL was created (https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=records-creating-content-platform-engine-route-http-protocol)
 - IER config mgr was run to setup FPOS and ROS for IER (https://www.ibm.com/docs/en/enterprise-records/5.2.1?topic=rercmbucl-creating-object-store-configuration-new-installation-profile-by-using-commands)
 - Task Manager pod has TM_JOB_URL parameter set (https://www.ibm.com/docs/en/enterprise-records/5.2.1?topic=in-configuring-content-navigator-task-manager-enterprise-records)
 - Additional Jars and configs were added to Task manager (https://www.ibm.com/docs/en/enterprise-records/5.2.1?topic=in-configuring-content-navigator-task-manager-enterprise-records)
@@ -336,11 +336,11 @@ Some steps were already automated:
 
 ## Automation Document Processing (ADP) (document_processing pattern)
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=tasks-document-processing
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=tasks-document-processing
 
 ### Connect ADP project to Git
 
-Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=processing-setting-up-remote-git-organization
+Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=processing-setting-up-remote-git-organization
 
 Needed if you want to be able to deploy Share, Version and Deploy ADP project
 

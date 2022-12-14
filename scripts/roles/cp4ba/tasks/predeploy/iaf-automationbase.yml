@@ -1,4 +1,4 @@
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=insights-customizing-kafka-elasticsearch-server-configuration
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=insights-customizing-kafka-elasticsearch-server-configuration
 # Based on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=p-system-requirements
 # Based on https://github.com/IBM/automation/tree/main/cr-examples/AutomationBase
 # Based on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=foundation-custom-resources#automationbase

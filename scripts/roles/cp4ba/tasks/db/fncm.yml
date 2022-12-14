@@ -11,7 +11,7 @@
     - gcd
     - os1
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=manager-preparing-databases
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=manager-preparing-databases
 - name: Set DB2_WORKLOAD
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -24,8 +24,8 @@
       "
   register: command_status
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=manager-preparing-databases
-# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-space-content-platform-engine-gcd
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=manager-preparing-databases
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/latest?topic=vtdluwiifp-creating-db2-database-table-space-content-platform-engine-gcd
 - name: GCD DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
@@ -46,8 +46,8 @@
       "
   register: command_status
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=manager-preparing-databases
-# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=manager-preparing-databases
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/latest?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
 - name: OS1 DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"

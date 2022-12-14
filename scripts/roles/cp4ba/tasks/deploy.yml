@@ -19,12 +19,12 @@
   ansible.builtin.set_fact:
     components: []
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-checking-cluster-configuration point 3
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=resource-checking-cluster-configuration point 3
 - name: Add RR to CR
   ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'rr/cr.yaml.j2') | from_yaml, recursive=true) }}"
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-business-automation-navigator
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=resource-configuring-business-automation-navigator
 - name: Add BAN to CR
   ansible.builtin.set_fact:
     cr: "{{ cr | combine(lookup('template', 'ban/cr.yaml.j2') | from_yaml, recursive=true) }}"
@@ -40,7 +40,7 @@
             jvm_customize_options: DELIM=;-Dcom.filenet.authentication.ExShareGID.AuthTokenOrder=oidc,oauth,ltpa
   when: cp4ba_external_share_google and cp4ba_config.optional_components.es
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-business-automation-studio
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=resource-configuring-business-automation-studio
 - name: Add BAS component
   ansible.builtin.set_fact:
     components: "{{ components + ['bas'] }}"
@@ -51,7 +51,7 @@
     cr: "{{ cr | combine(lookup('template', 'bas/cr.yaml.j2') | from_yaml, recursive=true) }}"
   when: cp4ba_config.optional_components.bas
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-business-automation-insights
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=resource-configuring-business-automation-insights
 - name: Add BAI component
   ansible.builtin.set_fact:
     components: "{{ components + ['bai'] }}"
@@ -62,7 +62,7 @@
     cr: "{{ cr | combine(lookup('template', 'bai/cr.yaml.j2') | from_yaml, recursive=true) }}"
   when: cp4ba_config.optional_components.bai
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-operational-decision-manager
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=resource-configuring-operational-decision-manager
 - name: Add ODM pattern
   ansible.builtin.set_fact:
     patterns: "{{ patterns + ['decisions'] }}"
@@ -88,7 +88,7 @@
     cr: "{{ cr | combine(lookup('template', 'odm/cr.yaml.j2') | from_yaml, recursive=true) }}"
   when: cp4ba_config.deployment_patterns.decisions
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-automation-decision-services
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=resource-configuring-automation-decision-services
 - name: Add ADS pattern
   ansible.builtin.set_fact:
     patterns: "{{ patterns + ['decisions_ads'] }}"
@@ -114,7 +114,7 @@
     cr: "{{ cr | combine(lookup('template', 'ads/cr-runtime.yaml.j2') | from_yaml, recursive=true) }}"
   when: cp4ba_config.deployment_patterns.decisions_ads and cp4ba_config.optional_components.ads_runtime
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-filenet-content-manager
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=resource-configuring-filenet-content-manager
 - name: Add FNCM pattern
   ansible.builtin.set_fact:
     patterns: "{{ patterns + ['content'] }}"
@@ -227,7 +227,7 @@
 
   when: cp4ba_external_share_google and cp4ba_config.optional_components.es
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-business-automation-application
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=resource-configuring-business-automation-application
 - name: Add AAE pattern
   ansible.builtin.set_fact:
     patterns: "{{ patterns + ['application'] }}"
@@ -285,7 +285,7 @@
 
   when: cp4ba_config.deployment_patterns.application and cp4ba_config.optional_components.ae_data_persistence
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-document-processing
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=resource-configuring-document-processing
 - name: Add ADP pattern
   ansible.builtin.set_fact:
     patterns: "{{ patterns + ['document_processing'] }}"
@@ -350,7 +350,7 @@
 
   when: cp4ba_config.deployment_patterns.document_processing
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-business-automation-workflow-authoring
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=resource-configuring-business-automation-workflow-authoring
 - name: Add BAWAUT pattern
   ansible.builtin.set_fact:
     patterns: "{{ patterns + ['workflow'] }}"
@@ -417,7 +417,7 @@
     dest: "{{ cp4ba_output_directory }}/cr.yaml"
     mode: u+rwx
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-deploying-custom-resource-you-created-script
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=deployment-deploying-custom-resource-you-created-script
 - name: Add CP4BA CR
   kubernetes.core.k8s:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"

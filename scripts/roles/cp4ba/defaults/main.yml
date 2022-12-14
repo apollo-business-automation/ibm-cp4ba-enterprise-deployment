@@ -5,7 +5,7 @@ cp4ba_k8s_api_key: ""
 cp4ba_k8s_host: ""
 ## Should not be changed in particular guide version.
 ## Version of the Subscription channel as defined on
-## https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=cluster-setting-up-in-openshift-console
+## https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=cluster-setting-up-in-openshift-console
 cp4ba_operator_channel: v22.2
 ## Should not be changed in particular guide version.
 ## Version of Cloud Pak CASE archive as found on

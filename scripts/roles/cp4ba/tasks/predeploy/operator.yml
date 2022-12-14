@@ -31,7 +31,7 @@
     dest: "{{ cp4ba_output_directory }}/subscription.yaml"
     mode: u+rwx
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=cluster-setting-up-in-openshift-console
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=cluster-setting-up-in-openshift-console
 - name: Add Subscription
   kubernetes.core.k8s:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
