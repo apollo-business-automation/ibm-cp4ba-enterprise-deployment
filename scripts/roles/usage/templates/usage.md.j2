@@ -539,6 +539,33 @@ As DB2 database storage for the platform.
 
 - db2inst1 / {{ universal_password }}
 
+#### CLI in container
+
+```bash
+# Switch to db2 user
+su - db2inst1
+# Initiate
+db2
+```
+
+### PostgreSQL
+
+As PostgreSQL database storage for the platform.
+
+#### Endpoints
+
+- Exposed as NodePort as found in Project *postgresql* in Service *postgresql*.
+
+#### Credentials
+
+- {{ lc_bind_admin_user }} / {{ universal_password }}
+
+#### CLI in container
+
+```bash
+psql postgresql://{{ lc_bind_admin_user }}:{{ universal_password }}@localhost:5432/postgresdb
+```
+
 {% if openldap_enabled == true %}
 
 ### OpenLDAP + phpLDAPadmin

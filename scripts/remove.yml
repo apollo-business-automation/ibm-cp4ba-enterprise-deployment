@@ -79,6 +79,10 @@
     name: openldap
   when: openldap_enabled
 
+- name: Remove PostgreSQL
+  ansible.builtin.include_role:
+    name: postgresql_action
+
 - name: Remove DB2MC
   ansible.builtin.include_role:
     name: db2mc

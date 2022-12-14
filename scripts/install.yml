@@ -46,6 +46,10 @@
     name: db2mc
   when: db2mc_enabled
 
+- name: Install PostgreSQL
+  ansible.builtin.include_role:
+    name: postgresql
+
 - name: Install openldap
   ansible.builtin.include_role:
     name: openldap
