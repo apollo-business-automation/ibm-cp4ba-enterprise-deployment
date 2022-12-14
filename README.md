@@ -5,7 +5,7 @@ Goal of this repository is to almost automagically install CP4BA Production (pre
 Last installation was performed on 2022-12-05 with CP4BA version 22.0.2.
 
 - [Disclaimer ✋](#disclaimer-)
-- [Documentation base](#documentation-base)
+- [Documentation base 📝](#documentation-base-)
 - [Benefits 🚀](#benefits-)
 - [General information 📢](#general-information-)
 - [What is in the package 📦](#what-is-in-the-package-)
@@ -36,7 +36,7 @@ Please do not hesitate to create an issue here if needed. Your feedback is appre
 
 **!Important** - Keep in mind that this deployment contains capabilities (the ones which are not bundled with CP4BA) which are not eligible to run on Worker Nodes covered by CP4BA OCP Restricted licenses. More info on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=clusters-restricted-openshift-entitlement.
 
-## Documentation base
+## Documentation base 📝
 
 Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1.
 

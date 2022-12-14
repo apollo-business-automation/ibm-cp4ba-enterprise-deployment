@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Updated CP4BA to 22.0.2.
 
+### Fixed
+
+- Wrong Project Area connection definition for BAW.
+
 ## [2022-12-05]
 
 ### Added
