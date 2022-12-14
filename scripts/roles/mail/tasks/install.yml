@@ -14,20 +14,20 @@
     common_namespace_name: mail
     common_output_directory: "{{ mail_output_directory }}"
 
-- name: Prepare yaml file for privileged ClusterRoleBinding
+- name: Prepare yaml file for privileged RoleBinding
   ansible.builtin.template:
-    src: privileged-scc-clusterrolebinding.yaml.j2
-    dest: "{{ mail_output_directory }}/privileged-scc-clusterrolebinding.yaml"
+    src: privileged-scc-rolebinding.yaml.j2
+    dest: "{{ mail_output_directory }}/privileged-scc-rolebinding.yaml"
     mode: u+rwx
 
-- name: Add privileged ClusterRoleBinding
+- name: Add privileged RoleBinding
   kubernetes.core.k8s:
     api_key: "{{ mail_k8s_api_key | default(omit) }}"
     host: "{{ mail_k8s_host | default(omit) }}"
     state: present
     force: false
     merge_type: merge
-    src: "{{ mail_output_directory }}/privileged-scc-clusterrolebinding.yaml"
+    src: "{{ mail_output_directory }}/privileged-scc-rolebinding.yaml"
     wait: true
     wait_sleep: 15
     wait_timeout: 15
