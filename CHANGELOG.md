@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 
 - Updated CP4BA to 22.0.2.
+- Updated RPA to 23.0.0.
 
 ### Fixed
 
