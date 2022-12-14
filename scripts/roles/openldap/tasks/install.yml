@@ -14,20 +14,20 @@
     common_namespace_name: openldap
     common_output_directory: "{{ openldap_output_directory }}"
 
-- name: Prepare yaml file for anyuid ClusterRoleBinding
+- name: Prepare yaml file for anyuid RoleBinding
   ansible.builtin.template:
-    src: anyuid-scc-clusterrolebinding.yaml.j2
-    dest: "{{ openldap_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
+    src: anyuid-scc-rolebinding.yaml.j2
+    dest: "{{ openldap_output_directory }}/anyuid-scc-rolebinding.yaml"
     mode: u+rwx
 
-- name: Add anyuid ClusterRoleBinding
+- name: Add anyuid RoleBinding
   kubernetes.core.k8s:
     api_key: "{{ openldap_k8s_api_key | default(omit) }}"
     host: "{{ openldap_k8s_host | default(omit) }}"
     state: present
     force: false
     merge_type: merge
-    src: "{{ openldap_output_directory }}/anyuid-scc-clusterrolebinding.yaml"
+    src: "{{ openldap_output_directory }}/anyuid-scc-rolebinding.yaml"
     wait: true
     wait_sleep: 15
     wait_timeout: 15
