@@ -79,6 +79,11 @@
     name: openldap
   when: openldap_enabled
 
+- name: Remove pgAdmin
+  ansible.builtin.include_role:
+    name: pgadmin
+  when: pgadmin_enabled
+
 - name: Remove PostgreSQL
   ansible.builtin.include_role:
     name: postgresql_action

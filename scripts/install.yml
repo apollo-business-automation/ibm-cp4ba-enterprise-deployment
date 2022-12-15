@@ -50,6 +50,11 @@
   ansible.builtin.include_role:
     name: postgresql
 
+- name: Install pgAdmin
+  ansible.builtin.include_role:
+    name: pgadmin
+  when: pgadmin_enabled
+
 - name: Install openldap
   ansible.builtin.include_role:
     name: openldap

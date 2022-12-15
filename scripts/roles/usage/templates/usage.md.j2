@@ -142,6 +142,22 @@ As UI for MongoDB
 - {{ principal_admin_user }} / {{ universal_password }}
 
 {% endif %}
+
+{% if pgadmin_enabled == true %}
+### pgAdmin
+
+As UI for PostgreSQL
+
+#### Endpoints
+
+- pgAdmin UI: https://pgadmin.{{ apps_endpoint_domain }}
+
+#### Credentials
+
+- UI itself: {{ principal_admin_user }} / {{ universal_password }}
+- CP4BA Instance password: {{ universal_password }}
+
+{% endif %}
 ## CP4BA - CP4BA capabilities
 
 ### Zen service account credentials
@@ -563,7 +579,7 @@ As PostgreSQL database storage for the platform.
 #### CLI in container
 
 ```bash
-psql postgresql://{{ lc_bind_admin_user }}:{{ universal_password }}@localhost:5432/postgresdb
+psql postgresql://{{ lc_bind_admin_user }}:{{ universal_password }}@localhost:5432/postgres
 ```
 
 {% if openldap_enabled == true %}
