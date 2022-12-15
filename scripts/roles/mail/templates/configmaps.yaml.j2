@@ -34,7 +34,7 @@ metadata:
   labels:
     app: mailserver
 data:
-  # Cannot be set to cp.local, otherwise postfix is eating mails, some details at https://github.com/docker-mailserver/docker-mailserver/issues/968
+  # Cannot be set to cp.internal, otherwise postfix is eating mails, some details at https://github.com/docker-mailserver/docker-mailserver/issues/968
   OVERRIDE_HOSTNAME: relay.local
   ENABLE_FETCHMAIL: "0"
   ENABLE_SPAMASSASSIN: "0"
