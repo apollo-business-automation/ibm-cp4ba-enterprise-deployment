@@ -93,6 +93,7 @@ Contains extra software which makes working with the platform even easier.
 - Kibana - Web UI elastic search dashboarding tool automatically connected to ES instance deployed with CP4BA.
 - Mail server - For various mail integrations e.g. from BAN, BAW and RPA.
 - Mongo Express - Web UI for Mongo DB databases for CP4BA and Process Mining to easier troubleshoot DB.
+- pgAdmin - Web UI for PostgreSQL database making it easier to admin and troubleshoot the DB.
 
 ### CP4BA (Cloud Pak for Business Automation) section<!-- omit in toc -->
 
@@ -116,7 +117,6 @@ Contains services which are reused by Cloud Paks.
 
 More info available in official docs at https://www.ibm.com/docs/en/cpfs.
 
-- Monitoring - Contains Grafana instance for custom dashboarding.
 - License metering - Tracks license usage. License Reporter as Web UI is also installed.
 - IAM - Provides Identity and Access management.
 - Health Checking - Enables you to generate MusthGather output which is useful for support.
@@ -486,6 +486,9 @@ data:
 
     ## Set to false if you don't want to install (or remove) DB2 Management Console
     db2mc_enabled: true
+
+    ## Set to false if you don't want to install (or remove) pgAdmin (PostgreSQL UI)
+    pgadmin_enabled: true
 
     ## Set to false if you don't want to install (or remove) Roundcube
     roundcube_enabled: true
