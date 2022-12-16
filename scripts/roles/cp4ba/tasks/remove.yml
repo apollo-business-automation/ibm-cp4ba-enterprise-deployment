@@ -208,7 +208,7 @@
     common_db2_hostname: "{{ cp4ba_db2_hostname }}"
     common_user: "{{ cp4ba_db2mc_admin_user }}"
   with_items:
-    - CP4BA
+    - BASE
     - TENANT1
     - TENANT2
   when: db2mc_enabled
@@ -222,28 +222,12 @@
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
     common_db2_user: "{{ item }}"
   with_items:
-    - icndb
-    - pb
-    - bas
-    - odm
-    - gcd
-    - os1
-    - aae
-    - aeos
     - base
-    - devos1
-    - badocs
-    - batos
-    - bados
-    - bawaut
-    - ch
-    - fpos
-    - ros
 
-- name: Remove DBs
+- name: Remove DB2 DBs
   ansible.builtin.include_role:
     name: common
-    tasks_from: remove-db
+    tasks_from: remove-db2-db
   vars:
     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
@@ -251,7 +235,78 @@
   with_items:
     - TENANT1
     - TENANT2
-    - CP4BA
+    - BASE
+
+- name: Remove PostgreSQL DBs
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: remove-postgresql-db
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_postgresql_db_name: "{{ item }}"
+  with_items:
+    - aeos
+    - aae
+    - devos1
+    - icndb
+    - pb
+    - bas
+    - badocs
+    - batos
+    - bados
+    - ch
+    - gcd
+    - os1
+    - fpos
+    - ros
+    - odm
+
+- name: Remove PostgreSQL tablespaces
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: remove-postgresql-tablespace
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_postgresql_tablespace: "{{ item }}"
+  with_items:
+    - aeos
+    - devos1
+    - icndb
+    - badocs
+    - batos
+    - bados
+    - ch
+    - gcd
+    - os1
+    - fpos
+    - ros
+
+- name: Remove PostgreSQL users
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: remove-postgresql-user
+  vars:
+    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
+    common_postgresql_user: "{{ item }}"
+  with_items:
+    - aeos
+    - aae
+    - devos1
+    - icndb
+    - pb
+    - bas
+    - badocs
+    - batos
+    - bados
+    - ch
+    - gcd
+    - os1
+    - fpos
+    - ros
+    - odm
 
 - name: Remove post-deploy.md Config Map
   kubernetes.core.k8s:

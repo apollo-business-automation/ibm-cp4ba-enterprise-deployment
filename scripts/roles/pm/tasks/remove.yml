@@ -67,84 +67,39 @@
     - ibm-cloud-databases-redis-operator-catalog
     - ibm-db2uoperator-catalog
 
-- name: Get DB2 Pod
-  kubernetes.core.k8s_info:
-    api_key: "{{ pm_k8s_api_key | default(omit) }}"
-    host: "{{ pm_k8s_host | default(omit) }}"
-    api_version: v1
-    kind: Pod
-    namespace: db2
-    label_selectors:
-      - component=db2oltp
-  register: pods
-  retries: 40
-  delay: 15
+- name: Remove DB connections from DB2MC
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: remove-db2mc-connection
+  vars:
+    common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
+    common_db2_db_name: "{{ item }}"
+    common_password: "{{ pm_db2mc_universal_password }}"
+    common_output_directory: "{{ pm_output_directory }}"
+    common_db2_hostname: "{{ pm_db2_hostname }}"
+    common_user: "{{ pm_db2mc_admin_user }}"
+  with_items:
+    - PM
+  when: db2mc_enabled
 
-- name: Delete Db2 for IPM
-  block:
+- name: Remove DB2 users
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: remove-db2-user
+  vars:
+    common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
+    common_db2_user: pm
 
-    - name: Connect to DB
-      kubernetes.core.k8s_exec:
-        api_key: "{{ pm_k8s_api_key | default(omit) }}"
-        host: "{{ pm_k8s_host | default(omit) }}"
-        namespace: db2
-        pod: "{{ pods.resources[0].metadata.name }}"
-        command: >
-          su - db2inst1 -s /usr/bin/bash -c "
-          db2 connect to CP4BA;
-          "
-      register: db_connect_status
-      ignore_errors: true
-
-    - name: Delete pm db2
-      block:
-
-        - name: Delete Tablespaces
-          kubernetes.core.k8s_exec:
-            api_key: "{{ pm_k8s_api_key | default(omit) }}"
-            host: "{{ pm_k8s_host | default(omit) }}"
-            namespace: db2
-            pod: "{{ pods.resources[0].metadata.name }}"
-            command: >
-              su - db2inst1 -s /usr/bin/bash -c "
-              db2 connect to CP4BA;
-              db2 DROP TABLESPACE {{ item }};
-              "
-          register: command_status
-          failed_when: command_status.rc != 0 and command_status.stdout is not search('.*\"'+item+'\" is an undefined name.*')
-          with_items:
-            - PM_TS
-            - PM_TEMP_TS
-            - PM_SYSTMP_TS
-
-        - name: Delete Schema
-          kubernetes.core.k8s_exec:
-            api_key: "{{ pm_k8s_api_key | default(omit) }}"
-            host: "{{ pm_k8s_host | default(omit) }}"
-            namespace: db2
-            pod: "{{ pods.resources[0].metadata.name }}"
-            command: >
-              su - db2inst1 -s /usr/bin/bash -c "
-              db2 connect to CP4BA;
-              db2 \"CALL SYSPROC.ADMIN_DROP_SCHEMA('PM', NULL, 'ERRORSCHEMA', 'ERRORTABLE')\";
-              "
-          retries: 10
-          delay: 2
-          register: command_status
-          failed_when: command_status.rc != 0 and command_status.stdout is not search('.*-601:CREATE TABLE.*')
-
-        - name: Remove DB2 user
-          ansible.builtin.include_role:
-            name: common
-            tasks_from: remove-db2-user
-          vars:
-            common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
-            common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
-            common_db2_user: pm
-
-      when: (db_connect_status.rc == 0)
-
-  when: (pods.resources | length != 0)
+- name: Remove DB2 DBs
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: remove-db2-db
+  vars:
+    common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
+    common_db2_db_name: PM
 
 - name: Get Mongo DB pod
   kubernetes.core.k8s_info:

@@ -1,69 +1,100 @@
-- name: Add DB2 users
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: add-db2-user
-  vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_db2_user: "{{ item }}"
-    common_db2_password: "{{ cp4ba_db2_universal_password }}"
-  with_items:
-    - gcd
-    - os1
-
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=manager-preparing-databases
-- name: Set DB2_WORKLOAD
-  kubernetes.core.k8s_exec:
+- name: Get postgresql pod
+  kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: db2
-    pod: c-db2ucluster-db2u-0
-    command: >
-      su - db2inst1 -s /usr/bin/bash -c "
-      db2set DB2_WORKLOAD=FILENET_CM;
-      "
-  register: command_status
+    api_version: v1
+    kind: Pod
+    namespace: postgresql
+    label_selectors:
+      - app=postgresql
+  register: postgresql_pod
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=manager-preparing-databases
 # Based on https://www.ibm.com/docs/en/filenet-p8-platform/latest?topic=vtdluwiifp-creating-db2-database-table-space-content-platform-engine-gcd
+- name: GCD DB prepare tablespace
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: mkdir /pgsqldata/gcd
+  register: command_status
+  failed_when: command_status.rc != 0 and command_status.stderr is not search('.*File exists*')
+
+- name: GCD DB prepare tablespace permissions
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: chown postgres:postgres /pgsqldata/gcd
+  register: command_status
+
 - name: GCD DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: db2
-    pod: c-db2ucluster-db2u-0
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
     command: >
-      su - db2inst1 -s /usr/bin/bash -c "
-      db2 CONNECT TO CP4BA;
-      db2 CREATE LARGE TABLESPACE GCD_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE USER TEMPORARY TABLESPACE GCD_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE SYSTEM TEMPORARY TABLESPACE GCD_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      bash -c "
+        psql postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:5432/postgres <<-EOF
+        -- create user gcd
+        CREATE ROLE gcd WITH INHERIT LOGIN ENCRYPTED PASSWORD '{{ cp4ba_postgresql_universal_password }}';
 
-      db2 GRANT DBADM ON DATABASE TO user gcd;
-      db2 GRANT USE OF TABLESPACE GCD_TS TO user gcd;
-      db2 GRANT USE OF TABLESPACE GCD_TEMP_TS TO user gcd;
-      db2 CONNECT RESET;
-      "
+        -- create database gcd
+        create database gcd owner gcd template template0 encoding UTF8 ;
+        revoke connect on database gcd from public;
+        grant all privileges on database gcd to gcd;
+        grant connect, temp, create on database gcd to gcd;
+
+        -- please modify location follow your requirement
+        create tablespace gcd_tbs owner gcd location '/pgsqldata/gcd';
+        grant create on tablespace gcd_tbs to gcd;
+      EOF"
   register: command_status
 
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=manager-preparing-databases
 # Based on https://www.ibm.com/docs/en/filenet-p8-platform/latest?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+- name: OS1 DB prepare tablespace
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: mkdir /pgsqldata/os1
+  register: command_status
+  failed_when: command_status.rc != 0 and command_status.stderr is not search('.*File exists*')
+
+- name: OS1 DB prepare tablespace permissions
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: chown postgres:postgres /pgsqldata/os1
+  register: command_status
+
 - name: OS1 DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: db2
-    pod: c-db2ucluster-db2u-0
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
     command: >
-      su - db2inst1 -s /usr/bin/bash -c "
-      db2 CONNECT TO CP4BA;
-      db2 CREATE LARGE TABLESPACE OS1_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE USER TEMPORARY TABLESPACE OS1_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE SYSTEM TEMPORARY TABLESPACE OS1_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      bash -c "
+        psql postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:5432/postgres <<-EOF
+        -- create user os1
+        CREATE ROLE os1 WITH INHERIT LOGIN ENCRYPTED PASSWORD '{{ cp4ba_postgresql_universal_password }}';
 
-      db2 GRANT DBADM ON DATABASE TO user os1;
-      db2 GRANT USE OF TABLESPACE OS1_TS TO user os1;
-      db2 GRANT USE OF TABLESPACE OS1_TEMP_TS TO user os1;
-      db2 CONNECT RESET;
-      "
+        -- create database os1
+        create database os1 owner os1 template template0 encoding UTF8 ;
+        revoke connect on database os1 from public;
+        grant all privileges on database os1 to os1;
+        grant connect, temp, create on database os1 to os1;
+
+        -- please modify location follow your requirement
+        create tablespace os1_tbs owner os1 location '/pgsqldata/os1';
+        grant create on tablespace os1_tbs to os1;
+      EOF"
   register: command_status

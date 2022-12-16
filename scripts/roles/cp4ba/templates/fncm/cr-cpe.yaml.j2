@@ -1,20 +1,20 @@
 spec:
   datasource_configuration:
     dc_gcd_datasource:
-      dc_database_type: db2
+      dc_database_type: postgresql
       dc_common_gcd_datasource_name: GCD
       dc_common_gcd_xa_datasource_name: GCDXA
-      database_servername: "{{ cp4ba_db2_hostname }}"
-      database_name: CP4BA
-      database_port: "50000"
+      database_servername: "{{ cp4ba_postgresql_hostname }}"
+      database_name: gcd
+      database_port: "5432"
     dc_os_datasources:
-      - dc_database_type: db2
+      - dc_database_type: postgresql
         dc_os_label: os1
         dc_common_os_datasource_name: OS1
         dc_common_os_xa_datasource_name: OS1XA
-        database_servername: "{{ cp4ba_db2_hostname }}"
-        database_name: CP4BA
-        database_port: "50000"
+        database_servername: "{{ cp4ba_postgresql_hostname }}"
+        database_name: os1
+        database_port: "5432"
   ecm_configuration:
     fncm_secret_name: ibm-fncm-secret
     cpe:

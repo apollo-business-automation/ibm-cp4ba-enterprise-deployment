@@ -14,8 +14,7 @@
     common_db2_user: pm
     common_db2_password: "{{ pm_db2_password }}"
 
-# This counts on CP4BA database created during CP4BA deployment making this part not standalone
-- name: Create & configure PM Schema
+- name: Create PM DB
   kubernetes.core.k8s_exec:
     api_key: "{{ pm_k8s_api_key | default(omit) }}"
     host: "{{ pm_k8s_host | default(omit) }}"
@@ -23,17 +22,28 @@
     pod: c-db2ucluster-db2u-0
     command: >
       su - db2inst1 -s /usr/bin/bash -c "
-      db2 CONNECT TO CP4BA;
-      db2 CREATE REGULAR TABLESPACE PM_TS PAGESIZE 32 K BUFFERPOOL PM_BP_32K;
-      db2 CREATE USER TEMPORARY TABLESPACE PM_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL PM_BP_32K;
-      db2 CREATE SYSTEM TEMPORARY TABLESPACE PM_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL PM_BP_32K;
-
-      db2 GRANT DBADM ON DATABASE TO user pm;
-      db2 GRANT USE OF TABLESPACE PM_TS TO user pm;
-      db2 GRANT USE OF TABLESPACE PM_TEMP_TS TO user pm;
+      db2 CREATE DATABASE PM AUTOMATIC STORAGE YES USING CODESET UTF-8 TERRITORY DEFAULT COLLATE USING SYSTEM PAGESIZE 32768;
+      db2 CONNECT TO PM;
+      db2 GRANT CONNECT,DATAACCESS ON DATABASE TO USER pm;
+      db2 GRANT USE OF TABLESPACE USERSPACE1 TO USER pm;
       db2 CONNECT RESET;
       "
   register: command_status
+
+- name: Add DB connections to DB2MC
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: add-db2mc-connection
+  vars:
+    common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
+    common_db2_db_name: PM
+    common_user: "{{ pm_db2mc_admin_user }}"
+    common_password: "{{ pm_db2mc_universal_password }}"
+    common_output_directory: "{{ pm_output_directory }}"
+    common_db2_hostname: "{{ pm_db2_hostname }}"
+    common_db2_password: "{{ pm_db2_password }}"
+  when: db2mc_enabled
 
 - name: Get Mongo DB pod
   kubernetes.core.k8s_info:

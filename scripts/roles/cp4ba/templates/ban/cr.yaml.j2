@@ -1,11 +1,11 @@
 spec:
   datasource_configuration:
     dc_icn_datasource:
-      dc_database_type: db2
+      dc_database_type: postgresql
       dc_common_icn_datasource_name: ECMClientDS
-      database_servername: "{{ cp4ba_db2_hostname }}"
-      database_port: "50000"
-      database_name: CP4BA
+      database_servername: "{{ cp4ba_postgresql_hostname }}"
+      database_port: "5432"
+      database_name: icndb
   navigator_configuration:
     ban_secret_name: ibm-ban-secret
     replica_count: 1

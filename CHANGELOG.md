@@ -15,7 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Updated CP4BA to 22.0.2.
 - Updated RPA to 23.0.0.
-- Default domain fro users/emails changed from cp.local to cp.internal as .local has other special meaning and should not be used.
+- Default domain for users/emails changed from cp.local to cp.internal as .local has other special meaning and should not be used.
+- Non ADP databases switched from DB2 to PostgreSQL.
+- Separate DB2 DB for ADP Base is created.
+- Separate DB2 DB for IPM Task Mining is created.
 
 ### Fixed
 

@@ -40,11 +40,12 @@
 - name: Install DB2
   ansible.builtin.include_role:
     name: db2
+  when: cp4ba_config.deployment_patterns.document_processing or pm_enabled
 
 - name: Install DB2MC
   ansible.builtin.include_role:
     name: db2mc
-  when: db2mc_enabled
+  when: (cp4ba_config.deployment_patterns.document_processing or pm_enabled) and db2mc_enabled
 
 - name: Install PostgreSQL
   ansible.builtin.include_role:

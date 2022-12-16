@@ -1,61 +1,60 @@
-- name: Add DB2 users
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: add-db2-user
-  vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_db2_user: odm
-    common_db2_password: "{{ cp4ba_db2_universal_password }}"
-
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=manager-configuring-external-database
+- name: Get postgresql pod
+  kubernetes.core.k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: postgresql
+    label_selectors:
+      - app=postgresql
+  register: postgresql_pod
+
 - name: ODM DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: db2
-    pod: c-db2ucluster-db2u-0
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
     command: >
-      su - db2inst1 -s /usr/bin/bash -c "
-      db2 CONNECT TO CP4BA;
-      db2 CREATE REGULAR TABLESPACE ODM_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE USER TEMPORARY TABLESPACE ODM_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE SYSTEM TEMPORARY TABLESPACE ODM_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE TABLESPACE RESDWTS PAGESIZE 32K BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE SYSTEM TEMPORARY TABLESPACE RESDWTMPTS PAGESIZE 32K BUFFERPOOL CP4BA_BP_32K;
+      bash -c "
+        psql postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:5432/postgres <<-EOF
+        -- create user odm
+        CREATE ROLE odm WITH INHERIT LOGIN ENCRYPTED PASSWORD '{{ cp4ba_postgresql_universal_password }}';
 
-      db2 GRANT DBADM ON DATABASE TO user odm;
-      db2 GRANT USE OF TABLESPACE ODM_TS TO user odm;
-      db2 GRANT USE OF TABLESPACE ODM_TEMP_TS TO user odm;
-      db2 GRANT USE OF TABLESPACE RESDWTS TO user odm;
+        -- create database odm
+        create database odm owner odm template template0 encoding UTF8 ;
+        revoke connect on database odm from public;
+        grant all privileges on database odm to odm;
+        grant connect, temp, create on database odm to odm;
 
-      db2 'CREATE TABLE odm.EXECUTION_TRACES (
-        ID INT GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) NOT NULL,
-        TIME_STAMP BIGINT,
-        LOCATION VARCHAR(2000),
-        REQUEST_PATH VARCHAR(2000) NOT NULL,
-        CANONICAL_PATH VARCHAR(2000) NOT NULL,
-        RULESET_PROPERTIES CLOB(1G),
-        ELAPSED_TIME BIGINT,
-        USER_DATA CLOB(1G),
-        NB_RULES INT,
-        NB_RULES_FIRED INT,
-        NB_RULES_NOT_FIRED INT,
-        NB_TASKS INT,
-        NB_TASKS_EXECUTED INT,
-        NB_TASKS_NOT_EXECUTED INT,
-        RULES CLOB(1G),
-        TASKS CLOB(1G),
-        EXECUTION_TRACE_TREE CLOB(1G),
-        EXEC_OUTPUT CLOB(1G),
-        INPUT_PARAMS CLOB(1G),
-        OUTPUT_PARAMS CLOB(1G),
-        EXECUTION_ID VARCHAR(255) NOT NULL,
-        FULL_EXECUTION_TRACE CLOB(1G),
-        CONSTRAINT ET_PK PRIMARY KEY (ID),
-        CONSTRAINT EID_UNQ UNIQUE (EXECUTION_ID)
-      ) IN RESDWTS;';
-      echo 'This is fixing the shell premature exist - do not remove';
-      db2 CONNECT RESET;
-      "
+        -- Add table for Execution traces
+        \c bas;
+        CREATE TABLE EXECUTION_TRACES (
+          ID SERIAL8,
+          TIME_STAMP INT8,
+          LOCATION VARCHAR(2000),
+          REQUEST_PATH VARCHAR(2000) NOT NULL,
+          CANONICAL_PATH VARCHAR(2000) NOT NULL,
+          RULESET_PROPERTIES text,
+          ELAPSED_TIME INT8,
+          USER_DATA text,
+          NB_RULES INT,
+          NB_RULES_FIRED INT,
+          NB_RULES_NOT_FIRED INT,
+          NB_TASKS INT,
+          NB_TASKS_EXECUTED INT,
+          NB_TASKS_NOT_EXECUTED INT,
+          RULES text,
+          TASKS text,
+          EXECUTION_TRACE_TREE text,
+          EXEC_OUTPUT text,
+          INPUT_PARAMS text,
+          OUTPUT_PARAMS text,
+          EXECUTION_ID VARCHAR(255) NOT NULL,
+          FULL_EXECUTION_TRACE text,
+          CONSTRAINT ET_PK PRIMARY KEY (ID),
+          CONSTRAINT EID_UNQ UNIQUE (EXECUTION_ID)
+        );
+      EOF"
   register: command_status

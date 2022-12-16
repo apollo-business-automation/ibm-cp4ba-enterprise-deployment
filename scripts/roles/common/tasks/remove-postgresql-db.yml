@@ -1,0 +1,35 @@
+# Example of the functionality call
+#
+# - name: Remove PostgreSQL DB
+#   ansible.builtin.include_role:
+#     name: common
+#     tasks_from: remove-postgresql-db
+#   vars:
+#     common_k8s_api_key: "{{ prefix_k8s_api_key | default(omit) }}"
+#     common_k8s_host: "{{ prefix_k8s_host | default(omit) }}"
+#     common_postgresql_db_name: _postgresql_db_name
+
+- name: Get postgresql pod
+  kubernetes.core.k8s_info:
+    api_key: "{{ common_k8s_api_key | default(omit) }}"
+    host: "{{ common_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: postgresql
+    label_selectors:
+      - app=postgresql
+  register: postgresql_pod
+
+- name: Delete PostgreSQL DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ common_k8s_api_key | default(omit) }}"
+    host: "{{ common_k8s_host | default(omit) }}"
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: >
+      bash -c "
+        psql postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:5432/postgres <<-EOF
+        DROP DATABASE IF EXISTS {{ common_postgresql_db_name }} WITH (FORCE);
+      EOF"
+  register: command_status
+  when: postgresql_pod.resources | length != 0

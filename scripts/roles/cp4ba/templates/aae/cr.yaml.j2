@@ -7,10 +7,10 @@ spec:
       autoscaling:
         enabled: false
       database:
-        host: "{{ cp4ba_db2_hostname }}"
-        name: CP4BA
-        port: "50000"
-        current_schema: AAE
+        host: "{{ cp4ba_postgresql_hostname }}"
+        name: aae
+        port: "5432"
+        type: postgresql
       data_persistence:
         enable: "{{ aae_data_persistence | default(false) }}"
         object_store_name: AEOS
