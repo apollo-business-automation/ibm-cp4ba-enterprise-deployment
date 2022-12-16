@@ -625,7 +625,6 @@
     common_retries: 36
     common_delay: 300
   with_items:
-    - "{{ cp4ba_cr_meta_name }}-callerapi"
     - "{{ cp4ba_cr_meta_name }}-classifyprocess-classify"
     - "{{ cp4ba_cr_meta_name }}-deep-learning"
     - "{{ cp4ba_cr_meta_name }}-natural-language-extractor"
@@ -634,7 +633,7 @@
     - "{{ cp4ba_cr_meta_name }}-processing-extraction"
     - "{{ cp4ba_cr_meta_name }}-setup"
     - "{{ cp4ba_cr_meta_name }}-spbackend"
-    - "{{ cp4ba_cr_meta_name }}-updatefiledetail"
+    - "{{ cp4ba_cr_meta_name }}-str-extraction"
   when: cp4ba_config.deployment_patterns.document_processing
 
 - name: Wait for BAI InsightsEngine Ready state
@@ -700,40 +699,6 @@
     common_retries: 60
     common_delay: 120
   when: cp4ba_config.deployment_patterns.workflow
-
-- name: Wait for {{ cp4ba_cr_meta_name }}-workflow-authoring-baw-jms StatefulSet ready replicas
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: wait-resource-condition-generic
-  vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_api_version: apps/v1
-    common_resource_kind: StatefulSet
-    common_resource_name: "{{ cp4ba_cr_meta_name }}-workflow-authoring-baw-jms"
-    common_resource_namespace: "{{ cp4ba_project_name }}"
-    common_condition_query: resources[*].status.readyReplicas
-    common_condition_value: 1
-    common_retries: 60
-    common_delay: 120
-  when: cp4ba_config.deployment_patterns.workflow and cp4ba_config.optional_components.baw_authoring
-
-- name: Wait for {{ cp4ba_cr_meta_name }}-workflow-authoring-baw-server StatefulSet ready replicas
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: wait-resource-condition-generic
-  vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_api_version: apps/v1
-    common_resource_kind: StatefulSet
-    common_resource_name: "{{ cp4ba_cr_meta_name }}-workflow-authoring-baw-server"
-    common_resource_namespace: "{{ cp4ba_project_name }}"
-    common_condition_query: resources[*].status.readyReplicas
-    common_condition_value: 1
-    common_retries: 60
-    common_delay: 120
-  when: cp4ba_config.deployment_patterns.workflow and cp4ba_config.optional_components.baw_authoring
 
 - name: Deployment wait list
   ansible.builtin.set_fact:
