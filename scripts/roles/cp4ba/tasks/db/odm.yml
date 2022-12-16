@@ -27,34 +27,5 @@
         revoke connect on database odm from public;
         grant all privileges on database odm to odm;
         grant connect, temp, create on database odm to odm;
-
-        -- Add table for Execution traces
-        \c bas;
-        CREATE TABLE EXECUTION_TRACES (
-          ID SERIAL8,
-          TIME_STAMP INT8,
-          LOCATION VARCHAR(2000),
-          REQUEST_PATH VARCHAR(2000) NOT NULL,
-          CANONICAL_PATH VARCHAR(2000) NOT NULL,
-          RULESET_PROPERTIES text,
-          ELAPSED_TIME INT8,
-          USER_DATA text,
-          NB_RULES INT,
-          NB_RULES_FIRED INT,
-          NB_RULES_NOT_FIRED INT,
-          NB_TASKS INT,
-          NB_TASKS_EXECUTED INT,
-          NB_TASKS_NOT_EXECUTED INT,
-          RULES text,
-          TASKS text,
-          EXECUTION_TRACE_TREE text,
-          EXEC_OUTPUT text,
-          INPUT_PARAMS text,
-          OUTPUT_PARAMS text,
-          EXECUTION_ID VARCHAR(255) NOT NULL,
-          FULL_EXECUTION_TRACE text,
-          CONSTRAINT ET_PK PRIMARY KEY (ID),
-          CONSTRAINT EID_UNQ UNIQUE (EXECUTION_ID)
-        );
       EOF"
   register: command_status
