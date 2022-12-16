@@ -181,7 +181,6 @@
     - ibm-cp4a-operator-catalog
     - ibm-cp-automation-foundation-catalog
     - ibm-automation-foundation-core-catalog
-    - opencloud-operators
 
 - name: Remove Project cp4ba
   kubernetes.core.k8s:
