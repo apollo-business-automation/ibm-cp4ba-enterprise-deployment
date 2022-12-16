@@ -1,11 +1,5 @@
 # Based on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=foundation-robotic-process-automation
 
-- name: Create RPA directory for generated files
-  ansible.builtin.file:
-    path: "{{ rpa_output_directory }}"
-    state: directory
-    mode: u+rwx
-
 - name: Get OCP Apps domain
   ansible.builtin.include_role:
     name: common
