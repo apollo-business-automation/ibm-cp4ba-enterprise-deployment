@@ -574,12 +574,12 @@ As PostgreSQL database storage for the platform.
 
 #### Credentials
 
-- {{ lc_bind_admin_user }} / {{ universal_password }}
+- {{ lc_principal_admin_user }} / {{ universal_password }}
 
 #### CLI in container
 
 ```bash
-psql postgresql://{{ lc_bind_admin_user }}:{{ universal_password }}@localhost:5432/postgres
+psql postgresql://{{ lc_principal_admin_user }}:{{ universal_password }}@localhost:5432/postgres
 ```
 
 {% if openldap_enabled == true %}
