@@ -61,10 +61,6 @@ Deployment of other parts is also based on respective official documentations.
 
 ## General information 📢
 
-Result of this Production deployment is not fully supported:
-- For convenience, it contains OpenLDAP as a directory provider which is not supported - in real deployments this needs to be replaced with a supported directory provider
-- For convenience and lower resource consumption, it uses one containerized DB2 database and schemas for majority of required DBs - in real deployments a supported DB option described on "[Compatibility matrix](https://www.ibm.com/software/reports/compatibility/clarity-reports/report/html/softwareReqsForProduct?deliverableId=71C22290D7DB11EBAA175CFD3E629A2A&osPlatforms=Linux%7CMac%20OS%7CWindows&duComponentIds=D010%7CD009%7CD011%7CS015%7CS014%7CS013%7CC027%7CC032%7CC017%7CC024%7CC023%7CC029%7CC018%7CC021%7CC022%7CC030%7CC028%7CC020%7CC025%7CC031%7CC016%7CC034%7CC019%7CC026&mandatoryCapIds=71%7C26&optionalCapIds=134%7C62%7C127%7C9%7C401%7C132%7C20%7C161) > Supported Software > Databases" would be used
-
 What is not included:
 - ICCs - not covered.
 - Caution! FNCM External share - Currently not supported with ZEN & IAM as per limitation on [FNCM limitations](https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=notes-known-limitations-issues#concept_gmf_x1h_1fb__ecm)
