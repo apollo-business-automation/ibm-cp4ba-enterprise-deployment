@@ -86,7 +86,7 @@
 
 - name: Remove PostgreSQL
   ansible.builtin.include_role:
-    name: postgresql_action
+    name: postgresql
 
 - name: Remove DB2MC
   ansible.builtin.include_role:
