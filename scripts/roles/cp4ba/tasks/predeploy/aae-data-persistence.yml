@@ -13,4 +13,4 @@
     definition:
       data:
         aeosDBUsername: "{{ 'aeos' | b64encode }}"
-        aeosDBPassword: "{{ cp4ba_db2_universal_password | b64encode }}"
+        aeosDBPassword: "{{ cp4ba_postgresql_universal_password | b64encode }}"

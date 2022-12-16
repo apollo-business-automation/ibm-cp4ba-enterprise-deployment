@@ -26,4 +26,4 @@
     definition:
       data:
         devos1DBUsername: "{{ 'devos1' | b64encode }}"
-        devos1DBPassword: "{{ cp4ba_db2_universal_password | b64encode }}"
+        devos1DBPassword: "{{ cp4ba_postgresql_universal_password | b64encode }}"

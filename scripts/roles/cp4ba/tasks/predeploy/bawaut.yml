@@ -11,7 +11,7 @@
     definition: |
       data:
         {{ item }}DBUsername: {{ item | b64encode }}
-        {{ item }}DBPassword: {{ cp4ba_db2_universal_password | b64encode }}
+        {{ item }}DBPassword: {{ cp4ba_postgresql_universal_password | b64encode }}
   with_items:
     - badocs
     - batos
