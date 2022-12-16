@@ -45,8 +45,6 @@ spec:
       db_secret: ca-basedb
       rabbitmq:
         replica_count: 2
-    caller_api:
-      replica_count: 1
     spbackend:
       replica_count: 1
     postprocessing:
@@ -58,8 +56,6 @@ spec:
     classifyprocess:
       replica_count: 1
     processingextraction:
-      replica_count: 1
-    updatefiledetail:
       replica_count: 1
     naturallanguageextractor:
       replica_count: 1
