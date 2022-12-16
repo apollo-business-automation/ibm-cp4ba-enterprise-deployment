@@ -17,7 +17,9 @@ spec:
         - name: postgresql
           args:
             - '-c'
-            - max_prepared_transactions=200        
+            - max_prepared_transactions=500
+            - '-c'
+            - max_connections=500
           resources:
             limits:
               memory: 4Gi
