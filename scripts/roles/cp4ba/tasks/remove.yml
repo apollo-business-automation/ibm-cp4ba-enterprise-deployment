@@ -268,7 +268,7 @@
   vars:
     common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_postgresql_tablespace: "{{ item }}"
+    common_postgresql_tablespace_name: "{{ item }}"
   with_items:
     - aeos
     - devos1
