@@ -94,8 +94,8 @@
         grant connect, temp, create on database batos to batos;
 
         -- please modify location follow your requirement
-        create tablespace bawtos_tbs owner batos location '/pgsqldata/batos';
-        grant create on tablespace bawtos_tbs to batos;
+        create tablespace batos_tbs owner batos location '/pgsqldata/batos';
+        grant create on tablespace batos_tbs to batos;
       EOF"
   register: command_status
 
