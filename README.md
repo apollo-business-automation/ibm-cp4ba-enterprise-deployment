@@ -38,7 +38,7 @@ Please do not hesitate to create an issue here if needed. Your feedback is appre
 
 ## Documentation base 📝
 
-Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1.
+Deploying CP4BA is based on official documentation which is located at https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest.
 
 Deployment of other parts is also based on respective official documentations.
 

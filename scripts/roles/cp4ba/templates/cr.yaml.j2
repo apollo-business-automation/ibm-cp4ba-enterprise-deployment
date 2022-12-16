@@ -64,6 +64,10 @@ spec:
     ad:
       lc_user_filter: "{{ lc_ad_user_filter }}"
       lc_group_filter: "{{ lc_ad_group_filter }}"
+{% elif 'Custom' in lc_selected_ldap_type %}
+    custom:
+      lc_user_filter: "{{ lc_custom_user_filter }}"
+      lc_group_filter: "{{ lc_custom_group_filter }}"
 {% endif %}
   datasource_configuration:
     dc_ssl_enabled: false
