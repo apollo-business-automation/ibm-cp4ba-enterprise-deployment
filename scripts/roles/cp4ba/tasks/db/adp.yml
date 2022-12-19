@@ -142,7 +142,7 @@
         grant connect, temp, create on database devos1 to devos1;
 
         -- please modify location follow your requirement
-        create tablespace devos1 owner devos1 location '/pgsqldata/devos1';
+        create tablespace devos1_tbs owner devos1 location '/pgsqldata/devos1';
         grant create on tablespace devos1_tbs to devos1;
       EOF"
   register: command_status
