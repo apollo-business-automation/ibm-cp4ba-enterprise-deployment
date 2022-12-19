@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - PostgreSQL deployment.
 - pgAdmin for PostgreSQl UI administration.
+- Configuration for PM redis installation.
 
 ### Changed
 
@@ -20,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Non ADP databases switched from DB2 to PostgreSQL.
 - Separate DB2 DB for ADP Base is created.
 - Separate DB2 DB for IPM Task Mining is created.
+- Enabled RPA NLP by default.
 
 ### Fixed
 

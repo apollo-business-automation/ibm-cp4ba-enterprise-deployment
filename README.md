@@ -461,9 +461,19 @@ data:
     # Contents of the following will be merged into RPA CR yaml file. Arrays are overwriten.
     rpa_cr_custom:
       spec:
-        # Configures the NLP provider component of IBM RPA. Set atleast to 1 to enable it. https://www.ibm.com/docs/en/rpa/21.0?topic=platform-configuring-rpa-custom-resources#basic-setup
+        # Configures the NLP provider component of IBM RPA. You can disable it by specifying 0. https://www.ibm.com/docs/en/rpa/21.0?topic=platform-configuring-rpa-custom-resources#basic-setup
         nlp:
-          replicas: 0
+          replicas: 1
+    
+    # Additional customization for Process Mining
+    # Contents of the following will be merged into PM CR yaml file. Arrays are overwriten.
+    pm_cr_custom:
+      spec:
+        processmining:
+          storage:
+            # Disables redis to spare resources as per https://www.ibm.com/docs/en/process-mining/1.13.2?topic=configurations-custom-resource-definition
+            redis:
+              install: false
 
     ## Set to false if you don't want to install (or remove) Process Mining
     pm_enabled: true

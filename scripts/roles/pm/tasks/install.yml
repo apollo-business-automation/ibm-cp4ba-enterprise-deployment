@@ -195,9 +195,18 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Prepare yaml file for ProcessMining instance
-  ansible.builtin.template:
-    src: processmining.yaml.j2
+- name: Load PM CR to variable
+  ansible.builtin.set_fact:
+    cr: "{{ lookup('template', 'processmining.yaml.j2') | from_yaml }}"
+
+- name: Merge customizations
+  ansible.builtin.set_fact:
+    cr: "{{ cr | combine(pm_cr_custom | from_yaml, recursive=true) }}"
+  when: pm_cr_custom is defined
+
+- name: Write CR to file
+  ansible.builtin.copy:
+    content: '{{ cr | to_nice_yaml(indent=2, width=1337) }}'
     dest: "{{ pm_output_directory }}/processmining.yaml"
     mode: u+rwx
 
