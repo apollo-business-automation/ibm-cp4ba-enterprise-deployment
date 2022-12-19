@@ -259,7 +259,8 @@
     - os1
     - fpos
     - ros
-    - odm
+    - odmdc
+    - odmres
 
 - name: Remove PostgreSQL tablespaces
   ansible.builtin.include_role:
@@ -305,7 +306,8 @@
     - os1
     - fpos
     - ros
-    - odm
+    - odmdc
+    - odmres
 
 - name: Remove post-deploy.md Config Map
   kubernetes.core.k8s:
