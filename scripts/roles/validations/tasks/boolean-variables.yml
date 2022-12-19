@@ -17,6 +17,8 @@
       value: "{{ cerebro_enabled }}"
     - name: db2mc_enabled
       value: "{{ db2mc_enabled }}"
+    - name: pgadmin_enabled
+      value: "{{ pgadmin_enabled }}"
     - name: roundcube_enabled
       value: "{{ roundcube_enabled }}"
     - name: mongo_express_enabled
