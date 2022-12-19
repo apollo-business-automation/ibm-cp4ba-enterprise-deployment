@@ -1,4 +1,6 @@
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=manager-configuring-external-database
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=manager-targeting-separate-external-databases
+
 - name: Get postgresql pod
   kubernetes.core.k8s_info:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
