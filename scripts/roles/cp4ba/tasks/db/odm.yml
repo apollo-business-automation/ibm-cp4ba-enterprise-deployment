@@ -10,7 +10,7 @@
       - app=postgresql
   register: postgresql_pod
 
-- name: ODM DB
+- name: ODM DC DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
@@ -19,13 +19,33 @@
     command: >
       bash -c "
         psql postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:5432/postgres <<-EOF
-        -- create user odm
-        CREATE ROLE odm WITH INHERIT LOGIN ENCRYPTED PASSWORD '{{ cp4ba_postgresql_universal_password }}';
+        -- create user odmdc
+        CREATE ROLE odmdc WITH INHERIT LOGIN ENCRYPTED PASSWORD '{{ cp4ba_postgresql_universal_password }}';
 
-        -- create database odm
-        create database odm owner odm template template0 encoding UTF8 ;
-        revoke connect on database odm from public;
-        grant all privileges on database odm to odm;
-        grant connect, temp, create on database odm to odm;
+        -- create database odmdc
+        create database odmdc owner odmdc template template0 encoding UTF8 ;
+        revoke connect on database odmdc from public;
+        grant all privileges on database odmdc to odmdc;
+        grant connect, temp, create on database odmdc to odmdc;
+      EOF"
+  register: command_status
+
+- name: ODM RES DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: >
+      bash -c "
+        psql postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:5432/postgres <<-EOF
+        -- create user odmres
+        CREATE ROLE odmres WITH INHERIT LOGIN ENCRYPTED PASSWORD '{{ cp4ba_postgresql_universal_password }}';
+
+        -- create database odmres
+        create database odmres owner odmres template template0 encoding UTF8 ;
+        revoke connect on database odmres from public;
+        grant all privileges on database odmres to odmres;
+        grant connect, temp, create on database odmres to odmres;
       EOF"
   register: command_status
