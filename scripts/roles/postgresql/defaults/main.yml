@@ -3,6 +3,6 @@ postgresql_base_dir: /tmp
 postgresql_dir_name: postgresql
 postgresql_k8s_api_key: ""
 postgresql_k8s_host: ""
-postgresql_image_tag: 13.9-alpine3.17
+postgresql_image_tag: 14.6-alpine3.17
 postgresql_storage_class_name: ""
 postgresql_universal_password: ""
