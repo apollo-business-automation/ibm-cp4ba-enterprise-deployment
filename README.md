@@ -161,45 +161,45 @@ The following picture shows real idle utilization of Nodes with deployed platfor
 The following output shows CPU and Memory requests and limits on Nodes on sample OpenShift with 8 Worker Nodes (16 CPU, 32GB Memory each).
 
 ```text
-node/ocp01-8mdd5-worker-2d7kb
-  Resource           Requests       Limits
-  cpu                11700m (75%)   115210m (743%)
-  memory             25060Mi (80%)  122136Mi (393%)
-
-node/ocp01-8mdd5-worker-6z8f2
-  Resource           Requests       Limits
-  cpu                12098m (78%)   28190m (181%)
-  memory             24848Mi (80%)  47372Mi (152%)
-
-node/ocp01-8mdd5-worker-dmv4w
-  Resource           Requests       Limits
-  cpu                5414m (34%)    5500m (35%)
-  memory             27884Mi (89%)  25344Mi (81%)
-
-node/ocp01-8mdd5-worker-lq6lb
+node/10.126.234.118
   Resource           Requests          Limits
-  cpu                14 (90%)          25100m (161%)
-  memory             22270024Ki (70%)  31217Mi (100%)
+  cpu                8896m (56%)       61800m (389%)
+  memory             18621971Ki (30%)  75921696Ki (126%)
 
-node/ocp01-8mdd5-worker-n4jsq
-  Resource           Requests       Limits
-  cpu                12184m (78%)   39725m (256%)
-  memory             17444Mi (56%)  45562Mi (146%)
+node/10.126.234.120
+  Resource           Requests          Limits
+  cpu                8972m (56%)       33 (207%)
+  memory             18004499Ki (29%)  39627040Ki (65%)
 
-node/ocp01-8mdd5-worker-qxgtf
-  Resource           Requests       Limits
-  cpu                11694m (75%)   72160m (465%)
-  memory             24260Mi (78%)  83588Mi (269%)
+node/10.126.234.123
+  Resource           Requests          Limits
+  cpu                8939m (56%)       34410m (216%)
+  memory             26085907Ki (43%)  57037376716800m (92%)
 
-node/ocp01-8mdd5-worker-tppg6
-  Resource           Requests       Limits
-  cpu                12431m (80%)   86780m (559%)
-  memory             26032Mi (83%)  98525Mi (317%)
+node/10.126.234.88
+  Resource           Requests           Limits
+  cpu                9815m (61%)        48925m (308%)
+  memory             16605715Ki (27%)   56155424Ki (93%)
 
-node/ocp01-8mdd5-worker-zqzbd
-  Resource           Requests       Limits
-  cpu                14307m (92%)   29100m (187%)
-  memory             24286Mi (78%)  39198Mi (126%)
+node/10.127.73.103
+  Resource           Requests          Limits
+  cpu                9575m (60%)       100280m (631%)
+  memory             25315931Ki (42%)  118744352Ki (197%)
+
+node/10.127.73.126
+  Resource           Requests          Limits
+  cpu                9686m (60%)       14840m (93%)
+  memory             14702099Ki (24%)  25485600Ki (42%)
+
+node/10.127.73.85
+  Resource           Requests          Limits
+  cpu                9475m (59%)       20200m (127%)
+  memory             29463059Ki (48%)  51413280Ki (85%)
+
+node/10.127.73.90
+  Resource           Requests          Limits
+  cpu                8030m (50%)       53710m (338%)
+  memory             17379859Ki (28%)  61489440Ki (102%)
 ```
 
 ## Automated post-deployment tasks ✅
