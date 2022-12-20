@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - PostgreSQL deployment.
 - pgAdmin for PostgreSQl UI administration.
 - Configuration for PM redis installation.
+- Extra task manager for flink for external event processing.
 
 ### Changed
 
