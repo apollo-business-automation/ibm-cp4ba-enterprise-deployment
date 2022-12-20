@@ -403,36 +403,6 @@
       - 200
   register: add_team_response
 
-# can import new user, not needed
-# - name: Add lc_principal_admin_user to bot developer team
-#   ansible.builtin.uri:
-#     url: "https://cpd-{{ rpa_project_name }}.{{ apps_endpoint_domain }}/rpa/api/v1.0/en-US/user/import"
-#     method: POST
-#     headers:
-#       Authorization: "Bearer {{ rpa_token }}"
-#     body_format: json
-#     body:
-#       {
-#         "roles": [],
-#         "teams": [
-#           "{{ bot_dev_team_id }}"
-#         ],
-#         "users": [
-#           {
-#             "name": "{{ lc_principal_admin_user }}",
-#             "email": "{{ lc_principal_admin_user }}@{{ lc_ldap_domain }}",
-#             "distinguishedName": "{{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_user_base_dn }}"
-#           }
-#         ]
-#       }
-#     validate_certs: false
-#     return_content: true
-#     status_code:
-#       - 200
-#       - 500
-#   register: import_response
-#   failed_when: team_response.status != 200 and import_response.content is not search('Cannot insert duplicate key row in object')
-
 - name: Create Project
   ansible.builtin.include_role:
     name: common
