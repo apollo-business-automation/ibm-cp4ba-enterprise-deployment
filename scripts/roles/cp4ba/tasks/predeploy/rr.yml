@@ -1,5 +1,5 @@
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=engine-creating-secrets-protect-sensitive-configuration-data
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=studio-creating-secrets-protect-sensitive-configuration-data
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=engine-creating-secrets-protect-sensitive-configuration-data
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=studio-creating-secrets-protect-sensitive-configuration-data
 - name: Prepare yaml file for RR Secret
   ansible.builtin.template:
     src: rr/rr-secret.yaml.j2

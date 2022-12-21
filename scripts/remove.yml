@@ -16,7 +16,7 @@
 
   when: rpa_enabled
 
-# TODO # TODO requires different version of CPFS then CP4BA  - last in 22.0.1.4 and 1.5.2
+# TODO requires some CP4I resources and fails
 # - name: Remove Asset Repo
 #   ansible.builtin.include_role:
 #     name: asset_repo
@@ -79,14 +79,24 @@
     name: openldap
   when: openldap_enabled
 
+- name: Remove pgAdmin
+  ansible.builtin.include_role:
+    name: pgadmin
+  when: pgadmin_enabled
+
+- name: Remove PostgreSQL
+  ansible.builtin.include_role:
+    name: postgresql
+
 - name: Remove DB2MC
   ansible.builtin.include_role:
     name: db2mc
-  when: db2mc_enabled
+  when: (cp4ba_config.deployment_patterns.document_processing or pm_enabled) and db2mc_enabled
 
 - name: Remove DB2
   ansible.builtin.include_role:
     name: db2
+  when: cp4ba_config.deployment_patterns.document_processing or pm_enabled
 
 - name: Remove usage
   ansible.builtin.include_role:

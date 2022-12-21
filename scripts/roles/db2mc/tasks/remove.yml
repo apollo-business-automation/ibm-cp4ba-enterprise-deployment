@@ -13,7 +13,7 @@
 - name: Remove DB
   ansible.builtin.include_role:
     name: common
-    tasks_from: remove-db
+    tasks_from: remove-db2-db
   vars:
     common_k8s_api_key: "{{ db2mc_k8s_api_key | default(omit) }}"
     common_k8s_host: "{{ db2mc_k8s_host | default(omit) }}"

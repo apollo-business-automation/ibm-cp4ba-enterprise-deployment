@@ -21,7 +21,7 @@ As DB2 database management UI.
 
 #### Endpoints
 
-- DB2 Monitoring Console UI: https://db2mc.{{ apps_endpoint_domain }}/console  
+- DB2 Monitoring Console UI: https://db2mc.{{ apps_endpoint_domain }}/console
 - DB2 Monitoring Console REST API docs: https://db2mc.{{ apps_endpoint_domain }}/dbapi/api/index_enterprise.html
 - DB2 Monitoring Console REST API endpoint: https://db2mc.{{ apps_endpoint_domain }}/dbapi/v4
 
@@ -39,7 +39,7 @@ As Git server provider.
 UI: https://gitea.{{ apps_endpoint_domain }}
 OAS: https://gitea.{{ apps_endpoint_domain }}/api/swagger#/
 
-####  Credentials
+#### Credentials
 
 - Credentials you should use: {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 - Initial administrative user credentials: giteaadmin / {{ universal_password }}
@@ -125,7 +125,7 @@ Not exposed outside the cluster.
 
 #### Credentials
 
-- for admin: {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}/ {{ mail_universal_password  }}
+- for admin: {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}/ {{ mail_universal_password }}
 - for user: cpuser@{{ lc_ldap_domain }} / {{ mail_universal_password }}
 
 {% if mongo_express_enabled == true %}
@@ -142,12 +142,28 @@ As UI for MongoDB
 - {{ principal_admin_user }} / {{ universal_password }}
 
 {% endif %}
+
+{% if pgadmin_enabled == true %}
+### pgAdmin
+
+As UI for PostgreSQL
+
+#### Endpoints
+
+- pgAdmin UI: https://pgadmin.{{ apps_endpoint_domain }}
+
+#### Credentials
+
+- UI itself: {{ principal_admin_user }}@{{ lc_ldap_domain }} / {{ universal_password }}
+- CP4BA Instance password: {{ universal_password }}
+
+{% endif %}
 ## CP4BA - CP4BA capabilities
 
 ### Zen service account credentials
 
 Based on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=users-generating-api-keys-authentication  
-If you need to call CP4BA endpoints with ZenApiKey (e. g. for ODM) a service account with username *cpadminservice* has been prepared for you with the generated api key which can be found in *apollo-one-shot* ConfigMap in *zen-api-key* key.
+If you need to call CP4BA endpoints with ZenApiKey (e. g. for ODM) a service account with username *cpadminservice* has been prepared for you with the generated api key which can be found in Project *apollo-one-shot* in ConfigMap *usage* in *zen-api-key* key.
 
 ### Useful info
 
@@ -157,7 +173,6 @@ If you want to investigate the actual ansible code that is running in the operat
 oc cp -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} --no-headers | grep cp4a-operator | awk '{print $1}'`:/opt/ansible/roles cp4ba-ansible-roles
 # Content
 oc cp -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} --no-headers | grep ibm-content-operator | awk '{print $1}'`:/opt/ansible/roles content-ansible-roles
-
 ```
 
 Order of capabilities deployment can be found in operator code in */opt/ansible/roles/icp4a/tasks/main.yml*.
@@ -165,7 +180,6 @@ Order of capabilities deployment can be found in operator code in */opt/ansible/
 To get logs from Operator.
 ```bash
 oc logs deployment/ibm-cp4a-operator > cp4ba-operator.log
-
 ```
 
 In operator log you can search for error using *playbook task failed*.
@@ -175,7 +189,6 @@ Operator loop in cp4ba-operator.log begins with output *TASK [Gathering Facts]*.
 If you want to determine Operator version use the following command.
 ```bash
 oc exec -it -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} | grep ibm-cp4a-operator | awk '{print $1}'` -- cat /opt/ibm/version.txt
-
 ```
 
 {% if cp4ba_config.deployment_patterns.foundation == true %}
@@ -189,7 +202,6 @@ oc exec -it -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} 
 
 ```bash
 etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ universal_password }}" --endpoints=https://{{ cp4ba_project_name }}-dba-rr-client.{{ cp4ba_project_name }}.svc:2379 --insecure-transport=true --cacert="/shared/resources/tls/ca-cert.pem"
-
 ```
 
 ### Business Automation Navigator (BAN) (foundation pattern)
@@ -200,7 +212,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 - Health API: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/jaxrs/api/health
 - Ping: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/ping.jsp
 
-####  Credentials
+#### Credentials
 
 - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 {% endif %}
@@ -212,7 +224,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 
 - Playback AAE Server apps list: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ae-pbk/v2/applications
 
-####  Credentials
+#### Credentials
 
 - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
@@ -227,7 +239,7 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 - Business Performance Center UI in BAN: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=BAI
 - Flink: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bai-flink-ui
 
-####  Credentials
+#### Credentials
 
 - for BAI - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 - for Flink - username: eventprocessing-admin (```oc get secret -n {{ cp4ba_project_name }} $(oc get InsightsEngine -n {{ cp4ba_project_name }} iaf-insights-engine -o jsonpath='{.status.components.flinkUi.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.username}' | base64 -d```) / password: ```oc get secret -n {{ cp4ba_project_name }} $(oc get InsightsEngine -n {{ cp4ba_project_name }} iaf-insights-engine -o jsonpath='{.status.components.flinkUi.endpoints[0].authentication.secret.secretName}') -o jsonpath='{.data.password}' | base64 -d```
@@ -236,33 +248,32 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 
 ```bash
 oc cp -n {{ cp4ba_project_name }} `oc get pod --no-headers -n {{ cp4ba_project_name }} | grep cp4a-operator | awk '{print $1}'`:/tmp/ansible-operator/runner/tmp/bai/templates/bai_all_in_one.yaml bai_all_in_one.yaml
-
 ```
 {% endif %}
 
 {% if cp4ba_config.deployment_patterns.decisions == true %}
 ### Operational Decision Manager (ODM) (decisions pattern)
 
-You may get 400 not authorized error when accessing endpoints. In this case clear cookies and refresh browser.  
+You may get 400 not authorized error when accessing endpoints. In this case clear cookies and refresh browser.
 
 #### Endpoints
 
 - Decision Center UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter
 - Decision Center OAS: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter-api
-- Decision Center remote API jars: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/decision-center-client-api.zip (details on https://www.ibm.com/docs/en/odm/8.11.0?topic=8110-accessing-decision-center-remotely-from-java-client)
-- Decision Center build command API jars: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/buildcommand.zip (details on https://www.ibm.com/docs/en/odm/8.11.0?topic=8110-automating-project-builds-build-command)
-- Decision Center custom data providers API jars: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/decision-center-client-api.zip (details on https://www.ibm.com/docs/en/odm/8.11.0?topic=8110-setting-up-custom-data-providers)
+- Decision Center remote API jars: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/decision-center-client-api.zip (details on https://www.ibm.com/docs/en/odm/latest?topic=8110-accessing-decision-center-remotely-from-java-client)
+- Decision Center build command API jars: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/buildcommand.zip (details on https://www.ibm.com/docs/en/odm/latest?topic=8110-automating-project-builds-build-command)
+- Decision Center custom data providers API jars: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/decision-center-client-api.zip (details on https://www.ibm.com/docs/en/odm/latest?topic=8110-setting-up-custom-data-providers)
 - Decision Center truststore: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/truststore.jks
 - Decision Center OIDC providers: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/decisioncenter/assets/OdmOidcProvidersRD.json
 - Decision Runner UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/DecisionRunner
 - Decision Server Console: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/res
 - Decision Server Runtime: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/odm/DecisionService
 
-####  Credentials
+#### Credentials
 
 - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }} for access through web UIs
 - odmAdmin / {{ universal_password }} who can be used for ODM REST Basic Auth
-- For ODM REST auth with {{ lc_principal_admin_user }} user or other LDAP users, follow guide on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=access-using-zen-api-key-authentication with REST Authoziation header with ZenApiKey type
+- For ODM REST auth with {{ lc_principal_admin_user }} user or other LDAP users, follow guide on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=access-using-zen-api-key-authentication with REST Authoziation header with ZenApiKey type
 
 {% endif %}
 {% if cp4ba_config.deployment_patterns.decisions_ads == true %}
@@ -273,9 +284,9 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 - Administration: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/admin-platform
 - Runtime OAS: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/runtime/api/swagger-ui
 - Runtime OAS JSON file: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/runtime/api/v1/openapi.json
-- Runtime service invocation template: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/runtime/api/v1/deploymentSpaces/embedded/decisions/{decisionId}/operations/{operation}/execute (using ZenApiKey Authentication with Zen token (https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=administering-authorizing-http-requests-by-using-zen-api-key))
+- Runtime service invocation template: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/runtime/api/v1/deploymentSpaces/embedded/decisions/{decisionId}/operations/{operation}/execute (using ZenApiKey Authentication with Zen token (https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=administering-authorizing-http-requests-by-using-zen-api-key))
 
-####  Credentials
+#### Credentials
 
 - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
@@ -288,12 +299,12 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 For external share you need to use ingress prefixed set of endpoints.
 
 - ACCE console UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/acce
-- CPE WSI endpoint: https://cpe-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/wsi/FNCEWS40MTOM (https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/wsi/FNCEWS40MTOM)
+- CPE WSI endpoint: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/wsi/FNCEWS40MTOM (https://cpe-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/wsi/FNCEWS40MTOM)
 - CPE health check: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/P8CE/Health
 - CPE ping page: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/FileNet/Engine
 - PE ping page: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/peengine/IOR/ping
 - PE details page: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/peengine/IOR/admin/help
-- CSS health check: https://cpe-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/P8CE/Health/CBRDashboard (https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/P8CE/Health/CBRDashboard)
+- CSS health check: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/P8CE/Health/CBRDashboard (https://cpe-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/P8CE/Health/CBRDashboard)
 - CMIS definitions UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cmis/openfncmis_wlp
 - CMIS endpoint: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cmis/openfncmis_wlp/services (e.g. for BAW CMIS)
 - GraphiQL UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/content-services-graphql
@@ -309,7 +320,7 @@ For external share you need to use ingress prefixed set of endpoints.
 - IER CPE HTTP URL: http://ierconfig-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/wsi/FNCEWS40MTOM
 - IER application plugin: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ier/EnterpriseRecordsPlugin/IERApplicationPlugin.jar
 
-####  Credentials
+#### Credentials
 
 - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
@@ -334,7 +345,7 @@ If you want FDM to connect to CPE, you need to provide it with Zen certificate. 
 - AAE Server apps list: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ae-instance1/v2/applications
 - AAE API Docs https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ae-instance1/public/apidoc
 
-####  Credentials
+#### Credentials
 
 - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
@@ -344,10 +355,10 @@ If you want FDM to connect to CPE, you need to provide it with Zen certificate. 
 
 #### Endpoints
 
-- CDRA API: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/adp/cdra/cdapi/  
+- CDRA API: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/adp/cdra/cdapi/
 - Content Project Deployment Service: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/adp/cpds/ibm-dba-content-deployment/ (Note: This URL is meant to use with ADP scripts and not to be accessed as is without context root)
 
-####  Credentials
+#### Credentials
 
 - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
@@ -357,19 +368,26 @@ If you want FDM to connect to CPE, you need to provide it with Zen certificate. 
 
 #### Endpoints
 
-- Process Portal: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut/ProcessPortal
-- Process Admin: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut/ProcessAdmin
-- Process Inspector: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut/ProcessInspector
-- OAS REST API: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut/bpm/explorer
-- OAS REST API Operations: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut/bpm/explorer/?url=/bawaut/ops/docs
-- Original REST API: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut/bpmrest-ui
+- Process Portal: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bas/ProcessPortal
+- Process Admin: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bas/ProcessAdmin
+- Process Inspector: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bas/ProcessInspector
+- OAS REST API: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bas/bpm/explorer
+- OAS REST API Operations: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bas/bpm/explorer/?url=/bas/ops/docs
+- Original REST API: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bas/bpmrest-ui
 - PFS federated systems: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/pfs/rest/bpm/federated/v1/systems
 - Workplace: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=workplace (If you encounter error stating that you are using self-signed certificates, clear you cookies)
 - Case monitor: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=bawmonitor
 - Case Client: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=baw
 - Case administration: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=bawadmin
+- FNCM Server definition in BAW:
+  - Host name: cp4ba-cmis-svc.cp4ba.svc.cluster.local
+  - Port: 9443
+  - Context path: /cmis/openfncmis_wlp/services
+  - Secure server: true
+  - Repository: depends to which you want to connect in internal FNCM (e.g. BADOCS or OS1)
+  - Credentials as in Credentials section
 
-####  Credentials
+#### Credentials
 
 - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
@@ -402,7 +420,7 @@ If you want FDM to connect to CPE, you need to provide it with Zen certificate. 
 
 #### Endpoints
 
-- Elastic Search: https://iaf-system-es-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}  
+- Elastic Search: https://iaf-system-es-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}
 
 #### Credentials
 
@@ -420,7 +438,7 @@ If you want FDM to connect to CPE, you need to provide it with Zen certificate. 
 #### Credentials
 
 - Username: icp4ba-kafka-auth-0 (```oc get kafkauser icp4ba-kafka-auth-0 -n {{ cp4ba_project_name }} -o jsonpath='{.status.username}'```)
-- Password: ```oc get secret -n {{ cp4ba_project_name }} $(oc get kafkauser icp4ba-kafka-auth-0 -n {{ cp4ba_project_name }} -o jsonpath='{.status.secret}') -o jsonpath='{.data.password}' | base64 -d```  
+- Password: ```oc get secret -n {{ cp4ba_project_name }} $(oc get kafkauser icp4ba-kafka-auth-0 -n {{ cp4ba_project_name }} -o jsonpath='{.status.secret}') -o jsonpath='{.data.password}' | base64 -d```
 
 Apicurio has same credentials as Kafka.
 
@@ -428,9 +446,9 @@ Alternative custom user: cpadmin / {{ universal_password }}
 
 #### Configuration for Kafka connection
 
-- Security protocol: Sasl Ssl  
-- Sasl Mechanism: SCRAM-SHA-512  
-- Root CA cert (used in *Path to root CA certificates file*): ```oc get kafka iaf-system -n {{ cp4ba_project_name }} -o jsonpath='{.status.listeners[1].certificates[0]}'```  
+- Security protocol: Sasl Ssl
+- Sasl Mechanism: SCRAM-SHA-512
+- Root CA cert (used in *Path to root CA certificates file*): ```oc get kafka iaf-system -n {{ cp4ba_project_name }} -o jsonpath='{.status.listeners[1].certificates[0]}'```
 
 {% if pm_enabled == true %}
 ### Process Mining
@@ -443,7 +461,7 @@ Alternative custom user: cpadmin / {{ universal_password }}
 - Task Mining Route for Client install: https://processmining-tm-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/
 - Process Mining non Zen Route: https://processmining-pm-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/
 
-####  Credentials
+#### Credentials
 
 - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
@@ -457,7 +475,7 @@ oc cp -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} --no-h
 
 To get logs for Operator.
 ```bash
-oc get pods -n {{ cp4ba_project_name }} -o name | grep processmining-operator-controller | xargs oc logs  > process-mining-operator.log
+oc get pods -n {{ cp4ba_project_name }} -o name | grep processmining-operator-controller | xargs oc logs > process-mining-operator.log
 ```
 
 {% if asset_repo_enabled == true %}
@@ -465,9 +483,9 @@ oc get pods -n {{ cp4ba_project_name }} -o name | grep processmining-operator-co
 
 #### Endpoints
 
-- UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/assets  
+- UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/assets
 
-####  Credentials
+#### Credentials
 
 - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
@@ -480,7 +498,7 @@ oc get pods -n {{ cp4ba_project_name }} -o name | grep processmining-operator-co
 - UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/rpa/ui
 - API: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/rpa/api/v1.2/en/configuration
 
-####  Credentials
+#### Credentials
 
 - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 
@@ -491,7 +509,7 @@ As Cloud Pak Foundational Services.
 
 #### Endpoints
 
-- Console UI: https://cp-console-ibm-common-services.{{ apps_endpoint_domain }}  
+- Console UI: https://cp-console-ibm-common-services.{{ apps_endpoint_domain }}
 - IAM login page: https://cp-console-ibm-common-services.{{ apps_endpoint_domain }}/oidc/login.jsp
 
 #### Credentials
@@ -515,7 +533,6 @@ Based on https://www.ibm.com/docs/en/cpfs?topic=pcfls-apis#auditSnapshot
 ```bash
 TOKEN=`oc get secret ibm-licensing-token -o jsonpath={.data.token} -n cs-control | base64 -d`
 curl -kL https:/ibm-licensing-service-instance-cs-control.{{ apps_endpoint_domain }}/snapshot?token=$TOKEN --output snapshot.zip
-
 ```
 
 ## Pre-requisites
@@ -531,6 +548,33 @@ As DB2 database storage for the platform.
 #### Credentials
 
 - db2inst1 / {{ universal_password }}
+
+#### CLI in container
+
+```bash
+# Switch to db2 user
+su - db2inst1
+# Initiate
+db2
+```
+
+### PostgreSQL
+
+As PostgreSQL database storage for the platform.
+
+#### Endpoints
+
+- Exposed as NodePort as found in Project *postgresql* in Service *postgresql*.
+
+#### Credentials
+
+- {{ lc_principal_admin_user }} / {{ universal_password }}
+
+#### CLI in container
+
+```bash
+psql postgresql://{{ lc_principal_admin_user }}:{{ universal_password }}@localhost:5432/postgres
+```
 
 {% if openldap_enabled == true %}
 
@@ -548,7 +592,7 @@ As LDAP directory provider and management tool.
 
 #### Users and Groups
 
-LDAP contains the following users in {{ lc_ldap_user_base_dn }}.:  
+LDAP contains the following users in {{ lc_ldap_user_base_dn }}.:
 - {{ lc_principal_admin_user }}/{{ lc_principal_admin_password }}
 - cpadmin1/{{ universal_password }}
 - cpadmin2/{{ universal_password }}
@@ -556,7 +600,7 @@ LDAP contains the following users in {{ lc_ldap_user_base_dn }}.:
 - cpuser1/{{ universal_password }}
 - cpuser2/{{ universal_password }}
 
-LDAP contains the following groups in {{ lc_ldap_group_base_dn }}:  
+LDAP contains the following groups in {{ lc_ldap_group_base_dn }}:
 - {{ lc_principal_admin_group }} - members: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_user_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpadmin1,{{ lc_ldap_user_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpadmin2,{{ lc_ldap_user_base_dn }}
 - cpusers - members: {{ lc_ldap_user_id_attribute }}={{ lc_principal_admin_user }},{{ lc_ldap_user_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpadmin1,{{ lc_ldap_user_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpadmin2,{{ lc_ldap_user_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser,{{ lc_ldap_user_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser1,{{ lc_ldap_user_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser2,{{ lc_ldap_user_base_dn }}
 - cpusers1 - members: {{ lc_ldap_user_id_attribute }}=cpuser,{{ lc_ldap_user_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser1,{{ lc_ldap_user_base_dn }}; {{ lc_ldap_user_id_attribute }}=cpuser2,{{ lc_ldap_user_base_dn }}
@@ -596,7 +640,7 @@ As MongoDB database storage for the platform.
 #### CLI in container
 
 ```bash
-mongo --username root --password  {{ universal_password }} --authenticationDatabase admin
+mongo --username root --password {{ universal_password }} --authenticationDatabase admin
 ```
 
 ## Deployment job

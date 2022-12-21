@@ -6,7 +6,7 @@
     dest: "{{ cp4ba_output_directory }}/root-ca-secret.yaml"
     mode: u+rwx
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=certificates-providing-root-ca-certificate
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=certificates-providing-root-ca-certificate
 - name: Add root CA Secret
   kubernetes.core.k8s:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"

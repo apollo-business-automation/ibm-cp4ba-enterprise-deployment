@@ -1,138 +1,191 @@
-- name: Add DB2 users
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: add-db2-user
-  vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_db2_user: "{{ item }}"
-    common_db2_password: "{{ cp4ba_db2_universal_password }}"
-  with_items:
-    - batos
-    - bados
-    - badocs
-    - bawaut
-    - ch
+- name: Get postgresql pod
+  kubernetes.core.k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: postgresql
+    label_selectors:
+      - app=postgresql
+  register: postgresql_pod
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=authoring-creating-required-databases
-- name: Set BAW DB2_WORKLOAD
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=authoring-creating-required-databases
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/latest?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+- name: BADOCS DB prepare tablespace
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: db2
-    pod: c-db2ucluster-db2u-0
-    command: >
-      su - db2inst1 -s /usr/bin/bash -c "
-      db2set DB2_WORKLOAD=FILENET_CM;
-      "
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: mkdir /pgsqldata/badocs
+  register: command_status
+  failed_when: command_status.rc != 0 and command_status.stderr is not search('.*File exists*')
+
+- name: BADOCS DB prepare tablespace permissions
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: chown postgres:postgres /pgsqldata/badocs
   register: command_status
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=authoring-creating-required-databases
-# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
 - name: BADOCS DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: db2
-    pod: c-db2ucluster-db2u-0
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
     command: >
-      su - db2inst1 -s /usr/bin/bash -c "
-      db2 CONNECT TO CP4BA;
-      db2 CREATE LARGE TABLESPACE BADOCS_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE USER TEMPORARY TABLESPACE BADOCS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE SYSTEM TEMPORARY TABLESPACE BADOCS_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      bash -c "
+        psql postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:5432/postgres <<-EOF
+        -- create user badocs
+        CREATE ROLE badocs WITH INHERIT LOGIN ENCRYPTED PASSWORD '{{ cp4ba_postgresql_universal_password }}';
 
-      db2 GRANT DBADM ON DATABASE TO user badocs;
-      db2 GRANT USE OF TABLESPACE BADOCS_TS TO user badocs;
-      db2 GRANT USE OF TABLESPACE BADOCS_TEMP_TS TO user badocs;
-      db2 CONNECT RESET;
-      "
+        -- create database badocs
+        create database badocs owner badocs template template0 encoding UTF8 ;
+        revoke connect on database badocs from public;
+        grant all privileges on database badocs to badocs;
+        grant connect, temp, create on database badocs to badocs;
+
+        -- please modify location follow your requirement
+        create tablespace badocs_tbs owner badocs location '/pgsqldata/badocs';
+        grant create on tablespace badocs_tbs to badocs;
+      EOF"
   register: command_status
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=authoring-creating-required-databases
-# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=authoring-creating-required-databases
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/latest?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+- name: BATOS DB prepare tablespace
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: mkdir /pgsqldata/batos
+  register: command_status
+  failed_when: command_status.rc != 0 and command_status.stderr is not search('.*File exists*')
+
+- name: BATOS DB prepare tablespace permissions
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: chown postgres:postgres /pgsqldata/batos
+  register: command_status
+
 - name: BATOS DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: db2
-    pod: c-db2ucluster-db2u-0
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
     command: >
-      su - db2inst1 -s /usr/bin/bash -c "
-      db2 CONNECT TO CP4BA;
-      db2 CREATE LARGE TABLESPACE BATOS_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE USER TEMPORARY TABLESPACE BATOS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE SYSTEM TEMPORARY TABLESPACE BATOS_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      bash -c "
+        psql postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:5432/postgres <<-EOF
+        -- create user batos
+        CREATE ROLE batos WITH INHERIT LOGIN ENCRYPTED PASSWORD '{{ cp4ba_postgresql_universal_password }}';
 
-      db2 GRANT DBADM ON DATABASE TO user batos;
-      db2 GRANT USE OF TABLESPACE BATOS_TS TO user batos;
-      db2 GRANT USE OF TABLESPACE BATOS_TEMP_TS TO user batos;
-      db2 CONNECT RESET;
-      "
+        -- create database batos
+        create database batos owner batos template template0 encoding UTF8 ;
+        revoke connect on database batos from public;
+        grant all privileges on database batos to batos;
+        grant connect, temp, create on database batos to batos;
+
+        -- please modify location follow your requirement
+        create tablespace batos_tbs owner batos location '/pgsqldata/batos';
+        grant create on tablespace batos_tbs to batos;
+      EOF"
   register: command_status
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=authoring-creating-required-databases
-# Based on https://www.ibm.com/docs/en/filenet-p8-platform/5.5.x?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=authoring-creating-required-databases
+# Based on https://www.ibm.com/docs/en/filenet-p8-platform/latest?topic=vtdluwiifp-creating-db2-database-table-spaces-content-platform-engine-object-store
+- name: BADOS DB prepare tablespace
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: mkdir /pgsqldata/bados
+  register: command_status
+  failed_when: command_status.rc != 0 and command_status.stderr is not search('.*File exists*')
+
+- name: BADOS DB prepare tablespace permissions
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: chown postgres:postgres /pgsqldata/bados
+  register: command_status
+
 - name: BADOS DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: db2
-    pod: c-db2ucluster-db2u-0
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
     command: >
-      su - db2inst1 -s /usr/bin/bash -c "
-      db2 CONNECT TO CP4BA;
-      db2 CREATE LARGE TABLESPACE BADOS_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE USER TEMPORARY TABLESPACE BADOS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE SYSTEM TEMPORARY TABLESPACE BADOS_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      bash -c "
+        psql postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:5432/postgres <<-EOF
+        -- create user bados
+        CREATE ROLE bados WITH INHERIT LOGIN ENCRYPTED PASSWORD '{{ cp4ba_postgresql_universal_password }}';
 
-      db2 GRANT DBADM ON DATABASE TO user bados;
-      db2 GRANT USE OF TABLESPACE BADOS_TS TO user bados;
-      db2 GRANT USE OF TABLESPACE BADOS_TEMP_TS TO user bados;
-      db2 CONNECT RESET;
-      "
-  register: command_status
+        -- create database bados
+        create database bados owner bados template template0 encoding UTF8 ;
+        revoke connect on database bados from public;
+        grant all privileges on database bados to bados;
+        grant connect, temp, create on database bados to bados;
 
-# BAWAUTDB Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=crd-creating-required-databases-in-db2
-- name: BAWAUT DB
-  kubernetes.core.k8s_exec:
-    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: db2
-    pod: c-db2ucluster-db2u-0
-    command: >
-      su - db2inst1 -s /usr/bin/bash -c "
-      db2 CONNECT TO CP4BA;
-      db2 CREATE REGULAR TABLESPACE BAWAUT_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE USER TEMPORARY TABLESPACE BAWAUT_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE SYSTEM TEMPORARY TABLESPACE BAWAUT_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-
-      db2 GRANT DBADM ON DATABASE TO user bawaut;
-      db2 GRANT USE OF TABLESPACE BAWAUT_TS TO user bawaut;
-      db2 GRANT USE OF TABLESPACE BAWAUT_TEMP_TS TO user bawaut;
-      db2 CONNECT RESET;
-      "
+        -- please modify location follow your requirement
+        create tablespace bados_tbs owner bados location '/pgsqldata/bados';
+        grant create on tablespace bados_tbs to bados;
+      EOF"
   register: command_status
 
 # Based on https://www.ibm.com/docs/en/baw/20.x?topic=system-preparing-database-case-history-store
 # Based on
-# https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=bawraws-optional-enabling-timeline-visualizer-widget-display-business-automation-workflow-process-activity-flow
-- name: CH (Case History) DB
+# https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=bawraws-optional-enabling-timeline-visualizer-widget-display-business-automation-workflow-process-activity-flow
+- name: CH DB prepare tablespace
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: db2
-    pod: c-db2ucluster-db2u-0
-    command: >
-      su - db2inst1 -s /usr/bin/bash -c "
-      db2 CONNECT TO CP4BA;
-      db2 CREATE LARGE TABLESPACE CH_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE USER TEMPORARY TABLESPACE CH_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE SYSTEM TEMPORARY TABLESPACE CH_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: mkdir /pgsqldata/ch
+  register: command_status
+  failed_when: command_status.rc != 0 and command_status.stderr is not search('.*File exists*')
 
-      db2 GRANT DBADM ON DATABASE TO user ch;
-      db2 GRANT USE OF TABLESPACE CH_TS TO user ch;
-      db2 GRANT USE OF TABLESPACE CH_TEMP_TS TO user ch;
-      db2 CONNECT RESET;
-      "
+- name: CH DB prepare tablespace permissions
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: chown postgres:postgres /pgsqldata/ch
+  register: command_status
+
+- name: CH DB
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: >
+      bash -c "
+        psql postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:5432/postgres <<-EOF
+        -- create user ch
+        CREATE ROLE ch WITH INHERIT LOGIN ENCRYPTED PASSWORD '{{ cp4ba_postgresql_universal_password }}';
+
+        -- create database ch
+        create database ch owner ch template template0 encoding UTF8 ;
+        revoke connect on database ch from public;
+        grant all privileges on database ch to ch;
+        grant connect, temp, create on database ch to ch;
+
+        -- please modify location follow your requirement
+        create tablespace ch_tbs owner ch location '/pgsqldata/ch';
+        grant create on tablespace ch_tbs to ch;
+      EOF"
   register: command_status

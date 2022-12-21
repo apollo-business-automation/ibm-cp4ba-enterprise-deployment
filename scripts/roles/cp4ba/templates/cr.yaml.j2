@@ -22,16 +22,16 @@ spec:
     root_ca_secret: cp4ba-root-ca
     sc_deployment_patterns: ""
     sc_optional_components: ""
-    sc_deployment_type: production
+    sc_deployment_type: Production
     sc_deployment_profile_size: small
     sc_deployment_platform: "{{ cp4ba_deployment_platform }}"
     sc_ingress_enable: false
     sc_deployment_hostname_suffix: "{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}"
     sc_image_repository: cp.icr.io
     trusted_certificate_list: []
-    sc_install_automation_base: false #Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=insights-customizing-kafka-elasticsearch-server-configuration,
+    sc_install_automation_base: false #Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=insights-customizing-kafka-elasticsearch-server-configuration,
     # but that no longer is valid, with false, the automation base connection information for elastic search are not created properly
-    # which then stops processing of the Cloud Pak operator. TODO: Should probably still be false, verify
+    # which then stops processing of the Cloud Pak operator.
     storage_configuration:
       sc_slow_file_storage_classname: "{{ cp4ba_storage_class_name }}"
       sc_medium_file_storage_classname: "{{ cp4ba_storage_class_name }}"
@@ -64,6 +64,10 @@ spec:
     ad:
       lc_user_filter: "{{ lc_ad_user_filter }}"
       lc_group_filter: "{{ lc_ad_group_filter }}"
+{% elif 'Custom' in lc_selected_ldap_type %}
+    custom:
+      lc_user_filter: "{{ lc_custom_user_filter }}"
+      lc_group_filter: "{{ lc_custom_group_filter }}"
 {% endif %}
   datasource_configuration:
     dc_ssl_enabled: false

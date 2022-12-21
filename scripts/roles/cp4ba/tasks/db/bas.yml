@@ -1,54 +1,55 @@
-- name: Add DB2 users
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: add-db2-user
-  vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_db2_user: "{{ item }}"
-    common_db2_password: "{{ cp4ba_db2_universal_password }}"
-  with_items:
-    - pb
-    - bas
+- name: Get postgresql pod
+  kubernetes.core.k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: postgresql
+    label_selectors:
+      - app=postgresql
+  register: postgresql_pod
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=studio-creating-databases
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=studio-creating-databases
 - name: PB DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: db2
-    pod: c-db2ucluster-db2u-0
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
     command: >
-      su - db2inst1 -s /usr/bin/bash -c "
-      db2 CONNECT TO CP4BA;
-      db2 CREATE REGULAR TABLESPACE PB_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE USER TEMPORARY TABLESPACE PB_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE SYSTEM TEMPORARY TABLESPACE PB_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      bash -c "
+        psql postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:5432/postgres <<-EOF
+        -- create a new user
+        create user pb with password '{{ cp4ba_postgresql_universal_password }}';
 
-      db2 GRANT DBADM ON DATABASE TO user pb;
-      db2 GRANT USE OF TABLESPACE PB_TS TO user pb;
-      db2 GRANT USE OF TABLESPACE PB_TEMP_TS TO user pb;
-      db2 CONNECT RESET;
-      "
+        -- create database pb
+        create database pb owner pb;
+
+        -- The following grant is used for databases
+        grant all privileges on database pb to pb;
+      EOF"
   register: command_status
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=studio-creating-databases
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=studio-creating-databases
 - name: BAS DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: db2
-    pod: c-db2ucluster-db2u-0
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
     command: >
-      su - db2inst1 -s /usr/bin/bash -c "
-      db2 CONNECT TO CP4BA;
-      db2 CREATE REGULAR TABLESPACE BAS_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE USER TEMPORARY TABLESPACE BAS_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE SYSTEM TEMPORARY TABLESPACE BAS_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      bash -c "
+        psql postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:5432/postgres <<-EOF
+        -- create the user
+        CREATE ROLE bas WITH INHERIT LOGIN ENCRYPTED PASSWORD '{{ cp4ba_postgresql_universal_password }}';
 
-      db2 GRANT DBADM ON DATABASE TO user bas;
-      db2 GRANT USE OF TABLESPACE BAS_TS TO user bas;
-      db2 GRANT USE OF TABLESPACE BAS_TEMP_TS TO user bas;
-      db2 CONNECT RESET;
-      "
+        -- create the database:
+        CREATE DATABASE bas WITH OWNER bas ENCODING 'UTF8';
+        GRANT ALL ON DATABASE bas to bas;
+
+        -- Connect to your database and create schema
+        \c bas;
+        SET ROLE bas;
+        CREATE SCHEMA IF NOT EXISTS bas AUTHORIZATION bas;
+      EOF"
   register: command_status

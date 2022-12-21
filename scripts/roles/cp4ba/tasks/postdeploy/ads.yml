@@ -30,7 +30,7 @@
     common_namespace_name: "{{ cp4ba_project_name }}"
     common_output_to_var: "zen_token"
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=gst-task-2-connecting-git-repository-sharing-decision-service
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=gst-task-2-connecting-git-repository-sharing-decision-service
 - name: Create ADS organization in Gitea
   ansible.builtin.uri:
     url: "https://gitea.{{ apps_endpoint_domain }}/api/v1/orgs"
@@ -96,7 +96,7 @@
           - "{{ cp4ba_config.optional_components.ads_runtime | ternary('manage_ads_decision','') }}"
           - "{{ cp4ba_config.optional_components.ads_runtime | ternary('monitor_ads_runtime','') }}"
 
-    # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=services-managing-user-permissions
+    # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=services-managing-user-permissions
     - name: Create ADS admin role
       ansible.builtin.uri:
         url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/usermgmt/v1/role"
@@ -164,26 +164,31 @@
     status_code:
       - 200
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=credentials-configuring-maven-repository-manager
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=credentials-configuring-maven-repository-manager
 - name: Add Maven credential
   ansible.builtin.uri:
-    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/rest-api/api/admin/credential"
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/rest-api/api/maven-configs"
     method: POST
     headers:
       Authorization: "Bearer {{ zen_token }}"
     body_format: json
     body: |
       {
+        "serverUri": "https://nexus.{{ apps_endpoint_domain }}/repository/maven-releases/",
+        "authType": "CREDENTIALS",
         "credentialsType": "USERNAME",
-        "credentialsUsage": "MAVEN",
-        "discriminator": "https://nexus.{{ apps_endpoint_domain }}/repository/maven-releases/",
-        "credentials": "{{ lc_principal_admin_user }}:{{ lc_principal_admin_password }}"
+        "username": "{{ lc_principal_admin_user }}",
+        "password": "{{ lc_principal_admin_password }}"
       }
     validate_certs: false
-    status_code: 200
-  register: ads_credential_response
+    status_code:
+      - 200
+      - 500
+  register: ads_maven_credential_response
+  failed_when: ads_maven_credential_response.status != 200 and
+    ads_maven_credential_response.json.message is not search('A maven config with this server URL already exists.')
 
-# https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=services-connecting-remote-repository-automatically
+# https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.2?topic=decisions-connecting-remote-repository-automatically
 - name: Automate git project setup
   ansible.builtin.uri:
     url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/ads/rest-api/api/admin/git-providers"

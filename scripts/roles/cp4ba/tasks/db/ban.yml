@@ -1,31 +1,56 @@
-- name: Add DB2 users
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: add-db2-user
-  vars:
-    common_k8s_api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
-    common_k8s_host: "{{ cp4ba_k8s_host | default(omit) }}"
-    common_db2_user: icndb
-    common_db2_password: "{{ cp4ba_db2_universal_password }}"
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=navigator-preparing-database
+# Based on https://www.ibm.com/docs/en/content-navigator/latest?topic=navigator-creating-db2-database-content
 
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=navigator-preparing-database
-# Based on https://www.ibm.com/docs/en/content-navigator/3.0.11?topic=navigator-creating-db2-database-content
+- name: Get postgresql pod
+  kubernetes.core.k8s_info:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: Pod
+    namespace: postgresql
+    label_selectors:
+      - app=postgresql
+  register: postgresql_pod
+
+- name: BAN DB prepare tablespace
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: mkdir /pgsqldata/icndb
+  register: command_status
+  failed_when: command_status.rc != 0 and command_status.stderr is not search('.*File exists*')
+
+- name: BAN DB prepare tablespace permissions
+  kubernetes.core.k8s_exec:
+    api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
+    host: "{{ cp4ba_k8s_host | default(omit) }}"
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
+    command: chown postgres:postgres /pgsqldata/icndb
+  register: command_status
+
 - name: BAN DB
   kubernetes.core.k8s_exec:
     api_key: "{{ cp4ba_k8s_api_key | default(omit) }}"
     host: "{{ cp4ba_k8s_host | default(omit) }}"
-    namespace: db2
-    pod: c-db2ucluster-db2u-0
+    namespace: postgresql
+    pod: "{{ postgresql_pod.resources[0].metadata.name }}"
     command: >
-      su - db2inst1 -s /usr/bin/bash -c "
-      db2 CONNECT TO CP4BA;
-      db2 CREATE REGULAR TABLESPACE ICNDB_TS PAGESIZE 32 K BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE USER TEMPORARY TABLESPACE ICNDB_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
-      db2 CREATE SYSTEM TEMPORARY TABLESPACE ICNDB_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL CP4BA_BP_32K;
+      bash -c "
+        psql postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:5432/postgres <<-EOF
+        -- create user icndb
+        CREATE ROLE icndb WITH INHERIT LOGIN ENCRYPTED PASSWORD '{{ cp4ba_postgresql_universal_password }}';
 
-      db2 GRANT DBADM ON DATABASE TO user icndb;
-      db2 GRANT USE OF TABLESPACE ICNDB_TS TO user icndb;
-      db2 GRANT USE OF TABLESPACE ICNDB_TEMP_TS TO user icndb;
-      db2 CONNECT RESET;
-      "
+        -- create database icndb
+        create database icndb owner icndb template template0 encoding UTF8 ;
+        revoke connect on database icndb from public;
+        grant all privileges on database icndb to icndb;
+        grant connect, temp, create on database icndb to icndb;
+
+        -- please modify location follow your requirement
+        create tablespace icndb_tbs owner icndb location '/pgsqldata/icndb';
+        grant create on tablespace icndb_tbs to icndb;
+      EOF"
   register: command_status

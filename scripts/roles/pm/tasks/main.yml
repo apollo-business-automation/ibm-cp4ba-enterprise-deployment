@@ -7,6 +7,12 @@
     path: "{{ pm_output_directory }}"
     state: absent
 
+- name: Create PM directory for generated files
+  ansible.builtin.file:
+    path: "{{ pm_output_directory }}"
+    state: directory
+    mode: u+rwx
+
 - name: Install PM
   include_tasks: install.yml
   when: "pm_action == 'install'"

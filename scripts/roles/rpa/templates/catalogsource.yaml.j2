@@ -1,4 +1,4 @@
-# case 1.7.0 / csv 1.7.0 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-robotic-process-automation
+# case 1.8.0 / csv 1.8.0 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-robotic-process-automation
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -8,12 +8,12 @@ spec:
   displayName: IBM Robotic Process Automation Catalog
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-rpa-operator-catalog@sha256:68be31d824b2d40d542bd62ea1735d9d0ce1dd9ce9b3e61a9e22c3b8215e939c
+  image: icr.io/cpopen/ibm-rpa-operator-catalog@sha256:f61ce7391bdf2f33b3eb0064b4ed45ee0bc6a5c897f864f594f89d0a91b55a32
   updateStrategy:
     registryPoll:
       interval: 45m
 ---
-# case 1.6.0 / csv 1.6.0 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cloud-databases-redis
+# case 1.6.2 / csv 1.6.2 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cloud-databases-redis
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -23,7 +23,7 @@ spec:
   displayName: ibm-cloud-databases-redis-operator-catalog
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-cloud-databases-redis-catalog@sha256:f339dd593991e1127ac42b96e39e538fa83237defb9dc9267de28f298b4bf427
+  image: icr.io/cpopen/ibm-cloud-databases-redis-catalog@sha256:f7125e46c322421067a70a00227b3244f86c111e301d2695ba9e30e12ec19955
   updateStrategy:
     registryPoll:
       interval: 45m

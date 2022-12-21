@@ -1,4 +1,4 @@
-# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=engine-creating-secrets-protect-sensitive-configuration-data
+# Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=engine-creating-secrets-protect-sensitive-configuration-data
 # If you plan to use AAE data persistence, you need to update FNCM secret for new object store.
 # Make sure FNCM secret already exists
 - name: Add AAE OS to FNCM Secret
@@ -13,4 +13,4 @@
     definition:
       data:
         aeosDBUsername: "{{ 'aeos' | b64encode }}"
-        aeosDBPassword: "{{ cp4ba_db2_universal_password | b64encode }}"
+        aeosDBPassword: "{{ cp4ba_postgresql_universal_password | b64encode }}"

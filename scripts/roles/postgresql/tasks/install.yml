@@ -1,0 +1,107 @@
+# Based on https://hub.docker.com/_/postgres
+
+- name: Create PostgreSQL directory for generated files
+  ansible.builtin.file:
+    path: "{{ postgresql_output_directory }}"
+    state: directory
+    mode: u+rwx
+
+- name: Create Project
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: create-project
+  vars:
+    common_k8s_api_key: "{{ postgresql_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ postgresql_k8s_host | default(omit) }}"
+    common_namespace_name: postgresql
+    common_output_directory: "{{ postgresql_output_directory }}"
+
+- name: Prepare yaml file for privileged RoleBinding
+  ansible.builtin.template:
+    src: privileged-scc-rolebinding.yaml.j2
+    dest: "{{ postgresql_output_directory }}/privileged-scc-rolebinding.yaml"
+    mode: u+rwx
+
+- name: Add privileged RoleBinding
+  kubernetes.core.k8s:
+    api_key: "{{ postgresql_k8s_api_key | default(omit) }}"
+    host: "{{ postgresql_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ postgresql_output_directory }}/privileged-scc-rolebinding.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Prepare yaml file for Secret
+  ansible.builtin.template:
+    src: secret.yaml.j2
+    dest: "{{ postgresql_output_directory }}/secret.yaml"
+    mode: u+rwx
+
+- name: Add Secret
+  kubernetes.core.k8s:
+    api_key: "{{ postgresql_k8s_api_key | default(omit) }}"
+    host: "{{ postgresql_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ postgresql_output_directory }}/secret.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Prepare yaml file for PVC
+  ansible.builtin.template:
+    src: pvc.yaml.j2
+    dest: "{{ postgresql_output_directory }}/pvc.yaml"
+    mode: u+rwx
+
+- name: Add PVC
+  kubernetes.core.k8s:
+    api_key: "{{ postgresql_k8s_api_key | default(omit) }}"
+    host: "{{ postgresql_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ postgresql_output_directory }}/pvc.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15
+
+- name: Prepare yaml file for Deployment
+  ansible.builtin.template:
+    src: deployment.yaml.j2
+    dest: "{{ postgresql_output_directory }}/deployment.yaml"
+    mode: u+rwx
+
+- name: Add Deployment
+  kubernetes.core.k8s:
+    api_key: "{{ postgresql_k8s_api_key | default(omit) }}"
+    host: "{{ postgresql_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ postgresql_output_directory }}/deployment.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 600
+
+- name: Prepare yaml file for Service
+  ansible.builtin.template:
+    src: service.yaml.j2
+    dest: "{{ postgresql_output_directory }}/service.yaml"
+    mode: u+rwx
+
+- name: Add Service
+  kubernetes.core.k8s:
+    api_key: "{{ postgresql_k8s_api_key | default(omit) }}"
+    host: "{{ postgresql_k8s_host | default(omit) }}"
+    state: present
+    force: false
+    merge_type: merge
+    src: "{{ postgresql_output_directory }}/service.yaml"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 15

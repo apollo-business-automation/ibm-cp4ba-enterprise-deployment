@@ -1,11 +1,17 @@
 spec:
   datasource_configuration:
-    dc_odm_datasource:
-      dc_database_type: db2
-      database_servername: "{{ cp4ba_db2_hostname }}"
-      dc_common_database_port: "50000"
-      dc_common_database_name: CP4BA
-      dc_common_database_instance_secret: odm-db-secret
+    dc_odm_decisioncenter_datasource:
+      database_type: postgresql
+      database_servername: "{{ cp4ba_postgresql_hostname }}"
+      database_port: "5432"
+      database_name: odmdc
+      database_instance_secret: odmdc-db-secret
+    dc_odm_decisionserver_datasource:
+      database_type: postgresql
+      database_servername: "{{ cp4ba_postgresql_hostname }}"
+      database_port: "5432"
+      database_name: odmres
+      database_instance_secret: odmres-db-secret
   odm_configuration:
     customization:
       authSecretRef: odm-web-security-secret

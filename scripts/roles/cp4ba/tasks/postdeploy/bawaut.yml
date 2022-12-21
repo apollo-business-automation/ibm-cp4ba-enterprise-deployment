@@ -32,7 +32,7 @@
 
 - name: Add admin groups to tw_admins
   ansible.builtin.uri:
-    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut/rest/bpm/wle/v1/group/tw_admins?action=addMember&group={{ item }}&parts=all"
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bas/rest/bpm/wle/v1/group/tw_admins?action=addMember&group={{ item }}&parts=all"
     method: POST
     headers:
       Authorization: "Bearer {{ zen_token }}"
@@ -43,7 +43,7 @@
 
 - name: Add admin groups and general groups to tw_authors
   ansible.builtin.uri:
-    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bawaut/rest/bpm/wle/v1/group/tw_authors?action=addMember&group={{ item }}&parts=all"
+    url: "https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bas/rest/bpm/wle/v1/group/tw_authors?action=addMember&group={{ item }}&parts=all"
     method: POST
     headers:
       Authorization: "Bearer {{ zen_token }}"

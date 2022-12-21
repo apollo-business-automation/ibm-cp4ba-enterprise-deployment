@@ -1,13 +1,13 @@
 spec:
   datasource_configuration:
     dc_os_datasources:
-      - dc_database_type: db2
+      - dc_database_type: postgresql
         dc_os_label: aeos
         dc_common_os_datasource_name: AEOS
         dc_common_os_xa_datasource_name: AEOSXA
-        database_servername: "{{ cp4ba_db2_hostname }}"
-        database_name: CP4BA
-        database_port: "50000"
+        database_servername: "{{ cp4ba_postgresql_hostname }}"
+        database_name: aeos
+        database_port: "5432"
   initialize_configuration:
     ic_obj_store_creation:
       object_stores:

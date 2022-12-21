@@ -1,9 +1,9 @@
 # Example of the functionality call
 #
-# - name: Remove DB
+# - name: Remove DB@ DB
 #   ansible.builtin.include_role:
 #     name: common
-#     tasks_from: remove-db
+#     tasks_from: remove-db2-db
 #   vars:
 #     common_k8s_api_key: "{{ prefix_k8s_api_key | default(omit) }}"
 #     common_k8s_host: "{{ prefix_k8s_host | default(omit) }}"
@@ -19,10 +19,10 @@
     label_selectors:
       - component=db2oltp
   register: pods
-  retries: 40
+  retries: 4
   delay: 15
 
-- name: Delete DB
+- name: Delete DB2 DB
   kubernetes.core.k8s_exec:
     api_key: "{{ common_k8s_api_key | default(omit) }}"
     host: "{{ common_k8s_host | default(omit) }}"

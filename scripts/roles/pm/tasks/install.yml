@@ -1,9 +1,3 @@
-- name: Create PM directory for generated files
-  ansible.builtin.file:
-    path: "{{ pm_output_directory }}"
-    state: directory
-    mode: u+rwx
-
 - name: Add DB2 user
   ansible.builtin.include_role:
     name: common
@@ -14,8 +8,7 @@
     common_db2_user: pm
     common_db2_password: "{{ pm_db2_password }}"
 
-# This counts on CP4BA database created during CP4BA deployment making this part not standalone
-- name: Create & configure PM Schema
+- name: Create PM DB
   kubernetes.core.k8s_exec:
     api_key: "{{ pm_k8s_api_key | default(omit) }}"
     host: "{{ pm_k8s_host | default(omit) }}"
@@ -23,17 +16,28 @@
     pod: c-db2ucluster-db2u-0
     command: >
       su - db2inst1 -s /usr/bin/bash -c "
-      db2 CONNECT TO CP4BA;
-      db2 CREATE REGULAR TABLESPACE PM_TS PAGESIZE 32 K BUFFERPOOL PM_BP_32K;
-      db2 CREATE USER TEMPORARY TABLESPACE PM_TEMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL PM_BP_32K;
-      db2 CREATE SYSTEM TEMPORARY TABLESPACE PM_SYSTMP_TS PAGESIZE 32 K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL PM_BP_32K;
-
-      db2 GRANT DBADM ON DATABASE TO user pm;
-      db2 GRANT USE OF TABLESPACE PM_TS TO user pm;
-      db2 GRANT USE OF TABLESPACE PM_TEMP_TS TO user pm;
+      db2 CREATE DATABASE PM AUTOMATIC STORAGE YES USING CODESET UTF-8 TERRITORY DEFAULT COLLATE USING SYSTEM PAGESIZE 32768;
+      db2 CONNECT TO PM;
+      db2 GRANT CONNECT,DATAACCESS ON DATABASE TO USER pm;
+      db2 GRANT USE OF TABLESPACE USERSPACE1 TO USER pm;
       db2 CONNECT RESET;
       "
   register: command_status
+
+- name: Add DB connections to DB2MC
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: add-db2mc-connection
+  vars:
+    common_k8s_api_key: "{{ pm_k8s_api_key | default(omit) }}"
+    common_k8s_host: "{{ pm_k8s_host | default(omit) }}"
+    common_db2_db_name: PM
+    common_user: "{{ pm_db2mc_admin_user }}"
+    common_password: "{{ pm_db2mc_universal_password }}"
+    common_output_directory: "{{ pm_output_directory }}"
+    common_db2_hostname: "{{ pm_db2_hostname }}"
+    common_db2_password: "{{ pm_db2_password }}"
+  when: db2mc_enabled
 
 - name: Get Mongo DB pod
   kubernetes.core.k8s_info:
@@ -191,9 +195,18 @@
     wait_sleep: 15
     wait_timeout: 15
 
-- name: Prepare yaml file for ProcessMining instance
-  ansible.builtin.template:
-    src: processmining.yaml.j2
+- name: Load PM CR to variable
+  ansible.builtin.set_fact:
+    cr: "{{ lookup('template', 'processmining.yaml.j2') | from_yaml }}"
+
+- name: Merge customizations
+  ansible.builtin.set_fact:
+    cr: "{{ cr | combine(pm_cr_custom | from_yaml, recursive=true) }}"
+  when: pm_cr_custom is defined
+
+- name: Write CR to file
+  ansible.builtin.copy:
+    content: '{{ cr | to_nice_yaml(indent=2, width=1337) }}'
     dest: "{{ pm_output_directory }}/processmining.yaml"
     mode: u+rwx
 
@@ -336,7 +349,7 @@
   ansible.builtin.set_fact:
     api_key: "{{ user_profile_response.json.data.apiKey }}"
 
-# Based on https://www.ibm.com/docs/en/process-mining/1.13.1?topic=manual-how-integrate-process-mining-task-mining
+# Based on https://www.ibm.com/docs/en/process-mining/latest?topic=manual-how-integrate-process-mining-task-mining
 - name: Setup master key for task mining
   ansible.builtin.uri:
     url: "https://cpd-{{ pm_project_name }}.{{ apps_endpoint_domain }}/taskmining/api/pmMasterUser"
