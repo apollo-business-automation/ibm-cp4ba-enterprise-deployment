@@ -163,7 +163,7 @@ As UI for PostgreSQL
 ### Zen service account credentials
 
 Based on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=users-generating-api-keys-authentication  
-If you need to call CP4BA endpoints with ZenApiKey (e. g. for ODM) a service account with username *cpadminservice* has been prepared for you with the generated api key which can be found in *apollo-one-shot* ConfigMap in *zen-api-key* key.
+If you need to call CP4BA endpoints with ZenApiKey (e. g. for ODM) a service account with username *cpadminservice* has been prepared for you with the generated api key which can be found in Project *apollo-one-shot* in ConfigMap *usage* in *zen-api-key* key.
 
 ### Useful info
 
@@ -173,7 +173,6 @@ If you want to investigate the actual ansible code that is running in the operat
 oc cp -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} --no-headers | grep cp4a-operator | awk '{print $1}'`:/opt/ansible/roles cp4ba-ansible-roles
 # Content
 oc cp -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} --no-headers | grep ibm-content-operator | awk '{print $1}'`:/opt/ansible/roles content-ansible-roles
-
 ```
 
 Order of capabilities deployment can be found in operator code in */opt/ansible/roles/icp4a/tasks/main.yml*.
@@ -181,7 +180,6 @@ Order of capabilities deployment can be found in operator code in */opt/ansible/
 To get logs from Operator.
 ```bash
 oc logs deployment/ibm-cp4a-operator > cp4ba-operator.log
-
 ```
 
 In operator log you can search for error using *playbook task failed*.
@@ -191,7 +189,6 @@ Operator loop in cp4ba-operator.log begins with output *TASK [Gathering Facts]*.
 If you want to determine Operator version use the following command.
 ```bash
 oc exec -it -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} | grep ibm-cp4a-operator | awk '{print $1}'` -- cat /opt/ibm/version.txt
-
 ```
 
 {% if cp4ba_config.deployment_patterns.foundation == true %}
@@ -205,7 +202,6 @@ oc exec -it -n {{ cp4ba_project_name }} `oc get pod -n {{ cp4ba_project_name }} 
 
 ```bash
 etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ universal_password }}" --endpoints=https://{{ cp4ba_project_name }}-dba-rr-client.{{ cp4ba_project_name }}.svc:2379 --insecure-transport=true --cacert="/shared/resources/tls/ca-cert.pem"
-
 ```
 
 ### Business Automation Navigator (BAN) (foundation pattern)
@@ -252,7 +248,6 @@ etcdctl get --from-key '' --insecure-skip-tls-verify=true --user="root:{{ univer
 
 ```bash
 oc cp -n {{ cp4ba_project_name }} `oc get pod --no-headers -n {{ cp4ba_project_name }} | grep cp4a-operator | awk '{print $1}'`:/tmp/ansible-operator/runner/tmp/bai/templates/bai_all_in_one.yaml bai_all_in_one.yaml
-
 ```
 {% endif %}
 
@@ -304,12 +299,12 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 For external share you need to use ingress prefixed set of endpoints.
 
 - ACCE console UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/acce
-- CPE WSI endpoint: https://cpe-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/wsi/FNCEWS40MTOM (https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/wsi/FNCEWS40MTOM)
+- CPE WSI endpoint: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/wsi/FNCEWS40MTOM (https://cpe-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/wsi/FNCEWS40MTOM)
 - CPE health check: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/P8CE/Health
 - CPE ping page: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/FileNet/Engine
 - PE ping page: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/peengine/IOR/ping
 - PE details page: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/peengine/IOR/admin/help
-- CSS health check: https://cpe-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/P8CE/Health/CBRDashboard (https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/P8CE/Health/CBRDashboard)
+- CSS health check: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/P8CE/Health/CBRDashboard (https://cpe-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/P8CE/Health/CBRDashboard)
 - CMIS definitions UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cmis/openfncmis_wlp
 - CMIS endpoint: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cmis/openfncmis_wlp/services (e.g. for BAW CMIS)
 - GraphiQL UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/content-services-graphql
@@ -538,7 +533,6 @@ Based on https://www.ibm.com/docs/en/cpfs?topic=pcfls-apis#auditSnapshot
 ```bash
 TOKEN=`oc get secret ibm-licensing-token -o jsonpath={.data.token} -n cs-control | base64 -d`
 curl -kL https:/ibm-licensing-service-instance-cs-control.{{ apps_endpoint_domain }}/snapshot?token=$TOKEN --output snapshot.zip
-
 ```
 
 ## Pre-requisites
