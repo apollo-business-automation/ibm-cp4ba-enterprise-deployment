@@ -49,6 +49,13 @@ spec:
         config:
           - key: path.repo
             value: '/usr/share/elasticsearch/snapshots/main'
+    tls:
+      issuerRef:
+        name: iaf-issuer
+        kind: Issuer
+      caSecret:
+        secretName: global-ca
+        key: ca.crt
     snapshotStores:
       - name: main
         storage:
