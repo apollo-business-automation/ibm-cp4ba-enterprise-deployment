@@ -52,6 +52,7 @@ spec:
     # Workaround caused by pattern where BAW is installed without BAI and with sc_install_automation_base true, 
     # which then causes merge of CP4BA operator managed AutomationBase template with empty tls which results in 
     # Elasticsearch certificate different from the global-ca
+{% if cp4ba_config.optional_components.bai == false %}
     tls:
       issuerRef:
         name: iaf-issuer
@@ -59,6 +60,7 @@ spec:
       caSecret:
         secretName: global-ca
         key: ca.crt
+{% endif %}
     snapshotStores:
       - name: main
         storage:
