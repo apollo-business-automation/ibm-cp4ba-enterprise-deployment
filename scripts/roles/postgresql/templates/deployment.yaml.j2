@@ -46,7 +46,15 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
             successThreshold: 1
-            timeoutSeconds: 5              
+            timeoutSeconds: 5
+          startupProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+            failureThreshold: 18
+            periodSeconds: 10            
           securityContext:
             privileged: true
           image: "postgres:{{ postgresql_image_tag }}"
