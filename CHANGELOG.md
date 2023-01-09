@@ -6,10 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [2023-01-09]
+
 ### Fixed
 
 - Postgres network configuration error appearing in some environments due to pod restart in init phase.
-- Scenario of BAW installation with BAI, fix for PFS and BAS not starting correctly.
+- Scenario of BAW installation without BAI, fix for PFS and BAS not starting correctly.
 
 ## [2022-12-21]
 
