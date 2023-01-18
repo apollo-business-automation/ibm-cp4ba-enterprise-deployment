@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+### Added
+
+- Post deploy steps documentation for ICN Sync, Edit Service and Microsoft Office.
+
+### Fixed
+
+- Cleanup PVCs during RPA removal to prevent potential failures during repetitive installs.
+
 ## [2023-01-09]
 
 ### Fixed
