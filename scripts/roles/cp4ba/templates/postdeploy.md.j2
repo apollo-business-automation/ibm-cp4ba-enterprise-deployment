@@ -3,6 +3,10 @@
 Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=deployments-completing-post-installation-tasks
 
 The following list specifies when you need to perform particular post-deployment steps
+  - [Business Automation Navigator (BAN) (foundation pattern)](#business-automation-navigator-ban-foundation-pattern)
+    - [IBM Content Navigator Sync](#ibm-content-navigator-sync) - When you want to use Sync feature.
+    - [IBM Content Navigator Edit Service](#ibm-content-navigator-edit-service) - When you want to use Edit Service feature.
+    - [IBM Content Navigator for Microsoft Office](#ibm-content-navigator-for-microsoft-office) - When you want to use NMO feature.
   - [Business Automation Studio (BAS) (foundation pattern)](#business-automation-studio-bas-foundation-pattern)
     - [Deploy toolkits and configurators](#deploy-toolkits-and-configurators) - When you want to call ODM from Business Application using Automation Services.
   - [Business Automation Insights (BAI) (foundation pattern)](#business-automation-insights-bai-foundation-pattern)
@@ -36,6 +40,38 @@ oc project {{ cp4ba_project_name }}
 
 
 For logging in to CP4BA pillars use *Authentication type: Enterprise LDAP* and user *{{ lc_principal_admin_user }}* with password "{{ lc_principal_admin_password }}" if not stated otherwise.
+
+## Business Automation Navigator (BAN) (foundation pattern)
+
+### IBM Content Navigator Sync
+
+Based on https://www.ibm.com/docs/en/content-navigator/latest?topic=components-configuring-sync-services-content-navigator-filenet-p8
+
+You need to download and install IBM Content Navigator Sync installer from PPA or Fix Central for corresponding version and OS (e.g. M08W6ML	IBM Content Navigator Sync V3.0.13 Windows Multilingual).
+
+Enable Desktop and Connection of OS1 for sync services.
+
+For Desktop URL, use https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=OS1  
+Use Single Sign-on  
+Login with Enterprise LDAP with {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}  
+
+### IBM Content Navigator Edit Service
+
+Based on https://www.ibm.com/docs/en/content-navigator/latest?topic=components-configuring-edit-service-client-content-navigator
+
+You need to download and install IBM Content Navigator Edit Service installer from PPA or Fix Central for corresponding version and OS (e.g. M08W8ML	IBM Content Navigator Edit Service V3.0.13 Windows Multilingual).
+
+Enable Desktop and Connection of OS1 for edit services.
+
+### IBM Content Navigator for Microsoft Office
+
+Based on https://www.ibm.com/docs/en/content-navigator/latest?topic=machines-installing-content-navigator-microsoft-office-interactively
+
+You need to download and install IBM Content Navigator for Microsoft Office installer from PPA or Fix Central for corresponding version and OS (e.g. M08W4ML	IBM Content Navigator for Microsoft Office V3.0.13 Windows Multilingual).
+
+IBM Content Navigator URL: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/  
+Desktop ID: OS1  
+Login with Enterprise LDAP with {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}  
 
 ## Business Automation Studio (BAS) (foundation pattern)
 
