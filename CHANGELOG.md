@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Post deploy steps documentation for ICN Sync, Edit Service and Microsoft Office.
 
+### Changed
+
+- Switch RPA client install instructions from command line to wizard.
+
 ### Fixed
 
 - Cleanup PVCs during RPA removal to prevent potential failures during repetitive installs.
