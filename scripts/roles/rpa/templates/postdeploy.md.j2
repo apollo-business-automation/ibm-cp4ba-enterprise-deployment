@@ -9,17 +9,16 @@ The following list specifies when you need to perform particular post-deployment
 
 Based on https://www.ibm.com/docs/en/rpa/latest?topic=client-installing-by-using-installer
 
-You need to download IBM Robotic Process Automation Client Installer (part number M07KKML but make sure you install the corresponding one for the RPA version deployed) as IRPA_Client_Installer.zip from PPA  
-Unzip IRPA_Client_Installer.zip  
-Execute RPA Client install script with the following command. It also installs Studio.  
-Name of the exe file is version specific so you need to customize the following command.  
-Run as Administrator.  
-```cmd
-"IBM RPA Client Install.exe" /exenoui /qn installlevel=4 tenantcode=5000 licenseapiaddress=https://cpd-{{ rpa_project_name }}.{{ apps_endpoint_domain }}/rpa/api/
-```
-Wait until the installation is completed. You can use provided *client-install-wait.cmd* from *rpa-postdeploy* Config Map to wait for install process to finish.  
+You need to download and install IBM Robotic Process Automation Client Installer from PPA or Fix Central for corresponding version and OS (e.g. M09VDML	IBM Robotic Process Automation Client Installer 23.0.1 Windows Multilingual).
+
+Choose Setup Type: Complete  
+Proxy Configurtion: none  
+API Address: https://cpd-{{ rpa_project_name }}.{{ apps_endpoint_domain }}/rpa/api/  
+Tenant Code: 5000  
 
 ## Create vault password
+
+Note: You may need to add some non-alphanumeric character to the password.  
 
 In Windows system tray, find Vault, right click it and choose *Open*  
 Password: {{ rpa_universal_password }}  
