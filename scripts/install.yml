@@ -126,6 +126,11 @@
       ansible.builtin.include_role:
         name: mssql
 
+    - name: Install cloudbeaver
+      ansible.builtin.include_role:
+        name: cloudbeaver
+      when: cloudbeaver_enabled
+
     - name: Install RPA
       ansible.builtin.include_role:
         name: rpa

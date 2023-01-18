@@ -10,6 +10,11 @@
       ansible.builtin.include_role:
         name: rpa
 
+    - name: Remove cloudbeaver
+      ansible.builtin.include_role:
+        name: cloudbeaver
+      when: cloudbeaver_enabled
+
     - name: Remove MSSQL
       ansible.builtin.include_role:
         name: mssql

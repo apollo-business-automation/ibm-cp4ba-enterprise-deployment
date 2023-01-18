@@ -158,6 +158,22 @@ As UI for PostgreSQL
 - CP4BA Instance password: {{ universal_password }}
 
 {% endif %}
+
+{% if cloudbeaver_enabled == true %}
+### CloudBeaver
+
+As UI for MSSQL
+
+#### Endpoints
+
+- CloudBeaver UI: https://cloudbeaver.{{ apps_endpoint_domain }}
+
+#### Credentials
+
+- UI itself: {{ principal_admin_user }} / {{ universal_password }}
+- SQL Server database: sa / {{ universal_password }}
+
+{% endif %}
 ## CP4BA - CP4BA capabilities
 
 ### Zen service account credentials
