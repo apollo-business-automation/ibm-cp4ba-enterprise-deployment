@@ -179,7 +179,7 @@ As UI for MSSQL
 ### Zen service account credentials
 
 Based on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=users-generating-api-keys-authentication  
-If you need to call CP4BA endpoints with ZenApiKey (e. g. for ODM) a service account with username *cpadminservice* has been prepared for you with the generated api key which can be found in Project *apollo-one-shot* in ConfigMap *usage* in *zen-api-key* key.
+If you need to call CP4BA endpoints with ZenApiKey (e.g. for ODM) a service account with username *cpadminservice* has been prepared for you with the generated api key which can be found in Project *apollo-one-shot* in ConfigMap *usage* in *zen-api-key* key.
 
 ### Useful info
 
@@ -289,7 +289,7 @@ You may get 400 not authorized error when accessing endpoints. In this case clea
 
 - {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }} for access through web UIs
 - odmAdmin / {{ universal_password }} who can be used for ODM REST Basic Auth
-- For ODM REST auth with {{ lc_principal_admin_user }} user or other LDAP users, follow guide on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=access-using-zen-api-key-authentication with REST Authoziation header with ZenApiKey type
+- For ODM REST auth with {{ lc_principal_admin_user }} user or other LDAP users, follow guide on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=access-using-zen-api-key-authentication with REST Authorization header with ZenApiKey type
 
 {% endif %}
 {% if cp4ba_config.deployment_patterns.decisions_ads == true %}
@@ -323,7 +323,7 @@ For external share you need to use ingress prefixed set of endpoints.
 - CSS health check: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/P8CE/Health/CBRDashboard (https://cpe-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/P8CE/Health/CBRDashboard)
 - CMIS definitions UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cmis/openfncmis_wlp
 - CMIS endpoint: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cmis/openfncmis_wlp/services (e.g. for BAW CMIS)
-- GraphiQL UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/content-services-graphql
+- GraphQL UI: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/content-services-graphql
 - GraphQL endpoint: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/content-services-graphql/graphql
 - OS1 Desktop: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=OS1
 - External Share ingress for navigator: https://ingress-es-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/navigator/?desktop=admin
@@ -400,7 +400,7 @@ If you want FDM to connect to CPE, you need to provide it with Zen certificate. 
   - Port: 9443
   - Context path: /cmis/openfncmis_wlp/services
   - Secure server: true
-  - Repository: depends to which you want to connect in internal FNCM (e.g. BADOCS or OS1)
+  - Repository: depends on which you want to connect in internal FNCM (e.g. BADOCS or OS1)
   - Credentials as in Credentials section
 
 #### Credentials
