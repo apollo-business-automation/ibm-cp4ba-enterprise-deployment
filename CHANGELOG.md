@@ -19,7 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 
-- Cleanup PVCs during RPA removal to prevent potential failures during repetitive installs.   
+- Cleanup PVCs during RPA removal to prevent potential failures during repetitive installations.   
 
 ## [2023-01-09]
 
@@ -33,7 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 - PostgreSQL deployment.
-- pgAdmin for PostgreSQl UI administration.
+- pgAdmin for PostgreSQL UI administration.
 - Configuration for PM redis installation.
 - Extra task manager for flink for external event processing.
 

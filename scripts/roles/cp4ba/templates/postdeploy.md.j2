@@ -22,7 +22,7 @@ The following list specifies when you need to perform particular post-deployment
     - [Update Google OIDC redirect URIs](#update-google-oidc-redirect-uris) - (don't use now) When you configured Google ID for External Share.
     - [External Share](#external-share) - (don't use now) When you want to use External Share.
     - [External Share capability in BAN](#external-share-capability-in-ban) - (don't use now) When you want to use External Share.
-    - [IER configuration](#ier-configuration) - When you want configure IBM Enterprise Records.
+    - [IER configuration](#ier-configuration) - When you want to configure IBM Enterprise Records.
   - [Automation Document Processing (ADP) (document_processing pattern)](#automation-document-processing-adp-document_processing-pattern)
     - [Connect ADP project to Git](#connect-adp-project-to-git) - When you need to finish ADP configuration. Without Git connection, you cannot publish your solution.
 
@@ -134,7 +134,7 @@ Add the following to eclipse.ini
 -Djavax.net.ssl.trustStore=truststore.jks
 ```
 
-Please note that after using this trust store, eclipse marketplace and updates will stop to work. To overcome this, you can to extract Global CA certificate from downloaded truststore.jks, make a copy of java cacerts, import GLobal CA into it and use the newly created cacerts.
+Please note that after using this trust store, eclipse marketplace and updates will stop to work. To overcome this, you can to extract Global CA certificate from downloaded truststore.jks, make a copy of java cacerts, import Global CA into it and use the newly created cacerts.
 
 
 When configuring RES connection in Deployment use  
@@ -155,7 +155,7 @@ Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=t
 
 ### ADS project git repo & connection
 
-ADS is setup to create repositories for Projects automatically. If you need to switch to specificaly named repo, you can use the following procedure.  
+ADS is set up to create repositories for Projects automatically. If you need to switch to specifically named repo, you can use the following procedure.  
 Create Repository. Change *name* in the payload to correspond to your project name.
 ```bash
 curl --insecure --request POST "https://gitea.{{ apps_endpoint_domain }}/api/v1/orgs/ads/repos" \
@@ -313,7 +313,7 @@ External desktop: New desktop
   Desktop ID: ExternalShareOS1  
 Consent agreement: Welcome to CP4A  
 Click OK  
-This may take some time, and the request can time out. Click OK after a minute again and it should complete successfully. In the mean time External share container is configuring object store behind the scenes.  
+This may take some time, and the request can time out. Click OK after a minute again, and it should complete successfully. In the meantime External share container is configuring object store behind the scenes.  
 Click Save and Close  
 
 Based on https://www.ibm.com/docs/en/content-navigator/latest?topic=share-configuring-menu-action  
@@ -358,7 +358,7 @@ URLs are available in *apollo-one-shot* Project in *usage* ConfigMap (IER CPE HT
 Some steps were already automated:
 - FPOS and ROS were created
 - CPE Configuration URL was created (https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=records-creating-content-platform-engine-route-http-protocol)
-- IER config mgr was run to setup FPOS and ROS for IER (https://www.ibm.com/docs/en/enterprise-records/5.2.1?topic=rercmbucl-creating-object-store-configuration-new-installation-profile-by-using-commands)
+- IER config mgr was run to set up FPOS and ROS for IER (https://www.ibm.com/docs/en/enterprise-records/5.2.1?topic=rercmbucl-creating-object-store-configuration-new-installation-profile-by-using-commands)
 - Task Manager pod has TM_JOB_URL parameter set (https://www.ibm.com/docs/en/enterprise-records/5.2.1?topic=in-configuring-content-navigator-task-manager-enterprise-records)
 - Additional Jars and configs were added to Task manager (https://www.ibm.com/docs/en/enterprise-records/5.2.1?topic=in-configuring-content-navigator-task-manager-enterprise-records)
 - Task manager pod restarted (https://www.ibm.com/docs/en/enterprise-records/5.2.1?topic=in-configuring-content-navigator-task-manager-enterprise-records)
