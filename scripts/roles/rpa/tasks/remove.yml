@@ -172,6 +172,23 @@
     wait_sleep: 5
     wait_timeout: 50
 
+- name: Delete PVCs
+  kubernetes.core.k8s:
+    state: absent
+    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
+    host: "{{ rpa_k8s_host | default(omit) }}"
+    api_version: v1
+    kind: PersistentVolumeClaim
+    name: "{{ item }}"
+    namespace: "{{ rpa_project_name }}"
+    wait: true
+    wait_sleep: 15
+    wait_timeout: 120
+  with_items:
+    - data-rpa-mq-rpa-ibm-mq-0
+    - rpa-apiserver-rpa-hot
+    - rpa-apiserver-rpa-archive
+
 - name: Remove post-deploy.md Config Map
   kubernetes.core.k8s:
     api_key: "{{ rpa_k8s_api_key | default(omit) }}"

@@ -2,7 +2,7 @@
 
 Goal of this repository is to almost automagically install CP4BA Production (previously Enterprise) patterns and also IAF components with all kinds of prerequisites and extras on OpenShift. Read the [Disclaimer ✋](#disclaimer-) carefully.
 
-Last installation was performed on 2023-01-09 with CP4BA version 22.0.2.
+Last installation was performed on 2023-01-27 with CP4BA version 22.0.2 IF001.
 
 - [Disclaimer ✋](#disclaimer-)
 - [Documentation base 📝](#documentation-base-)
@@ -32,7 +32,7 @@ Please do not hesitate to create an issue here if needed. Your feedback is appre
 
 **Not for production use (neither dev nor test or prod environments). Suitable for Demo and PoC environments - but with Production deployment.**  
 
-**!Important** - Keep in mind that the platform contains DB2 which is licensed with Standard Edition license available from CP4BA and it must adhere to the *Additional IBM DB2 Standard Edition Detail* in official license information at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument (or its newer revision).
+**!Important** - Keep in mind that the platform contains DB2 which is licensed with Standard Edition license available from CP4BA, and it must adhere to the *Additional IBM DB2 Standard Edition Detail* in official license information at http://www-03.ibm.com/software/sla/sladb.nsf/doclookup/F2925E0D5C24EAB4852586FE0060B3CC?OpenDocument (or its newer revision).
 
 **!Important** - Keep in mind that this deployment contains capabilities (the ones which are not bundled with CP4BA) which are not eligible to run on Worker Nodes covered by CP4BA OCP Restricted licenses. More info on https://www.ibm.com/docs/en/cloud-paks/1.0?topic=clusters-restricted-openshift-entitlement.
 
@@ -51,10 +51,10 @@ Deployment of other parts is also based on respective official documentations.
 ## Benefits 🚀
 
 - Automatic deployment of the whole platform where you don't need to take care about almost any prerequisites
-- Common Global CA used to sign all certificates so there is only one certificate you need to trust in you local machine to trust all URLs of the whole platform
+- Common Global CA used to sign all certificates, so there is only one certificate you need to trust in you local machine to trust all URLs of the whole platform
 - Trusted certificate in browser also enable you to save passwords
-- Wherever possible a common admin user *cpadmin* with adjustable password is used so you don't need to remember multiple credentials when you want to access the platform (convenience also comes with responsibility - so you don't want to expose your platform to whole world)
-- The whole platform is running on containers so you don't need to manually prepare anything on traditional VMs and take care of them including required prerequisites
+- Wherever possible a common admin user *cpadmin* with adjustable password is used, so you don't need to remember multiple credentials when you want to access the platform (convenience also comes with responsibility - so you don't want to expose your platform to whole world)
+- The whole platform is running on containers, so you don't need to manually prepare anything on traditional VMs and take care of them including required prerequisites
 - Many otherwise manual post-deployment steps have been automated
 - Pre integrated and automatically connected extras are deployed in the platform for easier access/management/troubleshooting
 - You have a working starting Production deployment which you can use as a reference for further custom deployments
@@ -86,10 +86,11 @@ Contains extra software which makes working with the platform even easier.
 - Roundcube - Web UI for included Mail server to be able to browse incoming emails.
 - Cerebro - Web UI elastic search browser automatically connected to ES instance deployed with CP4BA.
 - AKHQ - Web UI kafka browser automatically connected to Kafka instance deployed with CP4BA.
-- Kibana - Web UI elastic search dashboarding tool automatically connected to ES instance deployed with CP4BA.
+- Kibana - Web UI elastic search dashboard tool automatically connected to ES instance deployed with CP4BA.
 - Mail server - For various mail integrations e.g. from BAN, BAW and RPA.
 - Mongo Express - Web UI for Mongo DB databases for CP4BA and Process Mining to easier troubleshoot DB.
 - pgAdmin - Web UI for PostgreSQL database making it easier to admin and troubleshoot the DB.
+- CloudBeaver - Web UI for MSSQL database making it easier to admin and troubleshoot the DB.
 
 ### CP4BA (Cloud Pak for Business Automation) section<!-- omit in toc -->
 
@@ -115,7 +116,7 @@ More info available in official docs at https://www.ibm.com/docs/en/cpfs.
 
 - License metering - Tracks license usage. License Reporter as Web UI is also installed.
 - IAM - Provides Identity and Access management.
-- Health Checking - Enables you to generate MusthGather output which is useful for support.
+- Health Checking - Enables you to generate MustGather output which is useful for support.
 
 ### Pre-requisites section<!-- omit in toc -->
 
@@ -132,13 +133,13 @@ Contains prerequisites for the whole platform.
 Multiple command line tools are installed inside a container to make the installation possible.
 
 - Global CA - Generated self-signed Certification Authority via OpenSSL to make trusting the platform easier. It is also possible to provide your own CA and how to do so is described later in this doc.
-- helm - Used for helm charts installation (https://helm.sh/docs/).
+- Helm - Used for helm charts installation (https://helm.sh/docs/).
 
 ## Environments used for installation 💻
 
 With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift 4.10 with 8 Worker Nodes (16 CPU, 32GB Memory each), however it was historically executed on the following once.  
 
-- ROKS - RedHat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
+- ROKS - Red Hat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
 OpenShift 4.8.x & 4.10.x - 8 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
 Successfully installed
 
@@ -147,14 +148,14 @@ OpenShift 4.8.x & 4.10.x on vms - 7 Worker Nodes (16 CPU, 32GB Memory) - Managed
 Successfully installed
 
 - ARO - Azure Red Hat OpenShift allowing to run managed Red Hat OpenShift on Azure - not tested recently  
-OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
+OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Storage Class  
 Successfully installed
 
 - ROSA - Red Hat OpenShift Service on AWS - not tested recently  
-OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Strorage Class  
-Successfully installed **but has issues** with passthrough Routes malfunction making it hard to access the platform.
+OpenShift 4.8.x - 7 Worker Nodes (16 CPU, 32GB Memory) - ODF (OCS) with ocs-storagecluster-cephfs Storage Class  
+Successfully installed **but has issues** with pass-through Routes malfunction making it hard to access the platform.
 
-The following picture shows real idle utilization of Nodes with deployed platform on above mentioned ROKS as an example.
+The following picture shows real idle utilization of Nodes with deployed platform on above-mentioned ROKS as an example.
 
 ![assets/utilization.png](assets/utilization.png)
 
@@ -204,7 +205,7 @@ node/10.127.73.90
 
 ## Automated post-deployment tasks ✅
 
-For your convenience the following post-deplyment setup tasks have been automated:
+For your convenience the following post-deployment setup tasks have been automated:
 - Zen - Users and Groups added.
 - Zen - Administrative group is given all available privileges from all pillars.
 - Zen - Regular groups are given developer privileges from all pillars.
@@ -229,7 +230,7 @@ For your convenience the following post-deplyment setup tasks have been automate
 
 ## Pre-requisites ⬅️
 
-- OpenShift cluster sized according with the system requirements
+- OpenShift cluster sized according to the system requirements
   - Cloud Pak: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=pcmppd-system-requirements
   - RPA: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=openshift-pre-installation-requirements
   - Process Mining: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=platform-pre-installation-requirements
@@ -241,7 +242,7 @@ For your convenience the following post-deplyment setup tasks have been automate
 
 ## Installation steps ⚡
 
-The following steps instructs you to create new OpenShift resources via YAML files.
+The following steps instruct you to create new OpenShift resources via YAML files.
 
 You can apply them via OpenShift console (with the handy *plus* icon at the top right - Import YAML) or *oc* CLI from your machine.
 
@@ -497,6 +498,9 @@ data:
     ## Set to false if you don't want to install (or remove) pgAdmin (PostgreSQL UI)
     pgadmin_enabled: true
 
+    ## Set to false if you don't want to install (or remove) CloudBeaver (MSSQL UI)
+    cloudbeaver_enabled: true
+
     ## Set to false if you don't want to install (or remove) Roundcube
     roundcube_enabled: true
 
@@ -573,7 +577,7 @@ stringData:
 
 Trigger the installation by applying the following YAML (also see the picture below the YAML).
 
-This Job runs a Pod which performs the installation. It attempts 3 times to perform the install.
+This Job runs a Pod which performs the installation. It attempts 3 times to perform the installation.
 
 ```yaml
 apiVersion: batch/v1

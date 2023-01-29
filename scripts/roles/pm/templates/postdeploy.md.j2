@@ -1,18 +1,14 @@
 # PM post-deploy
 
 The following list specifies when you need to perform particular post-deployment steps
-- [Task Mining Client](#task-mining-client) - When you want to use Task Mining feature
+- [Task Mining Client](#task-mining-client) - When you want to use Task Mining feature.
 
 ## Task Mining Client
 
 Based on https://www.ibm.com/docs/en/process-mining/latest?topic=installation-process-mining-packages
 Based on https://www.ibm.com/docs/en/process-mining/latest?topic=optional-installing-task-mining-agent
 
-You need to download IBM Process Mining Client (part number M0726ML but make sure you install the corresponding one for the PM version deployed) as IPM_Client_Installer.zip from PPA  
-Unzip IPM_Client_Installer.zip  
-Execute PM Client install script with the following command.  
-Name of the msi file is version specific so you need to customize the following command.  
-Run as Administrator.  
-```cmd
-msiexec /i TaskMining.Agent.UI.Installer.msi /log log.txt /quiet SILENT_TM_ENDPOINT=https://processmining-tm-{{ pm_project_name }}.{{ apps_endpoint_domain }}/ SILENT_ALLOW_UNSECURE_HTTPS=true
-```
+You need to download and install Process Mining Client installer from PPA or Fix Central for corresponding version and OS (e.g. M09PTML	Process Mining 1.13.2 Client Windows Multilingual).
+
+Task mining endpoint: https://processmining-tm-{{ pm_project_name }}.{{ apps_endpoint_domain }}/  
+Accept untrusted certificates: Yes  
