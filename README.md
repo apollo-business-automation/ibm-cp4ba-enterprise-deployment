@@ -2,7 +2,7 @@
 
 Goal of this repository is to almost automagically install CP4BA Production (previously Enterprise) patterns and also IAF components with all kinds of prerequisites and extras on OpenShift. Read the [Disclaimer ✋](#disclaimer-) carefully.
 
-Last installation was performed on 2023-01-27 with CP4BA version 22.0.2 IF001.
+Last installation was performed on 2023-01-30 with CP4BA version 22.0.2 IF001.
 
 - [Disclaimer ✋](#disclaimer-)
 - [Documentation base 📝](#documentation-base-)
@@ -137,7 +137,7 @@ Multiple command line tools are installed inside a container to make the install
 
 ## Environments used for installation 💻
 
-With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift 4.10 with 8 Worker Nodes (16 CPU, 32GB Memory each), however it was historically executed on the following once.  
+With proper sizing of the cluster and provided RWX Storage Class, this guide should be working on any OpenShift 4.10.46+ with 8 Worker Nodes (16 CPU, 32GB Memory each), however it was historically executed on the following once.  
 
 - ROKS - Red Hat OpenShift Kubernetes Service allowing to run managed Red Hat OpenShift on IBM Cloud  
 OpenShift 4.8.x & 4.10.x - 8 Worker Nodes (16 CPU, 32GB Memory) - Managed NFS Storage Class  
@@ -163,44 +163,44 @@ The following output shows CPU and Memory requests and limits on Nodes on sample
 
 ```text
 node/10.126.234.118
-  Resource           Requests          Limits
-  cpu                8896m (56%)       61800m (389%)
-  memory             18621971Ki (30%)  75921696Ki (126%)
+  Resource           Requests           Limits
+  cpu                9291m (58%)        47040m (296%)
+  memory             23479827Ki (39%)   59177248Ki (98%)
 
 node/10.126.234.120
   Resource           Requests          Limits
-  cpu                8972m (56%)       33 (207%)
-  memory             18004499Ki (29%)  39627040Ki (65%)
+  cpu                8682m (54%)       48120m (303%)
+  memory             19735131Ki (32%)  59927840Ki (99%)
 
 node/10.126.234.123
   Resource           Requests          Limits
-  cpu                8939m (56%)       34410m (216%)
-  memory             26085907Ki (43%)  57037376716800m (92%)
+  cpu                9519m (59%)       34620m (218%)
+  memory             15941139Ki (26%)  38415648Ki (63%)
 
 node/10.126.234.88
-  Resource           Requests           Limits
-  cpu                9815m (61%)        48925m (308%)
-  memory             16605715Ki (27%)   56155424Ki (93%)
+  Resource           Requests          Limits
+  cpu                10470m (65%)      49100m (309%)
+  memory             21683731Ki (36%)  76425546956800m (124%)
 
 node/10.127.73.103
   Resource           Requests          Limits
-  cpu                9575m (60%)       100280m (631%)
-  memory             25315931Ki (42%)  118744352Ki (197%)
+  cpu                8715m (54%)       81800m (515%)
+  memory             23804435Ki (39%)  101947680Ki (169%)
 
 node/10.127.73.126
   Resource           Requests          Limits
-  cpu                9686m (60%)       14840m (93%)
-  memory             14702099Ki (24%)  25485600Ki (42%)
+  cpu                9686m (60%)       16695m (105%)
+  memory             17991187Ki (29%)  26956064Ki (44%)
 
 node/10.127.73.85
   Resource           Requests          Limits
-  cpu                9475m (59%)       20200m (127%)
-  memory             29463059Ki (48%)  51413280Ki (85%)
+  cpu                9265m (58%)       48800m (307%)
+  memory             29051411Ki (48%)  77058336Ki (128%)
 
 node/10.127.73.90
   Resource           Requests          Limits
-  cpu                8030m (50%)       53710m (338%)
-  memory             17379859Ki (28%)  61489440Ki (102%)
+  cpu                8960m (56%)       41490m (261%)
+  memory             16523795Ki (27%)  47665440Ki (79%)
 ```
 
 ## Automated post-deployment tasks ✅
@@ -312,7 +312,7 @@ data:
 
   # This parameter cotains a specific tag name of the repository. This allows you to run Install and Remove from the same version.
   # In situation where you want to clean and install newver version you leave the original tag you had, run through remove and then change this tag to lastest and run install.
-  git_branch: "2023-01-09"
+  git_branch: "2023-01-30"
 
   # Variables
   variables.yml: |
