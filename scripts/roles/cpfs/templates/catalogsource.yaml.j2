@@ -1,4 +1,4 @@
-# case 1.18.0 / csv 3.22.0 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cp-common-services
+# case 1.19.0 / csv 3.23.0 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cp-common-services
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -10,12 +10,12 @@ spec:
   displayName: IBMCS Operators
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-common-service-catalog@sha256:54a294b34afe71ceede6ebe6c8922b5a8accc7ca3bc23a828b885fc795d32c72
+  image: icr.io/cpopen/ibm-common-service-catalog@sha256:12744600eaa9d509ecca3d0a7d48f1fe022fade59eacd7c8f646c1d0f1e9dd64
   updateStrategy:
     registryPoll:
       interval: 45m
 ---
-# case 1.0.12 / csv 3.22.0 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-bts-bundle
+# case 1.0.13 / csv 3.23.0 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-bts-bundle
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -27,12 +27,12 @@ spec:
   displayName: BTS Operator
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-bts-operator-catalog@sha256:ea115ec291e4a0d1c17ed7dd7bee052c2a780fba60fe80f128d084074d71a070
+  image: icr.io/cpopen/ibm-bts-operator-catalog@sha256:1cbb05e621a8b0e6eacb720c823814ce4d9d178c9aad98252599e9972f911671
   updateStrategy:
     registryPoll:
       interval: 45m
 ---
-# case 4.8.0 / csv 1.15.5 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cloud-native-postgresql
+# case 4.9.0 / csv 1.17.2 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cloud-native-postgresql
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -44,7 +44,7 @@ spec:
   displayName: Cloud Native Postgresql Catalog
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-cpd-cloud-native-postgresql-operator-catalog@sha256:3da7f227fee1034d585c2c76a643a6d749784ca005565de83b0016079c5151ac
+  image: icr.io/cpopen/ibm-cpd-cloud-native-postgresql-operator-catalog@sha256:5b9eb4816ff00bfe1c063d2f707d55c2ea1df745bde4e7a17712214f62ebdf24
   updateStrategy:
     registryPoll:
       interval: 45m

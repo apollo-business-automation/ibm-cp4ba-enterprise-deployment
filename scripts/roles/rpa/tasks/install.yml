@@ -127,71 +127,6 @@
     wait_sleep: 15
     wait_timeout: 15
 
-# TODO hotfix for CPFS installed in multinamespace mode START last with RPA 23.0.0 at 2022-12-14
-- name: Prepare yaml file for licensing ConfigMap
-  ansible.builtin.template:
-    src: licensing-configmap.yaml.j2
-    dest: "{{ rpa_output_directory }}/licensing-configmap.yaml"
-    mode: u+rwx
-
-- name: Add licensing ConfigMap
-  kubernetes.core.k8s:
-    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
-    host: "{{ rpa_k8s_host | default(omit) }}"
-    state: present
-    force: false
-    merge_type: merge
-    src: "{{ rpa_output_directory }}/licensing-configmap.yaml"
-    wait: true
-    wait_sleep: 15
-    wait_timeout: 15
-
-- name: Wait for licensing token upload secret to appear
-  kubernetes.core.k8s_info:
-    api_key: "{{ cpfs_k8s_api_key | default(omit) }}"
-    host: "{{ cpfs_k8s_host | default(omit) }}"
-    api_version: v1
-    kind: Secret
-    name: ibm-licensing-upload-token
-    namespace: cs-control
-  register: licensing_secret
-  retries: 10
-  delay: 30
-  until: licensing_secret.resources | length == 1
-
-- name: Get existing licensing secret
-  kubernetes.core.k8s_info:
-    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
-    host: "{{ rpa_k8s_host | default(omit) }}"
-    api_version: v1
-    kind: Secret
-    namespace: cs-control
-    name: ibm-licensing-upload-token
-  register: licensing_secret
-
-- name: Set token_upload
-  ansible.builtin.set_fact:
-    token_upload: "{{ licensing_secret.resources[0].data['token-upload'] }}"
-
-- name: Prepare yaml file for licensing Secret
-  ansible.builtin.template:
-    src: licensing-secret.yaml.j2
-    dest: "{{ rpa_output_directory }}/licensing-secret.yaml"
-    mode: u+rwx
-
-- name: Add licensing Secret
-  kubernetes.core.k8s:
-    api_key: "{{ rpa_k8s_api_key | default(omit) }}"
-    host: "{{ rpa_k8s_host | default(omit) }}"
-    state: present
-    force: false
-    merge_type: merge
-    src: "{{ rpa_output_directory }}/licensing-secret.yaml"
-    wait: true
-    wait_sleep: 15
-    wait_timeout: 15
-# TODO hotfix for CPFS installed in multinamespace mode END
-
 - name: Load RPA CR to variable
   ansible.builtin.set_fact:
     cr: "{{ lookup('template', 'roboticprocessautomation.yaml.j2') | from_yaml }}"
@@ -418,12 +353,6 @@
   ansible.builtin.template:
     src: postdeploy.md.j2
     dest: "{{ rpa_output_directory }}/postdeploy.md"
-    mode: u+rwx
-
-- name: Prepare client-install-wait.cmd
-  ansible.builtin.template:
-    src: client-install-wait.cmd.j2
-    dest: "{{ rpa_output_directory }}/client-install-wait.cmd"
     mode: u+rwx
 
 - name: Prepare post-deploy.md Config Map

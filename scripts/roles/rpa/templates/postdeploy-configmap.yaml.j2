@@ -6,5 +6,3 @@ metadata:
 data:
   postdeploy.md: |- 
     {{ lookup('file', rpa_output_directory+'/postdeploy.md') | indent(4) }}
-  client-install-wait.cmd: |- 
-    {{ lookup('file', rpa_output_directory+'/client-install-wait.cmd') | indent(4) }}

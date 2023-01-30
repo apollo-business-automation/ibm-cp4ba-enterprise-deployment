@@ -19,6 +19,8 @@
       value: "{{ db2mc_enabled }}"
     - name: pgadmin_enabled
       value: "{{ pgadmin_enabled }}"
+    - name: cloudbeaver_enabled
+      value: "{{ cloudbeaver_enabled }}"
     - name: roundcube_enabled
       value: "{{ roundcube_enabled }}"
     - name: mongo_express_enabled
