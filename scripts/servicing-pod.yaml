@@ -11,7 +11,7 @@ spec:
       image: ubi9/ubi:9.0.0
       command: ["/bin/bash"]
       args:
-        ["-c","cd /usr; yum install git -y && git clone --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x servicing.sh; ./servicing.sh; while true; do echo 'Apollo one-shot servicing pod - Ready - Enter it via Terminal and \"bash -l\" - Delete it after you are done.'; sleep 300; done"]      
+        ["-c","cd /usr; yum install git -y && git clone --depth 1 --shallow-submodules --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x servicing.sh; ./servicing.sh; while true; do echo 'Apollo one-shot servicing pod - Ready - Enter it via Terminal and \"bash -l\" - Delete it after you are done.'; sleep 300; done"]      
       imagePullPolicy: IfNotPresent
       env:
         - name: GIT_REPOSITORY
