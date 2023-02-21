@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Other file types can now be uploaded in BAW Views (txt,xml,png,jpg,jpeg,pdf,xls,xlsx,doc,docx,ppt,pptx).
 - BAW email notification sent on reassignment.
 - ODM customization point for disabledDecisionModel.
+- Updated RPA to 23.0.2.
 
 ### Changed
 
