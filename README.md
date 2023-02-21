@@ -459,6 +459,15 @@ data:
             nodelabel_key: nvidia.com/gpu.present
             nodelabel_value: "true"
     
+    # Additional customization for Operational Decision Management
+    # Contents of the following will be merged into ODM part of CP4BA CR yaml file. Arrays are overwriten.
+    odm_cr_custom:
+      spec:
+        odm_configuration:
+          decisionCenter:
+            # Enable support for decision models
+            disabledDecisionModel: false
+    
     # Additional customization for Robotic Process Automation
     # Contents of the following will be merged into RPA CR yaml file. Arrays are overwriten.
     rpa_cr_custom:
