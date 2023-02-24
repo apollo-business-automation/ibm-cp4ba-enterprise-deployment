@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - BAW email notification sent on reassignment.
 - ODM customization point for disabledDecisionModel.
 - Updated RPA to 23.0.2.
+- Updated CP4BA to 22.0.2.2.
 
 ### Changed
 

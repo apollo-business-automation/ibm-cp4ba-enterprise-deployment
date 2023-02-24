@@ -1,4 +1,4 @@
-# case 4.1.1 / csv 22.2.1 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cp-automation
+# case 4.1.2 / csv 22.2.2 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cp-automation
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -8,12 +8,12 @@ spec:
   displayName: ibm-cp4a-operator
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-cp-automation-catalog@sha256:95ff5f4c93fa26ee47fa4f620425b87bc5acce106b27a9c2497bc17681253349
+  image: icr.io/cpopen/ibm-cp-automation-catalog@sha256:56aca04a9be8c9e1354c19fd976c0366ea5aff22f0f3ed30c43d4393d8215b02
   updateStrategy:
     registryPoll:
       interval: 45m
 ---
-# case 1.3.12 / csv 1.3.12 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cp-automation-foundation
+# case 1.3.13 / csv 1.3.13 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cp-automation-foundation
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -23,12 +23,12 @@ spec:
   displayName: IBM Automation Foundation Operators
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-cp-automation-foundation-catalog@sha256:61b40644c6442b21cce3d32eb07b3ae9bc4443b43d33575a8c73fb9cac6bfb57
+  image: icr.io/cpopen/ibm-cp-automation-foundation-catalog@sha256:1753b1cabf6cdc6d295d8da096ce3f769b6487fdbef5802de63dccbfa7d9a43b
   updateStrategy:
     registryPoll:
       interval: 45m
 ---
-# case 1.3.12 / csv 1.3.12 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-automation-foundation-core
+# case 1.3.13 / csv 1.3.13 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-automation-foundation-core
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -38,7 +38,7 @@ spec:
   displayName: IBM Automation Foundation Core Operators
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-automation-foundation-core-catalog@sha256:39ba42e91d7493d1ff7326d5364b99fe7305dbe713a71948de97b6a730314ede
+  image: icr.io/cpopen/ibm-automation-foundation-core-catalog@sha256:8bd0b52526de4a2adf6b299237f3d295a710e7d0ff538a319226c614ceae618b
   updateStrategy:
     registryPoll:
       interval: 45m
