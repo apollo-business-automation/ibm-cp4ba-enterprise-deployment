@@ -3,8 +3,8 @@ rpa_base_dir: /tmp
 rpa_dir_name: rpa
 rpa_k8s_api_key: ""
 rpa_k8s_host: ""
-rpa_operator_channel: v1.10
-rpa_version: 1.10.0
+rpa_operator_channel: v1.9
+rpa_version: 1.9.0
 rpa_project_name: cp4ba
 rpa_storage_class_name: ""
 rpa_universal_password: ""
