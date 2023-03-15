@@ -31,6 +31,9 @@ spec:
         replica_count: 1
         auto_scaling:
           enabled: false
+        probe:
+          startup:
+            initial_delay_seconds: 240          
       cpds:
         replica_count: 1
         auto_scaling:
