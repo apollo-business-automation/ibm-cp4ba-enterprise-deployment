@@ -122,8 +122,8 @@ More info available in official docs at https://www.ibm.com/docs/en/cpfs.
 
 Contains prerequisites for the whole platform.
 
-- DB2 - Database storage for Capabilities which need it.
-- PostgreSQL - Database storage for Capabilities which need it.
+- DB2 - Database storage for ADP.
+- PostgreSQL - Database storage for the majority of capabilities.
 - OpenLDAP - Directory solution for users and groups definition.
 - MSSQL server - Database storage for RPA server.
 - MongoDB - Database storage for ADS and Process Mining.
