@@ -322,12 +322,18 @@ data:
     ## (https://myibm.ibm.com/products-services/containerlibrary)  
     icr_password: TODO_ICR_PASSWORD
 
-    ## Name of the StorageClass used for all PVCs which must be already present in your OpenShift. 
-    ## Must be RWX and Fast.
+    ## Name of the StorageClass used for all RWX File PVCs which must be already present in your OpenShift. 
+    ## Must be RWX File and Fast.
     ## For ROKS this class could be ibmc-file-gold-gid (But strongly discouraged due to slow PVC binding)
     ## For NFS based class this could be managed-nfs-storage
-    ## For ODF (OCS) based class (e.g. on ARO or ROSA) this could be ocs-storagecluster-cephfs
-    storage_class_name: managed-nfs-storage
+    ## For ODF (OCS) based class this could be ocs-storagecluster-cephfs
+    storage_class_name: ocs-storagecluster-cephfs
+
+    ## Name of the StorageClass used for all RWO Block PVCs which must be already present in your OpenShift. 
+    ## Must be RWO Block and Fast.
+    ## For ODF (OCS) based class this could be ocs-storagecluster-ceph-rbd
+    ## If you do not have RWO Block storage class, you can specify the same RWX File one from storage_class_name variable but it is not a supported scenario from CP4BA perspective.
+    block_storage_class_name: ocs-storagecluster-ceph-rbd
 
     ## Options are OCP and ROKS (ROKS is specific to managed OpenShift on IBM Cloud)
     ## OCP option also applies to other managed OpenShifts ( like ARO, ROSA, etc. )

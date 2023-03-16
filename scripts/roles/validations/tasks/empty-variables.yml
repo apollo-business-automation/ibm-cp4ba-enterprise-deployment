@@ -5,3 +5,5 @@
   with_items:
     - name: storage_class_name
       value: "{{ storage_class_name }}"
+    - name: block_storage_class_name
+      value: "{{ block_storage_class_name }}"
