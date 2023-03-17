@@ -13,7 +13,7 @@ spec:
     registryPoll:
       interval: 45m
 ---
-# case 1.6.2 / csv 1.6.2 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cloud-databases-redis
+# case 1.6.3 / csv 1.6.3 / https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cloud-databases-redis
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -23,7 +23,7 @@ spec:
   displayName: ibm-cloud-databases-redis-operator-catalog
   publisher: IBM
   sourceType: grpc
-  image: icr.io/cpopen/ibm-cloud-databases-redis-catalog@sha256:f7125e46c322421067a70a00227b3244f86c111e301d2695ba9e30e12ec19955
+  image: icr.io/cpopen/ibm-cloud-databases-redis-catalog@sha256:02d97f4a762f368b05605b64ea0fdbb88e2f513665c8148fa0a407c8fe13c90f
   updateStrategy:
     registryPoll:
       interval: 45m

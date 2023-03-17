@@ -281,7 +281,7 @@
         patch:
           - op: add
             path: "/spec/services/{{ service_index }}/spec/mongoDB/storageClass"
-            value: "{{ cpfs_storage_class_name }}"
+            value: "{{ cpfs_block_storage_class_name }}"
 
   when: (operand_config | json_query(condition_query) | unique | length == 0 )
   vars:

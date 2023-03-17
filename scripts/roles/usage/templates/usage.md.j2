@@ -318,6 +318,7 @@ For external share you need to use ingress prefixed set of endpoints.
 - CPE WSI endpoint: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/wsi/FNCEWS40MTOM (https://cpe-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/wsi/FNCEWS40MTOM)
 - CPE health check: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/P8CE/Health
 - CPE ping page: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/FileNet/Engine
+- CPE automatic upgrade status endpoint: https://cpe-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/FileNet/AutomaticUpgradeStatus
 - PE ping page: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/peengine/IOR/ping
 - PE details page: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/peengine/IOR/admin/help
 - CSS health check: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/cpe/P8CE/Health/CBRDashboard (https://cpe-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/P8CE/Health/CBRDashboard)
@@ -395,6 +396,8 @@ If you want FDM to connect to CPE, you need to provide it with Zen certificate. 
 - Case monitor: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=bawmonitor
 - Case Client: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=baw
 - Case administration: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/icn/navigator/?desktop=bawadmin
+- Case REST endpoint: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bas/CaseManager/CASEREST/
+- Case Builder: https://cpd-{{ cp4ba_project_name }}.{{ apps_endpoint_domain }}/bas/CaseBuilder
 - FNCM Server definition in BAW:
   - Host name: cp4ba-cmis-svc.cp4ba.svc.cluster.local
   - Port: 9443

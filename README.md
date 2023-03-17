@@ -2,7 +2,7 @@
 
 Goal of this repository is to almost automagically install CP4BA Production (previously Enterprise) patterns and also IAF components with all kinds of prerequisites and extras on OpenShift. Read the [Disclaimer ✋](#disclaimer-) carefully.
 
-Last installation was performed on 2023-01-30 with CP4BA version 22.0.2 IF001.
+Last installation was performed on 2023-03-17 with CP4BA version 22.0.2 IF002.
 
 - [Disclaimer ✋](#disclaimer-)
 - [Documentation base 📝](#documentation-base-)
@@ -122,8 +122,8 @@ More info available in official docs at https://www.ibm.com/docs/en/cpfs.
 
 Contains prerequisites for the whole platform.
 
-- DB2 - Database storage for Capabilities which need it.
-- PostgreSQL - Database storage for Capabilities which need it.
+- DB2 - Database storage for ADP.
+- PostgreSQL - Database storage for the majority of capabilities.
 - OpenLDAP - Directory solution for users and groups definition.
 - MSSQL server - Database storage for RPA server.
 - MongoDB - Database storage for ADS and Process Mining.
@@ -312,7 +312,7 @@ data:
 
   # This parameter cotains a specific tag name of the repository. This allows you to run Install and Remove from the same version.
   # In situation where you want to clean and install newver version you leave the original tag you had, run through remove and then change this tag to lastest and run install.
-  git_branch: "2023-01-30"
+  git_branch: "2023-03-17"
 
   # Variables
   variables.yml: |
@@ -322,12 +322,18 @@ data:
     ## (https://myibm.ibm.com/products-services/containerlibrary)  
     icr_password: TODO_ICR_PASSWORD
 
-    ## Name of the StorageClass used for all PVCs which must be already present in your OpenShift. 
-    ## Must be RWX and Fast.
+    ## Name of the StorageClass used for all RWX File PVCs which must be already present in your OpenShift. 
+    ## Must be RWX File and Fast.
     ## For ROKS this class could be ibmc-file-gold-gid (But strongly discouraged due to slow PVC binding)
     ## For NFS based class this could be managed-nfs-storage
-    ## For ODF (OCS) based class (e.g. on ARO or ROSA) this could be ocs-storagecluster-cephfs
-    storage_class_name: managed-nfs-storage
+    ## For ODF (OCS) based class this could be ocs-storagecluster-cephfs
+    storage_class_name: ocs-storagecluster-cephfs
+
+    ## Name of the StorageClass used for all RWO Block PVCs which must be already present in your OpenShift. 
+    ## Must be RWO Block and Fast.
+    ## For ODF (OCS) based class this could be ocs-storagecluster-ceph-rbd
+    ## If you do not have RWO Block storage class, you can specify the same RWX File one from storage_class_name variable but it is not a supported scenario from CP4BA perspective.
+    block_storage_class_name: ocs-storagecluster-ceph-rbd
 
     ## Options are OCP and ROKS (ROKS is specific to managed OpenShift on IBM Cloud)
     ## OCP option also applies to other managed OpenShifts ( like ARO, ROSA, etc. )
@@ -458,6 +464,15 @@ data:
             gpu_enabled: false
             nodelabel_key: nvidia.com/gpu.present
             nodelabel_value: "true"
+    
+    # Additional customization for Operational Decision Management
+    # Contents of the following will be merged into ODM part of CP4BA CR yaml file. Arrays are overwriten.
+    odm_cr_custom:
+      spec:
+        odm_configuration:
+          decisionCenter:
+            # Enable support for decision models
+            disabledDecisionModel: false
     
     # Additional customization for Robotic Process Automation
     # Contents of the following will be merged into RPA CR yaml file. Arrays are overwriten.
@@ -596,7 +611,7 @@ spec:
           image: ubi9/ubi:9.0.0
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; yum install git -y && git clone --progress --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
+            ["-c","cd /usr; yum install git -y && git clone --depth 1 --shallow-submodules --progress --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION
@@ -735,7 +750,7 @@ spec:
           image: ubi9/ubi:9.0.0
           command: ["/bin/bash"]
           args:
-            ["-c","cd /usr; yum install git -y && git clone --progress --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
+            ["-c","cd /usr; yum install git -y && git clone --depth 1 --shallow-submodules --progress --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
           imagePullPolicy: IfNotPresent
           env:
             - name: ACTION

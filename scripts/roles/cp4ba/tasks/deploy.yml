@@ -88,6 +88,11 @@
     cr: "{{ cr | combine(lookup('template', 'odm/cr.yaml.j2') | from_yaml, recursive=true) }}"
   when: cp4ba_config.deployment_patterns.decisions
 
+- name: Merge ODM customizations
+  ansible.builtin.set_fact:
+    cr: "{{ cr | combine(odm_cr_custom , recursive=true) }}"
+  when: cp4ba_config.deployment_patterns.decisions and (odm_cr_custom is defined)
+
 # Based on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=resource-configuring-automation-decision-services
 - name: Add ADS pattern
   ansible.builtin.set_fact:
