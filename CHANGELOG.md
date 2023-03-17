@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [2023-03-17]
+
 ### Added
 
 - Other file types can now be uploaded in BAW Views (txt,xml,png,jpg,jpeg,pdf,xls,xlsx,doc,docx,ppt,pptx).

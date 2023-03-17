@@ -2,7 +2,7 @@
 
 Goal of this repository is to almost automagically install CP4BA Production (previously Enterprise) patterns and also IAF components with all kinds of prerequisites and extras on OpenShift. Read the [Disclaimer ✋](#disclaimer-) carefully.
 
-Last installation was performed on 2023-01-30 with CP4BA version 22.0.2 IF001.
+Last installation was performed on 2023-03-17 with CP4BA version 22.0.2 IF002.
 
 - [Disclaimer ✋](#disclaimer-)
 - [Documentation base 📝](#documentation-base-)
@@ -312,7 +312,7 @@ data:
 
   # This parameter cotains a specific tag name of the repository. This allows you to run Install and Remove from the same version.
   # In situation where you want to clean and install newver version you leave the original tag you had, run through remove and then change this tag to lastest and run install.
-  git_branch: "2023-01-30"
+  git_branch: "2023-03-17"
 
   # Variables
   variables.yml: |
