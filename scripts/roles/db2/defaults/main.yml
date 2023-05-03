@@ -3,7 +3,7 @@ db2_base_dir: /tmp
 db2_dir_name: db2
 db2_universal_password: ""
 db2_storage_class_name: ""
-db2_operator_channel: v1.1
+db2_operator_channel: v3.2
 db2_version: 11.5.8.0-cn2
 db2_icr_password: ""
 db2_deployment_platform: ""
