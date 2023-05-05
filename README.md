@@ -26,7 +26,7 @@ Docs entry point at https://ibm.github.io/cloud-pak-deployer
 CP4BA reference in docs at https://ibm.github.io/cloud-pak-deployer/30-reference/configuration/cloud-pak/#cp4ba  
 CP4BA Additional details in docs at https://ibm.github.io/cloud-pak-deployer/30-reference/configuration/cp4ba  
 
-You need to get rid of the One-shot deployment at first. You can use the following remove Job.
+You need to get rid of the One-shot deployment at first. You can use the following remove Job. And then remove whole apollo-one-shot Project.
 ```yaml
 apiVersion: batch/v1
 kind: Job
@@ -120,7 +120,7 @@ subjects:
 
 ### 3. Add configuration
 
-Customize `TODO_RWX_FILE_STORAGE_CLASS`, `TODO_ICR_PASSWORD`, `TODO_UNIVERSAL_PASSWORD` and `TODO_OCP_VERSION` (only x.y like 4.10, 4.11, 4.12)
+Customize `TODO_RWX_FILE_STORAGE_CLASS` (RFX File Storage class for PVC where the deployer stores its runtime data), `TODO_ICR_PASSWORD` (password for IBM Container Registry from https://myibm.ibm.com/products-services/containerlibrary), `TODO_UNIVERSAL_PASSWORD` (Password which will be used for all user credentials in the deployment) and `TODO_OCP_VERSION` (yur OpenShift version, only x.y like 4.10, 4.11, 4.12)
 
 ```yaml
 apiVersion: v1
