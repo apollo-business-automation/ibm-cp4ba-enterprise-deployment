@@ -120,7 +120,11 @@ subjects:
 
 ### 3. Add configuration
 
-Customize `TODO_RWX_FILE_STORAGE_CLASS` (RFX File Storage class for PVC where the deployer stores its runtime data), `TODO_ICR_PASSWORD` (password for IBM Container Registry from https://myibm.ibm.com/products-services/containerlibrary), `TODO_UNIVERSAL_PASSWORD` (Password which will be used for all user credentials in the deployment) and `TODO_OCP_VERSION` (yur OpenShift version, only x.y like 4.10, 4.11, 4.12)
+Customize
+- `TODO_RWX_FILE_STORAGE_CLASS` (RFX File Storage class for PVC where the deployer stores its runtime data)
+- `TODO_ICR_PASSWORD` (password for IBM Container Registry from https://myibm.ibm.com/products-services/containerlibrary)
+- `TODO_UNIVERSAL_PASSWORD` (Password which will be used for all user credentials in the deployment)
+- `TODO_OCP_VERSION` (your OpenShift version, only x.y like 4.10, 4.11, 4.12)
 
 ```yaml
 apiVersion: v1
