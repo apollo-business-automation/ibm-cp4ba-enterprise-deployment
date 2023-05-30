@@ -3,6 +3,9 @@
 📢📢📢**This repository has been merged to Cloud Pak Deployer**🚀🚀🚀  
 **Read further to get to know how to use it**
 
+Original README.md of Apollo one-shot is located at [README-orig.md](README-orig.md)
+
+
 - [Disclaimer ✋](#disclaimer-)
 - [Move to Cloud Pak Deployer (CPD) 🚀](#move-to-cloud-pak-deployer-cpd-)
   - [1. Create new Project](#1-create-new-project)
