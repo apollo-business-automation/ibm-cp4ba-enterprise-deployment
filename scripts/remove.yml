@@ -70,9 +70,6 @@
     name: mail
   when: mail_enabled    
 
-- name: Remove nexus
-  ansible.builtin.include_role:
-    name: nexus
 
 - name: Remove gitea
   ansible.builtin.include_role:

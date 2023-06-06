@@ -66,9 +66,6 @@
     name: gitea
   when: gitea_enabled
 
-- name: Install nexus
-  ansible.builtin.include_role:
-    name: nexus
 
 - name: Install Mail
   ansible.builtin.include_role:

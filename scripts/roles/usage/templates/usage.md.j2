@@ -44,19 +44,6 @@ OAS: https://gitea.{{ apps_endpoint_domain }}/api/swagger#/
 - Credentials you should use: {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
 - Initial administrative user credentials: giteaadmin / {{ universal_password }}
 
-### Nexus
-
-As package manager.
-
-#### Endpoints
-
-UI: https://nexus.{{ apps_endpoint_domain }}/
-OAS: https://nexus.{{ apps_endpoint_domain }}/service/rest/swagger.json
-
-#### Credentials
-
-- Credentials you should use: {{ lc_principal_admin_user }} / {{ lc_principal_admin_password }}
-- Initial administrative user credentials: admin / {{ universal_password }}
 
 {% if roundcube_enabled == true %}
 ### Roundcube
