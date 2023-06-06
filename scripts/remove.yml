@@ -34,16 +34,7 @@
 - name: Remove CPFS
   ansible.builtin.include_role:
     name: cpfs
-
-- name: Remove Mongo Express
-  ansible.builtin.include_role:
-    name: mongo_express
-  when: mongo_express_enabled
-
-- name: Remove MongoDB
-  ansible.builtin.include_role:
-    name: mongodb
-  when: mongodb_enabled    
+ 
 
 - name: Remove Kibana
   ansible.builtin.include_role:

@@ -115,20 +115,6 @@ Not exposed outside the cluster.
 - for admin: {{ lc_principal_admin_user }}@{{ lc_ldap_domain }}/ {{ mail_universal_password }}
 - for user: cpuser@{{ lc_ldap_domain }} / {{ mail_universal_password }}
 
-{% if mongo_express_enabled == true %}
-### Mongo Express
-
-As UI for MongoDB
-
-#### Endpoints
-
-- Mongo Express UI: https://mongo-express.{{ apps_endpoint_domain }}
-
-#### Credentials
-
-- {{ principal_admin_user }} / {{ universal_password }}
-
-{% endif %}
 
 {% if pgadmin_enabled == true %}
 ### pgAdmin
@@ -629,24 +615,6 @@ As DB server for RPA.
 
 ```bash
 /opt/mssql-tools/bin/sqlcmd -S 127.0.0.1 -U sa -P {{ universal_password }}
-```
-
-### MongoDB
-
-As MongoDB database storage for the platform.
-
-#### Endpoints
-
-- Exposed as NodePort as found in Project *mongodb* in Service *mongodb*.
-
-#### Credentials
-
-- root / {{ universal_password }} / authentication database is *admin*
-
-#### CLI in container
-
-```bash
-mongo --username root --password {{ universal_password }} --authenticationDatabase admin
 ```
 
 ## Deployment job
