@@ -247,6 +247,7 @@ data:
             enabled: true
             optional_components:
               baw_authoring: true # Workflow Authoring (BAW) - always keep true if workflow pattern is chosen. BAW Runtime is not implemented.
+              kafka: true # Will install a kafka cluster and enable kafka service for workflow authoring.
           workstreams: # Automation Workstream Services (IAWS)
             enabled: false # Always false in this tool - this feature is not implemented
       
