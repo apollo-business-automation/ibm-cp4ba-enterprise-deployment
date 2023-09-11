@@ -232,7 +232,6 @@ data:
             enabled: true
             optional_components: 
               document_processing_designer: true # Designer (ADP)
-              document_processing_runtime: false # Runtime (ADP) - Currently not implemented
             # Additional customization for Automation Document Processing
             # Contents of the following will be merged into ADP part of CP4BA CR yaml file. Arrays are overwritten.
             cr_custom:
@@ -248,8 +247,6 @@ data:
             optional_components:
               baw_authoring: true # Workflow Authoring (BAW) - always keep true if workflow pattern is chosen. BAW Runtime is not implemented.
               kafka: true # Will install a kafka cluster and enable kafka service for workflow authoring.
-          workstreams: # Automation Workstream Services (IAWS)
-            enabled: false # Always false in this tool - this feature is not implemented
       
       # Section for IBM Process mining
       pm:
