@@ -361,11 +361,6 @@ jdusek@cz.ibm.com
 Business Automation Technical Specialist  
 IBM Czech Republic
 
-Ondrej Svec  
-ondrej.svec2@ibm.com  
-Automation Engineer  
-IBM Client Engineering CEE  
-
 ## Notice
 
 © Copyright IBM Corporation 2021.
