@@ -1,18 +1,15 @@
 # Installation of Cloud Pak for Business Automation on containers - Cloud Pak Deployer (formerly Apollo one-shot deployment) 🔫 <!-- omit in toc -->
 
-📢📢📢**This repository has been merged to Cloud Pak Deployer**🚀🚀🚀  
-**Read further to get to know how to use it**
-
-Original README.md of Apollo one-shot is located at [README-orig.md](README-orig.md)
-
+If you want details for former Apollo one-shot go to [Apollo one-shot](#apollo-one-shot)
 
 - [Disclaimer ✋](#disclaimer-)
-- [Move to Cloud Pak Deployer (CPD) 🚀](#move-to-cloud-pak-deployer-cpd-)
+- [Deploy CP4BA using Cloud Pak Deployer (CPD) 🚀](#deploy-cp4ba-using-cloud-pak-deployer-cpd-)
   - [1. Create new Project](#1-create-new-project)
   - [2. Assign permissions](#2-assign-permissions)
   - [3. Add configuration](#3-add-configuration)
   - [4. Run the Job](#4-run-the-job)
   - [Removal](#removal)
+- [Apollo one-shot](#apollo-one-shot)
 - [Contacts](#contacts)
 - [Notice](#notice)
 
@@ -23,57 +20,14 @@ Absolutely no warranties, no support, no responsibility for anything.
 Use it on your own risk and always follow the official IBM documentations.  
 It is always your responsibility to make sure you are license compliant.
 
-## Move to Cloud Pak Deployer (CPD) 🚀
+## Deploy CP4BA using Cloud Pak Deployer (CPD) 🚀
 
 Main repository at https://github.com/IBM/cloud-pak-deployer  
 Docs entry point at https://ibm.github.io/cloud-pak-deployer  
 CP4BA reference in docs at https://ibm.github.io/cloud-pak-deployer/30-reference/configuration/cloud-pak/#cp4ba  
 CP4BA Additional details in docs at https://ibm.github.io/cloud-pak-deployer/30-reference/configuration/cp4ba  
 
-You need to get rid of the One-shot deployment at first. You can use the following remove Job. And then remove whole apollo-one-shot Project.
-```yaml
-apiVersion: batch/v1
-kind: Job
-metadata:
-  generateName: apollo-one-shot-remove-
-  namespace: apollo-one-shot
-spec:
-  template:
-    metadata:
-      labels:
-        app: apollo-one-shot  
-    spec:
-      containers:
-        - name: apollo-one-shot
-          image: ubi9/ubi:9.0.0
-          command: ["/bin/bash"]
-          args:
-            ["-c","cd /usr; yum install git -y && git clone --depth 1 --shallow-submodules --progress --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
-          imagePullPolicy: IfNotPresent
-          env:
-            - name: ACTION
-              value: remove
-            - name: GIT_REPOSITORY
-              valueFrom:
-                configMapKeyRef:
-                  name: apollo-one-shot
-                  key: git_repository
-            - name: GIT_BRANCH
-              value: main
-            - name: CONTAINER_RUN_MODE
-              value: "true"
-          volumeMounts:
-            - name: config
-              mountPath: /config/
-      restartPolicy: Never
-      volumes:
-        - name: config
-          configMap:
-            name: apollo-one-shot
-  backoffLimit: 2
-```
-
-Apollo one-shot like deployment from OpenShift console based on https://ibm.github.io/cloud-pak-deployer/50-advanced/run-on-openshift/run-deployer-on-openshift-using-console/
+Deployment from OpenShift console based on https://ibm.github.io/cloud-pak-deployer/50-advanced/run-on-openshift/run-deployer-on-openshift-using-console/
 
 ### 1. Create new Project
 
@@ -365,6 +319,7 @@ metadata:
   name: cloud-pak-deployer-config
   namespace: cloud-pak-deployer
 ```
+
 Update state to removed
 ```yaml
     cp4ba:
@@ -384,6 +339,55 @@ metadata:
 ```
 
 Reapply the Job from step [4. Run the Job](#4-run-the-job). It knows that it should remove the deployment based on the parameter in the ConfigMap.
+
+## Apollo one-shot
+
+📢📢📢**The code in this repository has been merged to Cloud Pak Deployer and is no longer developped**🚀🚀🚀  
+
+Original README.md of Apollo one-shot is located at [README-orig.md](README-orig.md)
+
+To get rid of the One-shot deployment at first. You can use the following remove Job. And then remove whole apollo-one-shot Project.
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: apollo-one-shot-remove-
+  namespace: apollo-one-shot
+spec:
+  template:
+    metadata:
+      labels:
+        app: apollo-one-shot  
+    spec:
+      containers:
+        - name: apollo-one-shot
+          image: ubi9/ubi:9.0.0
+          command: ["/bin/bash"]
+          args:
+            ["-c","cd /usr; yum install git -y && git clone --depth 1 --shallow-submodules --progress --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: ACTION
+              value: remove
+            - name: GIT_REPOSITORY
+              valueFrom:
+                configMapKeyRef:
+                  name: apollo-one-shot
+                  key: git_repository
+            - name: GIT_BRANCH
+              value: main
+            - name: CONTAINER_RUN_MODE
+              value: "true"
+          volumeMounts:
+            - name: config
+              mountPath: /config/
+      restartPolicy: Never
+      volumes:
+        - name: config
+          configMap:
+            name: apollo-one-shot
+  backoffLimit: 2
+```
 
 ## Contacts
 
