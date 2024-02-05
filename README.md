@@ -1,4 +1,4 @@
-# Installation of Cloud Pak for Business Automation on containers - Apollo one-shot deployment 🔫 <!-- omit in toc -->
+# Installation of Cloud Pak for Business Automation on containers - Cloud Pak Deployer (formerly Apollo one-shot deployment) 🔫 <!-- omit in toc -->
 
 📢📢📢**This repository has been merged to Cloud Pak Deployer**🚀🚀🚀  
 **Read further to get to know how to use it**
@@ -12,6 +12,7 @@ Original README.md of Apollo one-shot is located at [README-orig.md](README-orig
   - [2. Assign permissions](#2-assign-permissions)
   - [3. Add configuration](#3-add-configuration)
   - [4. Run the Job](#4-run-the-job)
+  - [Removal](#removal)
 - [Contacts](#contacts)
 - [Notice](#notice)
 
@@ -353,6 +354,36 @@ spec:
         persistentVolumeClaim:
           claimName: cloud-pak-deployer-status
 ```
+
+
+### Removal
+
+To remove Cloud Pak Deployer deployment, edit the main configmap
+```yaml
+kind: ConfigMap
+metadata:
+  name: cloud-pak-deployer-config
+  namespace: cloud-pak-deployer
+```
+Update state to removed
+```yaml
+    cp4ba:
+    - project: cp4ba
+      openshift_cluster_name: "{{ env_id }}"
+      openshift_storage_name: auto-storage
+      accept_licenses: true
+      state: removed # Change from installed
+```
+
+Remove the deployment job
+```yaml
+kind: Job
+metadata:
+  name: cloud-pak-deployer
+  namespace: cloud-pak-deployer
+```
+
+Reapply the Job from step [4. Run the Job](#4-run-the-job). It knows that it should remove the deployment based on the parameter in the ConfigMap.
 
 ## Contacts
 
