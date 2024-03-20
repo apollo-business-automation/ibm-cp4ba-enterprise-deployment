@@ -1,15 +1,8 @@
 # Installation of Cloud Pak for Business Automation on containers - Cloud Pak Deployer (formerly Apollo one-shot deployment) 🔫 <!-- omit in toc -->
 
-If you want details for former Apollo one-shot go to [Apollo one-shot](#apollo-one-shot)
-
 - [Disclaimer ✋](#disclaimer-)
 - [Deploy CP4BA using Cloud Pak Deployer (CPD) 🚀](#deploy-cp4ba-using-cloud-pak-deployer-cpd-)
-  - [1. Create new Project](#1-create-new-project)
-  - [2. Assign permissions](#2-assign-permissions)
-  - [3. Add configuration](#3-add-configuration)
-  - [4. Run the Job](#4-run-the-job)
-  - [Removal](#removal)
-- [Apollo one-shot](#apollo-one-shot)
+- [Removal](#removal)
 - [Contacts](#contacts)
 - [Notice](#notice)
 
@@ -27,86 +20,16 @@ Docs entry point at https://ibm.github.io/cloud-pak-deployer
 CP4BA reference in docs at https://ibm.github.io/cloud-pak-deployer/30-reference/configuration/cloud-pak/#cp4ba  
 CP4BA Additional details in docs at https://ibm.github.io/cloud-pak-deployer/30-reference/configuration/cp4ba  
 
-Deployment from OpenShift console based on https://ibm.github.io/cloud-pak-deployer/50-advanced/run-on-openshift/run-deployer-on-openshift-using-console/
+Follow the guide on https://ibm.github.io/cloud-pak-deployer/50-advanced/run-on-openshift/run-deployer-on-openshift-using-console/
 
-### 1. Create new Project
+In the [Configure the Cloud Paks and services to be deployed](https://ibm.github.io/cloud-pak-deployer/50-advanced/run-on-openshift/run-deployer-on-openshift-using-console/#configure-the-cloud-paks-and-service-to-be-deployed) section, modify and provide the following configuration for CP4BA instead of the one from the documentation for CP4D.
 
-```yaml
-apiVersion: v1
-kind: Namespace
-metadata:
-  creationTimestamp: null
-  name: cloud-pak-deployer
-```
-
-### 2. Assign permissions
+Customize:
+- `universal_password` - Only alphanumeric (no special characters) password which will be used for all user credentials in the deployment
+- `ocp_version` - Your OpenShift version, only x.y like 4.12, 4.14
+- As needed the `cp4ba:` section as per documentation at https://ibm.github.io/cloud-pak-deployer/30-reference/configuration/cloud-pak/#cp4ba  
 
 ```yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: cloud-pak-deployer-sa
-  namespace: cloud-pak-deployer
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: system:openshift:scc:privileged
-  namespace: cloud-pak-deployer
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: system:openshift:scc:privileged
-subjects:
-- kind: ServiceAccount
-  name: cloud-pak-deployer-sa
-  namespace: cloud-pak-deployer
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: cloud-pak-deployer-cluster-admin
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-- kind: ServiceAccount
-  name: cloud-pak-deployer-sa
-  namespace: cloud-pak-deployer
-```
-
-### 3. Add configuration
-
-Customize
-- `TODO_RWX_FILE_STORAGE_CLASS` - RFX File Storage class for PVC where the deployer stores its runtime data
-- `TODO_ICR_PASSWORD` - password for IBM Container Registry from https://myibm.ibm.com/products-services/containerlibrary
-- `TODO_UNIVERSAL_PASSWORD` - Password which will be used for all user credentials in the deployment
-- `TODO_OCP_VERSION` - your OpenShift version, only x.y like 4.10, 4.11, 4.12
-
-```yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: cloud-pak-deployer-status
-  namespace: cloud-pak-deployer
-spec:
-  accessModes:
-  - ReadWriteMany
-  resources:
-    requests:
-      storage: 10Gi
-  storageClassName: TODO_RWX_FILE_STORAGE_CLASS
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: cloud-pak-entitlement-key
-  namespace: cloud-pak-deployer
-type: Opaque
-stringData:
-  cp-entitlement-key: |
-    TODO_ICR_PASSWORD
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -116,16 +39,16 @@ metadata:
 data:
   cpd-config.yaml: |
     global_config:
+      environment_name: cp4ba
       cloud_platform: existing-ocp
       env_id: cp4ba
-      environment_name: sample
-      universal_password: TODO_UNIVERSAL_PASSWORD
+      universal_password: Passw0rd
 
     openshift:
     - cluster_name: "{{ env_id }}"
       domain_name: example.com
       name: "{{ env_id }}"
-      ocp_version: "TODO_OCP_VERSION"
+      ocp_version: 4.14
       console_banner: "{{ env_id }}"
       openshift_storage:
       - storage_name: auto-storage
@@ -133,6 +56,7 @@ data:
 
     cp4ba:
     - project: cp4ba
+      collateral_project: cp4ba-collateral
       openshift_cluster_name: "{{ env_id }}"
       openshift_storage_name: auto-storage
       accept_licenses: true
@@ -250,69 +174,14 @@ data:
 
       # Set to false if you don't want to install (or remove) Mongo Express
       mongo_express_enabled: true
+      
+      # Set to false if you don't want to install (or remove) phpLDAPAdmin
+      phpldapadmin_enabled: true
 ```
 
-### 4. Run the Job
+## Removal
 
-```yaml
-apiVersion: batch/v1
-kind: Job
-metadata:
-  labels:
-    app: cloud-pak-deployer
-  name: cloud-pak-deployer
-  namespace: cloud-pak-deployer
-spec:
-  parallelism: 1
-  completions: 1
-  backoffLimit: 0
-  template:
-    metadata:
-      name: cloud-pak-deployer
-      labels:
-        app: cloud-pak-deployer
-    spec:
-      containers:
-      - name: cloud-pak-deployer
-        image: quay.io/cloud-pak-deployer/cloud-pak-deployer:latest
-        imagePullPolicy: Always
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-        env:
-        - name: CONFIG_DIR
-          value: /Data/cpd-config
-        - name: STATUS_DIR
-          value: /Data/cpd-status
-        - name: CP_ENTITLEMENT_KEY
-          valueFrom:
-            secretKeyRef:
-              key: cp-entitlement-key
-              name: cloud-pak-entitlement-key
-        volumeMounts:
-        - name: config-volume
-          mountPath: /Data/cpd-config/config
-        - name: status-volume
-          mountPath: /Data/cpd-status
-        command: ["/bin/sh","-xc"]
-        args: 
-          - /cloud-pak-deployer/cp-deploy.sh env apply -v
-      restartPolicy: Never
-      securityContext:
-        runAsUser: 0
-      serviceAccountName: cloud-pak-deployer-sa
-      volumes:
-      - name: config-volume
-        configMap:
-          name: cloud-pak-deployer-config
-      - name: status-volume
-        persistentVolumeClaim:
-          claimName: cloud-pak-deployer-status
-```
-
-
-### Removal
-
-To remove Cloud Pak Deployer deployment, edit the main configmap
+To remove CP4BA deployment, edit the main configmap
 ```yaml
 kind: ConfigMap
 metadata:
@@ -330,64 +199,7 @@ Update state to removed
       state: removed # Change from installed
 ```
 
-Remove the deployment job
-```yaml
-kind: Job
-metadata:
-  name: cloud-pak-deployer
-  namespace: cloud-pak-deployer
-```
-
-Reapply the Job from step [4. Run the Job](#4-run-the-job). It knows that it should remove the deployment based on the parameter in the ConfigMap.
-
-## Apollo one-shot
-
-📢📢📢**The code in this repository has been merged to Cloud Pak Deployer and is no longer developped**🚀🚀🚀  
-
-Original README.md of Apollo one-shot is located at [README-orig.md](README-orig.md)
-
-To get rid of the One-shot deployment at first. You can use the following remove Job. And then remove whole apollo-one-shot Project.
-```yaml
-apiVersion: batch/v1
-kind: Job
-metadata:
-  generateName: apollo-one-shot-remove-
-  namespace: apollo-one-shot
-spec:
-  template:
-    metadata:
-      labels:
-        app: apollo-one-shot  
-    spec:
-      containers:
-        - name: apollo-one-shot
-          image: ubi9/ubi:9.0.0
-          command: ["/bin/bash"]
-          args:
-            ["-c","cd /usr; yum install git -y && git clone --depth 1 --shallow-submodules --progress --branch ${GIT_BRANCH} ${GIT_REPOSITORY}; cd ./ibm-cp4ba-enterprise-deployment/scripts; chmod u+x apollo-one-shot.sh; ./apollo-one-shot.sh"]
-          imagePullPolicy: IfNotPresent
-          env:
-            - name: ACTION
-              value: remove
-            - name: GIT_REPOSITORY
-              valueFrom:
-                configMapKeyRef:
-                  name: apollo-one-shot
-                  key: git_repository
-            - name: GIT_BRANCH
-              value: main
-            - name: CONTAINER_RUN_MODE
-              value: "true"
-          volumeMounts:
-            - name: config
-              mountPath: /config/
-      restartPolicy: Never
-      volumes:
-        - name: config
-          configMap:
-            name: apollo-one-shot
-  backoffLimit: 2
-```
+Reapply the Pod from step [Start the Deployer](https://ibm.github.io/cloud-pak-deployer/50-advanced/run-on-openshift/run-deployer-on-openshift-using-console/#start-the-deployer). It knows that it should remove the deployment based on the parameter in the ConfigMap.
 
 ## Contacts
 
