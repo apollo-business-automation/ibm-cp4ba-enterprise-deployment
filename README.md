@@ -177,6 +177,9 @@ data:
       
       # Set to false if you don't want to install (or remove) phpLDAPAdmin
       phpldapadmin_enabled: true
+
+      # Set to false if you don't want to install (or remove) OpenSearch Dashboards
+      opensearch_dashboards_enabled: true
 ```
 
 ## Removal
