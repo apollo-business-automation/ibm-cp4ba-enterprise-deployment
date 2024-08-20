@@ -48,7 +48,7 @@ data:
     - cluster_name: "{{ env_id }}"
       domain_name: example.com
       name: "{{ env_id }}"
-      ocp_version: 4.14
+      ocp_version: 4.15
       console_banner: "{{ env_id }}"
       openshift_storage:
       - storage_name: auto-storage
