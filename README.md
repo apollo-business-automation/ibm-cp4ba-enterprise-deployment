@@ -20,9 +20,9 @@ Docs entry point at https://ibm.github.io/cloud-pak-deployer
 CP4BA reference in docs at https://ibm.github.io/cloud-pak-deployer/30-reference/configuration/cloud-pak/#cp4ba  
 CP4BA Additional details in docs at https://ibm.github.io/cloud-pak-deployer/30-reference/configuration/cp4ba  
 
-Follow the guide on https://ibm.github.io/cloud-pak-deployer/50-advanced/run-on-openshift/run-deployer-on-openshift-using-console/
+Follow the guide on https://ibm.github.io/cloud-pak-deployer/10-use-deployer/3-run/existing-openshift-console/
 
-In the [Configure the Cloud Paks and services to be deployed](https://ibm.github.io/cloud-pak-deployer/50-advanced/run-on-openshift/run-deployer-on-openshift-using-console/#configure-the-cloud-paks-and-services-to-be-deployed) section, modify and provide the following configuration for CP4BA instead of the one from the documentation for CP4D.
+In the [Configure the Cloud Paks and services to be deployed](https://ibm.github.io/cloud-pak-deployer/10-use-deployer/3-run/existing-openshift-console/#configure-the-cloud-paks-and-services-to-be-deployed) section, modify and provide the following configuration for CP4BA instead of the one from the documentation for CP4D.
 
 Customize:
 - `universal_password` - Only alphanumeric (no special characters) password which will be used for all user credentials in the deployment. Will be generated if not provided.
