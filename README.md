@@ -95,7 +95,6 @@ data:
               ads_runtime: true # Runtime (ADS)
             gen_ai: # https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=services-configuring-generative-ai-secret
               apiKey: <watsonx_ai_api_key>
-              authUrl: https://iam.bluemix.net/identity/token
               mlUrl: https://us-south.ml.cloud.ibm.com
               projectId: <project_id>              
           content: # FileNet Content Manager (FNCM) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.2?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__ecm
@@ -133,6 +132,10 @@ data:
             optional_components:
               baw_authoring: true # Workflow Authoring (BAW) - always keep true if workflow pattern is chosen. BAW Runtime is not implemented.
               kafka: true # Will install a kafka cluster and enable kafka service for workflow authoring.
+            gen_ai: # https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/25.0.0?topic=customizing-enabling-generative-ai
+              apiKey: <watsonx_ai_api_key>
+              mlUrl: https://us-south.ml.cloud.ibm.com
+              projectId: <project_id>              
       
       # Section for IBM Process mining
       pm:
@@ -207,7 +210,7 @@ Update state to removed
       state: removed # Change from installed
 ```
 
-Reapply the Pod from step [Start the Deployer](https://ibm.github.io/cloud-pak-deployer/50-advanced/run-on-openshift/run-deployer-on-openshift-using-console/#start-the-deployer). It knows that it should remove the deployment based on the parameter in the ConfigMap.
+Reapply the Pod from step [Start the Deployer](https://ibm.github.io/cloud-pak-deployer/10-use-deployer/3-run/existing-openshift-console/#start-the-deployer). It knows that it should remove the deployment based on the parameter in the ConfigMap.
 
 ## Contacts
 
