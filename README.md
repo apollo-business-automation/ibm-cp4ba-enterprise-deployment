@@ -136,6 +136,7 @@ data:
               apiKey: watsonx_ai_api_key
               mlUrl: https://us-south.ml.cloud.ibm.com
               projectId: project_id
+              defaultFoundationModel: meta-llama/llama-3-3-70b-instruct
       
       # Section for IBM Process mining
       pm:
