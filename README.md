@@ -102,7 +102,6 @@ data:
             optional_components:
               cmis: true # Content Management Interoperability Services (FNCM - CMIS)
               css: true # Content Search Services (FNCM - CSS)
-              es: true # External Share (FNCM - ES)
               tm: true # Task Manager (FNCM - TM)
               ier: true # IBM Enterprise Records (FNCM - IER)
               icc4sap: false # IBM Content Collector for SAP (FNCM - ICC4SAP) - Currently not implemented
