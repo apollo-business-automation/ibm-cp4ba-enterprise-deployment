@@ -131,6 +131,8 @@ data:
             optional_components:
               baw_authoring: true # Workflow Authoring (BAW) - always keep true if workflow pattern is chosen. BAW Runtime is not implemented.
               kafka: true # Will install a kafka cluster and enable kafka service for workflow authoring.
+              workflow_assistant: true # Will enable Authoring assistant for workflow authoring.
+              workplace_assistant: true # Will enable Workplace assistant.
             gen_ai: # https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/25.0.0?topic=customizing-enabling-generative-ai
               apiKey: watsonx_ai_api_key
               mlUrl: https://us-south.ml.cloud.ibm.com
@@ -162,6 +164,11 @@ data:
             # Configures the NLP provider component of IBM RPA. You can disable it by specifying 0. https://www.ibm.com/docs/en/rpa/21.0?topic=platform-configuring-rpa-custom-resources#basic-setup
             nlp:
               replicas: 1
+
+      # Section for IBM Business Automation Manager Open Editions
+      bamoe:
+        # Set to false if you don't want to install (or remove) BAMOE
+        enabled: true
 
       # Section for Asset Repository
       asset_repo:
