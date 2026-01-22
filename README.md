@@ -186,9 +186,6 @@ data:
 
       # Set to false if you don't want to install (or remove) AKHQ
       akhq_enabled: true
-
-      # Set to false if you don't want to install (or remove) Mongo Express
-      mongo_express_enabled: true
       
       # Set to false if you don't want to install (or remove) phpLDAPAdmin
       phpldapadmin_enabled: true
