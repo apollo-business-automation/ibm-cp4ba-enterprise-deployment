@@ -170,6 +170,13 @@ data:
         # Set to false if you don't want to install (or remove) BAMOE
         enabled: true
 
+      ica:
+        # Set to false if you don't want to install (or remove) ICA
+        enabled: false
+        gen_ai:
+          apiKey: watsonx_ai_api_key
+          spaceId: watsonx_ai_space_id
+
       # Section for Asset Repository
       asset_repo:
         # Set to false if you don't want to install (or remove) Asset Repo
