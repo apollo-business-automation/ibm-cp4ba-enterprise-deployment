@@ -64,141 +64,164 @@ data:
       cpfs_profile_size: small # Profile size which affect replicas and resources of Pods of CPFS as per https://www.ibm.com/docs/en/cpfs?topic=operator-hardware-requirements-recommendations-foundational-services
 
       # Section for Cloud Pak for Business Automation itself
-      cp4ba:
-        # Set to false if you don't want to install (or remove) CP4BA
-        enabled: true # Currently always true
-        profile_size: small # Profile size which affect replicas and resources of Pods as per https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=pcmppd-system-requirements
-        patterns:
-          foundation: # Foundation pattern, always true - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.2?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__foundation
-            optional_components:
-              bas: true # Business Automation Studio (BAS) 
-              bai: true # Business Automation Insights (BAI)
-              ae: true # Application Engine (AE)
-          decisions: # Operational Decision Manager (ODM) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.2?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__odm
-            enabled: true
-            optional_components:
-              decision_center: true # Decison Center (ODM)
-              decision_runner: true # Decison Runner (ODM)
-              decision_server_runtime: true # Decison Server (ODM)
-            # Additional customization for Operational Decision Management
-            # Contents of the following will be merged into ODM part of CP4BA CR yaml file. Arrays are overwritten.
-            cr_custom:
-              spec:
-                odm_configuration:
-                  decisionCenter:
-                    # Enable support for decision models
-                    disabledDecisionModel: false
-          decisions_ads: # Automation Decision Services (ADS) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.2?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__ads
-            enabled: true
-            optional_components:
-              ads_designer: true # Designer (ADS)
-              ads_runtime: true # Runtime (ADS)
-            gen_ai: # https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=services-configuring-generative-ai-secret
-              apiKey: watsonx_ai_api_key
-              mlUrl: https://us-south.ml.cloud.ibm.com
-              projectId: project_id
-          content: # FileNet Content Manager (FNCM) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.2?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__ecm
-            enabled: true
-            optional_components:
-              cmis: true # Content Management Interoperability Services (FNCM - CMIS)
-              css: true # Content Search Services (FNCM - CSS)
-              tm: true # Task Manager (FNCM - TM)
-              ier: true # IBM Enterprise Records (FNCM - IER)
-              icc4sap: false # IBM Content Collector for SAP (FNCM - ICC4SAP) - Currently not implemented
-          application: # Business Automation Application (BAA) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.2?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__baa
-            enabled: true
-            optional_components:
-              app_designer: true # App Designer (BAA)
-              ae_data_persistence: true # App Engine data persistence (BAA)
-          document_processing: # Automation Document Processing (ADP) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.2?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__adp
-            enabled: true
-            optional_components: 
-              document_processing_designer: true # Designer (ADP)
-            # Additional customization for Automation Document Processing
-            # Contents of the following will be merged into ADP part of CP4BA CR yaml file. Arrays are overwritten.
-            cr_custom:
-              spec:
-                ca_configuration:
-                  # GPU config as described on https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=resource-configuring-document-processing
-                  deeplearning:
-                    gpu_enabled: false
-                    nodelabel_key: nvidia.com/gpu.present
-                    nodelabel_value: "true"
-                  ocrextraction:
-                    use_iocr: none # Allowed values: "none" to uninstall, "all" or "auto" to install (these are aliases)                         
-          workflow: # Business Automation Workflow (BAW) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/22.0.1?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__baw
-            enabled: true
-            optional_components:
-              baw_authoring: true # Workflow Authoring (BAW) - always keep true if workflow pattern is chosen. BAW Runtime is not implemented.
-              kafka: true # Will install a kafka cluster and enable kafka service for workflow authoring.
-              workflow_assistant: true # Will enable Authoring assistant for workflow authoring.
-              workplace_assistant: true # Will enable Workplace assistant.
-            gen_ai: # https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/25.0.0?topic=customizing-enabling-generative-ai
-              apiKey: watsonx_ai_api_key
-              mlUrl: https://us-south.ml.cloud.ibm.com
-              projectId: project_id
-              defaultFoundationModel: meta-llama/llama-3-3-70b-instruct
-      
-      # Section for IBM Process mining
-      pm:
-        # Set to false if you don't want to install (or remove) Process Mining
-        enabled: true
-        # Additional customization for Process Mining
-        # Contents of the following will be merged into PM CR yaml file. Arrays are overwritten.
-        cr_custom:
-          spec:
-            processmining:
-              storage:
-                # Disables redis to spare resources as per https://www.ibm.com/docs/en/process-mining/1.13.2?topic=configurations-custom-resource-definition
-                redis:
-                  install: false  
+      patterns:
+        foundation: # Foundation pattern, always true - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__foundation
+          optional_components:
+            bas: true # Business Automation Studio (BAS)
+            bai: true # Business Automation Insights (BAI)
+            ae: true # Application Engine (AE)
+        decisions: # Operational Decision Manager (ODM) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__odm
+          enabled: true
+          optional_components:
+            decision_center: true # Decision Center (ODM)
+            decision_runner: true # Decision Runner (ODM)
+            decision_server_runtime: true # Decision Server (ODM)
+          # Additional customization for Operational Decision Management
+          # Contents of the following will be merged into ODM part of CP4BA CR yaml file. Arrays are overwritten.
+          cr_custom:
+            spec:
+              odm_configuration:
+                decisionCenter:
+                  # Enable support for decision models
+                  disabledDecisionModel: false
+        decisions_ads: # Automation Decision Services (ADS) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__ads
+          enabled: true
+          optional_components:
+            ads_designer: true # Designer (ADS)
+            ads_runtime: true # Runtime (ADS)
+          gen_ai: # https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=services-configuring-generative-ai-secret
+            endpoint: https://us-south.ml.cloud.ibm.com
+            project_id: project_id
+            api_key: watsonx_ai_api_key
+        content: # FileNet Content Manager (FNCM) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__ecm
+          enabled: true
+          optional_components:
+            cmis: true # Content Management Interoperability Services (FNCM - CMIS)
+            css: true # Content Search Services (FNCM - CSS)
+            tm: true # Task Manager (FNCM - TM)
+            ier: true # IBM Enterprise Records (FNCM - IER)
+            icc4sap: false # IBM Content Collector for SAP (FNCM - ICC4SAP) - Currently not implemented
+            ccxmo: true # Content Cortex for Microsoft Office (CCXMO)
+            gen_ai: false # AI features of base CCX
+            ccxai: false # Content Coretex Ai Services
+          gen_ai:
+            endpoint: https://us-south.ml.cloud.ibm.com/ml/v1/text/extractions
+            space_id: space_id
+            api_key: watsonx_ai_api_key
+            cos_endpoint: cos_endpoint
+            cos_api_key: cos_api_key
+            cos_connection_id: cos_connection_id
+          ccxai_gen_ai:
+            provider: watsonx
+            endpoint: https://us-south.ml.cloud.ibm.com
+            api_key: watsonx_ai_api_key
+            model: openai/gpt-oss-120b
+            watsonx_saas_config:
+              project_id: project_id
+        application: # Business Automation Application (BAA) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__baa
+          enabled: true
+          optional_components:
+            app_designer: true # App Designer (BAA)
+            ae_data_persistence: true # App Engine data persistence (BAA)
+        document_processing: # Automation Document Processing (ADP) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__adp
+          enabled: true
+          optional_components:
+            document_processing_designer: true # Designer (ADP)
+          # Additional customization for Automation Document Processing
+          # Contents of the following will be merged into ADP part of CP4BA CR yaml file. Arrays are overwritten.
+          cr_custom:
+            spec:
+              ca_configuration:
+                ## NB: All config parameters for ADP are described here ==> https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=parameters-automation-document-processing
+                ocrextraction:
+                  # [Tech Preview] OCR Engine 2 (IOCR) for ADP - Starts the Watson Document Understanding (WDU) pods to process documents.
+                  use_iocr: auto # Allowed values: auto, all, none. Refer to doc for option details: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=parameters-automation-document-processing#:~:text=ocrextraction.use_iocr
+                  deep_learning_object_detection: # When enabled, ca_configuration.deeplearning parameters will be used (ignored otherwise), and deep-learning pods will be deployed to enhance object detection.
+                    # If disabled, all training will automatically be done in "fast-training" mode and should finish in less than 10 min.
+                    # Warn: If you enable this option and don't select the "fast training" mode in ADP before starting training, training could take hours (or more if you don't have GPUs).
+                    #       See "Important" note here for usage recommandation on using "fast/deeplarning" training: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2?topic=project-creating-data-extraction-model#:~:text=Training%20takes%20time
+                    enabled: true
+                deeplearning: # Only used if deep_learning_object_detection is enabled. Configure usage of GPU-enabled Nodes.
+                  gpu_enabled: false # Use GPUs for deeplearning training instead of CPUs.
+                  nodelabel_key: nvidia.com/gpu.present
+                  nodelabel_value: "true"
+                  replica_count: 1 # Controls the number of deep learning pod replicas. NB: The number of GPUs available on your cluster should be ≥ to replica_count.
+        workflow: # Business Automation Workflow (BAW) - https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/latest?topic=deployment-capabilities-production-deployments#concept_c2l_1ks_fnb__baw
+          enabled: true
+          optional_components:
+            baw_authoring: true # Workflow Authoring (BAW) - always keep true if workflow pattern is chosen. BAW Runtime is not implemented.
+            kafka: true # Will enable kafka service for workflow authoring.
+            workflow_assistant: true # Will enable Authoring assistant for workflow authoring.
+            workplace_assistant: true # Will enable Workplace assistant.
+          gen_ai: # https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/25.0.1?topic=customizing-enabling-generative-ai https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/25.0.1?topic=customizing-configuring-workplace-assistant https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/25.0.1?topic=customizing-configuring-authoring-assistant
+            endpoint: https://us-south.ml.cloud.ibm.com
+            project_id: project_id
+            api_key: watsonx_ai_api_key
+            model: openai/gpt-oss-120b
+          wxo_service_instance_url: https://api.hostname/instances/tenant_id
+  
+    # Section for IBM Process mining
+    pm:
+      # Set to false if you don't want to install (or remove) Process Mining
+      enabled: true
+      # Additional customization for Process Mining
+      # Contents of the following will be merged into PM CR yaml file. Arrays are overwritten.
+      cr_custom:
+        spec:
+          processmining:
+            storage:
+              # Disables redis to spare resources as per https://www.ibm.com/docs/en/process-mining/latest?topic=configurations-custom-resource-definition
+              redis:
+                install: false
+  
+    # Section for IBM Robotic Process Automation
+    rpa:
+      # Set to false if you don't want to install (or remove) RPA
+      enabled: true
+      # Additional customization for Robotic Process Automation
+      # Contents of the following will be merged into RPA CR yaml file. Arrays are overwritten.
+      cr_custom:
+        spec:
+          # Configures the NLP provider component of IBM RPA. You can disable it by specifying 0. https://www.ibm.com/docs/en/rpa/latest?topic=platform-configuring-rpa-custom-resources#basic-setup
+          nlp:
+            replicas: 1
+  
+    # Section for IBM Business Automation Manager Open Editions
+    bamoe:
+      # Set to false if you don't want to install (or remove) BAMOE
+      enabled: true
+  
+    # Section for IBM Content Assistant
+    ica:
+      # Set to false if you don't want to install (or remove) ICA
+      enabled: false
+      gen_ai:
+        api_key: watsonx_ai_api_key
+        space_id: space_id
+        model: openai/gpt-oss-120b
+        embedding_model: intfloat/multilingual-e5-large
+  
+    # Set to false if you don't want to install (or remove) CloudBeaver (PostgreSQL, DB2, MSSQL UI)
+    cloudbeaver_enabled: true
+  
+    # Set to false if you don't want to install (or remove) Roundcube
+    roundcube_enabled: true
+  
+    # Set to false if you don't want to install (or remove) Cerebro
+    cerebro_enabled: true
+  
+    # Set to false if you don't want to install (or remove) AKHQ
+    akhq_enabled: true
+  
+    # Set to false if you don't want to install (or remove) Mongo Express
+    mongo_express_enabled: true
+  
+    # Set to false if you don't want to install (or remove) phpLDAPAdmin
+    phpldapadmin_enabled: true
+  
+    # Set to false if you don't want to install (or remove) OpenSearch Dashboards
+    opensearch_dashboards_enabled: true
 
-      # Section for IBM Robotic Process Automation
-      rpa:
-        # Set to false if you don't want to install (or remove) RPA
-        enabled: true
-        # Additional customization for Robotic Process Automation
-        # Contents of the following will be merged into RPA CR yaml file. Arrays are overwritten.
-        cr_custom:
-          spec:
-            # Configures the NLP provider component of IBM RPA. You can disable it by specifying 0. https://www.ibm.com/docs/en/rpa/21.0?topic=platform-configuring-rpa-custom-resources#basic-setup
-            nlp:
-              replicas: 1
-
-      # Section for IBM Business Automation Manager Open Editions
-      bamoe:
-        # Set to false if you don't want to install (or remove) BAMOE
-        enabled: true
-
-      ica:
-        # Set to false if you don't want to install (or remove) ICA
-        enabled: false
-        gen_ai:
-          apiKey: watsonx_ai_api_key
-          spaceId: watsonx_ai_space_id
-
-      # Section for Asset Repository
-      asset_repo:
-        # Set to false if you don't want to install (or remove) Asset Repo
-        enabled: false # Currently not implemented
-
-      # Set to false if you don't want to install (or remove) CloudBeaver (PostgreSQL, DB2, MSSQL UI)
-      cloudbeaver_enabled: true
-
-      # Set to false if you don't want to install (or remove) Roundcube
-      roundcube_enabled: true
-
-      # Set to false if you don't want to install (or remove) Cerebro
-      cerebro_enabled: true
-
-      # Set to false if you don't want to install (or remove) AKHQ
-      akhq_enabled: true
-      
-      # Set to false if you don't want to install (or remove) phpLDAPAdmin
-      phpldapadmin_enabled: true
-
-      # Set to false if you don't want to install (or remove) OpenSearch Dashboards
-      opensearch_dashboards_enabled: true
 ```
 
 ## Removal
