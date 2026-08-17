@@ -160,67 +160,67 @@ data:
             model: openai/gpt-oss-120b
           wxo_service_instance_url: https://api.hostname/instances/tenant_id
   
-    # Section for IBM Process mining
-    pm:
-      # Set to false if you don't want to install (or remove) Process Mining
-      enabled: true
-      # Additional customization for Process Mining
-      # Contents of the following will be merged into PM CR yaml file. Arrays are overwritten.
-      cr_custom:
-        spec:
-          processmining:
-            storage:
-              # Disables redis to spare resources as per https://www.ibm.com/docs/en/process-mining/latest?topic=configurations-custom-resource-definition
-              redis:
-                install: false
-  
-    # Section for IBM Robotic Process Automation
-    rpa:
-      # Set to false if you don't want to install (or remove) RPA
-      enabled: true
-      # Additional customization for Robotic Process Automation
-      # Contents of the following will be merged into RPA CR yaml file. Arrays are overwritten.
-      cr_custom:
-        spec:
-          # Configures the NLP provider component of IBM RPA. You can disable it by specifying 0. https://www.ibm.com/docs/en/rpa/latest?topic=platform-configuring-rpa-custom-resources#basic-setup
-          nlp:
-            replicas: 1
-  
-    # Section for IBM Business Automation Manager Open Editions
-    bamoe:
-      # Set to false if you don't want to install (or remove) BAMOE
-      enabled: true
-  
-    # Section for IBM Content Assistant
-    ica:
-      # Set to false if you don't want to install (or remove) ICA
-      enabled: false
-      gen_ai:
-        api_key: watsonx_ai_api_key
-        space_id: space_id
-        model: openai/gpt-oss-120b
-        embedding_model: intfloat/multilingual-e5-large
-  
-    # Set to false if you don't want to install (or remove) CloudBeaver (PostgreSQL, DB2, MSSQL UI)
-    cloudbeaver_enabled: true
-  
-    # Set to false if you don't want to install (or remove) Roundcube
-    roundcube_enabled: true
-  
-    # Set to false if you don't want to install (or remove) Cerebro
-    cerebro_enabled: true
-  
-    # Set to false if you don't want to install (or remove) AKHQ
-    akhq_enabled: true
-  
-    # Set to false if you don't want to install (or remove) Mongo Express
-    mongo_express_enabled: true
-  
-    # Set to false if you don't want to install (or remove) phpLDAPAdmin
-    phpldapadmin_enabled: true
-  
-    # Set to false if you don't want to install (or remove) OpenSearch Dashboards
-    opensearch_dashboards_enabled: true
+      # Section for IBM Process mining
+      pm:
+        # Set to false if you don't want to install (or remove) Process Mining
+        enabled: true
+        # Additional customization for Process Mining
+        # Contents of the following will be merged into PM CR yaml file. Arrays are overwritten.
+        cr_custom:
+          spec:
+            processmining:
+              storage:
+                # Disables redis to spare resources as per https://www.ibm.com/docs/en/process-mining/latest?topic=configurations-custom-resource-definition
+                redis:
+                  install: false
+    
+      # Section for IBM Robotic Process Automation
+      rpa:
+        # Set to false if you don't want to install (or remove) RPA
+        enabled: true
+        # Additional customization for Robotic Process Automation
+        # Contents of the following will be merged into RPA CR yaml file. Arrays are overwritten.
+        cr_custom:
+          spec:
+            # Configures the NLP provider component of IBM RPA. You can disable it by specifying 0. https://www.ibm.com/docs/en/rpa/latest?topic=platform-configuring-rpa-custom-resources#basic-setup
+            nlp:
+              replicas: 1
+    
+      # Section for IBM Business Automation Manager Open Editions
+      bamoe:
+        # Set to false if you don't want to install (or remove) BAMOE
+        enabled: true
+    
+      # Section for IBM Content Assistant
+      ica:
+        # Set to false if you don't want to install (or remove) ICA
+        enabled: false
+        gen_ai:
+          api_key: watsonx_ai_api_key
+          space_id: space_id
+          model: openai/gpt-oss-120b
+          embedding_model: intfloat/multilingual-e5-large
+    
+      # Set to false if you don't want to install (or remove) CloudBeaver (PostgreSQL, DB2, MSSQL UI)
+      cloudbeaver_enabled: true
+    
+      # Set to false if you don't want to install (or remove) Roundcube
+      roundcube_enabled: true
+    
+      # Set to false if you don't want to install (or remove) Cerebro
+      cerebro_enabled: true
+    
+      # Set to false if you don't want to install (or remove) AKHQ
+      akhq_enabled: true
+    
+      # Set to false if you don't want to install (or remove) Mongo Express
+      mongo_express_enabled: true
+    
+      # Set to false if you don't want to install (or remove) phpLDAPAdmin
+      phpldapadmin_enabled: true
+    
+      # Set to false if you don't want to install (or remove) OpenSearch Dashboards
+      opensearch_dashboards_enabled: true
 
 ```
 
