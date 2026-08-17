@@ -224,6 +224,8 @@ data:
 
 ```
 
+In the [Start the deployer](https://ibm.github.io/cloud-pak-deployer/10-use-deployer/3-run/existing-openshift-console/#start-the-deployer) section, modify the latest tag to v3.3.7 (current latest CP4BA version tag, check on the following page https://github.com/IBM/cloud-pak-deployer/releases).
+
 ## Removal
 
 To remove CP4BA deployment, edit the main configmap
