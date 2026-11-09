@@ -212,9 +212,6 @@ data:
       # Set to false if you don't want to install (or remove) Roundcube
       roundcube_enabled: true
     
-      # Set to false if you don't want to install (or remove) Cerebro
-      cerebro_enabled: true
-    
       # Set to false if you don't want to install (or remove) AKHQ
       akhq_enabled: true
     
@@ -230,7 +227,7 @@ data:
 
 ```
 
-In the [Start the deployer](https://ibm.github.io/cloud-pak-deployer/10-use-deployer/3-run/existing-openshift-console/#start-the-deployer) section, modify the latest tag to v3.3.7 (current latest CP4BA version tag, check on the following page https://github.com/IBM/cloud-pak-deployer/releases).
+In the [Start the deployer](https://ibm.github.io/cloud-pak-deployer/10-use-deployer/3-run/existing-openshift-console/#start-the-deployer) section, modify the latest tag to v3.3.11 (current latest CP4BA version tag, check on the following page https://github.com/IBM/cloud-pak-deployer/releases).
 
 ## Removal
 
